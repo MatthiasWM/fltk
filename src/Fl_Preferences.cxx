@@ -75,9 +75,9 @@ const char *Fl_Preferences::newUUID() {
    \param[in] vendor unique text describing the company or author of this file
    \param[in] application unique text describing the application
 */
-Fl_Preferences::Fl_Preferences( Root root, const char *vendor, const char *application ) {
+Fl_Preferences::Fl_Preferences( Root root, const char *vendor, const char *application, unsigned int flags ) {
   node = new Node( "." );
-  rootNode = new RootNode( this, root, vendor, application );
+  rootNode = new RootNode( this, root, vendor, application, flags );
   node->setRoot(rootNode);
 }
 
@@ -93,9 +93,9 @@ Fl_Preferences::Fl_Preferences( Root root, const char *vendor, const char *appli
    \param[in] vendor unique text describing the company or author of this file
    \param[in] application unique text describing the application
  */
-Fl_Preferences::Fl_Preferences( const char *path, const char *vendor, const char *application ) {
+Fl_Preferences::Fl_Preferences( const char *path, const char *vendor, const char *application, unsigned int flags ) {
   node = new Node( "." );
-  rootNode = new RootNode( this, path, vendor, application );
+  rootNode = new RootNode( this, path, vendor, application, flags );
   node->setRoot(rootNode);
 }
 
@@ -272,6 +272,64 @@ char Fl_Preferences::deleteGroup( const char *group ) {
   Node *nd = node->search( group );
   if ( nd ) return nd->remove();
   return 0;
+}
+
+/**
+  Add a group, even if a group by that name already exists.
+
+ \param[in] name name of the group to create.
+ \return a newly created Fl_Preference.
+ */
+Fl_Preferences Fl_Preferences::addGroup( const char *name ) {
+  Node *newNode = new Node(name);
+  newNode->setParent(node);
+  return Fl_Preferences((Fl_Preferences::ID)newNode);
+}
+
+/**
+ Add a group that serves as inline text, useful for XML.
+
+ \param[in] text a string that will be shown in line with XML tags.
+ \return a newly created Fl_Preference.
+ */
+Fl_Preferences Fl_Preferences::addInline( const char *text ) {
+  Fl_Preferences p = addGroup("-inline");
+  p.set("text", text);
+  return p;
+}
+
+/**
+ Check if the group entry at a given index is marked as inline.
+
+ \param[in] groupIndex index in this group, starting at 0
+ \return 1 if the entry is marked inline, 0 otherwise
+ */
+char Fl_Preferences::isInline(int groupIndex)
+{
+  if (groupIndex>=groups())
+    return 0;
+  Fl_Preferences p(this, groupIndex);
+  if (strcmp(p.name(), "-inline")==0)
+    return 1;
+  return 0;
+}
+
+/**
+ Return the text of the group entry at a given index if it is marked as inline.
+
+ \param[in] groupIndex index in this group, starting at 0
+ \return the text, must *not* be free()'d, or NULL if the entry doesn't exist
+    or isn't marked inline.
+ */
+const char *Fl_Preferences::getInline(int groupIndex)
+{
+  if (groupIndex>=groups())
+    return 0L;
+  Fl_Preferences p(this, groupIndex);
+  if (strcmp(p.name(), "-inline")==0) {
+    return p.node->get("text");
+  }
+  return 0L;
 }
 
 /**
@@ -738,9 +796,12 @@ char Fl_Preferences::getUserdataPath( char *path, int pathlen ) {
  Writes all preferences to disk. This function works only with
  the base preferences group. This function is rarely used as
  deleting the base preferences flushes automatically.
+
+ \param even_if_clean if this flag is set, we rewrite the file even if no values
+      were changed.
  */
-void Fl_Preferences::flush() {
-  if ( rootNode && node->dirty() )
+void Fl_Preferences::flush(char even_if_clean) {
+  if ( rootNode && (even_if_clean ||node->dirty()) )
     rootNode->write();
 }
 
@@ -803,11 +864,12 @@ int Fl_Preferences::Node::lastEntrySet = -1;
 
 // create the root node
 // - construct the name of the file that will hold our preferences
-Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, Root root, const char *vendor, const char *application )
+Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, Root root, const char *vendor, const char *application, unsigned int flags )
 : prefs_(prefs),
   filename_(0L),
   vendor_(0L),
-  application_(0L) {
+  application_(0L),
+  flags_(flags) {
 
   char *filename = Fl::system_driver()->preference_rootnode(prefs, root, vendor, application);
     filename_    = filename ? strdup(filename) : 0L;
@@ -818,11 +880,12 @@ Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, Root root, const char
 
 // create the root node
 // - construct the name of the file that will hold our preferences
-Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, const char *path, const char *vendor, const char *application )
+Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, const char *path, const char *vendor, const char *application, unsigned int flags )
 : prefs_(prefs),
   filename_(0L),
   vendor_(0L),
-  application_(0L) {
+  application_(0L),
+  flags_(flags) {
 
   if (!vendor)
     vendor = "unknown";
@@ -907,6 +970,33 @@ int Fl_Preferences::RootNode::read() {
 
 // write the group tree and all entry leafs
 int Fl_Preferences::RootNode::write() {
+  switch (flags_ & FORMATS_MASK) {
+    case FORMAT_FLTK: return writeFLTK();
+    case FORMAT_XML: return writeXML();
+    case FORMAT_JSON: return writeJSON();
+  }
+  return -1;
+}
+
+void Fl_Preferences::RootNode::protectionCheck(FILE *f) {
+  if (Fl::system_driver()->preferences_need_protection_check()) {
+    // unix: make sure that system prefs are user-readable
+    if (strncmp(filename_, "/etc/fltk/", 10) == 0) {
+      char *p;
+      p = filename_ + 9;
+      do {       // for each directory to the pref file
+        *p = 0;
+        fl_chmod(filename_, 0755); // rwxr-xr-x
+        *p = '/';
+        p = strchr(p+1, '/');
+      } while (p);
+      fl_chmod(filename_, 0644);   // rw-r--r--
+    }
+  }
+}
+
+// write the group tree and all entry leafs
+int Fl_Preferences::RootNode::writeFLTK() {
   if (!filename_)   // RUNTIME preferences
     return -1;
   fl_make_path_for_file(filename_);
@@ -918,20 +1008,38 @@ int Fl_Preferences::RootNode::write() {
   fprintf( f, "; application: %s\n", application_ );
   prefs_->node->write( f );
   fclose( f );
-  if (Fl::system_driver()->preferences_need_protection_check()) {
-    // unix: make sure that system prefs are user-readable
-    if (strncmp(filename_, "/etc/fltk/", 10) == 0) {
-      char *p;
-      p = filename_ + 9;
-      do {			 // for each directory to the pref file
-        *p = 0;
-        fl_chmod(filename_, 0755); // rwxr-xr-x
-        *p = '/';
-        p = strchr(p+1, '/');
-      } while (p);
-      fl_chmod(filename_, 0644);   // rw-r--r--
-    }
-  }
+  protectionCheck(f);
+  return 0;
+}
+
+int Fl_Preferences::RootNode::writeXML() {
+  if (!filename_)   // RUNTIME preferences
+    return -1;
+  fl_make_path_for_file(filename_);
+  FILE *f = fl_fopen( filename_, "wb" );
+  if ( !f )
+    return -1;
+  // write the Processing instructions
+  fprintf( f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+  prefs_->node->writeXML( f, 0 );
+  fclose( f );
+  protectionCheck(f);
+  return 0;
+}
+
+int Fl_Preferences::RootNode::writeJSON() {
+  if (!filename_)   // RUNTIME preferences
+    return -1;
+  fl_make_path_for_file(filename_);
+  FILE *f = fl_fopen( filename_, "wb" );
+  if ( !f )
+    return -1;
+  fprintf( f, "; FLTK preferences file format 1.0\n" );
+  fprintf( f, "; vendor: %s\n", vendor_ );
+  fprintf( f, "; application: %s\n", application_ );
+  prefs_->node->write( f );
+  fclose( f );
+  protectionCheck(f);
   return 0;
 }
 
@@ -1093,6 +1201,86 @@ int Fl_Preferences::Node::write( FILE *f ) {
   if ( child_ ) child_->write( f );
   dirty_ = 0;
   return 0;
+}
+
+int Fl_Preferences::Node::writeXML( FILE *f, int indent ) {
+  if (top_) {
+    if (child_) child_->writeXML(f, indent);
+    return 0;
+  }
+  if ( next_ ) next_->writeXML( f, indent );
+  const char *nodename = name();
+  if (strcmp(nodename, "!--")==0) {
+    fputs("<!-- ", f);
+    const char *text = get("text");
+    if (text) fputs(text, f);
+    fputs("-->", f);
+  } else if (strcmp(nodename, "-inline")==0) {
+    const char *text = get("text");
+    if (text) {
+      writeIndent(f, indent);
+      writeInlineXML(f, text, indent);
+      fputc('\n', f);
+    }
+  } else {
+    writeIndent(f, indent);
+    fputc('<', f); fputs(nodename, f);
+    for ( int i = 0; i < nEntry_; i++ ) {
+      fputc(' ', f);
+      fputs(entry_[i].name, f);
+      fputs("=\"", f);
+      writeValueXML(f, entry_[i].value);
+      fputc('"', f);
+    }
+    if (child_) {
+      fputs(">\n", f);
+      if ( child_ ) child_->writeXML( f, indent+1 );
+      writeIndent(f, indent);
+      fputs("</", f); fputs(nodename, f); fputs(">\n", f);
+    } else {
+      fputs(" />\n", f);
+    }
+  }
+  dirty_ = 0;
+  return 0;
+}
+
+void Fl_Preferences::Node::writeValueXML( FILE *f, const char *text ) {
+  uchar c;
+  if (text) {
+    while ( (c = *(uchar*)text) ) {
+      if (c=='<') puts("&lt;");
+      else if (c=='>') puts("&gt;");
+      else if (c=='&') puts("&amp;");
+      else if (c=='"') puts("&quot;");
+      else if (c<' ') fprintf(f, "&#x%02X;", c);
+      else putc(c, f);
+      text++;
+    }
+  }
+}
+
+void Fl_Preferences::Node::writeInlineXML( FILE *f, const char *text, int indent ) {
+  uchar c;
+  if (text) {
+    char skip_ws = 1;
+    while ( (c = *(uchar*)text) ) {
+      if (c=='<') puts("&lt;");
+      else if (c=='>') puts("&gt;");
+      else if (c=='&') puts("&amp;");
+      else if (c=='\n') { putc('\n', f); writeIndent(f, indent); skip_ws = 1; }
+      else if (skip_ws && (c==' ' || c=='\t')) { text++; continue; }
+      else if (c<' ') fprintf(f, "&#x%02X;", c);
+      else putc(c, f);
+      skip_ws = 0;
+      text++;
+    }
+  }
+}
+
+void Fl_Preferences::Node::writeIndent( FILE *f, int n )
+{
+  for (int i=n; i>0; --i) fputs("    ", f);
 }
 
 // set the parent node and create the full path

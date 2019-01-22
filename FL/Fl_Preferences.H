@@ -76,7 +76,25 @@ public:
     SYSTEM=0,   ///< Preferences are used system-wide
     USER        ///< Preferences apply only to the current user
   };
-  
+
+  /*
+   Define various flags.
+   */
+  /** Create a preference file in the proprietary FLTK format. The format of
+   * an existing preferences file is not changed unless FORCE_FORMAT is set. */
+  static const unsigned int FORMAT_FLTK  = 0x00000000;
+  /** Create a preference file in a subset of the Extensible Markup Language
+   * (XML) format*/
+  static const unsigned int FORMAT_XML   = 0x00000001;
+  /** Create a preference file in a subste of teh JavaScript Object
+   * Notation (JSON) */
+  static const unsigned int FORMAT_JSON  = 0x00000002;
+  /** Mask for all formats in flags field */
+  static const unsigned int FORMATS_MASK  = 0x0000000F;
+  /** Write a preference file in the requested format, even if it was previously
+   * created in a different format */
+  static const unsigned int FORCE_FORMAT = 0x00000010;
+
   /**
    Every Fl_Preferences-Group has a uniqe ID.
    
@@ -88,8 +106,8 @@ public:
   
   static const char *newUUID();
 
-  Fl_Preferences( Root root, const char *vendor, const char *application );
-  Fl_Preferences( const char *path, const char *vendor, const char *application );
+  Fl_Preferences( Root root, const char *vendor, const char *application, unsigned int flags=FORMAT_FLTK );
+  Fl_Preferences( const char *path, const char *vendor, const char *application, unsigned int flags=FORMAT_FLTK  );
   Fl_Preferences( Fl_Preferences &parent, const char *group );
   Fl_Preferences( Fl_Preferences *parent, const char *group );
   Fl_Preferences( Fl_Preferences &parent, int groupIndex );
@@ -119,6 +137,10 @@ public:
   char groupExists( const char *key );
   char deleteGroup( const char *group );
   char deleteAllGroups();
+  Fl_Preferences addGroup( const char *group );
+  Fl_Preferences addInline( const char *text );
+  char isInline(int groupIndex);
+  const char *getInline(int groupIndex);
 
   int entries();
   const char *entry( int index );
@@ -134,8 +156,8 @@ public:
   char set( const char *entry, double value );
   char set( const char *entry, double value, int precision );
   char set( const char *entry, const char *value );
-  char set( const char *entry, const void *value, int size ); 
-  
+  char set( const char *entry, const void *value, int size );
+
   char get( const char *entry, int &value, int defaultValue );
   char get( const char *entry, float &value,  float defaultValue );
   char get( const char *entry, double &value, double defaultValue );
@@ -148,7 +170,7 @@ public:
 
   char getUserdataPath( char *path, int pathlen );
 
-  void flush();
+  void flush(char even_if_clean=0);
 
   // char export( const char *filename, Type fileFormat );
   // char import( const char *filename );
@@ -186,9 +208,11 @@ public:
     char *name, *value;
   };
 
+  /** Change this object to point to a different preference entry. */
+  Fl_Preferences &operator=(const Fl_Preferences&);
+
 private: 
   Fl_Preferences() : node(0), rootNode(0) { }
-  Fl_Preferences &operator=(const Fl_Preferences&);
 
   static char nameBuffer[128];
   static char uuidBuffer[40];
@@ -223,6 +247,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     ~Node();
     // node methods
     int write( FILE *f );
+    int writeXML( FILE *f, int indent );
     const char *name();
     const char *path() { return path_; }
     Node *find( const char *path );
@@ -249,6 +274,10 @@ public:  // older Sun compilers need this (public definition of the following cl
     void deleteAllEntries();
     int nEntry() { return nEntry_; }
     Entry &entry(int i) { return entry_[i]; }
+  private:
+    void writeValueXML( FILE *f, const char *text );
+    void writeInlineXML( FILE *f, const char *text, int indent );
+    void writeIndent( FILE *f, int n );
   };
   friend class Node;
 
@@ -256,14 +285,20 @@ public:  // older Sun compilers need this (public definition of the following cl
     Fl_Preferences *prefs_;
     char *filename_;
     char *vendor_, *application_;
+    unsigned int flags_;
   public:
-    RootNode( Fl_Preferences *, Root root, const char *vendor, const char *application );
-    RootNode( Fl_Preferences *, const char *path, const char *vendor, const char *application );
+    RootNode( Fl_Preferences *, Root root, const char *vendor, const char *application, unsigned int flags );
+    RootNode( Fl_Preferences *, const char *path, const char *vendor, const char *application, unsigned int flags );
     RootNode( Fl_Preferences * );
     ~RootNode();
     int read();
     int write();
+    int writeFLTK();
+    int writeXML();
+    int writeJSON();
     char getPath( char *path, int pathlen );
+  private:
+    void protectionCheck(FILE *f);
   };
   friend class RootNode;
 
