@@ -158,7 +158,7 @@ public:
   char set( const char *entry, const char *value );
   char set( const char *entry, const void *value, int size );
 
-  char get( const char *entry, int &value, int defaultValue );
+  char get( const char *entry, int &value,    int defaultValue );
   char get( const char *entry, float &value,  float defaultValue );
   char get( const char *entry, double &value, double defaultValue );
   char get( const char *entry, char *&value,  const char *defaultValue );
@@ -246,6 +246,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     Node( const char *path );
     ~Node();
     // node methods
+    char readElementXML( FILE *f );
     int write( FILE *f );
     int writeXML( FILE *f, int indent );
     const char *name();
@@ -275,6 +276,9 @@ public:  // older Sun compilers need this (public definition of the following cl
     int nEntry() { return nEntry_; }
     Entry &entry(int i) { return entry_[i]; }
   private:
+    int readQuotedValueXML(FILE *f, int prev_c, char *buf, int n);
+    int readDirectValueXML(FILE *f, int prev_c, char *buf, int n);
+    int readInlineValueXML(FILE *f, int prev_c, char *buf, int n);
     void writeValueXML( FILE *f, const char *text );
     void writeInlineXML( FILE *f, const char *text, int indent );
     void writeIndent( FILE *f, int n );
@@ -292,6 +296,9 @@ public:  // older Sun compilers need this (public definition of the following cl
     RootNode( Fl_Preferences * );
     ~RootNode();
     int read();
+    int readFLTK();
+    int readXML();
+    int readJSON();
     int write();
     int writeFLTK();
     int writeXML();

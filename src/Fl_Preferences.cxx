@@ -931,8 +931,19 @@ Fl_Preferences::RootNode::~RootNode() {
   prefs_->node = 0L;
 }
 
-// read a preferences file and construct the group tree and with all entry leafs
+// read the group tree and all entry leafs
+// TODO: we should figure out what the file format is and then read it with the correct reader and fix the flags
 int Fl_Preferences::RootNode::read() {
+  switch (flags_ & FORMATS_MASK) {
+    case FORMAT_FLTK: return readFLTK();
+    case FORMAT_XML: return readXML();
+    case FORMAT_JSON: return readJSON();
+  }
+  return -1;
+}
+
+// read a preferences file and construct the group tree and with all entry leafs
+int Fl_Preferences::RootNode::readFLTK() {
   if (!filename_)   // RUNTIME preferences
     return -1; 
   char buf[1024];
@@ -966,6 +977,34 @@ int Fl_Preferences::RootNode::read() {
   fclose( f );
   prefs_->node->clearDirtyFlags();
   return 0;
+}
+
+int Fl_Preferences::RootNode::readXML() {
+  if (!filename_)   // RUNTIME preferences
+    return -1;
+  FILE *f = fl_fopen( filename_, "rb" );
+  if ( !f )
+    return -1;
+  // FIXME: check if the first tag is "<?XML" and skip to "?>"
+  char buf[1024];
+  if (fgets( buf, 1024, f )==0) { /* ignore */ }
+  int ret = 0;
+  Node *nd = prefs_->node;
+  nd->deleteAllChildren();
+  nd->deleteAllEntries();
+  // TODO: now read that tree...
+  for (;;) {
+    ret = nd->readElementXML(f);
+    if (ret!=0) break;
+    if (feof(f)) break;
+  }
+  fclose( f );
+  prefs_->node->clearDirtyFlags();
+  return ret;
+}
+
+int Fl_Preferences::RootNode::readJSON() {
+  return -1;
 }
 
 // write the group tree and all entry leafs
@@ -1281,6 +1320,215 @@ void Fl_Preferences::Node::writeInlineXML( FILE *f, const char *text, int indent
 void Fl_Preferences::Node::writeIndent( FILE *f, int n )
 {
   for (int i=n; i>0; --i) fputs("    ", f);
+}
+
+static char isSpace(int c) {
+  return (c==' ' || c=='\n' || c=='\t' || c=='\r');
+}
+
+static char validStartChar(int c) {
+  return (isalpha(c) || c=='_' || c==':' || c>127);
+}
+
+static int skipSpace(FILE *f) {
+  for (;;) {
+    int c = fgetc(f);
+    if (c==EOF) return c;
+    if (!isSpace(c)) return c;
+  }
+}
+
+// FIXME: count characters to avoid buffer overrun!
+static int readWord(FILE *f, int prev_c, char *buf, int n)
+{
+  char *d = buf; *d = 0;
+  int c = prev_c; if (c==0) c = fgetc(f);
+  if (c==EOF) return c;
+  if (validStartChar(c)) { // valid start char?
+    for (;;) {
+      *d++ = c;
+      c = fgetc(f);
+      if (!(isalnum(c)||c=='_'||c==':'||c=='.'||c=='-'||c>127)) // valid cont char?
+        break;
+    }
+  }
+  *d = 0;
+  return c;
+}
+
+int unescape(FILE *f) {
+  int c = fgetc(f);
+  if (c=='#') {
+    c = fgetc(f);
+    if (isalnum(c)) {
+      int v = c-'0';
+      for (;;) {
+        c = fgetc(f);
+        if (isalnum(c)) v = v*10 + c-'0';
+        else if (c==';') return v;
+        else break; // that should not happen
+      }
+    } else if (c=='x') {
+      char buf[31];
+      c = readWord(f, c, buf, 32);
+      if (c==';') {
+        int ret = 0;
+        sscanf(buf, "x%X", &ret);
+        return ret;
+      }
+    }
+  } else {
+    char buf[31];
+    c = readWord(f, 0, buf, 32);
+    if (c==';') {
+      if (strcmp(buf, "amp")) return '&';
+      if (strcmp(buf, "lt")) return '<';
+      if (strcmp(buf, "gt")) return '>';
+      if (strcmp(buf, "quot")) return '"';
+      if (strcmp(buf, "apos")) return '\"';
+    }
+  }
+  return '?'; // not a supported escaped char
+}
+
+int Fl_Preferences::Node::readQuotedValueXML(FILE *f, int prev_c, char *buf, int n)
+{
+  char *d = buf; *d = 0;
+  int c = prev_c;
+  for (;;) {
+    c = fgetc(f);
+    if (c==EOF) return c; // TODO: many other characters are illegal here
+    if (c=='"') {
+      break;
+    } else if (c=='&') {
+      *d++ = unescape(f);
+    } else {
+      *d++ = c;
+    }
+  }
+  *d = 0;
+  return c;
+}
+
+int Fl_Preferences::Node::readDirectValueXML(FILE *f, int prev_c, char *buf, int n)
+{
+  char *d = buf; *d = 0;
+  int c = prev_c; if (c==0) c = fgetc(f);
+  for (;;) {
+    if (c==EOF) return c; // TODO: many other characters are illegal here
+    if (isSpace(c) || c=='<' || c=='>') {
+      ungetc(c, f);
+      break;
+    } else if (c=='&') {
+      *d++ = unescape(f);
+    } else {
+      *d++ = c;
+    }
+    c = fgetc(f);
+  }
+  *d = 0;
+  return c;
+}
+
+int Fl_Preferences::Node::readInlineValueXML(FILE *f, int prev_c, char *buf, int n)
+{
+  char *d = buf; *d = 0;
+  int c = prev_c; if (c==0) c = fgetc(f);
+  char skip_ws = 1;
+  for (;;) {
+    if (c==EOF) return c; // TODO: many other characters are illegal here
+    if (c=='<') {
+      ungetc(c, f);
+      break;
+    } else if (c=='\n') {
+      skip_ws = 1;
+    } else if (isSpace(c)) {
+      if (!skip_ws) *d++ = c;
+    } else {
+      if (c=='&') {
+        c = unescape(f);
+      }
+      if (skip_ws) {
+        skip_ws = 0;
+        if (d>buf && (d[-1]!=' ') && !isSpace(c)) *d++ = ' ';
+      }
+      *d++ = c;
+    }
+    c = fgetc(f);
+  }
+  *d = 0;
+  return c;
+}
+
+char Fl_Preferences::Node::readElementXML( FILE *f )
+{
+  char buf[1025], val[1025];
+  long unseek = ftell(f);
+  int c = skipSpace(f);
+  if (c==EOF) return 0;
+  for (;;) {
+    if (c=='<') { // Tag found: <tag> or <tag key=value>
+      c = skipSpace(f);
+      if (c=='/') { // we reached the end of this block
+        fseek(f, unseek, SEEK_SET);
+        return 0;
+      }
+      c = readWord(f, c, buf, 1024);
+      if (buf[0]==0) return -1;
+      Node *nd = new Node(buf);
+      nd->setParent(this);
+      char hasChildren = 0;
+      // read properties
+      for (;;) {
+        c = skipSpace(f);
+        if (c==EOF) return -1;
+        if (c=='>') { // end of start tag
+          hasChildren = 1;
+          break;
+        } else if (c=='/') { // end of no-children tag
+          c = skipSpace(f);
+          if (c!='>') return -1; // expected end of tag
+          break;
+        } else if (validStartChar(c)) { // start of attribute name
+          c = readWord(f, c, buf, 1024);
+          if (c!='=') c = skipSpace(f);
+          if (c!='=') return -1; // attribute name must be followed by a
+          c = skipSpace(f);
+          if (c=='"') c = readQuotedValueXML(f, c, val, 1024);
+          else c = readDirectValueXML(f, c, val, 1024);
+          nd->set(buf, val);
+        } else {
+          return -1;
+        }
+      }
+      // check end of tag
+      if (hasChildren) {
+        // read child elements
+        nd->readElementXML(f);
+        // read end tag
+        if (c!='<') c = skipSpace(f);
+        if (c!='<') return -1; // invalid end tag
+        c = skipSpace(f);
+        if (c!='/') return -1; // invalid end tag
+        c = skipSpace(f);
+        c = readWord(f, c, buf, 1024);
+        if (strcmp(buf, nd->name())!=0) return -1; // end tag is not the same as start tag
+        if (c!='>') c = skipSpace(f);
+        if (c!='>') return -1; // invalid end tag
+      }
+    } else if (!top_) { // inline value found
+      readInlineValueXML(f, c, buf, 1024);
+      Node *nd = new Node("-inline");
+      nd->set("text", buf);
+      nd->setParent(this);
+    } else { // something went wrong
+      return -1;
+    }
+    unseek = ftell(f);
+    c = skipSpace(f);
+    if (c==EOF) return 0;
+  }
+  return 0;
 }
 
 // set the parent node and create the full path

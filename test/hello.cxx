@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
   return Fl::run();
 #else
     Fl_Preferences prefs("/Users/matt/test.xml", 0L, 0L, Fl_Preferences::FORMAT_XML);
+    prefs.clear();
     Fl_Preferences car(prefs, "car");
     car.set("color", "red");
     car.set("seats", 4);
