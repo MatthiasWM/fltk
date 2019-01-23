@@ -1058,9 +1058,11 @@ int Fl_Preferences::RootNode::writeXML() {
   FILE *f = fl_fopen( filename_, "wb" );
   if ( !f )
     return -1;
-  // write the Processing instructions
-  fprintf( f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-  prefs_->node->writeXML( f, 0 );
+  {
+    XMLWriter xmlWriter(f);
+    fprintf( f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    prefs_->node->write(xmlWriter);
+  }
   fclose( f );
   protectionCheck(f);
   return 0;
@@ -1242,85 +1244,67 @@ int Fl_Preferences::Node::write( FILE *f ) {
   return 0;
 }
 
-int Fl_Preferences::Node::writeXML( FILE *f, int indent ) {
+int Fl_Preferences::Node::write(XMLWriter &xml) {
   if (top_) {
-    if (child_) child_->writeXML(f, indent);
+    if (child_) child_->write(xml);
     return 0;
   }
-  if ( next_ ) next_->writeXML( f, indent );
+  if ( next_ ) next_->write(xml);
   const char *nodename = name();
   if (strcmp(nodename, "!--")==0) {
-    fputs("<!-- ", f);
-    const char *text = get("text");
-    if (text) fputs(text, f);
-    fputs("-->", f);
+    writeComment(xml);
   } else if (strcmp(nodename, "-inline")==0) {
-    const char *text = get("text");
-    if (text) {
-      writeIndent(f, indent);
-      writeInlineXML(f, text, indent);
-      fputc('\n', f);
-    }
+    writeInline(xml);
   } else {
-    writeIndent(f, indent);
-    fputc('<', f); fputs(nodename, f);
-    for ( int i = 0; i < nEntry_; i++ ) {
-      fputc(' ', f);
-      fputs(entry_[i].name, f);
-      fputs("=\"", f);
-      writeValueXML(f, entry_[i].value);
-      fputc('"', f);
-    }
-    if (child_) {
-      fputs(">\n", f);
-      if ( child_ ) child_->writeXML( f, indent+1 );
-      writeIndent(f, indent);
-      fputs("</", f); fputs(nodename, f); fputs(">\n", f);
-    } else {
-      fputs(" />\n", f);
-    }
+    writeNode(xml);
   }
   dirty_ = 0;
   return 0;
 }
 
-void Fl_Preferences::Node::writeValueXML( FILE *f, const char *text ) {
-  uchar c;
+void Fl_Preferences::Node::writeComment(XMLWriter &xml) {
+  xml.write("<!-- ");
+  const char *text = get("text");
+  xml.write(text);
+  xml.write("-->");
+}
+
+void Fl_Preferences::Node::writeInline(XMLWriter &xml) {
+  const char *text = get("text");
   if (text) {
-    while ( (c = *(uchar*)text) ) {
-      if (c=='<') puts("&lt;");
-      else if (c=='>') puts("&gt;");
-      else if (c=='&') puts("&amp;");
-      else if (c=='"') puts("&quot;");
-      else if (c<' ') fprintf(f, "&#x%02X;", c);
-      else putc(c, f);
-      text++;
-    }
+    xml.writeIndent();
+    xml.writeInline(text);
+    xml.write('\n');
   }
 }
 
-void Fl_Preferences::Node::writeInlineXML( FILE *f, const char *text, int indent ) {
-  uchar c;
-  if (text) {
-    char skip_ws = 1;
-    while ( (c = *(uchar*)text) ) {
-      if (c=='<') puts("&lt;");
-      else if (c=='>') puts("&gt;");
-      else if (c=='&') puts("&amp;");
-      else if (c=='\n') { putc('\n', f); writeIndent(f, indent); skip_ws = 1; }
-      else if (skip_ws && (c==' ' || c=='\t')) { text++; continue; }
-      else if (c<' ') fprintf(f, "&#x%02X;", c);
-      else putc(c, f);
-      skip_ws = 0;
-      text++;
+void Fl_Preferences::Node::writeNode(XMLWriter &xml) {
+  xml.writeIndent();
+  xml.write('<');
+  xml.write(name());
+  for ( int i = 0; i < nEntry_; i++ ) {
+    xml.write(' ');
+    xml.write(entry_[i].name);
+    xml.write("=\"");
+    xml.writeInline(entry_[i].value);
+    xml.write('"');
+  }
+  if (child_) {
+    xml.write(">\n");
+    if ( child_ ) {
+      xml.indent();
+      child_->write(xml);
+      xml.edent();
     }
+    xml.writeIndent();
+    xml.write("</");
+    xml.write(name());
+    xml.write(">\n");
+  } else {
+    xml.write(" />\n");
   }
 }
 
-void Fl_Preferences::Node::writeIndent( FILE *f, int n )
-{
-  for (int i=n; i>0; --i) fputs("    ", f);
-}
 
 static char isSpace(int c) {
   return (c==' ' || c=='\n' || c=='\t' || c=='\r');
@@ -1472,6 +1456,8 @@ char Fl_Preferences::Node::readElementXML( FILE *f )
       if (c=='/') { // we reached the end of this block
         fseek(f, unseek, SEEK_SET);
         return 0;
+      } else if (c=='!') {
+        // TODO: this may be the start of a comment section!
       }
       c = readWord(f, c, buf, 1024);
       if (buf[0]==0) return -1;
@@ -1985,6 +1971,97 @@ int Fl_Plugin_Manager::loadAll(const char *filepath, const char *pattern) {
   free(dir);
   return 0;
 }
+
+// =============================================================================
+// XMLReader
+
+/*
+ * Create and write an XML file.
+ *
+ * TODO: This class does not do much formatting of the output at all.
+ * TODO: This class does not do any error checking at all.
+ */
+Fl_Preferences::XMLWriter::XMLWriter(FILE *f) :
+  pFile(f),
+  pIndent(0)
+{
+}
+
+Fl_Preferences::XMLWriter::~XMLWriter() {
+}
+
+/*
+ * TODO: We should have a flag that determines if we can wrap at some margin.
+ * TODO: Text should be wrapped at a whitespace when it gets widwr than the margin.
+ * TODO: Text should be indented after a forced or implied newline.
+ */
+void Fl_Preferences::XMLWriter::write(const char *text) {
+  if (text) fputs(text, pFile);
+}
+
+/*
+ * TODO: This should call write(const char*) to make used of wrapping, etc.
+ */
+void Fl_Preferences::XMLWriter::write(char c) {
+  fputc(c, pFile);
+}
+
+void Fl_Preferences::XMLWriter::writeIndent() {
+  for (int i=pIndent; i>0; --i) write("    ");
+}
+
+/*
+ * TODO: How do we wrap lines?
+ */
+void Fl_Preferences::XMLWriter::writeInline(const char *text) {
+  uchar c;
+  if (text) {
+    char skip_ws = 1;
+    while ( (c = *(uchar*)text) ) {
+      if (c=='<') write("&lt;");
+      else if (c=='>') write("&gt;");
+      else if (c=='&') write("&amp;");
+      else if (c=='\n') { write('\n'); writeIndent(); skip_ws = 1; }
+      else if (skip_ws && (c==' ' || c=='\t')) { text++; continue; }
+      else if (c<' ') fprintf(pFile, "&#x%02X;", c);
+      else write(c);
+      skip_ws = 0;
+      text++;
+    }
+  }
+}
+
+/*
+ * TODO: How do we wrap lines?
+ */
+void Fl_Preferences::XMLWriter::writeValue(const char *text) {
+  uchar c;
+  if (text) {
+    while ( (c = *(uchar*)text) ) {
+      if (c=='<') write("&lt;");
+      else if (c=='>') write("&gt;");
+      else if (c=='&') write("&amp;");
+      else if (c=='"') write("&quot;");
+      else if (c<' ') fprintf(pFile, "&#x%02X;", c);
+      else write(c);
+      text++;
+    }
+  }
+}
+
+
+// =============================================================================
+// XMLWriter
+
+Fl_Preferences::XMLReader::XMLReader(FILE *f) :
+  pFile(f)
+{
+}
+
+Fl_Preferences::XMLReader::~XMLReader() {
+}
+
+
 
 //
 // End of "$Id$".

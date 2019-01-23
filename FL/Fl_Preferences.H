@@ -52,19 +52,31 @@
    Extensive binary data however should be stored in separate
    files: see getUserdataPath().
  
- \note Platform-specific location of the Fl_Preferences text files.
- This construct
+  \note Platform-specific location of the Fl_Preferences text files.
+  This construct
   \code new Fl_Preferences(Fl_Preferences::USER, "vendor", "application"); \endcode
- where "vendor" and "application" are any user-chosen strings, will create these text files:
- \li Windows XP platform: <tt>C:\\Documents and Settings\\<i>username</i>\\Application Data\\<i>vendor</i>\\<i>application</i>.prefs</tt>
- \li Windows 7+ platform: <tt>C:\\Users\\<i>username</i>\\AppData\\Roaming\\<i>vendor</i>\\<i>application</i>.prefs </tt>
- \li X11 platform: <tt>$HOME/.fltk/<i>vendor</i>/<i>application</i>.prefs </tt>
- \li MacOS platform: <tt>$HOME/Library/Preferences/<i>vendor</i>/<i>application</i>.prefs </tt>
+  where "vendor" and "application" are any user-chosen strings, will create these text files:
+  \li Windows XP platform: <tt>C:\\Documents and Settings\\<i>username</i>\\Application Data\\<i>vendor</i>\\<i>application</i>.prefs</tt>
+  \li Windows 7+ platform: <tt>C:\\Users\\<i>username</i>\\AppData\\Roaming\\<i>vendor</i>\\<i>application</i>.prefs </tt>
+  \li X11 platform: <tt>$HOME/.fltk/<i>vendor</i>/<i>application</i>.prefs </tt>
+  \li MacOS platform: <tt>$HOME/Library/Preferences/<i>vendor</i>/<i>application</i>.prefs </tt>
 
    \note Starting with FLTK 1.3, preference databases are expected to
    be in UTF-8 encoding. Previous databases were stored in the
    current character set or code page which renders them incompatible
    for text entries using international characters.
+
+  \note Starting with FLTK 1.4, preferences support a subset of
+  the Extensible Markup Language (XML format). Fl_Preferences "groups"
+  correspond to XML "tags". Multiple tags can have the same name using
+  <tt>addGroup()</tt> and the numerical index to read them.
+
+  Fl_Preferences "entries" correspond to XML attrbute/value-pairs. Attributes
+  always have a unique name for each tag.
+
+  Inline text (for example <tt>\<name\>Matt\</name\></tt>) is created using
+  <tt>name.addInline("Matt")</tt>, queried via <tt>name.isInline(index)</tt>,
+  and read via <tt>name.getInline(index)</tt>.
  */
 class FL_EXPORT Fl_Preferences {
 
@@ -218,6 +230,34 @@ private:
   static char uuidBuffer[40];
   static Fl_Preferences *runtimePrefs;
 
+  class Utf8Buffer {
+  public:
+    Utf8Buffer();
+    ~Utf8Buffer();
+  };
+
+  class XMLReader {
+    FILE *pFile;
+  public:
+    XMLReader(FILE *f);
+    ~XMLReader();
+  };
+
+  class XMLWriter {
+    FILE *pFile;
+    int pIndent;
+  public:
+    XMLWriter(FILE *f);
+    ~XMLWriter();
+    void write(const char *text);
+    void write(char c);
+    void writeInline(const char *text);
+    void writeValue(const char *text);
+    void writeIndent();
+    void indent(int n=1) { pIndent+=n; }
+    void edent(int n=1) { pIndent-=n; }
+  };
+
 public:  // older Sun compilers need this (public definition of the following classes)
   class RootNode;
   
@@ -248,7 +288,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     // node methods
     char readElementXML( FILE *f );
     int write( FILE *f );
-    int writeXML( FILE *f, int indent );
+    int write( XMLWriter &f );
     const char *name();
     const char *path() { return path_; }
     Node *find( const char *path );
@@ -276,12 +316,13 @@ public:  // older Sun compilers need this (public definition of the following cl
     int nEntry() { return nEntry_; }
     Entry &entry(int i) { return entry_[i]; }
   private:
+    void writeNode( XMLWriter &f );
+    void writeComment( XMLWriter &f );
+    void writeInline( XMLWriter &f );
+
     int readQuotedValueXML(FILE *f, int prev_c, char *buf, int n);
     int readDirectValueXML(FILE *f, int prev_c, char *buf, int n);
     int readInlineValueXML(FILE *f, int prev_c, char *buf, int n);
-    void writeValueXML( FILE *f, const char *text );
-    void writeInlineXML( FILE *f, const char *text, int indent );
-    void writeIndent( FILE *f, int n );
   };
   friend class Node;
 
@@ -296,16 +337,16 @@ public:  // older Sun compilers need this (public definition of the following cl
     RootNode( Fl_Preferences * );
     ~RootNode();
     int read();
-    int readFLTK();
-    int readXML();
-    int readJSON();
     int write();
-    int writeFLTK();
-    int writeXML();
-    int writeJSON();
     char getPath( char *path, int pathlen );
   private:
     void protectionCheck(FILE *f);
+    int readFLTK();
+    int readXML();
+    int readJSON();
+    int writeFLTK();
+    int writeXML();
+    int writeJSON();
   };
   friend class RootNode;
 
