@@ -127,6 +127,16 @@ public:
   Fl_Preferences(const Fl_Preferences&);
   Fl_Preferences( ID id );
   virtual ~Fl_Preferences();
+
+  /** Set a new file path and name.
+   \param[in] fn new path and file name.
+   */
+  void filename(const char *fn) { rootNode->filename(fn); }
+
+  /** Get the current file path and name for this database.
+   \return reference to a file path and name, don't free() the returned value.
+   */
+  const char *filename() { return rootNode->filename(); }
   
   /** Return an ID that can later be reused to open more references to this dataset.
    */
@@ -231,9 +241,24 @@ private:
   static Fl_Preferences *runtimePrefs;
 
   class Utf8Buffer {
+    unsigned char *pBuffer;
+    int pnBuffer, pNBuffer;
+    int pMark;
+    void makeRoom(int n);
   public:
     Utf8Buffer();
     ~Utf8Buffer();
+    void append(const char *str);
+    void append(unsigned ucs);
+    operator const char*() { return (const char*)pBuffer; }
+    void mark() { pMark = pnBuffer; }
+    void crop() { pnBuffer = pMark; pBuffer[pnBuffer] = 0; }
+    char isEmpty() { return (pnBuffer==0); }
+  };
+
+  class XML {
+  public:
+    static char isSpace(unsigned ucs);
   };
 
   class XMLReader {
@@ -241,6 +266,12 @@ private:
   public:
     XMLReader(FILE *f);
     ~XMLReader();
+    int eof();
+    void seek(long set);
+    long tell();
+    unsigned getc();
+    unsigned skipSpace();
+    unsigned readWord(Utf8Buffer &buffer, unsigned first=0);
   };
 
   class XMLWriter {
@@ -286,7 +317,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     Node( const char *path );
     ~Node();
     // node methods
-    char readElementXML( FILE *f );
+    int read( XMLReader &f );
     int write( FILE *f );
     int write( XMLWriter &f );
     const char *name();
@@ -301,6 +332,7 @@ public:  // older Sun compilers need this (public definition of the following cl
     RootNode *findRoot();
     char remove();
     char dirty();
+    void setDirty() { dirty_ = 1; }
     void clearDirtyFlags();
     void deleteAllChildren();
     // entry methods
@@ -336,6 +368,8 @@ public:  // older Sun compilers need this (public definition of the following cl
     RootNode( Fl_Preferences *, const char *path, const char *vendor, const char *application, unsigned int flags );
     RootNode( Fl_Preferences * );
     ~RootNode();
+    void filename(const char *fn);
+    const char *filename() { return filename_; }
     int read();
     int write();
     char getPath( char *path, int pathlen );

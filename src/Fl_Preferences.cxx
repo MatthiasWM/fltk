@@ -931,6 +931,17 @@ Fl_Preferences::RootNode::~RootNode() {
   prefs_->node = 0L;
 }
 
+// replace the filename and mark the tree dirty if new filename differs from old.
+void Fl_Preferences::RootNode::filename(const char *fn) {
+  if (!fn) return; // can't clear the filename
+  if (filename_) {
+    if (strcmp(filename_, fn)==0) return;
+    ::free(filename_);
+  }
+  if (prefs_ && prefs_->node) prefs_->node->setDirty();
+  filename_ = strdup(fn);
+}
+
 // read the group tree and all entry leafs
 // TODO: we should figure out what the file format is and then read it with the correct reader and fix the flags
 int Fl_Preferences::RootNode::read() {
@@ -992,11 +1003,13 @@ int Fl_Preferences::RootNode::readXML() {
   Node *nd = prefs_->node;
   nd->deleteAllChildren();
   nd->deleteAllEntries();
-  // TODO: now read that tree...
-  for (;;) {
-    ret = nd->readElementXML(f);
-    if (ret!=0) break;
-    if (feof(f)) break;
+  {
+    XMLReader xmlReader(f);
+    // now read that tree...
+    for (;;) {
+      if (nd->read(xmlReader)==-1) break;
+      if (xmlReader.eof()) break;
+    }
   }
   fclose( f );
   prefs_->node->clearDirtyFlags();
@@ -1306,41 +1319,13 @@ void Fl_Preferences::Node::writeNode(XMLWriter &xml) {
 }
 
 
-static char isSpace(int c) {
-  return (c==' ' || c=='\n' || c=='\t' || c=='\r');
-}
-
 static char validStartChar(int c) {
   return (isalpha(c) || c=='_' || c==':' || c>127);
 }
 
-static int skipSpace(FILE *f) {
-  for (;;) {
-    int c = fgetc(f);
-    if (c==EOF) return c;
-    if (!isSpace(c)) return c;
-  }
-}
-
-// FIXME: count characters to avoid buffer overrun!
-static int readWord(FILE *f, int prev_c, char *buf, int n)
-{
-  char *d = buf; *d = 0;
-  int c = prev_c; if (c==0) c = fgetc(f);
-  if (c==EOF) return c;
-  if (validStartChar(c)) { // valid start char?
-    for (;;) {
-      *d++ = c;
-      c = fgetc(f);
-      if (!(isalnum(c)||c=='_'||c==':'||c=='.'||c=='-'||c>127)) // valid cont char?
-        break;
-    }
-  }
-  *d = 0;
-  return c;
-}
-
 int unescape(FILE *f) {
+  // FIXME: write this
+#if 0
   int c = fgetc(f);
   if (c=='#') {
     c = fgetc(f);
@@ -1372,6 +1357,7 @@ int unescape(FILE *f) {
       if (strcmp(buf, "apos")) return '\"';
     }
   }
+#endif
   return '?'; // not a supported escaped char
 }
 
@@ -1400,7 +1386,7 @@ int Fl_Preferences::Node::readDirectValueXML(FILE *f, int prev_c, char *buf, int
   int c = prev_c; if (c==0) c = fgetc(f);
   for (;;) {
     if (c==EOF) return c; // TODO: many other characters are illegal here
-    if (isSpace(c) || c=='<' || c=='>') {
+    if (XML::isSpace(c) || c=='<' || c=='>') {
       ungetc(c, f);
       break;
     } else if (c=='&') {
@@ -1426,7 +1412,7 @@ int Fl_Preferences::Node::readInlineValueXML(FILE *f, int prev_c, char *buf, int
       break;
     } else if (c=='\n') {
       skip_ws = 1;
-    } else if (isSpace(c)) {
+    } else if (XML::isSpace(c)) {
       if (!skip_ws) *d++ = c;
     } else {
       if (c=='&') {
@@ -1434,7 +1420,7 @@ int Fl_Preferences::Node::readInlineValueXML(FILE *f, int prev_c, char *buf, int
       }
       if (skip_ws) {
         skip_ws = 0;
-        if (d>buf && (d[-1]!=' ') && !isSpace(c)) *d++ = ' ';
+        if (d>buf && (d[-1]!=' ') && !XML::isSpace(c)) *d++ = ' ';
       }
       *d++ = c;
     }
@@ -1444,42 +1430,44 @@ int Fl_Preferences::Node::readInlineValueXML(FILE *f, int prev_c, char *buf, int
   return c;
 }
 
-char Fl_Preferences::Node::readElementXML( FILE *f )
+int Fl_Preferences::Node::read( XMLReader &xml )
 {
   char buf[1025], val[1025];
-  long unseek = ftell(f);
-  int c = skipSpace(f);
+  long unseek = xml.tell();
+  unsigned c = xml.skipSpace();
   if (c==EOF) return 0;
   for (;;) {
     if (c=='<') { // Tag found: <tag> or <tag key=value>
-      c = skipSpace(f);
+      c = xml.getc();
       if (c=='/') { // we reached the end of this block
-        fseek(f, unseek, SEEK_SET);
+        xml.seek(unseek);
         return 0;
       } else if (c=='!') {
         // TODO: this may be the start of a comment section!
       }
-      c = readWord(f, c, buf, 1024);
-      if (buf[0]==0) return -1;
-      Node *nd = new Node(buf);
+      Utf8Buffer key;
+      c = xml.readWord(key, c);
+      if (key.isEmpty()) return -1;
+      Node *nd = new Node(key);
       nd->setParent(this);
       char hasChildren = 0;
+#if 0
       // read properties
       for (;;) {
-        c = skipSpace(f);
+        c = xml.skipSpace();
         if (c==EOF) return -1;
         if (c=='>') { // end of start tag
           hasChildren = 1;
           break;
         } else if (c=='/') { // end of no-children tag
-          c = skipSpace(f);
+          c = xml.skipSpace();
           if (c!='>') return -1; // expected end of tag
           break;
         } else if (validStartChar(c)) { // start of attribute name
           c = readWord(f, c, buf, 1024);
-          if (c!='=') c = skipSpace(f);
+          if (c!='=') c = xml.skipSpace();
           if (c!='=') return -1; // attribute name must be followed by a
-          c = skipSpace(f);
+          c = xml.skipSpace();
           if (c=='"') c = readQuotedValueXML(f, c, val, 1024);
           else c = readDirectValueXML(f, c, val, 1024);
           nd->set(buf, val);
@@ -1492,26 +1480,27 @@ char Fl_Preferences::Node::readElementXML( FILE *f )
         // read child elements
         nd->readElementXML(f);
         // read end tag
-        if (c!='<') c = skipSpace(f);
+        if (c!='<') c = xml.skipSpace();
         if (c!='<') return -1; // invalid end tag
-        c = skipSpace(f);
+        c = xml.skipSpace();
         if (c!='/') return -1; // invalid end tag
-        c = skipSpace(f);
+        c = xml.skipSpace();
         c = readWord(f, c, buf, 1024);
         if (strcmp(buf, nd->name())!=0) return -1; // end tag is not the same as start tag
-        if (c!='>') c = skipSpace(f);
+        if (c!='>') c = xml.skipSpace();
         if (c!='>') return -1; // invalid end tag
       }
+#endif
     } else if (!top_) { // inline value found
-      readInlineValueXML(f, c, buf, 1024);
-      Node *nd = new Node("-inline");
-      nd->set("text", buf);
-      nd->setParent(this);
+//      readInlineValueXML(f, c, buf, 1024);
+//      Node *nd = new Node("-inline");
+//      nd->set("text", buf);
+//      nd->setParent(this);
     } else { // something went wrong
       return -1;
     }
-    unseek = ftell(f);
-    c = skipSpace(f);
+    unseek = xml.tell();
+    c = xml.skipSpace();
     if (c==EOF) return 0;
   }
   return 0;
@@ -1973,6 +1962,13 @@ int Fl_Plugin_Manager::loadAll(const char *filepath, const char *pattern) {
 }
 
 // =============================================================================
+// XML
+
+char Fl_Preferences::XML::isSpace(unsigned ucs) {
+  return (ucs==' ' || ucs=='\n' || ucs=='\t' || ucs=='\r');
+}
+
+// =============================================================================
 // XMLReader
 
 /*
@@ -2059,6 +2055,96 @@ Fl_Preferences::XMLReader::XMLReader(FILE *f) :
 }
 
 Fl_Preferences::XMLReader::~XMLReader() {
+}
+
+int Fl_Preferences::XMLReader::eof() {
+  return ::feof(pFile);
+}
+
+void Fl_Preferences::XMLReader::seek(long set) {
+  ::fseek(pFile, set, SEEK_SET);
+}
+
+long Fl_Preferences::XMLReader::tell() {
+  return ::ftell(pFile);
+}
+
+unsigned Fl_Preferences::XMLReader::getc() {
+  if (eof()) return EOF;
+  unsigned char c = fgetc(pFile);
+  int n = fl_utf8len(c);
+  if (n==1) {
+    return c;
+  } else {
+    unsigned char buf[8], *d = buf;
+    *d++ = c;
+    for ( ; n>1; --n) *d++ = fgetc(pFile);
+    return fl_utf8decode((const char*)buf, 0L, 0L);
+  }
+}
+
+unsigned Fl_Preferences::XMLReader::skipSpace() {
+  for (;;) {
+    unsigned c = getc();
+    if (c==EOF) return c;
+    if (!XML::isSpace(c)) return c;
+  }
+}
+
+unsigned Fl_Preferences::XMLReader::readWord(Utf8Buffer &buffer, unsigned prev_c) {
+  unsigned c = prev_c;
+  if (c==0) c = getc();
+  if (c==EOF) return c;
+  if (validStartChar(c)) {
+    for (;;) {
+      buffer.append(c);
+      c = getc();
+      if (!( (c<128 && isalnum(c)) || c=='_' || c==':' || c=='.' || c=='-' || c>127 )) // valid cont char?
+        break;
+    }
+  }
+  return c;
+}
+
+// =============================================================================
+// Utf8Buffer
+
+Fl_Preferences::Utf8Buffer::Utf8Buffer() :
+  pBuffer(0L),
+  pnBuffer(0),
+  pNBuffer(64),
+  pMark(0)
+{
+  pBuffer = (unsigned char*)malloc(pNBuffer+1);
+  pBuffer[pnBuffer] = 0;
+}
+
+Fl_Preferences::Utf8Buffer::~Utf8Buffer() {
+  if (pBuffer) ::free(pBuffer);
+}
+
+// make room for at least n more bytes
+void Fl_Preferences::Utf8Buffer::makeRoom(int n) {
+  if (pnBuffer+n>pNBuffer) {
+    int more = (n>pNBuffer)?n:pNBuffer;
+    pNBuffer += more;
+    pBuffer = (unsigned char*)realloc(pBuffer, pNBuffer+1);
+  }
+}
+
+void Fl_Preferences::Utf8Buffer::append(const char *str) {
+  if (!str) return;
+  int n = strlen(str);
+  makeRoom(n);
+  memmove(pBuffer+pnBuffer, str, n+1);
+  pnBuffer += n;
+}
+
+void Fl_Preferences::Utf8Buffer::append(unsigned ucs) {
+  makeRoom(8);
+  int n = fl_utf8encode(ucs, (char*)pBuffer+pnBuffer);
+  pnBuffer += n;
+  pBuffer[pnBuffer] = 0;
 }
 
 
