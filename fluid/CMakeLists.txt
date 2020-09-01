@@ -14,8 +14,6 @@
 #     https://www.fltk.org/bugs.php
 #
 
-if (NOT ANDROID)
-
 set (CPPFILES
   CodeEditor.cxx
   Fl_Function_Type.cxx
@@ -108,4 +106,3 @@ if (UNIX)
   endforeach()
 endif (UNIX)
 
-endif (NOT ANDROID)

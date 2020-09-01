@@ -24,7 +24,6 @@
 #define FL_ANDROID_WINDOW_DRIVER_H
 
 #include "../../Fl_Window_Driver.H"
-//#include <windows.h>
 
 /*
  Move everything here that manages the native window interface.
@@ -73,7 +72,7 @@ public:
   }
 
   Fl_Android_Window_Driver(Fl_Window *w) : Fl_Window_Driver(w) {}
-  virtual ~Fl_Android_Window_Driver() override {}
+  virtual ~Fl_Android_Window_Driver() override;
 
   virtual void make_current() override;
   virtual void show() override;
@@ -108,9 +107,9 @@ public:
   virtual void label(const char *name,const char *iname);
 #endif
   virtual void resize(int X,int Y,int W,int H) override;
-#if 0
   virtual void map();
   virtual void unmap();
+#if 0
   virtual void fullscreen_on();
   virtual void fullscreen_off(int X, int Y, int W, int H);
   virtual void iconize();
@@ -137,6 +136,17 @@ public:
 
   virtual void wait_for_expose() override { wait_for_expose_value = 1; }
   static void expose_all();
+
+  static Fl_Android_Window_Driver *stackTopWindow() { return pStackTopWindow; }
+  Fl_Android_Window_Driver *stackNextWindow() { return pStackNextWindow; }
+  Fl_Window *window() { return pWindow; }
+protected:
+  // store the order in which windows appear on the screens
+  static Fl_Android_Window_Driver *pStackTopWindow;
+  Fl_Android_Window_Driver *pStackNextWindow = nullptr;
+  void stackAddWindow();
+  void stackRaiseWindow();
+  void stackRemoveWindow();
 };
 
 

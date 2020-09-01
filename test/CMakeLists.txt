@@ -46,34 +46,29 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-#######################################################################
-# Add the ANDROID_OK option if the example can be compiled for Android
-# as well as for other platforms.
-
-if (NOT ANDROID)
-
-CREATE_EXAMPLE (adjuster adjuster.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (arc arc.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (animated animated.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (ask ask.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (bitmap bitmap.cxx fltk ANDROID_OK)
+CREATE_EXAMPLE (adjuster adjuster.cxx fltk)
+CREATE_EXAMPLE (arc arc.cxx fltk)
+CREATE_EXAMPLE (animated animated.cxx fltk)
+CREATE_EXAMPLE (ask ask.cxx fltk)
+CREATE_EXAMPLE (bitmap bitmap.cxx fltk)
 CREATE_EXAMPLE (blocks "blocks.cxx;blocks.icns" "fltk;${AUDIOLIBS}")
-CREATE_EXAMPLE (boxtype boxtype.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (browser browser.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (button button.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (buttons buttons.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (checkers "checkers.cxx;checkers_pieces.fl;checkers.icns" "fltk_images;fltk" ANDROID_OK)
-CREATE_EXAMPLE (clock clock.cxx fltk ANDROID_OK)
+CREATE_EXAMPLE (boxtype boxtype.cxx fltk)
+CREATE_EXAMPLE (browser browser.cxx fltk)
+CREATE_EXAMPLE (button button.cxx fltk)
+CREATE_EXAMPLE (buttons buttons.cxx fltk)
+CREATE_EXAMPLE (checkers "checkers.cxx;checkers_pieces.fl;checkers.icns" "fltk_images;fltk")
+CREATE_EXAMPLE (clock clock.cxx fltk)
 CREATE_EXAMPLE (colbrowser colbrowser.cxx fltk)
-CREATE_EXAMPLE (color_chooser color_chooser.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (cursor cursor.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (curve curve.cxx fltk ANDROID_OK)
+CREATE_EXAMPLE (color_chooser color_chooser.cxx fltk)
+CREATE_EXAMPLE (cursor cursor.cxx fltk)
+CREATE_EXAMPLE (curve curve.cxx fltk)
 CREATE_EXAMPLE (demo demo.cxx fltk)
 CREATE_EXAMPLE (device device.cxx "fltk_images;fltk")
-CREATE_EXAMPLE (doublebuffer doublebuffer.cxx fltk ANDROID_OK)
-CREATE_EXAMPLE (editor "editor.cxx;editor-Info.plist" fltk ANDROID_OK)
-CREATE_EXAMPLE (fast_slow fast_slow.fl fltk ANDROID_OK)
+CREATE_EXAMPLE (doublebuffer doublebuffer.cxx fltk)
+CREATE_EXAMPLE (editor "editor.cxx;editor-Info.plist" fltk)
+CREATE_EXAMPLE (fast_slow fast_slow.fl fltk)
 CREATE_EXAMPLE (file_chooser file_chooser.cxx "fltk_images;fltk")
+CREATE_EXAMPLE (flink "flink.cxx;flink_ui.fl" "fltk;fltk_images")
 CREATE_EXAMPLE (fltk-versions fltk-versions.cxx fltk)
 CREATE_EXAMPLE (fonts fonts.cxx fltk)
 CREATE_EXAMPLE (forms forms.cxx "fltk_forms;fltk")
@@ -205,8 +200,6 @@ if (OPTION_BUILD_SHARED_LIBS)
 
 endif (OPTION_BUILD_SHARED_LIBS)
 
-endif (NOT ANDROID)
-
 #####################################################
 # We need some support files for the demo programs
 #####################################################
@@ -231,3 +224,7 @@ file (COPY
 # for multi config builds (MSVC, Xcode)
 
 target_compile_definitions (demo PRIVATE GENERATED_BY_CMAKE)
+
+# Flink needs to know where CMake will put the Fluid executable
+set_target_properties(flink PROPERTIES COMPILE_DEFINITIONS FL_CMAKE_FLUID_PATH="$<TARGET_FILE:fluid>")
+

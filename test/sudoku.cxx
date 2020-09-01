@@ -437,6 +437,9 @@ void SudokuSound::play(char note) {
     Sleep(NOTE_DURATION);
   } else Beep(frequencies[note - 'A'], NOTE_DURATION);
 
+#elif defined(__ANDROID__)
+  // empty for now
+
 #else
 #  ifdef HAVE_ALSA_ASOUNDLIB_H
   if (handle) {

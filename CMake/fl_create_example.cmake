@@ -44,10 +44,6 @@
 #   List of libraries (CMake target names), separated by ';'. Needs
 #   quotes if more than one library is needed, e.g. "fltk_gl;fltk"
 #
-# CREATE_EXAMPLE can have an optional fourth argument with a list of options
-# - the option ANDROID_OK is set if CREATE_EXAMPLE creates code for Android
-#   builds in addition to the native build
-#
 ################################################################################
 
 macro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
@@ -141,17 +137,5 @@ macro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
     )
     unset (WRAPPER)
   endif (MAC_BUNDLE)
-
-  ######################################################################
-  # Parse optional fourth argument "ANDROID_OK", see description above.
-  ######################################################################
-
-  if (${ARGC} GREATER 3)
-    foreach (OPTION ${ARGV3})
-      if (${OPTION} STREQUAL "ANDROID_OK" AND OPTION_CREATE_ANDROID_STUDIO_IDE)
-        CREATE_ANDROID_IDE_FOR_TEST (${NAME} ${SOURCES} ${LIBRARIES})
-      endif ()
-    endforeach ()
-  endif ()
 
 endmacro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
