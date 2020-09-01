@@ -86,7 +86,7 @@ public:
   // Append a string to the list, string is duplicated.
   void add(const char *string) {
     pMakeRoom();
-    pArray[pN++] = ::strdup(string);
+    pArray[pN++] = fl_strdup(string);
   }
   // Retunr the number of entries in the list.
   int n() const { return pN; }
@@ -578,7 +578,7 @@ void createProjectBuildGradle()
              "        google()\n"
              "    }\n"
              "    dependencies {\n"
-             "        classpath 'com.android.tools.build:gradle:3.5.3'\n"
+             "        classpath 'com.android.tools.build:gradle:4.0.1'\n"
              "    }\n"
              "}\n\n"
              "allprojects {\n"
@@ -845,7 +845,7 @@ void createProject()
   createLibraryFolder("fltk", fltkSrcs);
 
   StringList fltkFormsSrcs;
-  getEntriesFromCMakeFile(fltkFormsSrcs, gFLTKRootDir, "src/CMakeLists.txt", "FLCPPFILES");
+  getEntriesFromCMakeFile(fltkFormsSrcs, gFLTKRootDir, "src/CMakeLists.txt", "FORMS_FILES");
   createLibraryFolder("fltk_forms", fltkFormsSrcs);
 
   // test applications that can run on Android

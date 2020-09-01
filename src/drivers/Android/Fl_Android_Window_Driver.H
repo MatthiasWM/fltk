@@ -107,8 +107,8 @@ public:
   virtual void label(const char *name,const char *iname);
 #endif
   virtual void resize(int X,int Y,int W,int H) override;
-  virtual void map();
-  virtual void unmap();
+  virtual void map() override;
+  virtual void unmap() override;
 #if 0
   virtual void fullscreen_on();
   virtual void fullscreen_off(int X, int Y, int W, int H);
@@ -137,13 +137,13 @@ public:
   virtual void wait_for_expose() override { wait_for_expose_value = 1; }
   static void expose_all();
 
-  static Fl_Android_Window_Driver *stackTopWindow() { return pStackTopWindow; }
+  static Fl_Android_Window_Driver *stackTopWindow() { return gStackTopWindow; }
   Fl_Android_Window_Driver *stackNextWindow() { return pStackNextWindow; }
   Fl_Window *window() { return pWindow; }
 protected:
   // store the order in which windows appear on the screens
-  static Fl_Android_Window_Driver *pStackTopWindow;
-  Fl_Android_Window_Driver *pStackNextWindow = nullptr;
+  static Fl_Android_Window_Driver *gStackTopWindow;
+  Fl_Android_Window_Driver *pStackNextWindow = this; // if the window points to itself, it is not mapped and not in the WindowStack
   void stackAddWindow();
   void stackRaiseWindow();
   void stackRemoveWindow();

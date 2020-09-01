@@ -123,6 +123,7 @@ public:
   virtual void remove_fd(int);
 #endif
   virtual void gettime(time_t *sec, int *usec);
+  virtual char* strdup(const char *s) {return ::strdup(s);}
 };
 
 #endif // FL_ANDROID_SYSTEM_DRIVER_H

@@ -38,7 +38,7 @@ Fl_Window_Driver *Fl_Window_Driver::newWindowDriver(Fl_Window *w)
 
 
 Window fl_window = 0;
-Fl_Android_Window_Driver *Fl_Android_Window_Driver::pStackTopWindow = nullptr;
+Fl_Android_Window_Driver *Fl_Android_Window_Driver::gStackTopWindow = nullptr;
 
 
 
@@ -263,6 +263,9 @@ void Fl_Android_Window_Driver::unmap()
  */
 void Fl_Android_Window_Driver::stackAddWindow()
 {
+  // if this window is already in the stack, remove it first, so we can raise it next
+  if (pStackNextWindow!=this) stackRemoveWindow();
+
   Fl_Android_Window_Driver *insertAfter = nullptr;
 
   if (pWindow->modal()) {
@@ -270,14 +273,14 @@ void Fl_Android_Window_Driver::stackAddWindow()
     insertAfter = nullptr;
   } else if (pWindow->non_modal()) {
     // if the window is non-modal, insert it right below the first modal window
-    for (auto w = pStackTopWindow; w; w = w->pStackNextWindow) {
+    for (auto w = gStackTopWindow; w; w = w->pStackNextWindow) {
       if (!w->pWindow->modal())
         break;
       insertAfter = w;
     }
   } else {
     // if this is a normal window, insert it after the first non-modal window
-    for (auto w = pStackTopWindow; w; w = w->pStackNextWindow) {
+    for (auto w = gStackTopWindow; w; w = w->pStackNextWindow) {
       if (!w->pWindow->non_modal()) // tests for modal and non-modal
         break;
       insertAfter = w;
@@ -287,9 +290,10 @@ void Fl_Android_Window_Driver::stackAddWindow()
     pStackNextWindow = insertAfter->pStackNextWindow;
     insertAfter->pStackNextWindow = this;
   } else {
-    pStackNextWindow = pStackTopWindow;
-    pStackTopWindow = this;
+    pStackNextWindow = gStackTopWindow;
+    gStackTopWindow = this;
   }
+  assert(pStackNextWindow!=this); // window must be in the stack at this point
 }
 
 void Fl_Android_Window_Driver::stackRaiseWindow()
@@ -300,16 +304,23 @@ void Fl_Android_Window_Driver::stackRaiseWindow()
 
 void Fl_Android_Window_Driver::stackRemoveWindow()
 {
-  auto w = pStackTopWindow;
+  // return, if the window is not in the stack
+  if (pStackNextWindow==this) return;
+
+  auto w = gStackTopWindow;
   if (w==this) {
-    pStackTopWindow = this->pStackNextWindow;
-  }
-  for ( ; w; w = w->pStackNextWindow) {
-    if (w->pStackNextWindow==this) {
-      w->pStackNextWindow = pStackNextWindow;
-      break;
+    gStackTopWindow = pStackNextWindow;
+    pStackNextWindow = this;
+  } else {
+    for (; w; w = w->pStackNextWindow) {
+      if (w->pStackNextWindow == this) {
+        w->pStackNextWindow = pStackNextWindow;
+        pStackNextWindow = this;
+        break;
+      }
     }
   }
+  assert(pStackNextWindow==this); // window must not be in the stack at this point
 }
 
 #if 0

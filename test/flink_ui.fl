@@ -3,8 +3,6 @@ version 1.0400
 header_name {.h}
 code_name {.cxx}
 comment {//
-// "$Id$"
-//
 // Flink for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2019-2020 by Matthias Melcher and others.
@@ -24,7 +22,9 @@ comment {//
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA.
 //
-// Please report all bugs and problems to "fltk-bugs@fltk.org".
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
 //
 } {in_source in_header
 }
@@ -41,7 +41,7 @@ decl {extern void selectSourceFolder();} {private global
 decl {extern void fluidPathChanged();} {private global
 }
 
-decl {extern void selectFluidPath();} {selected private global
+decl {extern void selectFluidPath();} {private global
 }
 
 decl {extern void projectFolderChanged();} {private global
@@ -120,10 +120,4 @@ Function {createMainWindow()} {open
       xywh {484 156 35 24} labelcolor 215
     }
   }
-}
-
-comment {
-//
-// End of "$Id$".
-//} {in_source in_header
 }
