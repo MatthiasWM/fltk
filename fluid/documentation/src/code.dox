@@ -7,9 +7,9 @@
 Overview of code nodes.
 
 
-\section function Functions and Methods
+\section function Function/Method
 
-![](flFunction.png) Functions
+![](flFunction.png) **Function**
 
 Fluid can generate C functions, C++ functions, and methods in classes.
 Functions can contain widgets to build windows and dialogs. *Code* nodes can
@@ -21,8 +21,7 @@ inside a declaration block. If added inside a class node, this node generates
 a method inside that class.
 
 ### Children ###
-Function nodes can contain code nodes and widget trees. The topmost node of a
-widget tree must be a window.
+Function nodes can contain Code, Codeblocks, Comments, and Windows.
 If the function node has no children, only a forward declaration will be
 created in the header, but no source code will be generated.
 
@@ -151,6 +150,9 @@ Fluid recognizes the keyword `static` or `virtual` at the beginning of the
 omit it in the implementation. The return type defaults still apply if there
 is no text after the keyword.
 
+Fluid also recognizes creators and destructors and defaults their return type
+to an empty string. Destructors can be `virtual`.
+
 ### Further Options ###
 
 Users can define a comment text in the *comment* field. The first line of the
@@ -173,15 +175,134 @@ creates an inlined function in the header file.
 
 <!-- ----------------------------------------------------------------------- -->
 
-\section code C Source Code
+\section code C++ Source Code
 
-![](flCode.png) Code
+![](flCode.png) **Code**
 
-...write me.
+Code nodes manage a block of C++ code. The code is indented and otherwise
+copied verbatim into the source code file.
 
- \section codeblock Code Block
+## Parents ##
 
- \section declaration Declaration
+Code nodes can be created as children of Functions/Methods, Codeblocks, and
+Widgetclasses. If a Code is the direct child of a Widgetclass, the code  will
+be part of the constructor.
+
+<!-- ----------------------------------------------------------------------- -->
+
+\section codeblock C++ Codeblock
+
+![](flCodeBlock.png) **CodeBlock**
+
+A Codeblock generates two lines of code in the source code file that wrap a
+block of C++ code or a number of widgets. The enfolded code will be further
+indented. Fluid will add curly brackets at the end of the first text field and
+at the beginning of the second one.
+
+```
+// .cxx
+if (test() {
+  ...
+)
+```
+
+\image html flCodeBlockDialog.png "Codeblock Properties"
+\image latex flCodeBlockDialog.png "Codeblock Properties"
+
+## Parents ##
+
+Codeblocks can be created as children of Functions/Methods, Codeblocks, and
+Widgetclasses. If a Codeblock is the direct child of a Widgetclass, the code
+will be part of the constructor.
+
+## Children ##
+
+Codeblocks can contain Code, Windows, Comments, and more Codeblocks.
+
+## Options ##
+
+Fluid recognizes if both text field contain preprocessor commands (both
+start with a `#`) and will neither indent nor create curly brackets.
+
+```
+// .cxx
+#if 0
+  ...
+#endif
+```
+
+<!-- ----------------------------------------------------------------------- -->
+
+\section declaration C++ Declaration
+
+![](flDeclaration.png) **Declaration**
+
+The Declaration node inserts a line of code in the header or source file at the
+top level or within a class.
+
+Typical uses are declaring a local or globally visible variable, a class
+member variable, or adding a preprocessor directive. It's also possible to
+generate single-line typedefs or namespace directives.
+```
+// examples:
+int x;
+extern int foo();
+#include "fluid.h"
+typedef char byte;
+using std::list;
+```
+
+## Parents ##
+
+Declarations can be created at the top level or inserted into a Class,
+WidgetClass, or DeclarationBlock.
+If a declaration is in inside a Class or WidgetClass, Fluid will generate code
+for the header file only.
+
+\image html flDeclarationDialog.png "Declaration Properties"
+\image latex flDeclarationDialog.png "Declaration Properties"
+
+## Options at Top Level ##
+
+A declaration can be generated for the header file only, or for the source file
+only.
+It can be markerd *static*, so it will appear in the source code, prepended
+with the word `static`, or it can be declared *extern*, so it appears in the
+source and the header file.
+```
+// .cxx static
+static int x;
+```
+
+```
+// .h extern
+extern int x;
+// .cxx extern
+int x;
+```
+
+Fluid recognizes the keywords `extern`, `class`, `typedef`, `using`
+and `FL_EXPORT` at the start of the declaration, or any non-alphabetic
+character (for example '`#`'), which overrides the *static* and *extern*
+options from the previous paragraph.
+
+## Options inside Class or WidgetClass ##
+
+The declaration can be made private, public, or protected.
+
+Fluid recognises the keywords `class`, `struct`, `typedef`,
+and `FL_EXPORT` at the start of the declaration and copies those declarations
+verbatim to the header file. Otherwise, Fluid will remove all but one spaces
+between the declaration and a potential inline comment.
+
+## Note ##
+
+Function prototypes can be declared here, but also by creating a Function node
+with no children, which then will create a forward declaration in the header.
+
+<!-- ----------------------------------------------------------------------- -->
+
+
 
  \section declarationblock Declaration Block
 

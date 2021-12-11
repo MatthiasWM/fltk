@@ -788,8 +788,12 @@ BREAK2:
  */
 void Fl_CodeBlock_Type::write_code1() {
   const char* c = name();
-  write_c("%s%s {\n", indent(), c ? c : "");
-  indentation++;
+  if (c && *c=='#' && after && *after=='#') {
+    write_c("%s\n", c);
+  } else {
+    write_c("%s%s {\n", indent(), c ? c : "");
+    indentation++;
+  }
 }
 
 /**
@@ -799,6 +803,17 @@ void Fl_CodeBlock_Type::write_code2() {
   indentation--;
   if (after) write_c("%s} %s\n", indent(), after);
   else write_c("%s}\n", indent());
+
+  const char* c = name();
+  if (c && *c=='#' && after && *after=='#') {
+    write_c("%s\n", after);
+  } else {
+    indentation--;
+    if (after)
+      write_c("%s} %s\n", indent(), after);
+    else
+      write_c("%s}\n", indent());
+  }
 }
 
 // ---- Fl_Decl_Type declaration
@@ -994,7 +1009,7 @@ void Fl_Decl_Type::write_code1() {
   const char* e = c+strlen(c), *csc = c;
   while (csc<e && (csc[0]!='/' || csc[1]!='/')) csc++;
   if (csc!=e) e = csc; // comment found
-                       // lose all trailing semicolons so I can add one:
+  // lose all trailing semicolons so I can add one:
   while (e>c && e[-1]==' ') e--;
   while (e>c && e[-1]==';') e--;
   if (class_name(1)) {
