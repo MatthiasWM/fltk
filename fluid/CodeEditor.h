@@ -53,6 +53,7 @@ public:
   void textsize(Fl_Fontsize s);
   int scroll_row() { return mTopLineNum; }
   int scroll_col() { return mHorizOffset; }
+  void draw();
 };
 
 // ---- CodeRangeEditor declaration
@@ -72,17 +73,27 @@ typedef void (*CodeRangeEditorCallback)(class CodeRangeEditor*, class Fl_Type*);
 class CodeRangeEditor : public CodeEditor {
   int event_position_;
   int event_button_;
+  int update_suspended_;
   CodeRangeEditorCallback focus_lost_cb_;
   Fl_Type *focus_lost_widget_;
   int editable_start_, editable_end_;
 public:
   CodeRangeEditor(int X, int Y, int W, int H, const char *L=0);
   ~CodeRangeEditor();
-  int event_position() { return event_position_; }
-  int event_button() { return event_button_; }
+  int event_position() const { return event_position_; }
+  int event_button() const { return event_button_; }
+  char *event_text() const;
   void make_editable(int pos_a, int pos_b, CodeRangeEditorCallback cb, Fl_Type *w);
+  int is_editable() const { return (editable_start_!=editable_end_); }
+  void end_editable(char call_the_callback=1);
+  void suspend_update() { update_suspended_++; }
+  void restore_update() { update_suspended_--; }
+  int update_suspended() { return (update_suspended_!=0); }
 protected:
   int handle(int event);
+  static void edit_range_update(int pos, int nInserted, int nDeleted,
+                           int /*nRestyled*/, const char * /*deletedText*/,
+                           void *cbArg);
 };
 
 // ---- CodeViewer declaration
@@ -93,7 +104,6 @@ public:
 
 protected:
   int handle(int ev) { return Fl_Text_Display::handle(ev); }
-  void draw();
 };
 
 #endif // !CodeEditor_h

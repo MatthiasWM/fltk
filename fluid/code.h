@@ -26,7 +26,8 @@ extern FILE *code_file;
 extern FILE *header_file;
 extern int indentation;
 extern int write_number;
-extern class CodeRangeEditor *write_sourceview;
+extern int write_sourceview;
+extern class CodeRangeEditor *edit_sourceview;
 
 int is_id(char c);
 const char* unique_id(void* o, const char*, const char*, const char*);

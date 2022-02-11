@@ -43,7 +43,8 @@ int indentation = 0;
 
 int write_number = 0;
 
-CodeRangeEditor *write_sourceview = 0L;
+int write_sourceview = 0;
+CodeRangeEditor *edit_sourceview = 0L;
 
 /**
  Return true if c can be in a C identifier.

@@ -261,6 +261,17 @@ void CodeEditor::textsize(Fl_Fontsize s) {
   }
 } // textsize
 
+/**
+ Tricking Fl_Text_Display into using bearable colors for this specific task.
+ */
+void CodeEditor::draw()
+{
+  Fl_Color c = Fl::get_color(FL_SELECTION_COLOR);
+  Fl::set_color(FL_SELECTION_COLOR, fl_color_average(FL_BACKGROUND_COLOR, FL_FOREGROUND_COLOR, 0.9f));
+  Fl_Text_Editor::draw();
+  Fl::set_color(FL_SELECTION_COLOR, c);
+}
+
 // ---- CodeViewer implementation
 
 /** \class CodeViewer
@@ -284,33 +295,34 @@ CodeViewer::CodeViewer(int X, int Y, int W, int H, const char *L)
   cursor_style(CARET_CURSOR);
 }
 
-/**
- Tricking Fl_Text_Display into using bearable colors for this specific task.
- */
-void CodeViewer::draw()
-{
-  Fl_Color c = Fl::get_color(FL_SELECTION_COLOR);
-  Fl::set_color(FL_SELECTION_COLOR, fl_color_average(FL_BACKGROUND_COLOR, FL_FOREGROUND_COLOR, 0.9f));
-  CodeEditor::draw();
-  Fl::set_color(FL_SELECTION_COLOR, c);
-}
-
 // ---- CodeRangeEditor --------------------------------------------------------
 
 CodeRangeEditor::CodeRangeEditor(int X, int Y, int W, int H, const char *L) :
 CodeEditor(X, Y, W, H, L),
 event_position_(0),
 event_button_(0),
+update_suspended_(0),
 focus_lost_cb_(0L),
 focus_lost_widget_(0L),
 editable_start_(0),
 editable_end_(0)
 {
+  mBuffer->add_modify_callback(edit_range_update, this);
 }
 
 CodeRangeEditor::~CodeRangeEditor()
 {
 }
+
+// result must be free'd.
+char *CodeRangeEditor::event_text() const
+{
+  if (!is_editable()) {
+    return strdup("");;
+  }
+  return buffer()->text_range(editable_start_, editable_end_);
+}
+
 
 extern void update_sourceview_cb(class Fl_Button*, void*);
 
@@ -330,12 +342,17 @@ int CodeRangeEditor::handle(int event)
           cursor_style(Fl_Text_Display::NORMAL_CURSOR);
         else
           cursor_style(Fl_Text_Display::CARET_CURSOR);
-        return CodeEditor::handle(event);
-      } else {
-        break;
       }
+      break;
+    case FL_UNFOCUS:
+      end_editable();
+      break;
   }
-  return CodeEditor::handle(event);
+  int ret = CodeEditor::handle(event);
+  int crsr = insert_position();
+  if (is_editable() && (crsr<editable_start_ || crsr>editable_end_))
+    end_editable();
+  return ret;
 }
 
 void CodeRangeEditor::make_editable(int pos_a, int pos_b, CodeRangeEditorCallback cb, Fl_Type *w)
@@ -345,3 +362,38 @@ void CodeRangeEditor::make_editable(int pos_a, int pos_b, CodeRangeEditorCallbac
   focus_lost_cb_ = cb;
   focus_lost_widget_ = w;
 }
+
+void CodeRangeEditor::end_editable(char call_the_callback)
+{
+  if (!is_editable())
+    return;
+  if (call_the_callback && focus_lost_cb_)
+    focus_lost_cb_(this, focus_lost_widget_);
+  editable_start_ = editable_end_ = 0;
+  cursor_style(Fl_Text_Display::CARET_CURSOR);
+}
+
+/*
+ \param[in] pos insert position in text
+ \param[in] nInserted number of bytes inserted
+ \param[in] nDeleted number of bytes deleted
+ \param[in] cbArg pointer back to the code editr
+ */
+void CodeRangeEditor::edit_range_update(int pos, int nInserted, int nDeleted,
+                              int /*nRestyled*/, const char * /*deletedText*/,
+                              void *cbArg)
+{
+  CodeRangeEditor *ed = (CodeRangeEditor*)cbArg;
+  if (ed->update_suspended())
+    return;
+  if (!ed->is_editable())
+    return;
+  if (pos<ed->editable_start_ || pos>ed->editable_end_)
+    return ed->end_editable();
+  int new_end = ed->editable_end_ + nInserted - nDeleted;
+  if (new_end<=ed->editable_start_)
+    return ed->end_editable();
+  // TODO: we must assume that the function arguments are correct or everything will mess up
+  ed->editable_end_ = new_end;
+}
+

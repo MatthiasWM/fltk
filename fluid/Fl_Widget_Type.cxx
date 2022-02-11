@@ -2107,6 +2107,19 @@ void Fl_Widget_Type::write_static() {
 extern int varused_test, varused;
 
 static void sv_update_label_cb(CodeRangeEditor *editor, Fl_Type *w) {
+  char *new_label = editor->event_text();
+  printf("New name is \"%s\"\n", new_label);
+  Fl_Type *t = (Fl_Type*)w;
+  t->label(new_label);
+
+  // TODO: set the label on screen ( t->setlabel(new_label); )
+  // TODO: also update the widget browser (the call above does that)
+  // TODO: set the label field in the widget editor (label_cb, but only if this is the current widget)
+  // TODO: the text in the preview is escaped, we must unescape it, before setting it again
+  // TODO: editable text should be highlighted over static text
+  // TODO: allow RMB to open pulldown menus
+
+  ::free(new_label);
   int x = 3;
 }
 
@@ -2187,30 +2200,30 @@ void Fl_Widget_Type::write_code1() {
     write_c(", ");
     switch (i18n_type) {
     case 0 : /* None */
-        if (write_sourceview) pos_a = (int)ftell(code_file)+1;
+        if (edit_sourceview) pos_a = (int)ftell(code_file)+1;
         write_cstring(label());
-        if (write_sourceview) pos_b = (int)ftell(code_file)-1;
+        if (edit_sourceview) pos_b = (int)ftell(code_file)-1;
         break;
     case 1 : /* GNU gettext */
         write_c("%s(", i18n_function);
-        if (write_sourceview) pos_a = (int)ftell(code_file)+1;
+        if (edit_sourceview) pos_a = (int)ftell(code_file)+1;
         write_cstring(label());
-        if (write_sourceview) pos_b = (int)ftell(code_file)-1;
+        if (edit_sourceview) pos_b = (int)ftell(code_file)-1;
         write_c(")");
         break;
     case 2 : /* POSIX catgets */
         write_c("catgets(%s,%s,%d,", i18n_file[0] ? i18n_file : "_catalog",
                 i18n_set, msgnum());
-        if (write_sourceview) pos_a = (int)ftell(code_file)+1;
+        if (edit_sourceview) pos_a = (int)ftell(code_file)+1;
         write_cstring(label());
-        if (write_sourceview) pos_b = (int)ftell(code_file)-1;
+        if (edit_sourceview) pos_b = (int)ftell(code_file)-1;
         write_c(")");
         break;
     }
-    if (write_sourceview) {
-      int crsr = write_sourceview->event_position();
+    if (edit_sourceview) {
+      int crsr = edit_sourceview->event_position();
       if (crsr>=pos_a && crsr<=pos_b) {
-        write_sourceview->make_editable(pos_a, pos_b, sv_update_label_cb, this);
+        edit_sourceview->make_editable(pos_a, pos_b, sv_update_label_cb, this);
       }
     }
   }

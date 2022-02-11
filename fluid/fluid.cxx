@@ -1767,10 +1767,12 @@ void update_sourceview_cb(Fl_Button*, void *editor_ptr)
   header_file_name = sv_header_filename;
 
   // generate the code and load the files
-  write_sourceview = editor;
+  write_sourceview = 1;
+  edit_sourceview = editor;
   // generate files
   if (write_code(sv_source_filename, sv_header_filename))
   {
+    sv_source->suspend_update();
     // load file into source editor
     int pos = sv_source->top_line();
     sv_source->buffer()->loadfile(sv_source_filename);
@@ -1780,9 +1782,11 @@ void update_sourceview_cb(Fl_Button*, void *editor_ptr)
     sv_header->buffer()->loadfile(sv_header_filename);
     sv_header->scroll(pos, 0);
     // update the source code highlighting
-    update_sourceview_position();
+    if (!editor)
+      update_sourceview_position();
+    sv_source->restore_update();
   }
-  write_sourceview = 0L;
+  write_sourceview = 0;
 
   code_file_name = code_file_name_bak;
   header_file_name = header_file_name_bak;
