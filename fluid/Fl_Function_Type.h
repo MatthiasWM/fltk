@@ -34,6 +34,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+class CodeRangeEditor;
+
 extern Fl_Class_Type *current_class;
 
 int has_toplevel_function(const char *rtype, const char *sig);
@@ -74,6 +76,12 @@ class Fl_Code_Type : public Fl_Type {
   int cursor_position_;
   int code_input_scroll_row;
   int code_input_scroll_col;
+
+  void sv_update(CodeRangeEditor *editor);
+  static void sv_update_cb(CodeRangeEditor *editor, Fl_Type *w) {
+    Fl_Code_Type *t = (Fl_Code_Type*)w;
+    t->sv_update(editor);
+  }
 
 public:
   Fl_Code_Type();

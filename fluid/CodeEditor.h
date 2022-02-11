@@ -81,6 +81,7 @@ public:
   CodeRangeEditor(int X, int Y, int W, int H, const char *L=0);
   ~CodeRangeEditor();
   int event_position() const { return event_position_; }
+  int lmb_inside(int start, int end);
   int event_button() const { return event_button_; }
   char *event_text() const;
   void make_editable(int pos_a, int pos_b, CodeRangeEditorCallback cb, Fl_Type *w);

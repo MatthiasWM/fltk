@@ -320,6 +320,7 @@ char *CodeRangeEditor::event_text() const
   if (!is_editable()) {
     return strdup("");;
   }
+  printf("%s\n", buffer()->text());
   return buffer()->text_range(editable_start_, editable_end_);
 }
 
@@ -330,7 +331,7 @@ int CodeRangeEditor::handle(int event)
 {
   switch (event) {
     case FL_PUSH:
-      if (Fl::event_inside(text_area.x, text_area.y, text_area.w, text_area.h)) {
+      if (!is_editable() && Fl::event_inside(text_area.x, text_area.y, text_area.w, text_area.h)) {
         event_position_ = xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS);
         event_button_ = Fl::event_button();
         update_sourceview_cb(NULL, this);
@@ -367,8 +368,12 @@ void CodeRangeEditor::end_editable(char call_the_callback)
 {
   if (!is_editable())
     return;
-  if (call_the_callback && focus_lost_cb_)
+  if (call_the_callback && focus_lost_cb_) {
     focus_lost_cb_(this, focus_lost_widget_);
+    event_position_ = -1;
+    event_button_ = 0;
+    update_sourceview_cb(NULL, this);
+  }
   editable_start_ = editable_end_ = 0;
   cursor_style(Fl_Text_Display::CARET_CURSOR);
 }
@@ -395,5 +400,12 @@ void CodeRangeEditor::edit_range_update(int pos, int nInserted, int nDeleted,
     return ed->end_editable();
   // TODO: we must assume that the function arguments are correct or everything will mess up
   ed->editable_end_ = new_end;
+}
+
+int CodeRangeEditor::lmb_inside(int start, int end) {
+  if (event_button_==FL_LEFT_MOUSE && start<=event_position_ && event_position_<=end)
+    return 1;
+  else
+    return 0;
 }
 

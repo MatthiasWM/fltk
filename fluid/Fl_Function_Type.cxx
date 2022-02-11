@@ -634,7 +634,34 @@ void Fl_Code_Type::write_code1() {
     main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
   }
 
+  int edit_start = (int)ftell(code_file);
   write_c_indented(name(), 0, '\n');
+  int edit_end = (int)ftell(code_file);
+  if (edit_sourceview && edit_sourceview->lmb_inside(edit_start, edit_end)) {
+    edit_sourceview->make_editable(edit_start, edit_end, sv_update_cb, this);
+  }
+}
+
+/**
+ Re-read the code froom the text editor.
+ */
+void Fl_Code_Type::sv_update(CodeRangeEditor *editor) {
+  char *txt = editor->event_text();
+  // unindent the code block
+  char *src = txt, *dst = txt, c = *src++, line_start = 1;
+  while (c) {
+    if (line_start) {
+      if (c==' ') c = *src++;
+      if (c==' ') c = *src++;
+      line_start = 0;
+    }
+    *dst++ = c;
+    if (c=='\n') line_start = 1;
+    c = *src++;
+  }
+  *dst = 0;
+  name(txt);
+  ::free(txt);
 }
 
 /**

@@ -2118,6 +2118,7 @@ static void sv_update_label_cb(CodeRangeEditor *editor, Fl_Type *w) {
   // TODO: the text in the preview is escaped, we must unescape it, before setting it again
   // TODO: editable text should be highlighted over static text
   // TODO: allow RMB to open pulldown menus
+  // TODO: check if we clicked source or header file (or don't allow editing the header)
 
   ::free(new_label);
   int x = 3;
@@ -2220,11 +2221,9 @@ void Fl_Widget_Type::write_code1() {
         write_c(")");
         break;
     }
-    if (edit_sourceview) {
-      int crsr = edit_sourceview->event_position();
-      if (crsr>=pos_a && crsr<=pos_b) {
-        edit_sourceview->make_editable(pos_a, pos_b, sv_update_label_cb, this);
-      }
+    // TODO: enable this when the todo's in sv_update_label_cb are solved
+    if (edit_sourceview && edit_sourceview->lmb_inside(pos_a, pos_b)) {
+//        edit_sourceview->make_editable(pos_a, pos_b, sv_update_label_cb, this);
     }
   }
   write_c(");\n");
