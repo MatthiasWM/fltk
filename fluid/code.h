@@ -20,10 +20,13 @@
 #include <FL/fl_attr.h>
 
 #include <stdarg.h>
+#include <stdio.h>
 
+extern FILE *code_file;
+extern FILE *header_file;
 extern int indentation;
 extern int write_number;
-extern int write_sourceview;
+extern class CodeRangeEditor *write_sourceview;
 
 int is_id(char c);
 const char* unique_id(void* o, const char*, const char*, const char*);

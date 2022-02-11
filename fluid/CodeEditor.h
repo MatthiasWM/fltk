@@ -55,6 +55,36 @@ public:
   int scroll_col() { return mHorizOffset; }
 };
 
+// ---- CodeRangeEditor declaration
+
+class CodeRangeEditor;
+class Fl_Type;
+
+typedef void (*CodeRangeEditorCallback)(class CodeRangeEditor*, class Fl_Type*);
+
+/*
+ This editor allows users to edit a renge of text. No text can be changed
+ outside the give range. If users leave focus or leave the editing range,
+ a callback will occur, returning the modified code range.
+
+ Fluid uses this editor
+ */
+class CodeRangeEditor : public CodeEditor {
+  int event_position_;
+  int event_button_;
+  CodeRangeEditorCallback focus_lost_cb_;
+  Fl_Type *focus_lost_widget_;
+  int editable_start_, editable_end_;
+public:
+  CodeRangeEditor(int X, int Y, int W, int H, const char *L=0);
+  ~CodeRangeEditor();
+  int event_position() { return event_position_; }
+  int event_button() { return event_button_; }
+  void make_editable(int pos_a, int pos_b, CodeRangeEditorCallback cb, Fl_Type *w);
+protected:
+  int handle(int event);
+};
+
 // ---- CodeViewer declaration
 
 class CodeViewer : public CodeEditor {

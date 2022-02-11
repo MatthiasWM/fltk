@@ -471,9 +471,10 @@ Function {make_class_panel()} {open
   }
 }
 
-Function {make_comment_panel()} {} {
+Function {make_comment_panel()} {open
+} {
   Fl_Window comment_panel {
-    label {Comment Properties} open
+    label {Comment Properties}
     xywh {780 296 550 280} type Double labelsize 11 hide resizable
     code0 {o->size_range(320, 180);} modal
   } {
@@ -529,8 +530,7 @@ Function {type_make_cb(Fl_Widget*,void*d)} {open return_type void
 if (Fl_Type::current && Fl_Type::current->is_group())
   add_new_widget_from_user(type_name, kAddAsLastChild);
 else
-  add_new_widget_from_user(type_name, kAddAfterCurrent);} {selected
-  }
+  add_new_widget_from_user(type_name, kAddAfterCurrent);} {}
 }
 
 Function {make_widgetbin()} {open
@@ -540,7 +540,7 @@ Function {make_widgetbin()} {open
     callback {if (Fl::event()==FL_SHORTCUT && Fl::event_key()==FL_Escape)
   exit_cb((Fl_Widget*)o, v);
 else
-  toggle_widgetbin_cb((Fl_Widget*)o, v);} open
+  toggle_widgetbin_cb((Fl_Widget*)o, v);}
     xywh {449 206 600 102} type Single align 80 hide non_modal
   } {
     Fl_Group {} {
@@ -962,26 +962,27 @@ else
   }
 }
 
-Function {make_sourceview()} {} {
+Function {make_sourceview()} {open
+} {
   Fl_Window sourceview_panel {
     label {Code View}
-    callback toggle_sourceview_cb
-    xywh {430 273 520 490} type Double align 80 hide resizable size_range {384 120 0 0}
+    callback toggle_sourceview_cb open
+    xywh {430 273 520 490} type Double align 80 resizable size_range {384 120 0 0} visible
   } {
     Fl_Tabs sv_tab {
-      callback update_sourceview_position_cb
+      callback update_sourceview_position_cb open
       xywh {10 10 500 440} selection_color 4 labelcolor 7 resizable
     } {
       Fl_Group {} {
         label Source open
         xywh {10 35 500 415} labelsize 13 resizable
       } {
-        Fl_Text_Editor sv_source {
+        Fl_Text_Editor sv_source {selected
           xywh {20 50 480 390} textfont 4 textsize 11 resizable
           code0 {\#include "CodeEditor.h"}
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
-          class CodeViewer
+          class CodeRangeEditor
         }
       }
       Fl_Group {} {
@@ -993,7 +994,7 @@ Function {make_sourceview()} {} {
           code0 {\#include "CodeEditor.h"}
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
-          class CodeViewer
+          class CodeRangeEditor
         }
       }
     }

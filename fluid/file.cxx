@@ -352,8 +352,13 @@ const char *read_word(int wantbrace) {
     // read in an unquoted word:
     int length = 0;
     for (;;) {
-      if (x == '\\') {x = read_quoted(); if (x<0) continue;}
-      else if (x<0 || isspace(x & 255) || x=='{' || x=='}' || x=='#') break;
+      if (x == '\\') {
+        x = read_quoted();
+        if (x<0)
+          continue;
+      } else if (x<0 || isspace(x & 255) || x=='{' || x=='}' || x=='#') {
+        break;
+      }
       buffer[length++] = x;
       expand_buffer(length);
       x = getc(fin);

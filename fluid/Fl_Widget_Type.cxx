@@ -2106,6 +2106,10 @@ void Fl_Widget_Type::write_static() {
 
 extern int varused_test, varused;
 
+static void sv_update_label_cb(CodeRangeEditor *editor, Fl_Type *w) {
+  int x = 3;
+}
+
 void Fl_Widget_Type::write_code1() {
   const char* t = subclassname(this);
   const char *c = array_name(this);
@@ -2179,22 +2183,35 @@ void Fl_Widget_Type::write_code1() {
     write_c("new %s(%d, %d, %d, %d", t, o->x(), o->y(), o->w(), o->h());
   }
   if (label() && *label()) {
+    int pos_a = 0, pos_b = 0;
     write_c(", ");
     switch (i18n_type) {
     case 0 : /* None */
+        if (write_sourceview) pos_a = (int)ftell(code_file)+1;
         write_cstring(label());
+        if (write_sourceview) pos_b = (int)ftell(code_file)-1;
         break;
     case 1 : /* GNU gettext */
         write_c("%s(", i18n_function);
+        if (write_sourceview) pos_a = (int)ftell(code_file)+1;
         write_cstring(label());
+        if (write_sourceview) pos_b = (int)ftell(code_file)-1;
         write_c(")");
         break;
     case 2 : /* POSIX catgets */
         write_c("catgets(%s,%s,%d,", i18n_file[0] ? i18n_file : "_catalog",
                 i18n_set, msgnum());
+        if (write_sourceview) pos_a = (int)ftell(code_file)+1;
         write_cstring(label());
+        if (write_sourceview) pos_b = (int)ftell(code_file)-1;
         write_c(")");
         break;
+    }
+    if (write_sourceview) {
+      int crsr = write_sourceview->event_position();
+      if (crsr>=pos_a && crsr<=pos_b) {
+        write_sourceview->make_editable(pos_a, pos_b, sv_update_label_cb, this);
+      }
     }
   }
   write_c(");\n");

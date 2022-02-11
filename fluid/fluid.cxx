@@ -1739,10 +1739,14 @@ void update_sourceview_position_cb(Fl_Tabs*, void*)
  Generate a header and source file in a temporary directory and
  load those into the Code Viewer widgets.
  */
-void update_sourceview_cb(Fl_Button*, void*)
+void update_sourceview_cb(Fl_Button*, void *editor_ptr)
 {
   if (!sourceview_panel || !sourceview_panel->visible())
     return;
+  // if `editor` is set, this function was triggered by user event happening
+  // inside one of the sourceview editor. We will regenrate the text, giving
+  // any of the nodes a change to react to the event.
+  CodeRangeEditor *editor = (CodeRangeEditor*)editor_ptr;
   // generate space for the source and header file filenames
   if (!sv_source_filename) {
     sv_source_filename = (char*)malloc(FL_PATH_MAX);
@@ -1763,7 +1767,7 @@ void update_sourceview_cb(Fl_Button*, void*)
   header_file_name = sv_header_filename;
 
   // generate the code and load the files
-  write_sourceview = 1;
+  write_sourceview = editor;
   // generate files
   if (write_code(sv_source_filename, sv_header_filename))
   {
@@ -1778,7 +1782,7 @@ void update_sourceview_cb(Fl_Button*, void*)
     // update the source code highlighting
     update_sourceview_position();
   }
-  write_sourceview = 0;
+  write_sourceview = 0L;
 
   code_file_name = code_file_name_bak;
   header_file_name = header_file_name_bak;

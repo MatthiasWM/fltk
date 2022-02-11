@@ -112,8 +112,8 @@ extern Fl_Double_Window *sourceview_panel;
 #include <FL/Fl_Tabs.H>
 extern void update_sourceview_position_cb(Fl_Tabs*, void*);
 extern Fl_Tabs *sv_tab;
-extern CodeViewer *sv_source;
-extern CodeViewer *sv_header;
+extern CodeRangeEditor *sv_source;
+extern CodeRangeEditor *sv_header;
 extern void update_sourceview_cb(Fl_Button*, void*);
 extern Fl_Light_Button *sv_autorefresh;
 extern Fl_Light_Button *sv_autoposition;

@@ -294,3 +294,54 @@ void CodeViewer::draw()
   CodeEditor::draw();
   Fl::set_color(FL_SELECTION_COLOR, c);
 }
+
+// ---- CodeRangeEditor --------------------------------------------------------
+
+CodeRangeEditor::CodeRangeEditor(int X, int Y, int W, int H, const char *L) :
+CodeEditor(X, Y, W, H, L),
+event_position_(0),
+event_button_(0),
+focus_lost_cb_(0L),
+focus_lost_widget_(0L),
+editable_start_(0),
+editable_end_(0)
+{
+}
+
+CodeRangeEditor::~CodeRangeEditor()
+{
+}
+
+extern void update_sourceview_cb(class Fl_Button*, void*);
+
+int CodeRangeEditor::handle(int event)
+{
+  switch (event) {
+    case FL_PUSH:
+      if (Fl::event_inside(text_area.x, text_area.y, text_area.w, text_area.h)) {
+        event_position_ = xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS);
+        event_button_ = Fl::event_button();
+        update_sourceview_cb(NULL, this);
+        // Send LMB/RMB click into header/source at text_pos -> void update_sourceview_cb(Fl_Button*, void*)
+        // -> clear editable range, set position cursor
+        // -> make range editable and set edit cursor, set callback on change
+        //    <- call callback when focus changes and return new text range (after all insertions and deletions into the range)
+        if (editable_start_<=event_position_ && event_position_<=editable_end_)
+          cursor_style(Fl_Text_Display::NORMAL_CURSOR);
+        else
+          cursor_style(Fl_Text_Display::CARET_CURSOR);
+        return CodeEditor::handle(event);
+      } else {
+        break;
+      }
+  }
+  return CodeEditor::handle(event);
+}
+
+void CodeRangeEditor::make_editable(int pos_a, int pos_b, CodeRangeEditorCallback cb, Fl_Type *w)
+{
+  editable_start_ = pos_a;
+  editable_end_ = pos_b;
+  focus_lost_cb_ = cb;
+  focus_lost_widget_ = w;
+}

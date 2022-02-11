@@ -20,6 +20,7 @@
 #include "Fl_Window_Type.h"
 #include "Fl_Function_Type.h"
 #include "alignment_panel.h"
+#include "CodeEditor.h"
 #include "file.h"
 
 #include <FL/Fl.H>
@@ -34,15 +35,15 @@
 /// \defgroup cfile C Code File Operations
 /// \{
 
-static FILE *code_file = NULL;
-static FILE *header_file = NULL;
+FILE *code_file = NULL;
+FILE *header_file = NULL;
 
 /// Store the current indentation level for the C source code.
 int indentation = 0;
 
 int write_number = 0;
 
-int write_sourceview = 0;
+CodeRangeEditor *write_sourceview = 0L;
 
 /**
  Return true if c can be in a C identifier.
@@ -529,6 +530,8 @@ static Fl_Type* write_code(Fl_Type* p) {
 
  \param[in] s filename of source code file
  \param[in] t filename of the header file
+ \param[in] editor set, if the event was triggered by the user clicking one
+    of the code previews
  \return 0 if the operation failed, 1 if it was successful
  */
 int write_code(const char *s, const char *t) {
