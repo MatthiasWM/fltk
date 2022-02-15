@@ -190,7 +190,29 @@ endif (FLTK_USE_X11 AND NOT OPTION_PRINT_SUPPORT)
 
 set (DRIVER_FILES)
 
-if (FLTK_USE_X11)
+if (OPTION_USE_SDL)
+
+  set (DRIVER_FILES
+    drivers/SDL/Fl_SDL_Graphics_Driver.cxx
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Window_Driver.cxx
+    drivers/SDL/Fl_SDL_Screen_Driver.cxx
+    drivers/SDL/Fl_SDL_System_Driver.cxx
+    Fl_get_key_sdl.cxx
+    Fl_SDL.cxx
+  )
+  set (DRIVER_HEADER_FILES
+    drivers/SDL/Fl_SDL_Graphics_Driver.H
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.H
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.H
+    drivers/SDL/Fl_SDL_Window_Driver.H
+    drivers/SDL/Fl_SDL_Screen_Driver.H
+    drivers/SDL/Fl_SDL_System_Driver.H
+    drivers/SDL/Fl_Font.H
+  )
+
+elseif (FLTK_USE_X11)
 
   # X11 (including APPLE with X11)
 
@@ -305,7 +327,7 @@ else ()
     drivers/GDI/Fl_Font.H
   )
 
-endif (FLTK_USE_X11)
+endif (OPTION_USE_SDL)
 
 source_group("Header Files" FILES ${HEADER_FILES})
 source_group("Driver Source Files" FILES ${DRIVER_FILES})
@@ -351,13 +373,15 @@ set (GL_DRIVER_FILES
   drivers/OpenGL/Fl_OpenGL_Graphics_Driver_rect.cxx
   drivers/OpenGL/Fl_OpenGL_Graphics_Driver_vertex.cxx
 )
-if (FLTK_USE_X11)
+if (OPTION_USE_SDL)
+  set (GL_DRIVER_FILES ${GL_DRIVER_FILES} drivers/SDL/Fl_SDL_Gl_Window_Driver.cxx)
+elseif (FLTK_USE_X11)
   set (GL_DRIVER_FILES ${GL_DRIVER_FILES} drivers/X11/Fl_X11_Gl_Window_Driver.cxx)
 elseif (APPLE)
   set (GL_DRIVER_FILES ${GL_DRIVER_FILES} drivers/Cocoa/Fl_Cocoa_Gl_Window_Driver.cxx)
 elseif (WIN32)
   set (GL_DRIVER_FILES ${GL_DRIVER_FILES} drivers/WinAPI/Fl_WinAPI_Gl_Window_Driver.cxx)
-endif (FLTK_USE_X11)
+endif (OPTION_USE_SDL)
 
 set (GL_DRIVER_HEADER_FILES
   drivers/OpenGL/Fl_OpenGL_Display_Device.H
@@ -416,7 +440,7 @@ if (WIN32)
   )
 endif (WIN32)
 
-if (APPLE AND (NOT OPTION_APPLE_X11))
+if (APPLE AND (NOT OPTION_APPLE_X11) AND (NOT OPTION_USE_SDL))
   set (MMFILES
     Fl_cocoa.mm
     drivers/Cocoa/Fl_Cocoa_Printer_Driver.mm
@@ -426,7 +450,7 @@ if (APPLE AND (NOT OPTION_APPLE_X11))
 else()
   set (MMFILES
   )
-endif (APPLE AND (NOT OPTION_APPLE_X11))
+endif ()
 
 
 #######################################################################

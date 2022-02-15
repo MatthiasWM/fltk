@@ -46,6 +46,18 @@ set (OPTION_ABI_VERSION ""
 set (FL_ABI_VERSION ${OPTION_ABI_VERSION})
 
 #######################################################################
+option (OPTION_USE_SDL "Overrides the use of native libraries with the SDL library" OFF)
+if (OPTION_USE_SDL)
+  # https://trenki2.github.io/blog/2017/06/02/using-sdl2-with-cmake/
+  #SET(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a)
+  find_package(SDL2 REQUIRED)
+  message ( "----- SDL: " ${SDL2_FOUND} )
+  message ( "SDL2_INCLUDE_DIRS: " ${SDL2_INCLUDE_DIRS})
+  message ( "SDL2_LIBRARIES: " ${SDL2_LIBRARIES})
+  include_directories(${SDL2_INCLUDE_DIRS})
+  # target_link_libraries(SDL2Test ${SDL2_LIBRARIES})
+endif ()
+
 #######################################################################
 if (UNIX)
   option (OPTION_CREATE_LINKS "create backwards compatibility links" OFF)

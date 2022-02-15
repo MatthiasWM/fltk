@@ -41,8 +41,11 @@ endif (DEBUG_VARIABLES_CMAKE)
 
 if (WIN32)
   list (APPEND FLTK_LDLIBS -lole32 -luuid -lcomctl32 -lws2_32)
-elseif (APPLE AND NOT OPTION_APPLE_X11)
+elseif (APPLE AND NOT OPTION_APPLE_X11 AND NOT OPTION_USE_SDL)
   list (APPEND FLTK_LDLIBS "-framework Cocoa")
+elseif (APPLE AND OPTION_USE_SDL)
+  list (APPEND FLTK_LDLIBS "-framework Cocoa")
+  # TODO: add required frameworks here
 else ()
   list (APPEND FLTK_LDLIBS -lm)
 endif (WIN32)

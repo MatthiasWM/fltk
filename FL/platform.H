@@ -33,7 +33,9 @@
 #   include <FL/fl_types.h> // for uchar
 class Fl_Window;
 
-#  ifdef _WIN32
+#  ifdef OPTION_USE_SDL
+#    include "SDL.H"
+#  elif defined(_WIN32)
 #    include "win32.H"
 #  elif defined(__APPLE__)
 #    include "mac.H"

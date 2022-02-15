@@ -21,6 +21,8 @@
 
 # Set the fluid executable path used to create .cxx/.h from .fl files
 
+if (0)
+
 if (CMAKE_CROSSCOMPILING)
   # find a fluid executable on the host system
   find_file(FLUID_PATH
@@ -38,6 +40,8 @@ endif (CMAKE_CROSSCOMPILING)
 
 # generate FLTK-Targets.cmake for build directory use
 export(TARGETS ${FLUID} ${FLTK_LIBRARIES} FILE ${CMAKE_CURRENT_BINARY_DIR}/FLTK-Targets.cmake)
+
+endif(0)
 
 # generate FLTK-Functions.cmake for build directory use
 configure_file (

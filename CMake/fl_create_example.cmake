@@ -115,6 +115,10 @@ macro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
   set_target_properties   (${TARGET_NAME} PROPERTIES OUTPUT_NAME ${NAME})
   target_link_libraries   (${TARGET_NAME} ${LIBRARIES})
 
+  if (OPTION_USE_SDL)
+    target_link_libraries (${TARGET_NAME} ${SDL2_LIBRARIES})
+  endif ()
+
   # we must link all programs with fltk_cairo if option CAIROEXT is enabled
   if (FLTK_HAVE_CAIROEXT)
     target_link_libraries (${TARGET_NAME} fltk_cairo cairo)

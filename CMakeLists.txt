@@ -110,7 +110,7 @@ add_subdirectory(src)
 # build fluid
 #######################################################################
 
-add_subdirectory(fluid)
+# TODO: add_subdirectory(fluid)
 
 #######################################################################
 # variables shared by export and install
