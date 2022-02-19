@@ -33,6 +33,7 @@ public:
   virtual void show();
   virtual Fl_X *makewindow();
   virtual void hide();
+  virtual void make_current();
 };
 
 

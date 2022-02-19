@@ -66,6 +66,7 @@ Fl_X *Fl_SDL_Window_Driver::makewindow()
   Fl_X::first = x;
 
   int old_event = Fl::e_number;
+  w->set_visible();
   w->handle(Fl::e_number = FL_SHOW); // get child windows to appear
   Fl::e_number = old_event;
   w->redraw(); // force draw to happen
@@ -81,3 +82,6 @@ void Fl_SDL_Window_Driver::hide() {
   ::free(ip);
 }
 
+void Fl_SDL_Window_Driver::make_current() {
+//  SDL_SetRenderTarget(renderer_, texture_);
+}

@@ -22,6 +22,9 @@
 #include <FL/fl_draw.H>
 #include "../../Fl_Screen_Driver.H"
 
+
+SDL_Renderer *fl_gc = 0L;
+
 /*
  * By linking this module, the following static method will instantiate the
  * SDL Graphics driver as the main display driver.
@@ -40,4 +43,24 @@ Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
 Fl_SDL_Graphics_Driver::~Fl_SDL_Graphics_Driver()
 {
   printf("SDL Graphics Driver destroyed\n");
+}
+
+void Fl_SDL_Graphics_Driver::color(Fl_Color c)
+{
+  color_ = c;
+  uchar r, g, b;
+  Fl::get_color(c, r, g, b);
+  SDL_SetRenderDrawColor(fl_gc, r, g, b, SDL_ALPHA_OPAQUE);
+}
+
+void Fl_SDL_Graphics_Driver::rect(int x, int y, int w, int h)
+{
+  SDL_Rect rect = { x, y, w, h };
+  SDL_RenderDrawRect(fl_gc, &rect);
+}
+
+void Fl_SDL_Graphics_Driver::rectf(int x, int y, int w, int h)
+{
+  SDL_Rect rect = { x, y, w, h };
+  SDL_RenderFillRect(fl_gc, &rect);
 }

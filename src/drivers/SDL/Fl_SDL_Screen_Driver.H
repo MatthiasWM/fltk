@@ -34,6 +34,7 @@ class FL_EXPORT Fl_SDL_Screen_Driver : public Fl_Screen_Driver
 protected:
   SDL_Window *screen_;
   SDL_Renderer *renderer_;
+  SDL_Texture *texture_;
 public:
   Fl_SDL_Screen_Driver();
   virtual ~Fl_SDL_Screen_Driver();
@@ -41,8 +42,7 @@ public:
   virtual void open_display_platform();
   virtual void close_display();
   virtual void get_system_colors();
-
-
+  virtual void flush();
 };
 
 

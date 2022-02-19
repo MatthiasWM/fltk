@@ -34,6 +34,9 @@ class FL_EXPORT Fl_SDL_Graphics_Driver : public Fl_Graphics_Driver {
 public:
   Fl_SDL_Graphics_Driver();
   ~Fl_SDL_Graphics_Driver();
+  void color(Fl_Color c);
+  void rect(int x, int y, int w, int h);
+  void rectf(int x, int y, int w, int h);
 };
 
 #endif // FL_SDL_GRAPHICS_DRIVER_H

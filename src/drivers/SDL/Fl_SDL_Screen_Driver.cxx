@@ -69,6 +69,15 @@ void Fl_SDL_Screen_Driver::open_display_platform()
       // TODO: error handling
     }
   }
+  texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1024, 768);
+  SDL_SetRenderTarget(renderer_, texture_);
+  SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x66, 0x00);
+  SDL_RenderClear(renderer_);
+  SDL_SetRenderTarget(renderer_, NULL);
+  SDL_RenderCopy(renderer_, texture_, NULL, NULL);
+  SDL_RenderPresent(renderer_);
+  fl_gc = renderer_;
+  SDL_SetRenderTarget(renderer_, texture_);
 }
 
 // optional method to close display access
@@ -90,3 +99,14 @@ void Fl_SDL_Screen_Driver::get_system_colors()
   open_display();
   // Don't do any color changes yet.
 }
+
+void Fl_SDL_Screen_Driver::flush()
+{
+  SDL_SetRenderTarget(renderer_, NULL);
+  SDL_RenderCopy(renderer_, texture_, NULL, NULL);
+  SDL_RenderPresent(renderer_);
+  // TODO: should probably be in void Fl_SDL_Window_Driver::make_current()
+  SDL_SetRenderTarget(renderer_, texture_);
+}
+
+
