@@ -107,6 +107,10 @@ void Fl_SDL_Screen_Driver::flush()
   SDL_RenderPresent(renderer_);
   // TODO: should probably be in void Fl_SDL_Window_Driver::make_current()
   SDL_SetRenderTarget(renderer_, texture_);
+//  We will need this later
+//  int SDL_UpdateTexture(SDL_Texture * texture,
+//                        const SDL_Rect * rect,
+//                        const void *pixels, int pitch);
 }
 
 

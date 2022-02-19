@@ -64,3 +64,33 @@ void Fl_SDL_Graphics_Driver::rectf(int x, int y, int w, int h)
   SDL_Rect rect = { x, y, w, h };
   SDL_RenderFillRect(fl_gc, &rect);
 }
+
+void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1) {
+  SDL_RenderDrawLine(fl_gc, x, y, x1, y);
+}
+
+void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1, int y1) {
+  SDL_RenderDrawLine(fl_gc, x, y, x1, y);
+  SDL_RenderDrawLine(fl_gc, x1, y, x1, y1);
+}
+
+void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1, int y1, int x2) {
+  SDL_RenderDrawLine(fl_gc, x, y, x1, y);
+  SDL_RenderDrawLine(fl_gc, x1, y, x1, y1);
+  SDL_RenderDrawLine(fl_gc, x1, y1, x2, y1);
+}
+
+void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1) {
+  SDL_RenderDrawLine(fl_gc, x, y, x, y1);
+}
+
+void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1, int x1) {
+  SDL_RenderDrawLine(fl_gc, x, y, x, y1);
+  SDL_RenderDrawLine(fl_gc, x, y1, x1, y1);
+}
+
+void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1, int x1, int y2) {
+  SDL_RenderDrawLine(fl_gc, x, y, x, y1);
+  SDL_RenderDrawLine(fl_gc, x, y1, x1, y1);
+  SDL_RenderDrawLine(fl_gc, x1, y1, x1, y2);
+}

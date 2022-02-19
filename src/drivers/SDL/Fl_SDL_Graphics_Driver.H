@@ -33,10 +33,16 @@
 class FL_EXPORT Fl_SDL_Graphics_Driver : public Fl_Graphics_Driver {
 public:
   Fl_SDL_Graphics_Driver();
-  ~Fl_SDL_Graphics_Driver();
-  void color(Fl_Color c);
-  void rect(int x, int y, int w, int h);
-  void rectf(int x, int y, int w, int h);
+  virtual ~Fl_SDL_Graphics_Driver();
+  virtual void color(Fl_Color c);
+  virtual void rect(int x, int y, int w, int h);
+  virtual void rectf(int x, int y, int w, int h);
+  virtual void xyline(int x, int y, int x1);
+  virtual void xyline(int x, int y, int x1, int y1);
+  virtual void xyline(int x, int y, int x1, int y1, int x2);
+  virtual void yxline(int x, int y, int y1);
+  virtual void yxline(int x, int y, int y1, int x1);
+  virtual void yxline(int x, int y, int y1, int x1, int y2);
 };
 
 #endif // FL_SDL_GRAPHICS_DRIVER_H

@@ -166,7 +166,18 @@ Our very basic structure of everything is implemented. For easier testing,
 we implement handling of the 'Escape' key first, so we can easily close our
 app while debugging. 
 
-NOTE: first of all, we now have two windows that open! Also, the Escape key is handled, but not closing the first window, so we are not closing the app either.
+Rendering directly to the screen is not possible in SDL. Rendering to the 
+framebuffer would work, but the content of the SDL framebuffer is unknown, so
+we would have the rerender the entire UI at every frame. FLTK renders incrementally
+by clipping out areas that don't need updates. So in SDL, we render into a
+texture surface and have the operating system copy the entire image into the 
+framebuffer. As this is done in hardware on some platforms (Android, i.e.), 
+there is no CPU time wasted.
+
+Implementing Fl_SDL_Screen_Driver::flush() to correctly arrange buffer and
+render context makes our blue background finally appear. No on to drawing
+rectangles and line to verify that drawing is basically working.
+
 
 
 
