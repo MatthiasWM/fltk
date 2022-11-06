@@ -27,6 +27,9 @@ set (ARCHIVE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/lib)
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
 set (FLTK_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+if (FLTK_USE_SDL)
+  list (APPEND FLTK_INCLUDE_DIRS ${SDL2_INCLUDE_DIRS})
+endif ()
 include_directories (${FLTK_INCLUDE_DIRS})
 
 # Remember root of FLTK source directory in case we're in a subdirectory.

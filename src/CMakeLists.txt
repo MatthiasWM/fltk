@@ -562,7 +562,8 @@ if (WIN32)
   )
 endif (WIN32)
 
-if (APPLE AND (NOT OPTION_APPLE_X11))
+if (APPLE AND (NOT OPTION_APPLE_X11) AND (NOT FLTK_USE_SDL))
+  # TODO: the SDL option should be moved next to the Wayland option, including setting paths, I guess
   set (MMFILES
     Fl_cocoa.mm
     drivers/Cocoa/Fl_Cocoa_Printer_Driver.mm

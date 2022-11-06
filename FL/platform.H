@@ -41,6 +41,8 @@ class Fl_Window;
 #    include "wayland.H"
 #  elif defined(FLTK_USE_X11)
 #    include "x11.H"
+#  elif defined(FLTK_USE_SDL)
+#    include "sdl.H"
 #  endif // _WIN32
 
 //

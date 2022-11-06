@@ -25,6 +25,8 @@ if (APPLE)
     # cmake --build build --target install
     message (WARNING "FLTK_USE_SDL on macOS targeting Darwin is under development" )
     find_package(SDL2 REQUIRED)
+    # include_directories (${SDL2_INCLUDE_DIRS}) # too soon to set this here
+    # ${SDL2_LIBRARIES}
   elseif (CMAKE_SYSTEM_NAME STREQUAL "iOS")
     message (FATAL_ERROR "FLTK_USE_SDL on macOS targeting iOS is not supported yet" )
   elseif (CMAKE_SYSTEM_NAME STREQUAL "Android")
