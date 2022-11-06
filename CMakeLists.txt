@@ -238,7 +238,12 @@ else ()
   message (STATUS "                 ZLIB = System")
 endif ()
 
-if (UNIX)
+if (FLTK_USE_SDL)
+
+    message (STATUS "Use SDL:                 Yes")
+    # TODO: SDL: also output target machine information
+
+elseif (UNIX)
 
   if (OPTION_USE_WAYLAND)
     message (STATUS "Use Wayland:             Yes (when available at run-time)")
@@ -263,7 +268,7 @@ if (UNIX)
     endif (USE_XFT)
   endif (USE_PANGO)
 
-endif (UNIX)
+endif ()
 
 if (FLTK_HAVE_CAIROEXT)
   message (STATUS "Fl_Cairo_Window support: Yes (extended)")

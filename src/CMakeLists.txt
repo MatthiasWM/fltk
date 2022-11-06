@@ -447,6 +447,7 @@ set (GL_DRIVER_FILES
   drivers/OpenGL/Fl_OpenGL_Graphics_Driver_rect.cxx
   drivers/OpenGL/Fl_OpenGL_Graphics_Driver_vertex.cxx
 )
+# TODO: SDL: OpenGL and SDL driver files
 if (OPTION_USE_WAYLAND)
   set (GL_DRIVER_FILES ${GL_DRIVER_FILES}
     drivers/Wayland/Fl_Wayland_Gl_Window_Driver.cxx
@@ -560,7 +561,8 @@ if (WIN32)
   )
 endif (WIN32)
 
-if (APPLE AND (NOT OPTION_APPLE_X11))
+# TODO: SDL: exclude some of the file for other platforms too
+if (APPLE AND (NOT OPTION_APPLE_X11) AND (NOT FLTK_USE_SDL))
   set (MMFILES
     Fl_cocoa.mm
     drivers/Cocoa/Fl_Cocoa_Printer_Driver.mm
@@ -570,7 +572,7 @@ if (APPLE AND (NOT OPTION_APPLE_X11))
 else()
   set (MMFILES
   )
-endif (APPLE AND (NOT OPTION_APPLE_X11))
+endif ()
 
 
 #######################################################################

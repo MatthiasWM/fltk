@@ -192,6 +192,11 @@ set (HAVE_LIBPNG 1)
 
 #######################################################################
 option (FLTK_USE_SDL "use SDL2 as a backend" OFF)
+if (FLTK_USE_SDL)
+  find_package (SDL2 REQUIRED)
+  include_directories (${SDL2_INCLUDE_DIRS}) 
+endif ()
+# TODO: SDL: if this option is selected, disable all the other resource gatherings
 
 #######################################################################
 if (UNIX)

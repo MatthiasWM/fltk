@@ -102,6 +102,8 @@ if (APPLE)
     if (NOT(${CMAKE_SYSTEM_VERSION} VERSION_LESS 17.0.0)) # a.k.a. macOS version ≥ 10.13
       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_LIBCPP_HAS_THREAD_API_PTHREAD")
     endif (NOT(${CMAKE_SYSTEM_VERSION} VERSION_LESS 17.0.0))
+  elseif (FLTK_USE_SDL)
+    # TODO: SDL: what goes here?
   else ()
     set (__APPLE_QUARTZ__ 1)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa")

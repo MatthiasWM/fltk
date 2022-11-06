@@ -39,6 +39,11 @@ endif (DEBUG_VARIABLES_CMAKE)
 # FIXME: libraries may need reordering.
 # FIXME: check fontconfig conditions (only if Xft is used or ...)
 
+# TODO: SDL: we will have to exclude other libraries per platform
+if (FLTK_USE_SDL)
+  list (APPEND FLTK_LDLIBS ${SDL2_LIBRARIES})
+endif ()
+
 if (WIN32)
   list (APPEND FLTK_LDLIBS -lole32 -luuid -lcomctl32 -lws2_32)
 elseif (APPLE AND NOT OPTION_APPLE_X11)
