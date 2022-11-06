@@ -52,6 +52,10 @@ include (CMake/fl_debug_pkg.cmake)
 include (CMake/fl_add_library.cmake)
 include (CMake/compatibility.cmake)
 
+if (FLTK_USE_SDL)
+  include (CMake/sdl.cmake)
+endif ()
+
 if (0)
   fl_debug_var (FLTK_VERSION_MAJOR)
   fl_debug_var (FLTK_VERSION_MINOR)

@@ -191,6 +191,9 @@ endif ()
 set (HAVE_LIBPNG 1)
 
 #######################################################################
+option (FLTK_USE_SDL "Use SDL2 as the graphics backend on all platforms" OFF)
+
+#######################################################################
 if (UNIX)
   option (OPTION_CREATE_LINKS "create backwards compatibility links" OFF)
   list (APPEND FLTK_LDLIBS -lm)
