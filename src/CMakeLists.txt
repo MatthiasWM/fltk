@@ -310,6 +310,28 @@ elseif (OPTION_USE_WAYLAND)
     drivers/Unix/Fl_Unix_System_Driver.H
   )
 
+elseif (FLTK_USE_SDL)
+
+  set (DRIVER_FILES
+    drivers/SDL/Fl_SDL_Screen_Driver.cxx
+    drivers/SDL/Fl_SDL_Window_Driver.cxx
+    drivers/SDL/Fl_SDL_Graphics_Driver.cxx
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_System_Driver.cxx
+    drivers/SDL/Fl_SDL_get_key.cxx
+    drivers/SDL/fl_SDL_platform_init.cxx
+  )
+  set (DRIVER_HEADER_FILES
+    drivers/SDL/Fl_SDL_Screen_Driver.H
+    drivers/SDL/Fl_SDL_Window_Driver.H
+    drivers/SDL/Fl_SDL_Graphics_Driver.H
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.H
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.H
+    drivers/SDL/Fl_SDL_System_Driver.H
+    drivers/SDL/Fl_SDL_Font.H
+  )
+
 elseif (APPLE)
 
   # Apple Quartz
