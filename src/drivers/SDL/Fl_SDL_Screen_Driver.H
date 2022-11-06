@@ -87,7 +87,7 @@ public:
 //  // --- global colors
 //  /* the default implementation of parse_color() may be enough */
 //  virtual int parse_color(const char *p, uchar &r, uchar &g, uchar &b);
-//  virtual void get_system_colors() {}
+  virtual void get_system_colors() { open_display(); }
 //  /* the default implementation of get_system_scheme() may be enough */
 //  virtual const char *get_system_scheme();
 //
@@ -153,8 +153,8 @@ public:
 //  // optional methods to enable/disable input methods for complex scripts
 //  virtual void enable_im() {}
 //  virtual void disable_im() {}
-//  // calls open_display_platform() and then does platform-independent work
-//  void open_display();
+  // calls open_display_platform() and then does platform-independent work
+  void open_display();
 //  // implement to open access to the display
 //  virtual void open_display_platform() {}
 //  // optional method to close display access

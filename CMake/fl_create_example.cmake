@@ -61,6 +61,8 @@ macro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
 
   # create macOS bundle? 0 = no, 1 = yes
 
+  # TODO: SDL: we probably don't want a bundle on macOS
+  # TODO: SDL: we want a library on Android whic will be in the APK and called by Java code
   if (APPLE AND (NOT OPTION_APPLE_X11))
     set (MAC_BUNDLE 1)
   else ()

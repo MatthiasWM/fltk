@@ -104,6 +104,8 @@ if (APPLE)
     endif (NOT(${CMAKE_SYSTEM_VERSION} VERSION_LESS 17.0.0))
   elseif (FLTK_USE_SDL)
     # TODO: SDL: what goes here?
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/usr/local/lib -lSDL2 -lSDL2main -lSDL2_test")
+    set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
   else ()
     set (__APPLE_QUARTZ__ 1)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa")
