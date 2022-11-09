@@ -20,6 +20,9 @@
 #include <FL/Fl_Adjuster.H>
 #include <FL/Fl_Box.H>
 
+// TODO: SDL: this should be included by FL/Fl.H for example
+#include <SDL_main.h>
+
 void adjcb(Fl_Widget *o, void *v) {
   Fl_Adjuster *a = (Fl_Adjuster*)o;
   Fl_Box *b = (Fl_Box *)v;

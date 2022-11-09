@@ -35,6 +35,11 @@ void Fl_SDL_Screen_Driver::open_display_platform()
                                0
                                );
 
+    if (_screen == NULL) {
+      // In the case that the window could not be made...
+      printf("Could not create SDL window: %s\n", SDL_GetError());
+    }
+
     fl_gc = SDL_CreateRenderer(_screen, -1, SDL_RENDERER_SOFTWARE);
     SDL_SetRenderDrawColor(fl_gc, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(fl_gc);

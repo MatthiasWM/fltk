@@ -28,7 +28,7 @@
 #if (defined(FL_LIBRARY) || defined(FL_INTERNALS)) // this part must be compiled when building the FLTK libraries
 
 // Standard SDL C/C++ includes...
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class FLWindow
 {

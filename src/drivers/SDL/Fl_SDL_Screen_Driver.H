@@ -23,8 +23,8 @@
 #ifndef FL_SDL_SCREEN_DRIVER_H
 #define FL_SDL_SCREEN_DRIVER_H
 
-#include <SDL2/SDL.h>
 #include <src/Fl_Screen_Driver.H>
+#include <SDL.h>
 
 /**
  TODO: SDL: write this

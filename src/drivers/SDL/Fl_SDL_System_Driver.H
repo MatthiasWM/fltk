@@ -42,7 +42,7 @@
 //#include <FL/Fl_Export.H>
 //#include <FL/filename.H>
 //#include <FL/Fl_Preferences.H>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 //#include <stdio.h>
 //#include <stdlib.h>
 //#include <stdarg.h>

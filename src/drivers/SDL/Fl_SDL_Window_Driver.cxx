@@ -258,6 +258,7 @@ Fl_X *Fl_SDL_Window_Driver::makeWindow()
   w->handle(Fl::e_number = FL_SHOW);
   Fl::e_number = old_event;
 
+  w->damage(FL_DAMAGE_ALL); // TODO: SDL: here?
 //  // if (w->modal()) { Fl::modal_ = w; fl_fix_focus(); }
 //  if (!w->parent()) [myview did_view_resolution_change]; // to set mapped_to_retina to its current state
 //  [pool release];

@@ -47,4 +47,21 @@ later point.
 A central part of the FLTK implementation is the ability to use CMake alone
 for as many host/target/backend combinations as possible.
 
+Install SDL for the target platform first.
 
+To enable SDL, add -DFLTK_USE_SDL=on during CMake configuration.
+
+To anbale iOS builds, add -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator
+or -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_ARCHITECTURES="arm64;armv7s"
+
+
+iOS build:
+SDL:
+cmake -S .. -B . -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_ARCHITECTURES=arm64
+cmake --build .
+sudo cmake --install . --prefix /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.0.sdk/usr/
+FLTK:
+cmake -S . -B build/iOS -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_ARCHITECTURES=arm64 -DFLTK_USE_SDL=on
+
+generates:
+build/iOS/bin/test/Debug/adjuster.app

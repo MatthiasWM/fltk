@@ -130,6 +130,10 @@ macro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
     target_link_libraries (${TARGET_NAME} gdiplus)
   endif ()
 
+  if (FLTK_USE_SDL)
+    target_link_libraries (${TARGET_NAME} ${SDL2_STATIC_LIBRARIES})
+  endif ()
+
   if (MAC_BUNDLE)
     if (PLIST)
       set_target_properties (${TARGET_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST

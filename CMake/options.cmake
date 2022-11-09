@@ -194,7 +194,9 @@ set (HAVE_LIBPNG 1)
 option (FLTK_USE_SDL "use SDL2 as a backend" OFF)
 if (FLTK_USE_SDL)
   find_package (SDL2 REQUIRED)
-  include_directories (${SDL2_INCLUDE_DIRS}) 
+  include_directories (${SDL2_INCLUDE_DIR})
+  set (MACOSX_BUNDLE_BUNDLE_VERSION "1.4.0")
+  set (MACOSX_BUNDLE_SHORT_VERSION_STRING "1.4.0")
 endif ()
 # TODO: SDL: if this option is selected, disable all the other resource gatherings
 
