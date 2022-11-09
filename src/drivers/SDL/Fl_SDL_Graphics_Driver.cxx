@@ -53,4 +53,5 @@ void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1)
 void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1)
 {
   SDL_RenderDrawLine(fl_gc, x, y, x, y1);
+  // SDL_RenderDrawLines(...)
 }
