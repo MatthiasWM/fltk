@@ -138,13 +138,13 @@ public:
 //  /** Usable for platform-specific code executed after the platform-independent part of Fl_Window::draw() */
 //  virtual void draw_end();
 //  void draw();
-//  virtual void make_current();
+  void make_current();
 //  virtual void label(const char *name, const char *mininame);
 //
-//  virtual Fl_X *makeWindow() { return 0; }
+  Fl_X *makeWindow();
 //  virtual void wait_for_expose();
 //  virtual void destroy_double_buffer();
-//  virtual void show();
+  void show();
 //  virtual void resize(int /*X*/, int /*Y*/, int /*W*/, int /*H*/) {}
 //  virtual void hide() {}
 //  int hide_common();

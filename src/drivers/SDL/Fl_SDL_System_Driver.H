@@ -42,6 +42,7 @@
 //#include <FL/Fl_Export.H>
 //#include <FL/filename.H>
 //#include <FL/Fl_Preferences.H>
+#include <SDL2/SDL.h>
 //#include <stdio.h>
 //#include <stdlib.h>
 //#include <stdarg.h>
@@ -251,7 +252,7 @@ public:
 //  virtual Fl_Sys_Menu_Bar_Driver *sys_menu_bar_driver() { return NULL; }
 //  virtual void lock_ring() {}
 //  virtual void unlock_ring() {}
-//  virtual double wait(double);                             // must override
+  double wait(double);
 //  virtual int ready() { return 0; }                        // must override
 };
 

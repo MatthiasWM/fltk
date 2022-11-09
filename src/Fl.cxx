@@ -1896,6 +1896,9 @@ void Fl::clear_widget_pointer(Fl_Widget const *w)
  */
 bool Fl::option(Fl_Option opt)
 {
+  // TODO: SDL: no files means no options
+  return 1;
+  
   if (!options_read_) {
     int tmp;
     { // first, read the system wide preferences

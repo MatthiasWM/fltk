@@ -28,6 +28,7 @@
 #ifndef FL_SDL_GRAPHICS_DRIVER_H
 #define FL_SDL_GRAPHICS_DRIVER_H
 
+#include <FL/platform.H>
 #include <FL/Fl_Graphics_Driver.H>
 
 //#include <FL/Fl_Image.H>
@@ -263,20 +264,20 @@ public:
 //  virtual void point(int x, int y);
 //  virtual void rect(int x, int y, int w, int h);
 //  virtual void focus_rect(int x, int y, int w, int h);
-//  virtual void rectf(int x, int y, int w, int h);
+  void rectf(int x, int y, int w, int h);
 //  // the default implementation is most likely enough
 //  virtual void colored_rectf(int x, int y, int w, int h, uchar r, uchar g, uchar b);
 //  virtual void line(int x, int y, int x1, int y1);
 //  /** see fl_line(int, int, int, int, int, int) */
 //  virtual void line(int x, int y, int x1, int y1, int x2, int y2);
 //  /** see fl_xyline(int, int, int) */
-//  virtual void xyline(int x, int y, int x1);
+  void xyline(int x, int y, int x1);
 //  /** see fl_xyline(int, int, int, int) */
 //  virtual void xyline(int x, int y, int x1, int y2);
 //  /** see fl_xyline(int, int, int, int, int) */
 //  virtual void xyline(int x, int y, int x1, int y2, int x3);
 //  /** see fl_yxline(int, int, int) */
-//  virtual void yxline(int x, int y, int y1);
+  void yxline(int x, int y, int y1);
 //  /** see fl_yxline(int, int, int, int) */
 //  virtual void yxline(int x, int y, int y1, int x2);
 //  /** see fl_yxline(int, int, int, int, int) */
@@ -320,7 +321,7 @@ public:
 //  virtual void pie(int x, int y, int w, int h, double a1, double a2);
 //  virtual void curve(double X0, double Y0, double X1, double Y1, double X2, double Y2, double X3, double Y3);
 //  virtual void line_style(int style, int width=0, char* dashes=0);
-//  virtual void color(Fl_Color c);
+  void color(Fl_Color c);
 //  virtual void set_color(Fl_Color i, unsigned int c);
 //  virtual void free_color(Fl_Color i, int overlay);
 //  virtual Fl_Color color();

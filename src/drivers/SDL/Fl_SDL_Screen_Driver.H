@@ -23,6 +23,7 @@
 #ifndef FL_SDL_SCREEN_DRIVER_H
 #define FL_SDL_SCREEN_DRIVER_H
 
+#include <SDL2/SDL.h>
 #include <src/Fl_Screen_Driver.H>
 
 /**
@@ -40,6 +41,10 @@ protected:
 //                               int x2, int y2, int w2, int h2);
 
 public:
+
+  SDL_Window *_screen;
+//  SDL_Renderer *_gc;
+
   Fl_SDL_Screen_Driver();
 //  static int keyboard_screen_scaling; // true means ctrl/+/-/0/ resize windows
 //  static char bg_set;
@@ -82,12 +87,12 @@ public:
 //  // --- audible output
 //  virtual void beep(int) {}
 //  // --- global events
-//  virtual void flush() {}                                  // must override
+  void flush();
 //  virtual void grab(Fl_Window *) {}
 //  // --- global colors
 //  /* the default implementation of parse_color() may be enough */
 //  virtual int parse_color(const char *p, uchar &r, uchar &g, uchar &b);
-  virtual void get_system_colors() { open_display(); }
+  void get_system_colors();
 //  /* the default implementation of get_system_scheme() may be enough */
 //  virtual const char *get_system_scheme();
 //
@@ -156,7 +161,7 @@ public:
   // calls open_display_platform() and then does platform-independent work
   void open_display();
 //  // implement to open access to the display
-//  virtual void open_display_platform() {}
+  void open_display_platform();
 //  // optional method to close display access
 //  virtual void close_display() {}
 //  // compute dimensions of an Fl_Offscreen

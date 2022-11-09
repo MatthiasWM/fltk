@@ -6,53 +6,45 @@
 Fl_SDL_Screen_Driver::Fl_SDL_Screen_Driver() {
 }
 
+void Fl_SDL_Screen_Driver::get_system_colors()
+{
+  open_display();
+  // We can also set some color map entries to make FLTK match the
+  // host color scheme.
+}
+
 void Fl_SDL_Screen_Driver::open_display()
 {
-  SDL_Init(SDL_INIT_VIDEO);
-  // TODO: SDL: there is a lot more to it
-  SDL_Window *window = SDL_CreateWindow(
-                                        "SDL2Test",
-                                        SDL_WINDOWPOS_UNDEFINED,
-                                        SDL_WINDOWPOS_UNDEFINED,
-                                        640,
-                                        480,
-                                        0
-                                        );
+  open_display_platform();
+  Fl_Graphics_Driver::default_driver();
+  // TODO: SDL: setup scalable graphics driver
+}
 
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  SDL_RenderClear(renderer);
-  SDL_RenderPresent(renderer);
+void Fl_SDL_Screen_Driver::open_display_platform()
+{
+  static char beenHereDoneThat = 0;
+  if ( !beenHereDoneThat ) {
+    beenHereDoneThat = 1;
+    SDL_Init(SDL_INIT_VIDEO);
+    // TODO: SDL: there is a lot more to it
+    _screen = SDL_CreateWindow("FLTK",
+                               SDL_WINDOWPOS_UNDEFINED,
+                               SDL_WINDOWPOS_UNDEFINED,
+                               w(),
+                               h(),
+                               0
+                               );
 
-  SDL_Event event;
+    fl_gc = SDL_CreateRenderer(_screen, -1, SDL_RENDERER_SOFTWARE);
+    SDL_SetRenderDrawColor(fl_gc, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(fl_gc);
+    SDL_RenderPresent(fl_gc);
+  }
+}
 
-  bool done = false;
-  while((!done) && (SDL_WaitEvent(&event))) {
-    switch(event.type) {
-      case SDL_USEREVENT:
-//        HandleUserEvents(&event);
-        break;
-
-      case SDL_KEYDOWN:
-        // Handle any key presses here.
-        break;
-
-      case SDL_MOUSEBUTTONDOWN:
-        // Handle mouse clicks here.
-        break;
-
-      case SDL_QUIT:
-        done = true;
-        break;
-
-      default:
-        break;
-    }   // End switch
-
-  }   // End while
-
-//  SDL_Delay(3000);
-
-  SDL_DestroyWindow(window);
-  SDL_Quit();
+void Fl_SDL_Screen_Driver::flush()
+{
+  // This is called after every burst of events by void Fl::flush()
+  // TODO: SDL: if nothing changed, there is no need to flush anything, right?
+  SDL_RenderPresent(fl_gc);
 }

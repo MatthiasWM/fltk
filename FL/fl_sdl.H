@@ -23,14 +23,22 @@
 #  error "Never use <FL/fl_sdl.H> directly; include <FL/platform.H> instead."
 #endif // !FL_PLATFORM_H
 
-typedef class FLWindow *Window; // pointer to the FLWindow objective-c class
-
 #include <FL/Fl_Widget.H> // for Fl_Callback
 
 #if (defined(FL_LIBRARY) || defined(FL_INTERNALS)) // this part must be compiled when building the FLTK libraries
 
 // Standard SDL C/C++ includes...
 #include <SDL2/SDL.h>
+
+class FLWindow
+{
+public:
+  FLWindow();
+};
+
+typedef class FLWindow *Window; // pointer to the FLWindow objective-c class
+
+extern SDL_Renderer *fl_gc;
 
 // TODO: SDL: Region defined here?
 
