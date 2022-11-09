@@ -57,11 +57,22 @@ or -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_ARCHITECTURE
 
 iOS build:
 SDL:
-cmake -S .. -B . -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_ARCHITECTURES=arm64
-cmake --build .
-sudo cmake --install . --prefix /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.0.sdk/usr/
+cmake -S . -B build/iOS -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_ARCHITECTURES=arm64
+cmake --build build/iOS
+sudo cmake --install build/iOS --prefix /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator16.0.sdk/usr/
 FLTK:
 cmake -S . -B build/iOS -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_ARCHITECTURES=arm64 -DFLTK_USE_SDL=on
-
-generates:
+open build/iOS/FLTK.xcodeproj
+generates and runs on simulator:
 build/iOS/bin/test/Debug/adjuster.app
+
+macOS build:
+SDL:
+cmake -S . -B build/macOS
+cmake --build build/macOS --config Debug
+sudo cmake --install build/macOS --config Debug
+FLTK:
+cmake -S . -B build/macOS -G Xcode -DFLTK_USE_SDL=on
+open build/macOS/FLTK.xcodeproj
+generates and runs on simulator:
+build/macOS/bin/test/Debug/adjuster.app
