@@ -21,6 +21,10 @@
 #ifndef Fl_H
 #  define Fl_H
 
+#ifdef FLTK_USE_SDL
+#include <SDL_main.h>
+#endif
+
 #include <FL/fl_config.h> // build configuration
 #include <FL/Fl_Export.H>
 #include <FL/platform_types.h> // for FL_SOCKET
