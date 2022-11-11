@@ -27,6 +27,20 @@ void Fl_SDL_Screen_Driver::open_display_platform()
     beenHereDoneThat = 1;
     SDL_Init(SDL_INIT_VIDEO);
     // TODO: SDL: there is a lot more to it
+
+#ifdef __ANDROID__
+    _screen = SDL_CreateWindow("FLTK",
+                               0,
+                               0,
+                               w(),
+                               h(),
+                               SDL_WINDOW_FULLSCREEN
+                               // TODO: SDL: Rotation
+                               // SDL_WINDOW_RESIZABLE
+                               // SDL_WINDOW_BORDERLESS
+                               // SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+                               );
+#else
     _screen = SDL_CreateWindow("FLTK",
                                SDL_WINDOWPOS_UNDEFINED,
                                SDL_WINDOWPOS_UNDEFINED,
@@ -34,6 +48,7 @@ void Fl_SDL_Screen_Driver::open_display_platform()
                                h(),
                                0
                                );
+#endif
 
     if (_screen == NULL) {
       // In the case that the window could not be made...
@@ -41,7 +56,8 @@ void Fl_SDL_Screen_Driver::open_display_platform()
     }
 
     fl_gc = SDL_CreateRenderer(_screen, -1, SDL_RENDERER_SOFTWARE);
-    SDL_SetRenderDrawColor(fl_gc, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderSetLogicalSize(fl_gc, w(), h());
+    SDL_SetRenderDrawColor(fl_gc, 128, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(fl_gc);
     SDL_RenderPresent(fl_gc);
   }

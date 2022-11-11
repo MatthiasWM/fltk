@@ -7,6 +7,27 @@ SDL_Renderer *fl_gc = NULL;
 extern unsigned fl_cmap[256]; // defined in fl_color.cxx
 
 
+static Fl_Fontdesc built_in_table[] = {
+  {" Arial"},
+  {"BArial"},
+  {"IArial"},
+  {"PArial"},
+  {" Courier New"},
+  {"BCourier New"},
+  {"ICourier New"},
+  {"PCourier New"},
+  {" Times New Roman"},
+  {"BTimes New Roman"},
+  {"ITimes New Roman"},
+  {"PTimes New Roman"},
+  {" Symbol"},
+  {" Terminal"},
+  {"BTerminal"},
+  {" Wingdings"},
+};
+
+Fl_Fontdesc* fl_fonts = built_in_table;
+
 Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
 {
 }

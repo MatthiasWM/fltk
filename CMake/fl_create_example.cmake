@@ -108,11 +108,13 @@ macro (CREATE_EXAMPLE NAME SOURCES LIBRARIES)
   # add executable target and set properties (all platforms)
   ##############################################################################
 
-  if (MAC_BUNDLE)
+  if (ANDROID)
+    add_library           (${TARGET_NAME} SHARED ${srcs})
+  elseif (MAC_BUNDLE)
     add_executable        (${TARGET_NAME} MACOSX_BUNDLE ${srcs} ${ICON_PATH})
   else ()
     add_executable        (${TARGET_NAME} WIN32 ${srcs})
-  endif (MAC_BUNDLE)
+  endif ()
 
   set_target_properties   (${TARGET_NAME} PROPERTIES OUTPUT_NAME ${NAME})
   target_link_libraries   (${TARGET_NAME} ${LIBRARIES})
