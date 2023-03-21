@@ -15,6 +15,7 @@
 #
 
 set (CPPFILES
+  Fl_Python.cxx
   Fl.cxx
   Fl_Adjuster.cxx
   Fl_Bitmap.cxx
@@ -510,6 +511,10 @@ if (FLTK_USE_X11)
   endif (NOT USE_XFT)
 endif (FLTK_USE_X11)
 
+include_directories("/opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11/include/python3.11")
+link_directories("/opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11/lib/")
+
+
 if (OPTION_USE_WAYLAND)
   pkg_check_modules(DBUS dbus-1)
   include_directories(${DBUS_INCLUDE_DIRS})
@@ -750,7 +755,7 @@ endif (OPENGL_FOUND)
 if (OPTION_BUILD_SHARED_LIBS AND NOT MSVC)
 
   FL_ADD_LIBRARY (fltk SHARED "${SHARED_FILES}")
-  target_link_libraries (fltk_SHARED ${OPTIONAL_LIBS} ${PKG_CAIRO_LIBRARIES})
+  target_link_libraries (fltk_SHARED ${OPTIONAL_LIBS} ${PKG_CAIRO_LIBRARIES} libpython3.11.dylib)
   fl_target_link_directories (fltk_SHARED PUBLIC "${PKG_CAIRO_LIBRARY_DIRS}")
 
   ###################################################################

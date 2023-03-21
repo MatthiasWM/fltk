@@ -92,7 +92,11 @@ if (OPENGL_FOUND)
 else()
   CREATE_EXAMPLE (handle_events handle_events.cxx fltk) # w/o Fl_Gl_Window
 endif()
-CREATE_EXAMPLE (hello hello.cxx fltk)
+
+include_directories("/opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11/include/python3.11")
+link_directories("/opt/homebrew/opt/python@3.11/Frameworks/Python.framework/Versions/3.11/lib/")
+CREATE_EXAMPLE (hello hello.cxx "fltk;python3.11")
+
 CREATE_EXAMPLE (help_dialog help_dialog.cxx "fltk_images;fltk")
 CREATE_EXAMPLE (icon icon.cxx fltk)
 CREATE_EXAMPLE (iconize iconize.cxx fltk)

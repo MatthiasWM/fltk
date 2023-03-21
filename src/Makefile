@@ -19,6 +19,7 @@
 
 CPPFILES = \
 	Fl.cxx \
+	Fl_Python.cxx \
 	Fl_Adjuster.cxx \
 	Fl_Bitmap.cxx \
 	Fl_Browser.cxx \
