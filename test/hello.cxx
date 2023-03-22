@@ -14,6 +14,16 @@
 //     https://www.fltk.org/bugs.php
 //
 
+//find_package(PythonLibs REQUIRED)
+//include_directories(${PYTHON_INCLUDE_DIRS})
+//target_link_libraries(<your exe or lib> ${PYTHON_LIBRARIES})
+//For details of the commands, run:
+//
+//cmake --help-module FindPythonLibs
+//cmake --help-command find_package
+//cmake --help-command include_directories
+//cmake --help-command target_link_libraries
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
@@ -32,6 +42,7 @@ from fltk import *
 def test_callback(a):
   print("Hallo Welt")
   print(a)
+  print(Fl.OPTION_VISIBLE_FOCUS)
 
 class MyButton(Fl_Button):
   def draw(self):
@@ -59,7 +70,6 @@ window.show()
 Fl.run()
 
 )EOF";
-
 
 
 // ---- flpy_window ------------------------------------------------------------
@@ -105,17 +115,39 @@ static struct PyModuleDef fltk_module = {
 
 // ---- flpy_fl ------------------------------------------------------------
 
-typedef struct {
-  PyObject_HEAD
-} Flpy_Object_Fl;
+//typedef struct {
+//  PyObject_HEAD
+//} Flpy_Object_Fl;
 
-static PyObject *flpy_method_fl_run(Flpy_Object_Fl *self, PyObject *args) {
+static PyObject *flpy_method_fl_run(PyObject * /*self=NULL*/, PyObject *args) {
   Fl::run();
   Py_RETURN_NONE;
 }
 
 static PyMethodDef flpy_methods_fl[] = {
-  { "run", (PyCFunction)flpy_method_fl_run, METH_NOARGS },
+  { "run", (PyCFunction)flpy_method_fl_run, METH_NOARGS|METH_STATIC },
+  { NULL }
+};
+
+PyObject *flpy_fl_get_e_number(PyObject *, void *) {
+  return Py_BuildValue("i", Fl::e_number);
+}
+int flpy_fl_set_e_number(PyObject *, PyObject *arg, void *) {
+  int v = (int)PyLong_AsLong(arg);
+  if (PyErr_Occurred()) {
+    PyErr_Print();
+    return -1;
+  }
+  Fl::e_number = v;
+  return 0;
+}
+PyObject *flpy_fl_get_int(PyObject *, void *v) {
+  return Py_BuildValue("i", (int)(fl_intptr_t)v);
+}
+static PyGetSetDef flpy_fl_getset[] = {
+  { "e_number", flpy_fl_get_e_number, flpy_fl_set_e_number, "Event number" },
+  { "OPTION_ARROW_FOCUS", flpy_fl_get_int, NULL, NULL, (void*)0 },
+  { "OPTION_VISIBLE_FOCUS", flpy_fl_get_int, NULL, NULL, (void*)1 },
   { NULL }
 };
 
@@ -123,11 +155,12 @@ static PyTypeObject flpy_type_fl = {
   PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "fltk.Fl",
     .tp_doc = PyDoc_STR("Fl"),
-    .tp_basicsize = sizeof(Flpy_Object_Fl),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT, // Py_TPFLAGS_DISALLOW_INSTANTIATION, "Static Types"
-    .tp_new = PyType_GenericNew,
+//    .tp_basicsize = sizeof(Flpy_Object_Fl),
+//    .tp_itemsize = 0,
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_DISALLOW_INSTANTIATION, // Py_TPFLAGS_DISALLOW_INSTANTIATION, "Static Types"
+//    .tp_new = PyType_GenericNew,
     .tp_methods = flpy_methods_fl,
+    .tp_getset = flpy_fl_getset,
 };
 
 // ---- flpy_widget ------------------------------------------------------------
@@ -251,12 +284,12 @@ static PyMethodDef flpy_methods_button[] = {
   { NULL }
 };
 
-extern PyTypeObject flpy_type_button;
-static PyObject *flpy_button_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-  Flpy_Object_Button *self = (Flpy_Object_Button*)PyType_GenericNew(type, args, kwds);
-  printf("%p %p\n", type, &flpy_type_button); // YES! This works!
-  return (PyObject*)self;
-}
+//extern PyTypeObject flpy_type_button;
+//static PyObject *flpy_button_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+//  Flpy_Object_Button *self = (Flpy_Object_Button*)PyType_GenericNew(type, args, kwds);
+//  printf("%p %p\n", type, &flpy_type_button); // YES! This works!
+//  return (PyObject*)self;
+//}
 
 static int flpy_button_init(Flpy_Object_Button *self, PyObject *args, PyObject*) {
   int x, y, w, h;
@@ -270,14 +303,18 @@ static int flpy_button_init(Flpy_Object_Button *self, PyObject *args, PyObject*)
  if (o->parent()) Py_INCREF(self);
 }
 
-PyTypeObject flpy_type_button = {
+static PyTypeObject flpy_type_button = {
   PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "fltk.Fl_Button",
     .tp_doc = PyDoc_STR("Fl_Button"),
     .tp_basicsize = sizeof(Flpy_Object_Button),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
-    .tp_new = flpy_button_new,
+//    .tp_new = flpy_button_new,
+    .tp_new = [](PyTypeObject *type, PyObject *args, PyObject *kwds) -> PyObject* {
+//      printf("%p %p\n", type, &flpy_type_button); // YES! This works! Also: PyTypeObject *Py_TYPE(PyObject *o)
+      return PyType_GenericNew(type, args, kwds);
+    },
     .tp_init = (initproc)flpy_button_init,
     .tp_methods = flpy_methods_button,
     .tp_base = &flpy_type_widget, // actually flpy_type_group...
