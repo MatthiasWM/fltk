@@ -27,7 +27,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#define protected public
+//#define protected public
 
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
@@ -42,21 +42,25 @@ from fltk import *
 def test_callback(a):
   print("Hallo Welt")
   print(a)
-  print(Fl.OPTION_VISIBLE_FOCUS)
+#  print(FL_BOLD|FL_ITALIC)
+  print(btn.label())
 
 class MyButton(Fl_Button):
   def draw(self):
-    print(self)
     fl_color(3)
     fl_rectf(10, 10, 150, 100)
     fl_color(4)
     fl_rectf(40, 40, 150, 100)
     super().draw()
 
+# if __name__ == "__main__":
+#   main()
+
 window = Fl_Window(340, 180)
 #  Fl_Box *box = new Fl_Box(20, 40, 300, 100, "Hello, World!");
 #btn = MyButton(20, 40, 300, 100, "Hello, World!")
 btn = Fl_Button(20, 40, 300, 100, "Hello, World!")
+#btn = Fl_Button(20, 40, 300, 100)
 btn.callback(test_callback, "Yolandi")
 #  box->box(FL_UP_BOX);
 #  box->labelfont(FL_BOLD + FL_ITALIC);
@@ -136,6 +140,7 @@ int flpy_fl_set_e_number(PyObject *, PyObject *arg, void *) {
   int v = (int)PyLong_AsLong(arg);
   if (PyErr_Occurred()) {
     PyErr_Print();
+//    PyErr_BadInternalCall();
     return -1;
   }
   Fl::e_number = v;
@@ -152,13 +157,10 @@ static PyGetSetDef flpy_fl_getset[] = {
 };
 
 static PyTypeObject flpy_type_fl = {
-  PyVarObject_HEAD_INIT(NULL, 0)
+  PyObject_HEAD_INIT(NULL)
     .tp_name = "fltk.Fl",
     .tp_doc = PyDoc_STR("Fl"),
-//    .tp_basicsize = sizeof(Flpy_Object_Fl),
-//    .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_DISALLOW_INSTANTIATION, // Py_TPFLAGS_DISALLOW_INSTANTIATION, "Static Types"
-//    .tp_new = PyType_GenericNew,
     .tp_methods = flpy_methods_fl,
     .tp_getset = flpy_fl_getset,
 };
@@ -167,6 +169,7 @@ static PyTypeObject flpy_type_fl = {
 
 // When tp_dealloc is called, make sure that children are dereferenced
 
+// add field to store object, so we can call methods of an object
 #define FlpyObject_HEAD \
   PyObject_HEAD \
   PyObject *callback_call; \
@@ -180,13 +183,16 @@ typedef struct {
 static void flpy_callback(Fl_Widget *w, void *v) {
   Flpy_Object_Widget *self = (Flpy_Object_Widget*)v;
   if (self->callback_call) {
-    // Don't do that it it is already a tuple!
-    // Actually, the first argument should be 'self', right? Or whatever do_callback() wants.
+    // if callback_obj is set, call the method in an object with self, widget, user_data
+    // else call the function with widget, user_data
+    // NOTE: if we allow an arbitrary number of parameters in Fl_Widget.callback(),
+    // we can create a tuple here with an arbitray number of parameters, and so the callback can have that too.
     PyObject *tuple = PyTuple_Pack(1, self->callback_data);
     Py_INCREF(tuple);
     PyObject *result = PyObject_CallObject(self->callback_call, tuple); //self->callback_data);
     Py_DECREF(tuple);
   }
+  // NOTE: we could also test if self.on_callback exists and call that. Would that be easier?
 }
 
 static PyObject *flpy_method_widget_show(Flpy_Object_Widget *self, PyObject *args) {
@@ -197,6 +203,8 @@ static PyObject *flpy_method_widget_show(Flpy_Object_Widget *self, PyObject *arg
 static PyObject *flpy_method_widget_label(Flpy_Object_Widget *self, PyObject *args) {
   char *str = NULL;
   if (PyTuple_Size(args) == 0) {
+    // This crashes when the label is NULL
+    if (self->o->label() == NULL) Py_RETURN_NONE;
     return PyUnicode_FromString(self->o->label());
   } else if (PyArg_ParseTuple(args, "z", &str)) {
     self->o->copy_label(str);
@@ -236,7 +244,7 @@ static int flpy_widget_init(Flpy_Object_Widget *self, PyObject *args, PyObject*)
 }
 
 static PyTypeObject flpy_type_widget = {
-  PyVarObject_HEAD_INIT(NULL, 0)
+  PyObject_HEAD_INIT(NULL)
     .tp_name = "fltk.Fl_Widget",
     .tp_doc = PyDoc_STR("Fl_Widget"),
     .tp_basicsize = sizeof(Flpy_Object_Widget),
@@ -249,6 +257,9 @@ static PyTypeObject flpy_type_widget = {
 
 // ---- flpy_button ------------------------------------------------------------
 
+class Flpy_Button;
+class Flpy_Derived_Button;
+
 typedef struct {
   FlpyObject_HEAD
   class Flpy_Button *o;
@@ -257,66 +268,64 @@ typedef struct {
 class Flpy_Button : public Fl_Button {
 public:
   Flpy_Button(int x, int y, int w, int h) : Fl_Button(x, y, w, h) { }
+  static int flpy_init(Flpy_Object_Button *self, PyObject *args, PyObject*);
+  static PyObject *flpy_value(Flpy_Object_Button *self, PyObject *args) {
+    int v;
+    if (PyTuple_Size(args) == 0) {
+      return PyLong_FromLong(self->o->value());
+    } else if (PyArg_ParseTuple(args, "i", &v)) {
+      return PyLong_FromLong(self->o->value(v));
+    }
+    return NULL;
+  }
+  static PyObject *flpy_draw(Flpy_Object_Button *self, PyObject *args) {
+    self->o->Fl_Button::draw();
+    Py_RETURN_NONE;
+  }
+  static PyMethodDef flpy_methods[];
+  static PyTypeObject flpy_type;
+};
+
+class Flpy_Derived_Button : public Flpy_Button {
+public:
+  Flpy_Derived_Button(int x, int y, int w, int h) : Flpy_Button(x, y, w, h) { }
   void draw() {
-    Flpy_Object_Button *self = (Flpy_Object_Button*)user_data();
+    Flpy_Derived_Button *self = (Flpy_Derived_Button*)user_data();
     PyObject_CallMethodNoArgs((PyObject*)self, PyUnicode_FromString("draw"));
   }
 };
 
-static PyObject *flpy_method_button_value(Flpy_Object_Button *self, PyObject *args) {
-  int v;
-  if (PyTuple_Size(args) == 0) {
-    return PyLong_FromLong(self->o->value());
-  } else if (PyArg_ParseTuple(args, "i", &v)) {
-    return PyLong_FromLong(self->o->value(v));
-  }
-  return NULL;
+int Flpy_Button::flpy_init(Flpy_Object_Button *self, PyObject *args, PyObject*) {
+  int x, y, w, h;
+  char *label_ = NULL;
+  if (!PyArg_ParseTuple(args, "iiii|z", &x, &y, &w, &h, &label_)) return NULL;
+  if (Py_TYPE(self) == &flpy_type)
+    self->o = new Flpy_Button(x, y, w, h);
+  else
+    self->o = new Flpy_Derived_Button(x, y, w, h);
+  Flpy_Button *o = self->o;
+  if (label_) o->copy_label(label_);
+  o->callback(flpy_callback, self);
+  if (o->parent()) Py_INCREF(self);
+  return 0;
 }
 
-static PyObject *flpy_method_button_draw(Flpy_Object_Button *self, PyObject *args) {
-  self->o->Fl_Button::draw();
-  Py_RETURN_NONE;
-}
-
-static PyMethodDef flpy_methods_button[] = {
-  { "value", (PyCFunction)flpy_method_button_value, METH_VARARGS },
-  { "draw", (PyCFunction)flpy_method_button_draw, METH_NOARGS },
+PyMethodDef Flpy_Button::flpy_methods[] = {
+  { "value", (PyCFunction)flpy_value, METH_VARARGS },
+  { "draw", (PyCFunction)flpy_draw, METH_NOARGS },
   { NULL }
 };
 
-//extern PyTypeObject flpy_type_button;
-//static PyObject *flpy_button_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
-//  Flpy_Object_Button *self = (Flpy_Object_Button*)PyType_GenericNew(type, args, kwds);
-//  printf("%p %p\n", type, &flpy_type_button); // YES! This works!
-//  return (PyObject*)self;
-//}
-
-static int flpy_button_init(Flpy_Object_Button *self, PyObject *args, PyObject*) {
-  int x, y, w, h;
-  char *label_;
-  if (!PyArg_ParseTuple(args, "iiii|z", &x, &y, &w, &h, &label_)) return NULL;
-  Flpy_Button *o = self->o = new Flpy_Button(x, y, w, h);
-  // depending if this is just an instatiation, we can return just Fl_Button,
-  // but if we derived a class, we should use Flpy_Button so users can override virtual methods?
-  if (label_) o->copy_label(label_);
-  o->callback(flpy_callback, self);
- if (o->parent()) Py_INCREF(self);
-}
-
-static PyTypeObject flpy_type_button = {
-  PyVarObject_HEAD_INIT(NULL, 0)
+PyTypeObject Flpy_Button::flpy_type = {
+  PyObject_HEAD_INIT(NULL)
     .tp_name = "fltk.Fl_Button",
     .tp_doc = PyDoc_STR("Fl_Button"),
     .tp_basicsize = sizeof(Flpy_Object_Button),
     .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
-//    .tp_new = flpy_button_new,
-    .tp_new = [](PyTypeObject *type, PyObject *args, PyObject *kwds) -> PyObject* {
-//      printf("%p %p\n", type, &flpy_type_button); // YES! This works! Also: PyTypeObject *Py_TYPE(PyObject *o)
-      return PyType_GenericNew(type, args, kwds);
-    },
-    .tp_init = (initproc)flpy_button_init,
-    .tp_methods = flpy_methods_button,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    .tp_new = PyType_GenericNew,
+    .tp_init = (initproc)flpy_init,
+    .tp_methods = flpy_methods,
     .tp_base = &flpy_type_widget, // actually flpy_type_group...
 };
 
@@ -381,9 +390,9 @@ PyInit_fltk(void)
   Py_INCREF(&flpy_type_widget);
   PyModule_AddObjectRef(m, "Fl_Widget", (PyObject *)&flpy_type_widget);
 
-  PyType_Ready(&flpy_type_button);
-  Py_INCREF(&flpy_type_button);
-  PyModule_AddObjectRef(m, "Fl_Button", (PyObject *)&flpy_type_button);
+  PyType_Ready(&Flpy_Button::flpy_type);
+  Py_INCREF(&Flpy_Button::flpy_type);
+  PyModule_AddObjectRef(m, "Fl_Button", (PyObject *)&Flpy_Button::flpy_type);
 
   PyType_Ready(&flpy_type_window);
   Py_INCREF(&flpy_type_window);
@@ -396,7 +405,9 @@ PyInit_fltk(void)
 //    return NULL;
 //  }
 //
-//  PyModule_AddIntMacro(m, FL_RED);
+  PyModule_AddIntMacro(m, FL_RED);
+  PyModule_AddIntMacro(m, FL_BOLD);
+  PyModule_AddIntMacro(m, FL_ITALIC);
 //
   return m;
 }

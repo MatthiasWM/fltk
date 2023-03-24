@@ -15,7 +15,6 @@
 #
 
 set (CPPFILES
-  Fl_Python.cxx
   Fl.cxx
   Fl_Adjuster.cxx
   Fl_Bitmap.cxx
@@ -568,6 +567,13 @@ else()
   )
 endif (APPLE AND (NOT OPTION_APPLE_X11))
 
+if (FLTK_PYTHON_BINDINGS)
+  include ("bindings/python/CMakeLists.txt")
+  source_group("Python Bindings" FILES
+    bindings/python/Flpy.cxx
+    bindings/python/Flpy.h
+  )
+endif()
 
 #######################################################################
 
