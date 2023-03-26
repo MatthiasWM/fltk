@@ -901,7 +901,19 @@ option (CMAKE_SUPPRESS_REGENERATION "suppress rules to re-run CMake on rebuild" 
 mark_as_advanced (CMAKE_SUPPRESS_REGENERATION)
 
 #######################################################################
+# Language bindings
+#######################################################################
+
+#### Python
+option (FLTK_PYTHON_BINDINGS "add Python language bindings to the library" OFF)
+if (FLTK_PYTHON_BINDINGS)
+  include ("src/bindings/python/config.cmake")
+endif (FLTK_PYTHON_BINDINGS)
+
+
+#######################################################################
 # Debugging ...
+#######################################################################
 
 if (DEBUG_OPTIONS_CMAKE)
   message (STATUS "") # empty line

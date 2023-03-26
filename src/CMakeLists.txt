@@ -399,9 +399,15 @@ source_group("Header Files" FILES ${HEADER_FILES})
 source_group("Driver Source Files" FILES ${DRIVER_FILES})
 source_group("Driver Header Files" FILES ${DRIVER_HEADER_FILES})
 
+if (DEFINED LANGBIND)
+  source_group(${LANGBIND_GROUP} FILES ${LANGBIND_HEADER_FILES} ${LANGBIND_FILES})
+  include_directories(${LANGBIND_INCLUDE_DIRS})
+endif ()
+
 set (CPPFILES
   ${CPPFILES}
   ${DRIVER_FILES}
+  ${LANGBIND_FILES}
 )
 
 set (FORMS_FILES
@@ -722,6 +728,10 @@ if (FLTK_HAVE_CAIRO)
   fl_target_link_directories (fltk PUBLIC "${PKG_CAIRO_LIBRARY_DIRS}")
 endif()
 
+if (DEFINED LANGBIND_LIBRARIES)
+  target_link_libraries (fltk ${LANGBIND_LIBRARIES})
+endif()
+
 #######################################################################
 
 FL_ADD_LIBRARY (fltk_forms STATIC "${FORMS_FILES}")
@@ -768,6 +778,10 @@ if (OPTION_BUILD_SHARED_LIBS AND NOT MSVC)
   FL_ADD_LIBRARY (fltk SHARED "${SHARED_FILES}")
   target_link_libraries (fltk_SHARED ${OPTIONAL_LIBS} ${PKG_CAIRO_LIBRARIES})
   fl_target_link_directories (fltk_SHARED PUBLIC "${PKG_CAIRO_LIBRARY_DIRS}")
+
+  if (DEFINED LANGBIND_LIBRARIES)
+    target_link_libraries (fltk ${LANGBIND_LIBRARIES})
+  endif()
 
   ###################################################################
 
@@ -824,6 +838,10 @@ if (OPTION_BUILD_SHARED_LIBS AND MSVC)
 
   FL_ADD_LIBRARY (fltk SHARED "${SOURCES}")
   target_link_libraries (fltk_SHARED ${OPTIONAL_LIBS})
+
+  if (DEFINED LANGBIND_LIBRARIES)
+    target_link_libraries (fltk ${LANGBIND_LIBRARIES})
+  endif()
 
   if (FLTK_USE_BUILTIN_JPEG)
     target_link_libraries (fltk_SHARED fltk_jpeg_SHARED)
