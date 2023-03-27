@@ -202,6 +202,15 @@ else ()
   CREATE_EXAMPLE (cairo_test cairo_test.cxx fltk)
 endif (FLTK_HAVE_CAIRO)
 
+# Python bindings demo
+if (FLTK_PYTHON_BINDINGS AND PYTHONLIBS_FOUND)
+  CREATE_EXAMPLE (python_test python_test.cxx "fltk;${PYTHON_LIBRARIES}")
+  target_include_directories (python_test
+    PUBLIC ${PYTHON_INCLUDE_DIRS}
+  )
+  target_link_libraries (python_test ${LANGBIND_LIBRARIES})
+endif ()
+
 # /EXPERIMENTAL/ Build some of the demo programs linked against the shared lib(s)
 
 if (OPTION_BUILD_SHARED_LIBS)

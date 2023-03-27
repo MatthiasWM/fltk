@@ -905,7 +905,7 @@ mark_as_advanced (CMAKE_SUPPRESS_REGENERATION)
 #######################################################################
 
 #### Python
-option (FLTK_PYTHON_BINDINGS "add Python language bindings to the library" OFF)
+option (FLTK_PYTHON_BINDINGS "add Python language bindings to the library" ON)
 if (FLTK_PYTHON_BINDINGS)
   include ("src/bindings/python/config.cmake")
 endif (FLTK_PYTHON_BINDINGS)

@@ -728,10 +728,6 @@ if (FLTK_HAVE_CAIRO)
   fl_target_link_directories (fltk PUBLIC "${PKG_CAIRO_LIBRARY_DIRS}")
 endif()
 
-if (DEFINED LANGBIND_LIBRARIES)
-  target_link_libraries (fltk ${LANGBIND_LIBRARIES})
-endif()
-
 #######################################################################
 
 FL_ADD_LIBRARY (fltk_forms STATIC "${FORMS_FILES}")
