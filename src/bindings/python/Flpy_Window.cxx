@@ -39,11 +39,12 @@ public:
 int Flpy_Window::flpy_init(Flpy_Object_Window *self, PyObject *args, PyObject*) {
   int w, h;
   char *label_;
-  if (!PyArg_ParseTuple(args, "ii|z", &w, &h, &label_)) return NULL;
+  if (!PyArg_ParseTuple(args, "ii|z", &w, &h, &label_)) return -1;
   Flpy_Window *o = self->o = new Flpy_Window(w, h);
   if (label_) o->copy_label(label_);
   o->user_data(self);
   if (o->parent()) Py_INCREF(self);
+  return 0;
 }
 
 static PyMethodDef flpy_window_methods[] = {

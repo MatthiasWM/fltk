@@ -42,7 +42,7 @@ PyTypeObject flpy_type = {
   .ob_base = PyObject_HEAD_INIT(NULL)
     .tp_name = "fltk.Fl",
     .tp_doc = PyDoc_STR("Fl"),
-    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_DISALLOW_INSTANTIATION, // Py_TPFLAGS_DISALLOW_INSTANTIATION, "Static Types"
+    .tp_flags = Py_TPFLAGS_DEFAULT /*|Py_TPFLAGS_DISALLOW_INSTANTIATION*/,
     .tp_methods = flpy_methods_fl,
     .tp_getset = flpy_fl_getset,
 };

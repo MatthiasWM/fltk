@@ -66,10 +66,11 @@ public:
   }
   static int flpy_init(Flpy_Object_Widget *self, PyObject *args, PyObject*) {
     int x, y, w, h;
-    if (!PyArg_ParseTuple(args, "iiii", &x, &y, &w, &h)) return NULL;
+    if (!PyArg_ParseTuple(args, "iiii", &x, &y, &w, &h)) return -1;
     Fl_Widget *o = self->o = new Flpy_Widget(x, y, w, h);
     o->callback(flpy_on_callback, self);
     if (o->parent()) Py_INCREF(self);
+    return 0;
   }
 };
 

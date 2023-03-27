@@ -57,7 +57,7 @@ public:
 int Flpy_Button::flpy_init(Flpy_Object_Button *self, PyObject *args, PyObject*) {
   int x, y, w, h;
   char *label_ = NULL;
-  if (!PyArg_ParseTuple(args, "iiii|z", &x, &y, &w, &h, &label_)) return NULL;
+  if (!PyArg_ParseTuple(args, "iiii|z", &x, &y, &w, &h, &label_)) return -1;
   if (Py_TYPE(self) == &flpy_type)
     self->o = new Flpy_Button(x, y, w, h);
   else
