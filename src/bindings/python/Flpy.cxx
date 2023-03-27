@@ -92,16 +92,9 @@ extern "C" FL_EXPORT PyObject *PyInit_fltk()
     Py_RETURN_NONE;
   }
 
-  //  Py_INCREF(&flpyo_widget);
-  //  if (PyModule_AddObject(m, "Fl_Widget", (PyObject *)&flpyo_widget) < 0) {
-  //    Py_DECREF(&flpyo_widget);
-  //    Py_DECREF(m);
-  //    return NULL;
-  //  }
-  //
   PyModule_AddIntMacro(m, FL_RED);
   PyModule_AddIntMacro(m, FL_BOLD);
   PyModule_AddIntMacro(m, FL_ITALIC);
-  //
+  
   return m;
 }
