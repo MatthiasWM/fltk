@@ -84,6 +84,6 @@ PyTypeObject flpy_button_type = {
   .tp_doc = PyDoc_STR("Fl_Button"),
   .tp_methods = flpy_button_methods,
   .tp_base = &flpy_widget_type,
-  .tp_new = PyType_GenericNew,
   .tp_init = (initproc)Flpy_Button::flpy_init,
+  .tp_new = PyType_GenericNew,
 };

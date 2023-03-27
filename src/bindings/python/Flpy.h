@@ -22,11 +22,13 @@
 
 #include <FL/Fl_Export.H>
 
+extern "C" {
 extern PyTypeObject flpy_type;
 extern PyTypeObject flpy_widget_type;
 extern PyTypeObject flpy_group_type;
 extern PyTypeObject flpy_window_type;
 extern PyTypeObject flpy_button_type;
+}
 
 #define FlpyObject_HEAD \
   PyObject_HEAD \

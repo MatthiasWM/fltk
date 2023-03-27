@@ -61,6 +61,6 @@ PyTypeObject flpy_window_type = {
   .tp_doc = PyDoc_STR("Fl_Window"),
   .tp_methods = flpy_window_methods,
   .tp_base = &flpy_widget_type, // actually flpy_type_group...
-  .tp_new = PyType_GenericNew,
   .tp_init = (initproc)Flpy_Window::flpy_init,
+  .tp_new = PyType_GenericNew,
 };
