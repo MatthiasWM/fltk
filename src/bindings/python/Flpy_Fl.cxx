@@ -1,5 +1,5 @@
 //
-// Python test program for the Fast Light Tool Kit (FLTK).
+// Python bindings for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2023 by Bill Spitzak and others.
 //
@@ -14,20 +14,44 @@
 //     https://www.fltk.org/bugs.php
 //
 
-//find_package(PythonLibs REQUIRED)
-//include_directories(${PYTHON_INCLUDE_DIRS})
-//target_link_libraries(<your exe or lib> ${PYTHON_LIBRARIES})
-//For details of the commands, run:
-//
-//cmake --help-module FindPythonLibs
-//cmake --help-command find_package
-//cmake --help-command include_directories
-//cmake --help-command target_link_libraries
+#include "Flpy.h"
 
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
+#include <FL/Fl.H>
 
-extern "C" PyObject *PyInit_fltk();
+static PyObject *flpy_method_fl_run(PyObject*, PyObject *args) {
+  Fl::run();
+  Py_RETURN_NONE;
+}
+
+static PyMethodDef flpy_methods_fl[] = {
+  { "run", (PyCFunction)flpy_method_fl_run, METH_NOARGS|METH_STATIC },
+  { NULL }
+};
+
+PyObject *flpy_fl_get_int(PyObject *, void *v) {
+  return Py_BuildValue("i", (int)(fl_intptr_t)v);
+}
+
+static PyGetSetDef flpy_fl_getset[] = {
+  { "OPTION_ARROW_FOCUS", flpy_fl_get_int, NULL, NULL, (void*)0 },
+  { "OPTION_VISIBLE_FOCUS", flpy_fl_get_int, NULL, NULL, (void*)1 },
+  { NULL }
+};
+
+PyTypeObject flpy_type = {
+  PyObject_HEAD_INIT(NULL)
+    .tp_name = "fltk.Fl",
+    .tp_doc = PyDoc_STR("Fl"),
+    .tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_DISALLOW_INSTANTIATION, // Py_TPFLAGS_DISALLOW_INSTANTIATION, "Static Types"
+    .tp_methods = flpy_methods_fl,
+    .tp_getset = flpy_fl_getset,
+};
+
+
+
+#if 0
+
+//#define protected public
 
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
@@ -35,45 +59,47 @@ extern "C" PyObject *PyInit_fltk();
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 
-const char *prg =
+const char *prg = R"EOF(
 
-"from fltk import *\n"
-"\n"
-"def test_callback(a):\n"
-"  print('Hallo Welt')\n"
-"  print(a)\n"
-"  print(FL_BOLD|FL_ITALIC)\n"
-"  print(btn.label())\n"
-"\n"
-"class MyButton(Fl_Button):\n"
-"  def draw(self):\n"
-"    fl_color(3)\n"
-"    fl_rectf(10, 10, 150, 100)\n"
-"    fl_color(4)\n"
-"    fl_rectf(40, 40, 150, 100)\n"
-"    super().draw()\n"
-"\n"
-"# if __name__ == '__main__':\n"
-"#   main()\n"
-"\n"
-"window = Fl_Window(340, 180)\n"
-"#btn = MyButton(20, 40, 300, 100, 'Hello, World!')\n"
-"btn = Fl_Button(20, 40, 300, 100, 'Hello, World!')\n"
-"#btn = Fl_Button(20, 40, 300, 100)\n"
-"btn.callback(test_callback, 'Callback called')\n"
-"#  box->box(FL_UP_BOX);\n"
-"#  box->labelfont(FL_BOLD + FL_ITALIC);\n"
-"#  box->labelsize(36);\n"
-"#  box->labeltype(FL_SHADOW_LABEL);\n"
-"#  window->end();\n"
-"#  window->show(argc, argv);\n"
-"#window.label('Hello!')\n"
-"window.show()\n"
-"#  return Fl::run();\n"
-"Fl.run()\n"
-;
+from fltk import *
 
-#if 0
+def test_callback(a):
+  print("Hallo Welt")
+  print(a)
+#  print(FL_BOLD|FL_ITALIC)
+  print(btn.label())
+
+class MyButton(Fl_Button):
+  def draw(self):
+    fl_color(3)
+    fl_rectf(10, 10, 150, 100)
+    fl_color(4)
+    fl_rectf(40, 40, 150, 100)
+    super().draw()
+
+# if __name__ == "__main__":
+#   main()
+
+window = Fl_Window(340, 180)
+#  Fl_Box *box = new Fl_Box(20, 40, 300, 100, "Hello, World!");
+#btn = MyButton(20, 40, 300, 100, "Hello, World!")
+btn = Fl_Button(20, 40, 300, 100, "Hello, World!")
+#btn = Fl_Button(20, 40, 300, 100)
+btn.callback(test_callback, "Yolandi")
+#  box->box(FL_UP_BOX);
+#  box->labelfont(FL_BOLD + FL_ITALIC);
+#  box->labelsize(36);
+#  box->labeltype(FL_SHADOW_LABEL);
+#  window->end();
+#  window->show(argc, argv);
+#window.label("Hello!")
+window.show()
+#  return Fl::run();
+Fl.run()
+
+)EOF";
+
+
 // ---- flpy_window ------------------------------------------------------------
 
 static PyObject *flpy_color(PyObject *self, PyObject *args)
@@ -409,7 +435,7 @@ PyInit_fltk(void)
   //
   return m;
 }
-#endif
+
 
 
 int main(int argc, char **argv) {
@@ -428,4 +454,6 @@ int main(int argc, char **argv) {
   //  window->show(argc, argv);
   //  return Fl::run();
 }
+
+#endif
 

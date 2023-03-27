@@ -1,9 +1,7 @@
-
-
 //
-// Hello, World! program for the Fast Light Tool Kit (FLTK).
+// Python bindings for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 1998-2021 by Bill Spitzak and others.
+// Copyright 2023 by Bill Spitzak and others.
 //
 // This library is free software. Distribution and use rights are outlined in
 // the file "COPYING" which should have been included with this file.  If this
@@ -16,18 +14,85 @@
 //     https://www.fltk.org/bugs.php
 //
 
-//find_package(PythonLibs REQUIRED)
-//include_directories(${PYTHON_INCLUDE_DIRS})
-//target_link_libraries(<your exe or lib> ${PYTHON_LIBRARIES})
-//For details of the commands, run:
-//
-//cmake --help-module FindPythonLibs
-//cmake --help-command find_package
-//cmake --help-command include_directories
-//cmake --help-command target_link_libraries
+#include "Flpy.h"
 
-#define PY_SSIZE_T_CLEAN
-#include <Python.h>
+#include <FL/fl_draw.H>
+
+
+static PyObject *flpy_color(PyObject *self, PyObject *args)
+{
+  if (PyTuple_Size(args)==0) {
+    return PyLong_FromLong(fl_color());
+    //    return Py_BuildValue("I", fl_color());
+  }
+  unsigned int color;
+  if (PyArg_ParseTuple(args, "I", &color)) {
+    fl_color(color);
+    Py_RETURN_NONE;
+  }
+  return NULL;
+}
+
+static PyObject *flpy_rectf(PyObject *self, PyObject *args)
+{
+  int x, y, w, h;
+  if (PyArg_ParseTuple(args, "iiii", &x, &y, &w, &h)) {
+    fl_rectf(x, y, w, h);
+    Py_RETURN_NONE;
+  }
+  return NULL;
+}
+
+static PyMethodDef fltk_methods[] = {
+  {"fl_color", flpy_color, METH_VARARGS, "Set the current color."},
+  {"fl_rectf", flpy_rectf, METH_VARARGS, "Draw a rectangle."},
+  {NULL, NULL, 0, NULL}        /* Sentinel */
+};
+
+static struct PyModuleDef fltk_module = {
+  PyModuleDef_HEAD_INIT,
+  "fltk",
+  "FLTK - the fast light GUI toolkit",
+  -1,
+  fltk_methods
+};
+
+extern "C" FL_EXPORT PyObject *PyInit_fltk()
+{
+  //  if (PyType_Ready(&flpyo_widget) < 0)
+  //    return NULL;
+
+  PyObject *m = PyModule_Create(&fltk_module);
+
+  PyType_Ready(&flpy_type);
+  PyObject *Flpy_Type = PyObject_New(PyObject, &flpy_type);
+  PyModule_AddObjectRef(m, "Fl", Flpy_Type);
+
+  PyType_Ready(&flpy_widget_type);
+  Py_INCREF(&flpy_widget_type);
+  PyModule_AddObjectRef(m, "Fl_Widget", (PyObject *)&flpy_widget_type);
+
+  PyType_Ready(&flpy_button_type);
+  Py_INCREF(&flpy_button_type);
+  PyModule_AddObjectRef(m, "Fl_Button", (PyObject *)&flpy_button_type);
+
+  PyType_Ready(&flpy_window_type);
+  Py_INCREF(&flpy_window_type);
+  PyModule_AddObjectRef(m, "Fl_Window", (PyObject *)&flpy_window_type);
+
+  //  Py_INCREF(&flpyo_widget);
+  //  if (PyModule_AddObject(m, "Fl_Widget", (PyObject *)&flpyo_widget) < 0) {
+  //    Py_DECREF(&flpyo_widget);
+  //    Py_DECREF(m);
+  //    return NULL;
+  //  }
+  //
+  PyModule_AddIntMacro(m, FL_RED);
+  PyModule_AddIntMacro(m, FL_BOLD);
+  PyModule_AddIntMacro(m, FL_ITALIC);
+  //
+  return m;
+}
 
 #if 0
 
@@ -82,44 +147,8 @@ Fl.run()
 
 // ---- flpy_window ------------------------------------------------------------
 
-static PyObject *flpy_color(PyObject *self, PyObject *args)
-{
-  if (PyTuple_Size(args)==0) {
-    return PyLong_FromLong(fl_color());
-    //    return Py_BuildValue("I", fl_color());
-  }
-  unsigned int color;
-  if (PyArg_ParseTuple(args, "I", &color)) {
-    fl_color(color);
-    Py_RETURN_NONE;
-  }
-  return NULL;
-}
 
-static PyObject *flpy_rectf(PyObject *self, PyObject *args)
-{
-  int x, y, w, h;
-  if (PyArg_ParseTuple(args, "iiii", &x, &y, &w, &h)) {
-    fl_rectf(x, y, w, h);
-    Py_RETURN_NONE;
-  }
-  return NULL;
-}
 
-static PyMethodDef fltk_methods[] = {
-  {"fl_color", flpy_color, METH_VARARGS, "Set the current color."},
-  {"fl_rectf", flpy_rectf, METH_VARARGS, "Draw a rectangle."},
-  {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-
-static struct PyModuleDef fltk_module = {
-  PyModuleDef_HEAD_INIT,
-  "fltk",   /* name of module */
-  "FLTK - the fast light GUI toolkit", /* module documentation, may be NULL */
-  -1,       /* size of per-interpreter state of the module,
-             or -1 if the module keeps state in global variables. */
-  fltk_methods
-};
 
 // ---- flpy_fl ------------------------------------------------------------
 
@@ -375,46 +404,6 @@ static PyTypeObject flpy_type_window = {
 
 // ---- flpy_window ------------------------------------------------------------
 
-PyMODINIT_FUNC
-PyInit_fltk(void)
-{
-  //  if (PyType_Ready(&flpyo_widget) < 0)
-  //    return NULL;
-
-  PyObject *m = PyModule_Create(&fltk_module);
-
-  PyType_Ready(&flpy_type_fl);
-  //  Py_INCREF(&flpy_type_fl);
-  //  PyModule_AddObjectRef(m, "_Fl", (PyObject *)&flpy_type_fl);
-  //  PyModule_AddObjectRef(<#PyObject *mod#>, <#const char *name#>, <#PyObject *value#>)
-  PyObject *FlPy = PyObject_New(PyObject, &flpy_type_fl);
-  PyModule_AddObjectRef(m, "Fl", FlPy);
-
-  PyType_Ready(&flpy_type_widget);
-  Py_INCREF(&flpy_type_widget);
-  PyModule_AddObjectRef(m, "Fl_Widget", (PyObject *)&flpy_type_widget);
-
-  PyType_Ready(&Flpy_Button::flpy_type);
-  Py_INCREF(&Flpy_Button::flpy_type);
-  PyModule_AddObjectRef(m, "Fl_Button", (PyObject *)&Flpy_Button::flpy_type);
-
-  PyType_Ready(&flpy_type_window);
-  Py_INCREF(&flpy_type_window);
-  PyModule_AddObjectRef(m, "Fl_Window", (PyObject *)&flpy_type_window);
-
-  //  Py_INCREF(&flpyo_widget);
-  //  if (PyModule_AddObject(m, "Fl_Widget", (PyObject *)&flpyo_widget) < 0) {
-  //    Py_DECREF(&flpyo_widget);
-  //    Py_DECREF(m);
-  //    return NULL;
-  //  }
-  //
-  PyModule_AddIntMacro(m, FL_RED);
-  PyModule_AddIntMacro(m, FL_BOLD);
-  PyModule_AddIntMacro(m, FL_ITALIC);
-  //
-  return m;
-}
 
 
 

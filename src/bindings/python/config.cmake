@@ -6,6 +6,11 @@ set (LANGBIND_GROUP "Python Bindings")
 
 set (LANGBIND_FILES
   bindings/python/Flpy.cxx
+  bindings/python/Flpy_Fl.cxx
+  bindings/python/Flpy_Widget.cxx
+  bindings/python/Flpy_Group.cxx
+  bindings/python/Flpy_Window.cxx
+  bindings/python/Flpy_Button.cxx
 )
 
 set (LANGBIND_HEADER_FILES
