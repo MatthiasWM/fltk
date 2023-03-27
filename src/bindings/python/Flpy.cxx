@@ -87,7 +87,7 @@ extern "C" FL_EXPORT PyObject *PyInit_fltk()
 
   PyType_Ready(&flpy_window_type);
   Py_INCREF(&flpy_window_type);
-  if (PyModule_AddObjectRef(m, "Fl_Window", (PyObject *)&flpy_window_type) < 0) {
+  if (PyModule_AddObject(m, "Fl_Window", (PyObject *)&flpy_window_type) < 0) {
     Py_DECREF(&flpy_window_type);
     Py_RETURN_NONE;
   }
@@ -95,6 +95,6 @@ extern "C" FL_EXPORT PyObject *PyInit_fltk()
   PyModule_AddIntMacro(m, FL_RED);
   PyModule_AddIntMacro(m, FL_BOLD);
   PyModule_AddIntMacro(m, FL_ITALIC);
-  
+
   return m;
 }
