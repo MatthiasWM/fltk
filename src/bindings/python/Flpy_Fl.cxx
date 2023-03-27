@@ -39,11 +39,11 @@ static PyGetSetDef flpy_fl_getset[] = {
 };
 
 PyTypeObject flpy_type = {
-  .ob_base = PyObject_HEAD_INIT(NULL)
-    .tp_name = "fltk.Fl",
-    .tp_doc = PyDoc_STR("Fl"),
-    .tp_flags = Py_TPFLAGS_DEFAULT /*|Py_TPFLAGS_DISALLOW_INSTANTIATION*/,
-    .tp_methods = flpy_methods_fl,
-    .tp_getset = flpy_fl_getset,
+  .ob_base = { PyObject_HEAD_INIT(NULL) },
+  .tp_name = "fltk.Fl",
+  .tp_flags = Py_TPFLAGS_DEFAULT /*|Py_TPFLAGS_DISALLOW_INSTANTIATION*/,
+  .tp_doc = PyDoc_STR("Fl"),
+  .tp_methods = flpy_methods_fl,
+  .tp_getset = flpy_fl_getset,
 };
 
