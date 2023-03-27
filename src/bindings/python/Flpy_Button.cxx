@@ -48,7 +48,7 @@ public:
 class Flpy_Derived_Button : public Flpy_Button {
 public:
   Flpy_Derived_Button(int x, int y, int w, int h) : Flpy_Button(x, y, w, h) { }
-  void draw() {
+  void draw() FL_OVERRIDE {
     Flpy_Derived_Button *self = (Flpy_Derived_Button*)user_data();
     PyObject_CallMethodNoArgs((PyObject*)self, PyUnicode_FromString("draw"));
   }
@@ -76,14 +76,14 @@ PyMethodDef flpy_button_methods[] = {
 };
 
 PyTypeObject flpy_button_type = {
-  PyObject_HEAD_INIT(NULL)
-    .tp_name = "fltk.Fl_Button",
-    .tp_doc = PyDoc_STR("Fl_Button"),
-    .tp_basicsize = sizeof(Flpy_Object_Button),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-    .tp_new = PyType_GenericNew,
-    .tp_init = (initproc)Flpy_Button::flpy_init,
-    .tp_methods = flpy_button_methods,
-    .tp_base = &flpy_widget_type, // actually flpy_type_group...
+  .ob_base = { PyObject_HEAD_INIT(NULL) },
+  .tp_name = "fltk.Fl_Button",
+  .tp_basicsize = sizeof(Flpy_Object_Button),
+  .tp_itemsize = 0,
+  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+  .tp_doc = PyDoc_STR("Fl_Button"),
+  .tp_methods = flpy_button_methods,
+  .tp_base = &flpy_widget_type,
+  .tp_new = PyType_GenericNew,
+  .tp_init = (initproc)Flpy_Button::flpy_init,
 };

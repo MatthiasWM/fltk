@@ -87,15 +87,15 @@ static PyMethodDef flpy_widget_methods[] = {
 };
 
 PyTypeObject flpy_widget_type = {
-  PyObject_HEAD_INIT(NULL)
-    .tp_name = "fltk.Fl_Widget",
-    .tp_doc = PyDoc_STR("Fl_Widget"),
-    .tp_basicsize = sizeof(Flpy_Object_Widget),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
-    .tp_new = PyType_GenericNew,
-    .tp_init = (initproc)Flpy_Widget::flpy_init,
-    .tp_methods = flpy_widget_methods,
+  .ob_base = { PyObject_HEAD_INIT(NULL) },
+  .tp_name = "fltk.Fl_Widget",
+  .tp_basicsize = sizeof(Flpy_Object_Widget),
+  .tp_itemsize = 0,
+  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+  .tp_doc = PyDoc_STR("Fl_Widget"),
+  .tp_methods = flpy_widget_methods,
+  .tp_init = (initproc)Flpy_Widget::flpy_init,
+  .tp_new = PyType_GenericNew,
 };
 
 void flpy_on_callback(Fl_Widget *w, void *v) {

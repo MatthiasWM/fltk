@@ -53,15 +53,14 @@ static PyMethodDef flpy_window_methods[] = {
 };
 
 PyTypeObject flpy_window_type = {
-  PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "fltk.Fl_Window",
-    .tp_doc = PyDoc_STR("Fl_Window"),
-    .tp_basicsize = sizeof(Flpy_Object_Window),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
-    .tp_new = PyType_GenericNew,
-    .tp_init = (initproc)Flpy_Window::flpy_init,
-    .tp_methods = flpy_window_methods,
-    .tp_base = &flpy_widget_type, // actually flpy_type_group...
+  .ob_base = { PyObject_HEAD_INIT(NULL) },
+  .tp_name = "fltk.Fl_Window",
+  .tp_basicsize = sizeof(Flpy_Object_Window),
+  .tp_itemsize = 0,
+  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
+  .tp_doc = PyDoc_STR("Fl_Window"),
+  .tp_methods = flpy_window_methods,
+  .tp_base = &flpy_widget_type, // actually flpy_type_group...
+  .tp_new = PyType_GenericNew,
+  .tp_init = (initproc)Flpy_Window::flpy_init,
 };
-
