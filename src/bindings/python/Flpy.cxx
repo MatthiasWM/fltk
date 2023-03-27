@@ -66,19 +66,31 @@ extern "C" FL_EXPORT PyObject *PyInit_fltk()
 
   PyType_Ready(&flpy_type);
   PyObject *Flpy_Type = PyObject_New(PyObject, &flpy_type);
-  PyModule_AddObjectRef(m, "Fl", Flpy_Type);
+  if (PyModule_AddObject(m, "Fl", Flpy_Type) < 0) {
+    Py_DECREF(&flpy_widget_type);
+    Py_RETURN_NONE;
+  }
 
   PyType_Ready(&flpy_widget_type);
   Py_INCREF(&flpy_widget_type);
-  PyModule_AddObjectRef(m, "Fl_Widget", (PyObject *)&flpy_widget_type);
+  if (PyModule_AddObject(m, "Fl_Widget", (PyObject *)&flpy_widget_type) < 0) {
+    Py_DECREF(&flpy_widget_type);
+    Py_RETURN_NONE;
+  }
 
   PyType_Ready(&flpy_button_type);
   Py_INCREF(&flpy_button_type);
-  PyModule_AddObjectRef(m, "Fl_Button", (PyObject *)&flpy_button_type);
+  if (PyModule_AddObject(m, "Fl_Button", (PyObject *)&flpy_button_type) < 0) {
+    Py_DECREF(&flpy_button_type);
+    Py_RETURN_NONE;
+  }
 
   PyType_Ready(&flpy_window_type);
   Py_INCREF(&flpy_window_type);
-  PyModule_AddObjectRef(m, "Fl_Window", (PyObject *)&flpy_window_type);
+  if (PyModule_AddObjectRef(m, "Fl_Window", (PyObject *)&flpy_window_type) < 0) {
+    Py_DECREF(&flpy_window_type);
+    Py_RETURN_NONE;
+  }
 
   //  Py_INCREF(&flpyo_widget);
   //  if (PyModule_AddObject(m, "Fl_Widget", (PyObject *)&flpyo_widget) < 0) {
