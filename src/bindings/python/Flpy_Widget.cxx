@@ -18,6 +18,8 @@
 
 #include <FL/Fl_Widget.H>
 #include <FL/Fl_Box.H>
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Gl_Window.H>
 
 class Flpy_Widget;
 class Flpy_Derived_Widget;
@@ -27,12 +29,11 @@ typedef struct {
   Flpy_Widget *o;
 } Flpy_Widget_Object;
 
-
 class Flpy_Widget : public Fl_Box {
 public: // 137 methods
   Flpy_Widget(int x, int y, int w, int h) : Fl_Box(x, y, w, h) { }
-  void label(const char *str) { copy_label(str); }
-  const char *label() { return label(); }
+//  void label(const char *str) { copy_label(str); }
+//  const char *label() { return label(); }
   void tooltip(const char *str) { copy_tooltip(str); }
   const char *tooltip() { return tooltip(); }
   static PyObject *flpy_callback(Flpy_Widget_Object *self, PyObject *args) {
@@ -52,6 +53,12 @@ public: // 137 methods
     }
     return NULL;
   }
+  static PyObject *flpy_damage(PyObject *self, PyObject *args) {
+    Flpy_ARG_v_TO_I(Widget, damage)
+    Flpy_ARG_I_TO_v_TYPE(Widget, damage, uchar)
+    Flpy_ARG_Iiiii_TO_v_TYPE(Widget, damage, uchar)
+    Flpy_ERR_IMPL(Widget, damage, "arguments are none, flags, or flags and x, y, w, h")
+  }
   static int flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*) {
     int x, y, w, h;
     if (!PyArg_ParseTuple(args, "iiii", &x, &y, &w, &h)) return -1;
@@ -60,134 +67,213 @@ public: // 137 methods
     if (o->parent()) Py_INCREF(self);
     return 0;
   }
+  static PyObject *flpy_measure_label(Flpy_Widget_Object *self, PyObject *args) {
+    int arg0 = 0, arg1 = 0;
+    if (!PyArg_ParseTuple(args, "|i", &arg0)) return NULL;
+    self->o->measure_label(arg0, arg1);
+    return Py_BuildValue("(ii)", arg0, arg1);
+  }
+  static PyObject *flpy_top_window_offset(Flpy_Widget_Object *self, PyObject *args) {
+    int arg0 = 0, arg1 = 0;
+    Fl_Window *win = self->o->top_window_offset(arg0, arg1);
+    PyObject *win_obj = win ? (PyObject*)win->user_data() : Py_None ;
+    return Py_BuildValue("(Oii)", win_obj, arg0, arg1);
+  }
   static PyMethodDef flpy_methods[];
 };
 
 PyMethodDef Flpy_Widget::flpy_methods[] = {
-  //  Fl_Widget(int x, int y, int w, int h, const char *label=0L);
-  //  virtual ~Fl_Widget();
-  Flpy_METHOD_v_TO_I(Widget, flags),
-  Flpy_METHOD_I_TO_v_TYPE(Widget, set_flag, unsigned int),
-  Flpy_METHOD_I_TO_v_TYPE(Widget, clear_flag, unsigned int),
-  //  void draw_box() const;
-  //  void draw_box(Fl_Boxtype t, Fl_Color c) const;
-  //  void draw_box(Fl_Boxtype t, int x,int y,int w,int h, Fl_Color c) const;
-  Flpy_METHOD_v_TO_v(Widget, draw_backdrop),
-  //  void draw_focus() const;
-  //  void draw_focus(Fl_Boxtype t, int X, int Y, int W, int H) const;
-  //  void draw_focus(Fl_Boxtype t, int x, int y, int w, int h, Fl_Color bg) const;
-  //  void draw_label() const;
-  //  void draw_label(int, int, int, int) const;
-  Flpy_METHOD_v_TO_v(Widget, draw), //  virtual void draw() = 0;
-  //  virtual int handle(int event);
-  Flpy_METHOD_v_TO_i(Widget, is_label_copied),
-  //  Fl_Group* parent() const {return parent_;}
-  //  void parent(Fl_Group* p) {parent_ = p;} // for hacks only, use Fl_Group::add()
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, type, uchar),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, x),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, y),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, w),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, h),
-  //  virtual void resize(int x, int y, int w, int h);
-  //  int damage_resize(int,int,int,int);
-  //  void position(int X,int Y) {resize(X,Y,w_,h_);}
-  //  void size(int W,int H) {resize(x_,y_,W,H);}
-  { "size", [](PyObject *self, PyObject *args)->PyObject* {
-    int w, h;
-    if (PyArg_ParseTuple(args, "ii:Fl_Widget.size()", &w, &h)) {
-      ((Flpy_Widget_Object*)self)->o->size(w, h);
-      Py_RETURN_NONE;
-    }
-    return NULL;
-  }, METH_VARARGS },
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, align, Fl_Align),
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, box, Fl_Boxtype),
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, color, Fl_Color), // TODO: see color() call below
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, selection_color, Fl_Color),
-  //  void color(Fl_Color bg, Fl_Color sel) {color_=bg; color2_=sel;}
-  Flpy_METHOD_v_TO_z_OR_z_TO_v(Widget, label),
-  //  void label(Fl_Labeltype a, const char* b) {label_.type = a; label_.value = b;} // TOD: another label() call
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, labeltype, Fl_Labeltype),
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, labelcolor, Fl_Color),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, labelfont),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, labelsize),
-  //  Fl_Image* image() {return label_.image;}
-  //  const Fl_Image* image() const {return label_.image;}
-  //  void image(Fl_Image* img);
-  //  void image(Fl_Image& img);
-  //  void bind_image(Fl_Image* img);
-  //  void bind_image(int f) { if (f) set_flag(IMAGE_BOUND); else clear_flag(IMAGE_BOUND); }
-  //  int image_bound() const {return ((flags_ & IMAGE_BOUND) ? 1 : 0);}
-  //  Fl_Image* deimage() {return label_.deimage;}
-  //  const Fl_Image* deimage() const {return label_.deimage;}
-  //  void deimage(Fl_Image* img);
-  //  void deimage(Fl_Image& img);
-  //  void bind_deimage(Fl_Image* img);
-  //  int deimage_bound() const {return ((flags_ & DEIMAGE_BOUND) ? 1 : 0);}
-  //  void bind_deimage(int f) { if (f) set_flag(DEIMAGE_BOUND); else clear_flag(DEIMAGE_BOUND); }
-  Flpy_METHOD_v_TO_z_OR_z_TO_v(Widget, tooltip),
-  //  Fl_Callback_p callback() const {return callback_;}
-  { "callback", (PyCFunction)Flpy_Widget::flpy_callback, METH_VARARGS },
-  //  void callback(Fl_Callback* cb, void* p) {callback_ = cb; user_data_ = p;}
-  //  void callback(Fl_Callback* cb) {callback_ = cb;}
-  //  void callback(Fl_Callback0* cb) {callback_ = (Fl_Callback*)cb;}
-  //  void callback(Fl_Callback1* cb, long p = 0);
-  //  void* user_data() const {return user_data_;}
-  //  void user_data(void* v) {user_data_ = v;}
-  //  long argument() const {return (long)(fl_intptr_t)user_data_;}
-  //  void argument(long v) {user_data_ = (void*)(fl_intptr_t)v;}
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, when, uchar),
-  Flpy_METHOD_v_TO_I(Widget, visible),
-  Flpy_METHOD_v_TO_i(Widget, visible_r),
-  Flpy_METHOD_v_TO_v(Widget, show),//  virtual void show();
-  Flpy_METHOD_v_TO_v(Widget, hide),//  virtual void hide();
-  Flpy_METHOD_v_TO_v(Widget, set_visible),
-  Flpy_METHOD_v_TO_v(Widget, clear_visible),
-  Flpy_METHOD_v_TO_I(Widget, active),
-  Flpy_METHOD_v_TO_i(Widget, active_r),
-  Flpy_METHOD_v_TO_v(Widget, activate),
-  Flpy_METHOD_v_TO_v(Widget, deactivate),
-  Flpy_METHOD_v_TO_I(Widget, output),
-  Flpy_METHOD_v_TO_v(Widget, set_output),
-  Flpy_METHOD_v_TO_v(Widget, clear_output),
-  Flpy_METHOD_v_TO_I(Widget, takesevents),
-  Flpy_METHOD_v_TO_I(Widget, changed),
-  Flpy_METHOD_v_TO_v(Widget, set_changed),
-  Flpy_METHOD_v_TO_v(Widget, clear_changed),
-  Flpy_METHOD_v_TO_v(Widget, clear_active),
-  Flpy_METHOD_v_TO_v(Widget, set_active),
-  Flpy_METHOD_v_TO_i(Widget, take_focus),
-  Flpy_METHOD_v_TO_v(Widget, set_visible_focus),
-  Flpy_METHOD_v_TO_v(Widget, clear_visible_focus),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, visible_focus),
-  //  void do_callback(Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {do_callback(this, user_data_, reason);}
-  //  void do_callback(Fl_Widget *widget, long arg, Fl_Callback_Reason reason=FL_REASON_UNKNOWN);
-  //  void do_callback(Fl_Widget *widget, void *arg = 0, Fl_Callback_Reason reason=FL_REASON_UNKNOWN);
-  Flpy_METHOD_v_TO_i(Widget, test_shortcut),
-  //  void _set_fullscreen() {flags_ |= FULLSCREEN;}
-  //  void _clear_fullscreen() {flags_ &= ~FULLSCREEN;}
-  //  int contains(const Fl_Widget *w) const ;
-  //  int inside(const Fl_Widget *wgt) const {return wgt ? wgt->contains(this) : 0;}
-  Flpy_METHOD_v_TO_v(Widget, redraw),
-  Flpy_METHOD_v_TO_v(Widget, redraw_label),
-  //  void clear_damage(uchar c = 0) {damage_ = c;}
-  //  uchar damage() const {return damage_;}
-  //  void damage(uchar c);
-  //  void damage(uchar c, int x, int y, int w, int h);
-  //  void draw_label(int, int, int, int, Fl_Align) const;
-  //  void measure_label(int& ww, int& hh) const {label_.measure(ww, hh);}
-  Flpy_METHOD_v_TO_w(Widget, window),
-  Flpy_METHOD_v_TO_w(Widget, top_window),
-  //  Fl_Window* top_window_offset(int& xoff, int& yoff) const;
-  Flpy_METHOD_v_TO_w(Widget, as_group),
-  Flpy_METHOD_v_TO_w(Widget, as_window),
-  Flpy_METHOD_v_TO_w(Widget, as_gl_window),
-  Flpy_METHOD_v_TO_i(Widget, use_accents_menu),
-  Flpy_METHOD_v_TO_I_OR_I_TO_v_TYPE(Widget, color2, Fl_Color),
-  Flpy_METHOD_v_TO_i_OR_i_TO_v(Widget, shortcut_label),
-  //  static void default_callback(Fl_Widget *widget, void *data);
-  //  static unsigned int label_shortcut(const char *t);
-  //  static int test_shortcut(const char*, const bool require_alt = false);
+
+  //    Fl_Widget(int x, int y, int w, int h, const char *label=0L);
+  //    virtual ~Fl_Widget();
+  FlpyMETHOD_VARARGS_BEGIN(Widget, x)
+    FlpyARG_i_TO_v(Widget, x)
+    FlpyARG_v_TO_i(Widget, x)
+  FlpyMETHOD_VARARGS_END(Widget, x, "takes no arguments or a single integer"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, y)
+    FlpyARG_i_TO_v(Widget, y)
+    FlpyARG_v_TO_i(Widget, y)
+  FlpyMETHOD_VARARGS_END(Widget, y, "takes no arguments or a single integer"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, w)
+    FlpyARG_i_TO_v(Widget, w)
+    FlpyARG_v_TO_i(Widget, w)
+  FlpyMETHOD_VARARGS_END(Widget, w, "takes no arguments or a single integer"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, h)
+    FlpyARG_i_TO_v(Widget, h)
+    FlpyARG_v_TO_i(Widget, h)
+  FlpyMETHOD_VARARGS_END(Widget, h, "takes no arguments or a single integer"),
+  FlpyMETHOD_v_TO_I(Widget, flags),
+  FlpyMETHOD_I_TO_v(Widget, set_flag),
+  FlpyMETHOD_I_TO_v(Widget, clear_flag),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, draw_box)
+    FlpyARG_v_TO_v(Widget, draw_box)
+    FlpyARG_II_TO_v_TYPE(Widget, draw_box, Fl_Boxtype, Fl_Color)
+    FlpyARG_IiiiiI_TO_v_TYPE(Widget, draw_box, Fl_Boxtype, Fl_Color)
+  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no arguments, or a boxtype and a color, or a boxtype, a box, and a color"),
+  FlpyMETHOD_v_TO_v(Widget, draw_backdrop),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, draw_focus)
+    FlpyARG_v_TO_v(Widget, draw_focus)
+    FlpyARG_Iiiii_TO_v_TYPE(Widget, draw_focus, Fl_Boxtype)
+    FlpyARG_IiiiiI_TO_v_TYPE(Widget, draw_focus, Fl_Boxtype, Fl_Color)
+  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no arguments, or a boxtype, a box, and an optional color"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, draw_label)
+    FlpyARG_v_TO_v(Widget, draw_label)
+    FlpyARG_iiii_TO_v(Widget, draw_label)
+  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no arguments, or box dimensions"),
+  FlpyMETHOD_VIRT_v_TO_v(Widget, draw),
+  FlpyMETHOD_VIRT_i_TO_i(Widget, handle),
+//  Not used:  int is_label_copied() const {return ((flags_ & COPIED_LABEL) ? 1 : 0);}
+  FlpyMETHOD_VARARGS_BEGIN(Widget, parent)
+    FlpyARG_v_TO_w(Widget, parent)
+    FlpyARG_g_TO_v(Widget, parent) // FIXME: this method may change ownership and must update refcounts
+  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no argument, or a group widget"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, type)
+    FlpyARG_v_TO_i(Widget, type)
+    FlpyARG_I_TO_v_TYPE(Widget, type, uchar)
+  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no argument, or an unsigned integer"),
+  FlpyMETHOD_VIRT_iiii_TO_v(Widget, resize),
+  FlpyMETHOD_iiii_TO_i(Widget, damage_resize),
+  FlpyMETHOD_ii_TO_v(Widget, position),
+  FlpyMETHOD_ii_TO_v(Widget, size),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, align)
+    FlpyARG_I_TO_v_TYPE(Widget, align, Fl_Align)
+    FlpyARG_v_TO_i(Widget, align)
+  FlpyMETHOD_VARARGS_END(Widget, align, "takes no arguments or a single alignment value"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, box)
+    FlpyARG_I_TO_v_TYPE(Widget, box, Fl_Boxtype)
+    FlpyARG_v_TO_i(Widget, box)
+  FlpyMETHOD_VARARGS_END(Widget, box, "takes no arguments or a boxtype"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, color)
+    FlpyARG_I_TO_v_TYPE(Widget, color, Fl_Color)
+    FlpyARG_II_TO_v_TYPE(Widget, color, Fl_Color, Fl_Color)
+    FlpyARG_v_TO_i(Widget, color)
+  FlpyMETHOD_VARARGS_END(Widget, color, "takes no arguments, or one or two colors"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, selection_color)
+    FlpyARG_I_TO_v_TYPE(Widget, selection_color, Fl_Color)
+    FlpyARG_v_TO_i(Widget, selection_color)
+  FlpyMETHOD_VARARGS_END(Widget, selection_color, "takes no arguments or one color"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, label)
+    FlpyARG_z_TO_v(Widget, copy_label)
+    FlpyARG_v_TO_z(Widget, label)
+  FlpyMETHOD_VARARGS_END(Widget, label, "takes no arguments or a single text string"),
+//    void label(Fl_Labeltype a, const char* b) {label_.type = a; label_.value = b;}
+  FlpyMETHOD_VARARGS_BEGIN(Widget, labeltype)
+    FlpyARG_I_TO_v_TYPE(Widget, labeltype, Fl_Labeltype)
+    FlpyARG_v_TO_i(Widget, labeltype)
+  FlpyMETHOD_VARARGS_END(Widget, labeltype, "takes no arguments or one labeltype"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, labelcolor)
+    FlpyARG_I_TO_v_TYPE(Widget, labelcolor, Fl_Color)
+    FlpyARG_v_TO_i(Widget, labelcolor)
+  FlpyMETHOD_VARARGS_END(Widget, labelcolor, "takes no arguments or one color"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, labelfont)
+    FlpyARG_I_TO_v_TYPE(Widget, labelfont, Fl_Font)
+    FlpyARG_v_TO_i(Widget, labelfont)
+  FlpyMETHOD_VARARGS_END(Widget, labelfont, "takes no arguments or a font index"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, labelsize)
+    FlpyARG_i_TO_v(Widget, labelsize)
+    FlpyARG_v_TO_i(Widget, labelsize)
+  FlpyMETHOD_VARARGS_END(Widget, labelsize, "takes no arguments or a text size"),
+//    Fl_Image* image() {return label_.image;}
+//    const Fl_Image* image() const {return label_.image;}
+//    void image(Fl_Image* img);
+//    void image(Fl_Image& img);
+//    void bind_image(Fl_Image* img);
+//    void bind_image(int f) { if (f) set_flag(IMAGE_BOUND); else clear_flag(IMAGE_BOUND); }
+//    int image_bound() const {return ((flags_ & IMAGE_BOUND) ? 1 : 0);}
+//    Fl_Image* deimage() {return label_.deimage;}
+//    const Fl_Image* deimage() const {return label_.deimage;}
+//    void deimage(Fl_Image* img);
+//    void deimage(Fl_Image& img);
+//    void bind_deimage(Fl_Image* img);
+//    int deimage_bound() const {return ((flags_ & DEIMAGE_BOUND) ? 1 : 0);}
+//    void bind_deimage(int f) { if (f) set_flag(DEIMAGE_BOUND); else clear_flag(DEIMAGE_BOUND); }
+  FlpyMETHOD_VARARGS_BEGIN(Widget, tooltip)
+    FlpyARG_z_TO_v(Widget, copy_tooltip)
+    FlpyARG_v_TO_z(Widget, tooltip)
+  FlpyMETHOD_VARARGS_END(Widget, tooltip, "takes no arguments or a single text string"),
+//    Fl_Callback_p callback() const {return callback_;}
+  { "callback", (PyCFunction)flpy_callback, METH_VARARGS },
+//    void callback(Fl_Callback* cb, void* p) {callback_ = cb; user_data_ = p;}
+//    void callback(Fl_Callback* cb) {callback_ = cb;}
+//    void callback(Fl_Callback0* cb) {callback_ = (Fl_Callback*)cb;}
+//    void callback(Fl_Callback1* cb, long p = 0) {
+//    void* user_data() const {return user_data_;}
+//    void user_data(void* v) {user_data_ = v;}
+//    long argument() const {return (long)(fl_intptr_t)user_data_;}
+//    void argument(long v) {user_data_ = (void*)(fl_intptr_t)v;}
+  FlpyMETHOD_VARARGS_BEGIN(Widget, labelfont)
+    FlpyARG_I_TO_v_TYPE(Widget, labelfont, Fl_Font)
+    FlpyARG_v_TO_i(Widget, labelfont)
+  FlpyMETHOD_VARARGS_END(Widget, labelfont, "takes no arguments or a font index"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, when)
+    FlpyARG_I_TO_v_TYPE(Widget, when, Fl_When)
+    FlpyARG_v_TO_i(Widget, when)
+  FlpyMETHOD_VARARGS_END(Widget, when, "takes no arguments or callback trigger flags"),
+  FlpyMETHOD_v_TO_I(Widget, visible),
+  FlpyMETHOD_v_TO_i(Widget, visible_r),
+  FlpyMETHOD_VIRT_v_TO_v(Widget, show),
+  FlpyMETHOD_VIRT_v_TO_v(Widget, hide),
+  FlpyMETHOD_v_TO_v(Widget, set_visible),
+  FlpyMETHOD_v_TO_v(Widget, clear_visible),
+  FlpyMETHOD_v_TO_I(Widget, active),
+  FlpyMETHOD_v_TO_i(Widget, active_r),
+  FlpyMETHOD_v_TO_v(Widget, activate),
+  FlpyMETHOD_v_TO_v(Widget, deactivate),
+  FlpyMETHOD_v_TO_i(Widget, output),
+  FlpyMETHOD_v_TO_v(Widget, set_output),
+  FlpyMETHOD_v_TO_v(Widget, clear_output),
+  FlpyMETHOD_v_TO_I(Widget, takesevents),
+  FlpyMETHOD_v_TO_i(Widget, changed),
+  FlpyMETHOD_v_TO_v(Widget, set_changed),
+  FlpyMETHOD_v_TO_v(Widget, clear_changed),
+  FlpyMETHOD_v_TO_v(Widget, set_active),
+  FlpyMETHOD_v_TO_v(Widget, clear_active),
+  FlpyMETHOD_v_TO_i(Widget, take_focus),
+  FlpyMETHOD_v_TO_v(Widget, set_visible_focus),
+  FlpyMETHOD_v_TO_v(Widget, clear_visible_focus),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, visible_focus)
+    FlpyARG_i_TO_v(Widget, visible_focus)
+    FlpyARG_v_TO_i(Widget, visible_focus)
+  FlpyMETHOD_VARARGS_END(Widget, visible_focus, "takes no arguments or a text size"),
+//    void do_callback(Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {do_callback(this, user_data_, reason);}
+//    void do_callback(Fl_Widget *widget, long arg, Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {
+//    void do_callback(Fl_Widget *widget, void *arg = 0, Fl_Callback_Reason reason=FL_REASON_UNKNOWN);
+  FlpyMETHOD_v_TO_i(Widget, test_shortcut),
+//    void _set_fullscreen() {flags_ |= FULLSCREEN;}
+//    void _clear_fullscreen() {flags_ &= ~FULLSCREEN;}
+  FlpyMETHOD_VARARGS_BEGIN(Widget, contains)
+    FlpyARG_w_TO_i(Widget, contains)
+  FlpyMETHOD_VARARGS_END(Widget, contains, "takes single widget argument"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, inside)
+    FlpyARG_w_TO_i(Widget, inside)
+  FlpyMETHOD_VARARGS_END(Widget, inside, "takes single widget argument"),
+  FlpyMETHOD_v_TO_v(Widget, redraw),
+  FlpyMETHOD_v_TO_v(Widget, redraw_label),
+  FlpyMETHOD_I0_TO_v(Widget, clear_damage),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, damage)
+    FlpyARG_v_TO_i(Widget, damage)
+    FlpyARG_I_TO_v_TYPE(Widget, damage, uchar)
+    FlpyARG_Iiiii_TO_v_TYPE(Widget, damage, uchar)
+  FlpyMETHOD_VARARGS_END(Widget, damage, "takes no argument, or damage flags and optional box dimensions"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, draw_label)
+    FlpyARG_iiiiI_TO_v_TYPE(Widget, draw_label, Fl_Align)
+  FlpyMETHOD_VARARGS_END(Widget, draw_label, "takes box dimensions and an aligment"),
+  { "measure_label", (PyCFunction)flpy_measure_label, METH_VARARGS },
+  FlpyMETHOD_v_TO_w(Widget, window),
+  FlpyMETHOD_v_TO_w(Widget, top_window),
+  { "top_window_offset", (PyCFunction)flpy_top_window_offset, METH_NOARGS },
+  FlpyMETHOD_v_TO_w(Widget, as_group),
+  FlpyMETHOD_v_TO_w(Widget, as_window),
+  FlpyMETHOD_v_TO_w(Widget, as_gl_window),
+  FlpyMETHOD_v_TO_i(Widget, use_accents_menu),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, color2)
+    FlpyARG_I_TO_v_TYPE(Widget, color2, Fl_Color)
+    FlpyARG_v_TO_i(Widget, color2)
+  FlpyMETHOD_VARARGS_END(Widget, color2, "takes no arguments or one color"),
+  FlpyMETHOD_VARARGS_BEGIN(Widget, shortcut_label)
+    FlpyARG_i_TO_v(Widget, shortcut_label)
+    FlpyARG_v_TO_i(Widget, shortcut_label)
+  FlpyMETHOD_VARARGS_END(Widget, shortcut_label, "takes no arguments or one integer"),
   { NULL }
 };
 

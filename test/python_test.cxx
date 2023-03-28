@@ -69,7 +69,7 @@ const char *prg =
 "#  box->labeltype(FL_SHADOW_LABEL);\n"
 "#  window->end();\n"
 "#  window->show(argc, argv);\n"
-"#window.label('Hello!', 123)\n"
+"#print( window.measure_label(120) )\n"
 "window.show()\n"
 "#  return Fl::run();\n"
 "Fl.run()\n"
