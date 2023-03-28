@@ -4,6 +4,8 @@ find_package(PythonLibs 3 REQUIRED)
 set (LANGBIND "Python")
 set (LANGBIND_GROUP "Python Bindings")
 
+set_property(GLOBAL PROPERTY CXX_STANDARD 11)
+
 set (LANGBIND_FILES
   bindings/python/Flpy.cxx
   bindings/python/Flpy_Fl.cxx

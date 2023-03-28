@@ -24,6 +24,8 @@
 //cmake --help-command include_directories
 //cmake --help-command target_link_libraries
 
+// TODO: if an exception occured in the callback, don't return to the main event loop!
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
@@ -43,7 +45,7 @@ const char *prg =
 "  print('Hallo Welt')\n"
 "  print(a)\n"
 "  print(FL_BOLD|FL_ITALIC)\n"
-"  print(btn.label())\n"
+"  print(btn.flags())\n"
 "\n"
 "class MyButton(Fl_Button):\n"
 "  def draw(self):\n"
@@ -56,7 +58,7 @@ const char *prg =
 "# if __name__ == '__main__':\n"
 "#   main()\n"
 "\n"
-"window = Fl_Window(340, 180)\n"
+"window = Fl_Window(340, 180, 'Hello Python')\n"
 "#btn = MyButton(20, 40, 300, 100, 'Hello, World!')\n"
 "btn = Fl_Button(20, 40, 300, 100, 'Hello, World!')\n"
 "#btn = Fl_Button(20, 40, 300, 100)\n"
@@ -67,7 +69,7 @@ const char *prg =
 "#  box->labeltype(FL_SHADOW_LABEL);\n"
 "#  window->end();\n"
 "#  window->show(argc, argv);\n"
-"#window.label('Hello!')\n"
+"#window.label('Hello!', 123)\n"
 "window.show()\n"
 "#  return Fl::run();\n"
 "Fl.run()\n"
