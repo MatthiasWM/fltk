@@ -46,7 +46,7 @@ const char *prg =
 "  print('Hallo Welt')\n"
 "  print(a)\n"
 "  print(FL_BOLD|FL_ITALIC)\n"
-"  print(btn.flags())\n"
+"  print(btn.value())\n"
 "\n"
 "class MyButton(Fl_Button):\n"
 "  def draw(self):\n"

@@ -60,6 +60,7 @@ extern void flpy_on_callback(class Fl_Widget *w, void *v);
 
 #define FlpyARG_v_TO_i(KLASS, NAME) if (PyTuple_GET_SIZE(args)==0) { return PyLong_FromLong( ((Flpy_##KLASS##_Object*)self)->o->NAME() ); }
 #define FlpyARG_i_TO_v(KLASS, NAME) if (PyTuple_GET_SIZE(args)==1 && PyLong_Check(PyTuple_GET_ITEM(args, 0))) { ((Flpy_##KLASS##_Object*)self)->o->NAME((int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0))); Py_RETURN_NONE; }
+#define FlpyARG_i_TO_i(KLASS, NAME) if (PyTuple_GET_SIZE(args)==1 && PyLong_Check(PyTuple_GET_ITEM(args, 0))) { return PyLong_FromLong( ((Flpy_##KLASS##_Object*)self)->o->NAME((int)PyLong_AsLong(PyTuple_GET_ITEM(args, 0))) ); }
 
 #define FlpyARG_z_TO_v(KLASS, NAME) if (PyTuple_GET_SIZE(args)==1 && PyUnicode_Check(PyTuple_GET_ITEM(args, 0))) { ((Flpy_##KLASS##_Object*)self)->o->NAME(PyUnicode_AsUTF8(PyTuple_GET_ITEM(args, 0))); Py_RETURN_NONE; }
 #define FlpyARG_v_TO_z(KLASS, NAME) {} if (PyTuple_GET_SIZE(args)==0) { const char *str = ((Flpy_##KLASS##_Object*)self)->o->NAME(); return str ? PyUnicode_FromString(str) : Py_NewRef(Py_None); }

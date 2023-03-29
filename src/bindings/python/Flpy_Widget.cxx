@@ -37,7 +37,7 @@ class Flpy_Widget : public Fl_Box {
 public:
   Flpy_Widget(int x, int y, int w, int h) : Fl_Box(x, y, w, h) { }
   static int flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*);
-  // TODO: check and optimize thid method (calling functions vs. calling methods, self, widget, and user_data object, etc.
+  // TODO: check and optimize this method (calling functions vs. calling methods, self, widget, and user_data object, etc.
   static PyObject *flpy_callback(Flpy_Widget_Object *self, PyObject *args) {
     if (PyTuple_Size(args) == 0) {
       return self->callback_method;

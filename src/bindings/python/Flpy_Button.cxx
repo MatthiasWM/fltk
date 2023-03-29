@@ -30,19 +30,7 @@ class Flpy_Button : public Fl_Button {
 public:
   Flpy_Button(int x, int y, int w, int h) : Fl_Button(x, y, w, h) { }
   static int flpy_init(Flpy_Button_Object *self, PyObject *args, PyObject*);
-  static PyObject *flpy_value(Flpy_Button_Object *self, PyObject *args) {
-    int v;
-    if (PyTuple_Size(args) == 0) {
-      return PyLong_FromLong(self->o->value());
-    } else if (PyArg_ParseTuple(args, "i", &v)) {
-      return PyLong_FromLong(self->o->value(v));
-    }
-    return NULL;
-  }
-  static PyObject *flpy_draw(Flpy_Button_Object *self, PyObject *args) {
-    self->o->Fl_Button::draw();
-    Py_RETURN_NONE;
-  }
+  static PyMethodDef flpy_methods[];
 };
 
 class Flpy_Derived_Button : public Flpy_Button {
@@ -69,27 +57,30 @@ int Flpy_Button::flpy_init(Flpy_Button_Object *self, PyObject *args, PyObject*) 
   return 0;
 }
 
-PyMethodDef flpy_button_methods[] = {
-  { "value", (PyCFunction)Flpy_Button::flpy_value, METH_VARARGS },
-  { "draw", (PyCFunction)Flpy_Button::flpy_draw, METH_NOARGS },
-/*
-   Fl_Button(int X, int Y, int W, int H, const char *L = 0);
-   void simulate_key_action();
-   void draw() FL_OVERRIDE;
-   int handle(int) FL_OVERRIDE;
-   int value(int v);
-   char value() const {return value_;}
-   int set() {return value(1);}
-   int clear() {return value(0);}
-   void setonly(); // this should only be called on FL_RADIO_BUTTONs
-   int shortcut() const {return shortcut_;}
-   void shortcut(int s) {shortcut_ = s;}
-   Fl_Boxtype down_box() const {return (Fl_Boxtype)down_box_;}
-   void down_box(Fl_Boxtype b) {down_box_ = b;}
-   void shortcut(const char *s) {shortcut(fl_old_shortcut(s));}
-   Fl_Color down_color() const {return selection_color();}
-   void down_color(unsigned c) {selection_color(c);}
-*/
+PyMethodDef Flpy_Button::flpy_methods[] = {
+  FlpyMETHOD_VARARGS_BEGIN(Button, value)
+    FlpyARG_i_TO_i(Button, value)
+    FlpyARG_v_TO_i(Button, value)
+  FlpyMETHOD_VARARGS_END(Button, value, "takes no arguments or one integer"),
+  FlpyMETHOD_VIRT_v_TO_v(Button, draw),
+  FlpyMETHOD_VIRT_i_TO_i(Button, handle),
+  FlpyMETHOD_v_TO_v(Button, simulate_key_action),
+  FlpyMETHOD_v_TO_v(Button, set),
+  FlpyMETHOD_v_TO_v(Button, clear),
+  FlpyMETHOD_v_TO_v(Button, setonly),
+  FlpyMETHOD_VARARGS_BEGIN(Button, shortcut)
+    FlpyARG_i_TO_v(Button, shortcut)
+    FlpyARG_z_TO_v(Button, shortcut)
+    FlpyARG_v_TO_i(Button, shortcut)
+  FlpyMETHOD_VARARGS_END(Button, shortcut, "takes no arguments or a shortcut keycode"),
+  FlpyMETHOD_VARARGS_BEGIN(Button, down_box)
+    FlpyARG_I_TO_v_TYPE(Button, down_box, Fl_Boxtype)
+    FlpyARG_v_TO_i(Button, down_box)
+  FlpyMETHOD_VARARGS_END(Button, down_box, "takes no arguments or a boxtype"),
+  FlpyMETHOD_VARARGS_BEGIN(Button, down_color)
+    FlpyARG_I_TO_v_TYPE(Button, down_color, Fl_Color)
+    FlpyARG_v_TO_i(Button, down_color)
+  FlpyMETHOD_VARARGS_END(Button, down_color, "takes no arguments or one color"),
   { NULL }
 };
 
@@ -100,7 +91,7 @@ PyTypeObject flpy_button_type = {
   .tp_itemsize = 0,
   .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
   .tp_doc = PyDoc_STR("Fl_Button"),
-  .tp_methods = flpy_button_methods,
+  .tp_methods = Flpy_Button::flpy_methods,
   .tp_base = &flpy_widget_type,
   .tp_init = (initproc)Flpy_Button::flpy_init,
   .tp_new = PyType_GenericNew,
