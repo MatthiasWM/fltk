@@ -40,6 +40,7 @@ extern "C" PyObject *PyInit_fltk();
 const char *prg =
 
 "from fltk import *\n"
+"import sys, gc\n"
 "\n"
 "def test_callback(a):\n"
 "  print('Hallo Welt')\n"
@@ -71,6 +72,9 @@ const char *prg =
 "#  window->show(argc, argv);\n"
 "#print( window.measure_label(120) )\n"
 "window.show()\n"
+"#print( sys.getrefcount(btn) )\n"
+"#print( gc.get_referrers(window) )\n"
+"#print( gc.get_referents(window) )\n"
 "#  return Fl::run();\n"
 "Fl.run()\n"
 ;

@@ -28,6 +28,10 @@ extern PyTypeObject flpy_group_type;
 extern PyTypeObject flpy_window_type;
 extern PyTypeObject flpy_button_type;
 
+extern PyObject *flpy_get_int(PyObject *, void *v);
+
+#define Flpy_GET_INT(NAME) { #NAME, flpy_get_int, NULL, NULL, (void*)(NAME) }
+
 #define FlpyObject_HEAD \
   PyObject_HEAD \
   PyObject *callback_class; \

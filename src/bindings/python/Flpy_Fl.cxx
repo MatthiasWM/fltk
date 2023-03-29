@@ -17,10 +17,14 @@
 #include "Flpy.h"
 
 #include <FL/Fl.H>
+#include <FL/platform.H>
 
 static PyObject *flpy_method_fl_run(PyObject*, PyObject *args) {
-  Fl::run();
-  Py_RETURN_NONE;
+  while (Fl_X::first) {
+    if (PyErr_Occurred()) break;
+    Fl::wait(1e20);
+  }
+  return PyLong_FromLong(0);
 }
 
 static PyMethodDef flpy_methods_fl[] = {
@@ -28,13 +32,13 @@ static PyMethodDef flpy_methods_fl[] = {
   { NULL }
 };
 
-PyObject *flpy_fl_get_int(PyObject *, void *v) {
-  return Py_BuildValue("i", (int)(fl_intptr_t)v);
+PyObject *flpy_get_int(PyObject *, void *v) {
+  return PyLong_FromLong((int)(fl_intptr_t)v);
 }
 
 static PyGetSetDef flpy_fl_getset[] = {
-  { "OPTION_ARROW_FOCUS", flpy_fl_get_int, NULL, NULL, (void*)0 },
-  { "OPTION_VISIBLE_FOCUS", flpy_fl_get_int, NULL, NULL, (void*)1 },
+  { "OPTION_ARROW_FOCUS", flpy_get_int, NULL, NULL, (void*)0 },
+  { "OPTION_VISIBLE_FOCUS", flpy_get_int, NULL, NULL, (void*)1 },
   { NULL }
 };
 

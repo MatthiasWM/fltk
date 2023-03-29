@@ -21,21 +21,23 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Gl_Window.H>
 
+// The Flpy_ class allows us to access protected members
 class Flpy_Widget;
+// The Flpy_Derived_ class allows users to override virtual methods
 class Flpy_Derived_Widget;
 
+// Python 'self' representation of an FLTK widget, user_data() links here
 typedef struct {
-  FlpyObject_HEAD
-  Flpy_Widget *o;
+  FlpyObject_HEAD     // Data needed for every widget that has no room in the FLTK class
+  Flpy_Widget *o;     // Link from 'self' back to widget
 } Flpy_Widget_Object;
 
+// In C++ we can't instantiate Fl_Widget. To make that easier in Python, we derive from Fl_Box
 class Flpy_Widget : public Fl_Box {
-public: // 137 methods
+public:
   Flpy_Widget(int x, int y, int w, int h) : Fl_Box(x, y, w, h) { }
-//  void label(const char *str) { copy_label(str); }
-//  const char *label() { return label(); }
-  void tooltip(const char *str) { copy_tooltip(str); }
-  const char *tooltip() { return tooltip(); }
+  static int flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*);
+  // TODO: check and optimize thid method (calling functions vs. calling methods, self, widget, and user_data object, etc.
   static PyObject *flpy_callback(Flpy_Widget_Object *self, PyObject *args) {
     if (PyTuple_Size(args) == 0) {
       return self->callback_method;
@@ -53,26 +55,14 @@ public: // 137 methods
     }
     return NULL;
   }
-  static PyObject *flpy_damage(PyObject *self, PyObject *args) {
-    Flpy_ARG_v_TO_I(Widget, damage)
-    Flpy_ARG_I_TO_v_TYPE(Widget, damage, uchar)
-    Flpy_ARG_Iiiii_TO_v_TYPE(Widget, damage, uchar)
-    Flpy_ERR_IMPL(Widget, damage, "arguments are none, flags, or flags and x, y, w, h")
-  }
-  static int flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*) {
-    int x, y, w, h;
-    if (!PyArg_ParseTuple(args, "iiii", &x, &y, &w, &h)) return -1;
-    Fl_Widget *o = self->o = new Flpy_Widget(x, y, w, h);
-    o->callback(flpy_on_callback, self);
-    if (o->parent()) Py_INCREF(self);
-    return 0;
-  }
+  // More complex method that is not predefined, optional arguments, returns a tuple
   static PyObject *flpy_measure_label(Flpy_Widget_Object *self, PyObject *args) {
     int arg0 = 0, arg1 = 0;
     if (!PyArg_ParseTuple(args, "|i", &arg0)) return NULL;
     self->o->measure_label(arg0, arg1);
     return Py_BuildValue("(ii)", arg0, arg1);
   }
+  // More complex method that is not predefined, returns a tuple
   static PyObject *flpy_top_window_offset(Flpy_Widget_Object *self, PyObject *args) {
     int arg0 = 0, arg1 = 0;
     Fl_Window *win = self->o->top_window_offset(arg0, arg1);
@@ -80,12 +70,41 @@ public: // 137 methods
     return Py_BuildValue("(Oii)", win_obj, arg0, arg1);
   }
   static PyMethodDef flpy_methods[];
+  static PyGetSetDef flpy_getset[];
 };
 
-PyMethodDef Flpy_Widget::flpy_methods[] = {
+class Flpy_Derived_Widget : public Flpy_Widget {
+public:
+  Flpy_Derived_Widget(int x, int y, int w, int h) : Flpy_Widget(x, y, w, h) { }
+  // TODO: void show()
+  // TODO: void hide()
+  void draw() FL_OVERRIDE {
+    Flpy_Derived_Widget *self = (Flpy_Derived_Widget*)user_data();
+    PyObject_CallMethodNoArgs((PyObject*)self, PyUnicode_FromString("draw"));
+    Py_RETURN_NONE;
+  }
+  // TODO: int handle(e)
+  // TODO: void resize(x, y, w, h)
+};
 
-  //    Fl_Widget(int x, int y, int w, int h, const char *label=0L);
-  //    virtual ~Fl_Widget();
+// TODO: roll this into a macro becuase it's the same for every widget class
+int Flpy_Widget::flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*) {
+  int x, y, w, h;
+  char *label_ = NULL;
+  if (!PyArg_ParseTuple(args, "iiii|z", &x, &y, &w, &h, &label_)) return -1;
+  if (Py_TYPE(self) == &flpy_type)
+    self->o = new Flpy_Widget(x, y, w, h);
+  else
+    self->o = new Flpy_Derived_Widget(x, y, w, h);
+  Flpy_Widget *o = self->o;
+  if (label_) o->copy_label(label_);
+  o->callback(flpy_on_callback, self);
+  if (o->parent()) Py_INCREF(self);
+  return 0;
+}
+
+// List of all class methods and their implementation with lambdas
+PyMethodDef Flpy_Widget::flpy_methods[] = {
   FlpyMETHOD_VARARGS_BEGIN(Widget, x)
     FlpyARG_i_TO_v(Widget, x)
     FlpyARG_v_TO_i(Widget, x)
@@ -122,7 +141,6 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
   FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no arguments, or box dimensions"),
   FlpyMETHOD_VIRT_v_TO_v(Widget, draw),
   FlpyMETHOD_VIRT_i_TO_i(Widget, handle),
-//  Not used:  int is_label_copied() const {return ((flags_ & COPIED_LABEL) ? 1 : 0);}
   FlpyMETHOD_VARARGS_BEGIN(Widget, parent)
     FlpyARG_v_TO_w(Widget, parent)
     FlpyARG_g_TO_v(Widget, parent) // FIXME: this method may change ownership and must update refcounts
@@ -156,7 +174,6 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
     FlpyARG_z_TO_v(Widget, copy_label)
     FlpyARG_v_TO_z(Widget, label)
   FlpyMETHOD_VARARGS_END(Widget, label, "takes no arguments or a single text string"),
-//    void label(Fl_Labeltype a, const char* b) {label_.type = a; label_.value = b;}
   FlpyMETHOD_VARARGS_BEGIN(Widget, labeltype)
     FlpyARG_I_TO_v_TYPE(Widget, labeltype, Fl_Labeltype)
     FlpyARG_v_TO_i(Widget, labeltype)
@@ -173,34 +190,39 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
     FlpyARG_i_TO_v(Widget, labelsize)
     FlpyARG_v_TO_i(Widget, labelsize)
   FlpyMETHOD_VARARGS_END(Widget, labelsize, "takes no arguments or a text size"),
-//    Fl_Image* image() {return label_.image;}
-//    const Fl_Image* image() const {return label_.image;}
-//    void image(Fl_Image* img);
-//    void image(Fl_Image& img);
-//    void bind_image(Fl_Image* img);
-//    void bind_image(int f) { if (f) set_flag(IMAGE_BOUND); else clear_flag(IMAGE_BOUND); }
-//    int image_bound() const {return ((flags_ & IMAGE_BOUND) ? 1 : 0);}
-//    Fl_Image* deimage() {return label_.deimage;}
-//    const Fl_Image* deimage() const {return label_.deimage;}
-//    void deimage(Fl_Image* img);
-//    void deimage(Fl_Image& img);
-//    void bind_deimage(Fl_Image* img);
-//    int deimage_bound() const {return ((flags_ & DEIMAGE_BOUND) ? 1 : 0);}
-//    void bind_deimage(int f) { if (f) set_flag(DEIMAGE_BOUND); else clear_flag(DEIMAGE_BOUND); }
+  // TODO: we must wrap Image types before we can link to them, remeber the Ref Count
+  //    Fl_Image* image() {return label_.image;}
+  //    const Fl_Image* image() const {return label_.image;}
+  //    void image(Fl_Image* img);
+  //    void image(Fl_Image& img);
+  //    void bind_image(Fl_Image* img);
+  //    void bind_image(int f) { if (f) set_flag(IMAGE_BOUND); else clear_flag(IMAGE_BOUND); }
+  //    int image_bound() const {return ((flags_ & IMAGE_BOUND) ? 1 : 0);}
+  //    Fl_Image* deimage() {return label_.deimage;}
+  //    const Fl_Image* deimage() const {return label_.deimage;}
+  //    void deimage(Fl_Image* img);
+  //    void deimage(Fl_Image& img);
+  //    void bind_deimage(Fl_Image* img);
+  //    int deimage_bound() const {return ((flags_ & DEIMAGE_BOUND) ? 1 : 0);}
+  //    void bind_deimage(int f) { if (f) set_flag(DEIMAGE_BOUND); else clear_flag(DEIMAGE_BOUND); }
   FlpyMETHOD_VARARGS_BEGIN(Widget, tooltip)
     FlpyARG_z_TO_v(Widget, copy_tooltip)
     FlpyARG_v_TO_z(Widget, tooltip)
   FlpyMETHOD_VARARGS_END(Widget, tooltip, "takes no arguments or a single text string"),
-//    Fl_Callback_p callback() const {return callback_;}
-  { "callback", (PyCFunction)flpy_callback, METH_VARARGS },
-//    void callback(Fl_Callback* cb, void* p) {callback_ = cb; user_data_ = p;}
-//    void callback(Fl_Callback* cb) {callback_ = cb;}
-//    void callback(Fl_Callback0* cb) {callback_ = (Fl_Callback*)cb;}
-//    void callback(Fl_Callback1* cb, long p = 0) {
-//    void* user_data() const {return user_data_;}
-//    void user_data(void* v) {user_data_ = v;}
-//    long argument() const {return (long)(fl_intptr_t)user_data_;}
-//    void argument(long v) {user_data_ = (void*)(fl_intptr_t)v;}
+  // TODO: how exactly do we want the callabcks to work in Python
+  //    Fl_Callback_p callback() const {return callback_;}
+  { "callback", (PyCFunction)flpy_callback, METH_VARARGS }, // TODO: add 'instance' argument
+  //    void callback(Fl_Callback* cb, void* p) {callback_ = cb; user_data_ = p;}
+  //    void callback(Fl_Callback* cb) {callback_ = cb;}
+  //    void callback(Fl_Callback0* cb) {callback_ = (Fl_Callback*)cb;}
+  //    void callback(Fl_Callback1* cb, long p = 0) {
+  //    void* user_data() const {return user_data_;}
+  //    void user_data(void* v) {user_data_ = v;}
+  //    long argument() const {return (long)(fl_intptr_t)user_data_;}
+  //    void argument(long v) {user_data_ = (void*)(fl_intptr_t)v;}
+  //    void do_callback(Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {do_callback(this, user_data_, reason);}
+  //    void do_callback(Fl_Widget *widget, long arg, Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {
+  //    void do_callback(Fl_Widget *widget, void *arg = 0, Fl_Callback_Reason reason=FL_REASON_UNKNOWN);
   FlpyMETHOD_VARARGS_BEGIN(Widget, labelfont)
     FlpyARG_I_TO_v_TYPE(Widget, labelfont, Fl_Font)
     FlpyARG_v_TO_i(Widget, labelfont)
@@ -235,12 +257,7 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
     FlpyARG_i_TO_v(Widget, visible_focus)
     FlpyARG_v_TO_i(Widget, visible_focus)
   FlpyMETHOD_VARARGS_END(Widget, visible_focus, "takes no arguments or a text size"),
-//    void do_callback(Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {do_callback(this, user_data_, reason);}
-//    void do_callback(Fl_Widget *widget, long arg, Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {
-//    void do_callback(Fl_Widget *widget, void *arg = 0, Fl_Callback_Reason reason=FL_REASON_UNKNOWN);
   FlpyMETHOD_v_TO_i(Widget, test_shortcut),
-//    void _set_fullscreen() {flags_ |= FULLSCREEN;}
-//    void _clear_fullscreen() {flags_ &= ~FULLSCREEN;}
   FlpyMETHOD_VARARGS_BEGIN(Widget, contains)
     FlpyARG_w_TO_i(Widget, contains)
   FlpyMETHOD_VARARGS_END(Widget, contains, "takes single widget argument"),
@@ -277,40 +294,38 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
   { NULL }
 };
 
-class Flpy_Derived_Widget : public Flpy_Widget {
-public:
-  Flpy_Derived_Widget(int x, int y, int w, int h) : Flpy_Widget(x, y, w, h) { }
+// Lst of all class constants
+PyGetSetDef Flpy_Widget::flpy_getset[] = {
+  Flpy_GET_INT(INACTIVE),
+  Flpy_GET_INT(INVISIBLE),
+  Flpy_GET_INT(OUTPUT),
+  Flpy_GET_INT(NOBORDER),
+  Flpy_GET_INT(FORCE_POSITION),
+  Flpy_GET_INT(NON_MODAL),
+  Flpy_GET_INT(SHORTCUT_LABEL),
+  Flpy_GET_INT(CHANGED),
+  Flpy_GET_INT(OVERRIDE),
+  Flpy_GET_INT(VISIBLE_FOCUS),
+  Flpy_GET_INT(COPIED_LABEL),
+  Flpy_GET_INT(CLIP_CHILDREN),
+  Flpy_GET_INT(MENU_WINDOW),
+  Flpy_GET_INT(TOOLTIP_WINDOW),
+  Flpy_GET_INT(MODAL),
+  Flpy_GET_INT(NO_OVERLAY),
+  Flpy_GET_INT(GROUP_RELATIVE),
+  Flpy_GET_INT(COPIED_TOOLTIP),
+  Flpy_GET_INT(FULLSCREEN),
+  Flpy_GET_INT(MAC_USE_ACCENTS_MENU),
+  Flpy_GET_INT(NEEDS_KEYBOARD),
+  Flpy_GET_INT(IMAGE_BOUND),
+  Flpy_GET_INT(DEIMAGE_BOUND),
+  Flpy_GET_INT(USERFLAG3),
+  Flpy_GET_INT(USERFLAG2),
+  Flpy_GET_INT(USERFLAG1),
+  { NULL }
 };
 
-/*
- INACTIVE        = 1<<0,   ///< the widget can't receive focus, and is disabled but potentially visible
- INVISIBLE       = 1<<1,   ///< the widget is not drawn, but can receive a few special events
- OUTPUT          = 1<<2,   ///< for output only
- NOBORDER        = 1<<3,   ///< don't draw a decoration (Fl_Window)
- FORCE_POSITION  = 1<<4,   ///< don't let the window manager position the window (Fl_Window)
- NON_MODAL       = 1<<5,   ///< this is a hovering toolbar window (Fl_Window)
- SHORTCUT_LABEL  = 1<<6,   ///< the label contains a shortcut we need to draw
- CHANGED         = 1<<7,   ///< the widget value changed
- OVERRIDE        = 1<<8,   ///< position window on top (Fl_Window)
- VISIBLE_FOCUS   = 1<<9,   ///< accepts keyboard focus navigation if the widget can have the focus
- COPIED_LABEL    = 1<<10,  ///< the widget label is internally copied, its destruction is handled by the widget
- CLIP_CHILDREN   = 1<<11,  ///< all drawing within this widget will be clipped (Fl_Group)
- MENU_WINDOW     = 1<<12,  ///< a temporary popup window, dismissed by clicking outside (Fl_Window)
- TOOLTIP_WINDOW  = 1<<13,  ///< a temporary popup, transparent to events, and dismissed easily (Fl_Window)
- MODAL           = 1<<14,  ///< a window blocking input to all other winows (Fl_Window)
- NO_OVERLAY      = 1<<15,  ///< window not using a hardware overlay plane (Fl_Menu_Window)
- GROUP_RELATIVE  = 1<<16,  ///< Reserved, not implemented. DO NOT USE.
- COPIED_TOOLTIP  = 1<<17,  ///< the widget tooltip is internally copied, its destruction is handled by the widget
- FULLSCREEN      = 1<<18,  ///< a fullscreen window (Fl_Window)
- MAC_USE_ACCENTS_MENU = 1<<19, ///< On the Mac OS platform, pressing and holding a key on the keyboard opens an accented-character menu window (Fl_Input_, Fl_Text_Editor)
- NEEDS_KEYBOARD  = 1<<20,  ///< set this on touch screen devices if a widget needs a keyboard when it gets Focus. @see Fl_Screen_Driver::request_keyboard()
- IMAGE_BOUND     = 1<<21,  ///< binding the image to the widget will transfer ownership, so that the widget will delete the image when it is no longer needed
- DEIMAGE_BOUND   = 1<<22,  ///< bind the inactive image to the widget, so the widget deletes the image when it no longer needed
- USERFLAG3       = 1<<29,  ///< reserved for 3rd party extensions
- USERFLAG2       = 1<<30,  ///< reserved for 3rd party extensions
- USERFLAG1       = 1<<31   ///< reserved for 3rd party extensions
- */
-
+// Python type description
 PyTypeObject flpy_widget_type = {
   .ob_base = { PyObject_HEAD_INIT(NULL) },
   .tp_name = "fltk.Fl_Widget",
@@ -319,10 +334,13 @@ PyTypeObject flpy_widget_type = {
   .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
   .tp_doc = PyDoc_STR("Fl_Widget"),
   .tp_methods = Flpy_Widget::flpy_methods,
+  .tp_getset = Flpy_Widget::flpy_getset,
   .tp_init = (initproc)Flpy_Widget::flpy_init,
   .tp_new = PyType_GenericNew,
 };
 
+// TODO: the callbacks of all widgets lead here, move this to Flpy.cxx
+// TODO: and add handling of different callback reasons
 void flpy_on_callback(Fl_Widget *w, void *v) {
   Flpy_Widget_Object *self = (Flpy_Widget_Object*)v;
   if (self->callback_method) {
@@ -335,6 +353,6 @@ void flpy_on_callback(Fl_Widget *w, void *v) {
     PyObject *result = PyObject_CallObject(self->callback_method, tuple); //self->callback_data);
     Py_DECREF(tuple);
   }
-  // NOTE: we could also test if self.on_callback exists and call that. Would that be easier?
+  // TODO: we could also test if self.on_callback exists and call that. Would that be easier?
 }
 
