@@ -34,6 +34,15 @@ public:
     self->o->show();
     Py_RETURN_NONE;
   }
+  static void flpy_dealloc(Flpy_Group_Object *self) {
+    PyTypeObject *tp = Py_TYPE(self);
+    printf("Group flpy_dealloc\n");
+    // TODO: free references and buffers here
+    tp->tp_free(self);
+    Py_DECREF(tp);
+  }
+  static PyMethodDef flpy_methods[];
+  static PyGetSetDef flpy_getset[];
 };
 
 class Flpy_Derived_Group : public Flpy_Group {
@@ -56,20 +65,17 @@ int Flpy_Group::flpy_init(Flpy_Group_Object *self, PyObject *args, PyObject*) {
   return 0;
 }
 
-static PyMethodDef flpy_group_methods[] = {
-  { "show", (PyCFunction)Flpy_Group::flpy_show, METH_VARARGS },
+PyMethodDef Flpy_Group::flpy_methods[] = {
+  { "show", (PyCFunction)flpy_show, METH_VARARGS },
+  FlpyMETHOD_VARARGS_BEGIN(Group, current)
+    FlpyARG_v_TO_w(Group, current)
+    FlpyARG_g_TO_v(Group, current) // not available
+  FlpyMETHOD_VARARGS_END(Group, current, "takes no argument, or a group"),
   { NULL }
 };
 
-PyTypeObject flpy_group_type = {
-  .ob_base = { PyObject_HEAD_INIT(NULL) },
-  .tp_name = "fltk.Fl_Group",
-  .tp_basicsize = sizeof(Flpy_Group_Object),
-  .tp_itemsize = 0,
-  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
-  .tp_doc = PyDoc_STR("Fl_Group"),
-  .tp_methods = flpy_group_methods,
-  .tp_base = &flpy_widget_type, // actually flpy_type_group...
-  .tp_init = (initproc)Flpy_Group::flpy_init,
-  .tp_new = PyType_GenericNew,
+PyGetSetDef Flpy_Group::flpy_getset[] = {
+  { NULL }
 };
+
+FlpyTYPE(Group, group, &flpy_widget_type, "The Fl_Group class is the FLTK container widget. It maintains an array of child widgets.")

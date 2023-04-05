@@ -255,7 +255,6 @@ public:
 
   /** Returns a pointer to the parent widget.
       Usually this is a Fl_Group or Fl_Window.
-      \retval NULL if the widget has no parent
       \see Fl_Group::add(Fl_Widget*)
    */
   Fl_Group* parent() const {return parent_;}
@@ -267,7 +266,7 @@ public:
       if the widget is already a child widget of another Fl_Group.
 
       Use Fl_Group::add(Fl_Widget*) and/or Fl_Group::remove(Fl_Widget*) instead.
-  */
+   */
   void parent(Fl_Group* p) {parent_ = p;} // for hacks only, use Fl_Group::add()
 
   /** Gets the widget type.

@@ -21,6 +21,20 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Gl_Window.H>
 
+
+/*
+ Flpy_Widget is the base class for all widget types.
+
+ Creating a widget will possibly auto-add it to the current group before the
+ PyObject reference is set. Deleting a group widget must not delete the child
+ widgets, but instead decrement their Python reference.
+
+ To allow cycloc GC, we must handle all possible obvious and hidden refs.
+ Obvious refs are in FlpyObject_HEAD. The hidden ones are refs to image and
+ deimge, and to all children of group widgets. Some widget types may reference
+ "internal" widgets like scrollbars.
+ */
+
 // The Flpy_ class allows us to access protected members
 class Flpy_Widget;
 // The Flpy_Derived_ class allows users to override virtual methods
@@ -36,21 +50,34 @@ typedef struct {
 class Flpy_Widget : public Fl_Box {
 public:
   Flpy_Widget(int x, int y, int w, int h) : Fl_Box(x, y, w, h) { }
+
+  // the following members are called from Pythin directly
   static int flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*);
-  // TODO: check and optimize this method (calling functions vs. calling methods, self, widget, and user_data object, etc.
+  static int flpy_traverse(Flpy_Widget_Object *self, visitproc visit, void *arg);
+  static int flpy_clear(Flpy_Widget_Object *self);
+  static void flpy_dealloc(Flpy_Widget_Object *self);
+  static PyMethodDef flpy_methods[];
+  static PyGetSetDef flpy_getset[];
+
   static PyObject *flpy_callback(Flpy_Widget_Object *self, PyObject *args) {
     if (PyTuple_Size(args) == 0) {
-      return self->callback_method;
+      if (self->callback_method) return self->callback_method;
+      Py_RETURN_NONE;
     } else {
-      self->callback_method = PyTuple_GetItem(args, 0);
-      int v = PyCallable_Check(self->callback_method);
-      Py_INCREF(self->callback_method);
-      if (PyTuple_Size(args) == 1) {
-        self->callback_data = Py_None;
-      } else {
-        self->callback_data = PyTuple_GetItem(args, 1);
-        Py_XINCREF(self->callback_data);
-      }
+      PyObject *method = NULL;
+      PyObject *data = NULL;
+      if (!PyArg_ParseTuple(args, "O|O", &method, &data))
+        return NULL;
+      Py_XINCREF(method);
+      Py_XINCREF(data);
+      PyObject *method_bak = self->callback_method;
+      PyObject *data_bak = self->callback_data;
+      self->callback_method = NULL;
+      self->callback_data = NULL;
+      Py_XDECREF(method_bak);
+      Py_XDECREF(data_bak);
+      self->callback_method = method;
+      self->callback_data = data;
       Py_RETURN_NONE;
     }
     return NULL;
@@ -69,8 +96,6 @@ public:
     PyObject *win_obj = win ? (PyObject*)win->user_data() : Py_None ;
     return Py_BuildValue("(Oii)", win_obj, arg0, arg1);
   }
-  static PyMethodDef flpy_methods[];
-  static PyGetSetDef flpy_getset[];
 };
 
 class Flpy_Derived_Widget : public Flpy_Widget {
@@ -87,6 +112,7 @@ public:
   // TODO: void resize(x, y, w, h)
 };
 
+
 // TODO: roll this into a macro becuase it's the same for every widget class
 int Flpy_Widget::flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*) {
   int x, y, w, h;
@@ -101,6 +127,33 @@ int Flpy_Widget::flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*) 
   o->callback(flpy_on_callback, self);
   if (o->parent()) Py_INCREF(self);
   return 0;
+}
+
+int Flpy_Widget::flpy_traverse(Flpy_Widget_Object *self, visitproc visit, void *arg)
+{
+  Py_VISIT(self->callback_method);
+  Py_VISIT(self->callback_data);
+  // FIXME: image
+  // FIXME: deimage
+  // FIXME: children
+  return 0;
+}
+
+int Flpy_Widget::flpy_clear(Flpy_Widget_Object *self)
+{
+  Py_CLEAR(self->callback_method);
+  Py_CLEAR(self->callback_data);
+  // FIXME: image
+  // FIXME: deimage
+  // FIXME: children
+  delete self->o;
+  return 0;
+}
+
+void Flpy_Widget::flpy_dealloc(Flpy_Widget_Object *self) {
+  PyObject_GC_UnTrack((PyObject*)self);
+  flpy_clear(self);
+  Py_TYPE(self)->tp_free(self);
 }
 
 // List of all class methods and their implementation with lambdas
@@ -134,21 +187,21 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
     FlpyARG_v_TO_v(Widget, draw_focus)
     FlpyARG_Iiiii_TO_v_TYPE(Widget, draw_focus, Fl_Boxtype)
     FlpyARG_IiiiiI_TO_v_TYPE(Widget, draw_focus, Fl_Boxtype, Fl_Color)
-  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no arguments, or a boxtype, a box, and an optional color"),
+  FlpyMETHOD_VARARGS_END(Widget, draw_focus, "takes no arguments, or a boxtype, a box, and an optional color"),
   FlpyMETHOD_VARARGS_BEGIN(Widget, draw_label)
     FlpyARG_v_TO_v(Widget, draw_label)
     FlpyARG_iiii_TO_v(Widget, draw_label)
-  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no arguments, or box dimensions"),
+  FlpyMETHOD_VARARGS_END(Widget, draw_label, "takes no arguments, or box dimensions"),
   FlpyMETHOD_VIRT_v_TO_v(Widget, draw),
   FlpyMETHOD_VIRT_i_TO_i(Widget, handle),
   FlpyMETHOD_VARARGS_BEGIN(Widget, parent)
     FlpyARG_v_TO_w(Widget, parent)
-    FlpyARG_g_TO_v(Widget, parent) // FIXME: this method may change ownership and must update refcounts
-  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no argument, or a group widget"),
+    //FlpyARG_g_TO_v(Widget, parent) // not available
+  FlpyMETHOD_VARARGS_END(Widget, parent, "takes no argument"),
   FlpyMETHOD_VARARGS_BEGIN(Widget, type)
     FlpyARG_v_TO_i(Widget, type)
     FlpyARG_I_TO_v_TYPE(Widget, type, uchar)
-  FlpyMETHOD_VARARGS_END(Widget, draw_box, "takes no argument, or an unsigned integer"),
+  FlpyMETHOD_VARARGS_END(Widget, type, "takes no argument, or an unsigned integer"),
   FlpyMETHOD_VIRT_iiii_TO_v(Widget, resize),
   FlpyMETHOD_iiii_TO_i(Widget, damage_resize),
   FlpyMETHOD_ii_TO_v(Widget, position),
@@ -211,7 +264,7 @@ PyMethodDef Flpy_Widget::flpy_methods[] = {
   FlpyMETHOD_VARARGS_END(Widget, tooltip, "takes no arguments or a single text string"),
   // TODO: how exactly do we want the callabcks to work in Python
   //    Fl_Callback_p callback() const {return callback_;}
-  { "callback", (PyCFunction)flpy_callback, METH_VARARGS }, // TODO: add 'instance' argument
+  { "callback", (PyCFunction)flpy_callback, METH_VARARGS },
   //    void callback(Fl_Callback* cb, void* p) {callback_ = cb; user_data_ = p;}
   //    void callback(Fl_Callback* cb) {callback_ = cb;}
   //    void callback(Fl_Callback0* cb) {callback_ = (Fl_Callback*)cb;}
@@ -325,33 +378,44 @@ PyGetSetDef Flpy_Widget::flpy_getset[] = {
   { NULL }
 };
 
-// Python type description
+#if 0
+FlpyTYPE(Widget, widget, NULL, "Fl_Widget is the base class for all widgets in FLTK.")
+#else
 PyTypeObject flpy_widget_type = {
   .ob_base = { PyObject_HEAD_INIT(NULL) },
   .tp_name = "fltk.Fl_Widget",
   .tp_basicsize = sizeof(Flpy_Widget_Object),
   .tp_itemsize = 0,
-  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
   .tp_doc = PyDoc_STR("Fl_Widget"),
   .tp_methods = Flpy_Widget::flpy_methods,
   .tp_getset = Flpy_Widget::flpy_getset,
+  .tp_dealloc = (destructor)Flpy_Widget::flpy_dealloc,
   .tp_init = (initproc)Flpy_Widget::flpy_init,
   .tp_new = PyType_GenericNew,
+  .tp_traverse = (traverseproc)Flpy_Widget::flpy_traverse,
+  .tp_clear = (inquiry)Flpy_Widget::flpy_clear,
 };
+#endif
 
 // TODO: the callbacks of all widgets lead here, move this to Flpy.cxx
 // TODO: and add handling of different callback reasons
 void flpy_on_callback(Fl_Widget *w, void *v) {
   Flpy_Widget_Object *self = (Flpy_Widget_Object*)v;
-  if (self->callback_method) {
-    // if callback_obj is set, call the method in an object with self, widget, user_data
-    // else call the function with widget, user_data
-    // NOTE: if we allow an arbitrary number of parameters in Fl_Widget.callback(),
-    // we can create a tuple here with an arbitray number of parameters, and so the callback can have that too.
-    PyObject *tuple = PyTuple_Pack(1, self->callback_data);
+  if (!self) return;
+  if (self->callback_method && !Py_IsNone(self->callback_method)) {
+    PyObject *data = self->callback_data;
+    if (!data) data = Py_None;
+    PyObject *tuple = PyTuple_Pack(2, self, data);
     Py_INCREF(tuple);
-    PyObject *result = PyObject_CallObject(self->callback_method, tuple); //self->callback_data);
+    PyObject *result = PyObject_CallObject(self->callback_method, tuple);
     Py_DECREF(tuple);
+    Py_XDECREF(result);
+  } else if (PyObject_HasAttrString((PyObject*)self, "on_callback")) {
+    PyObject *data = self->callback_data;
+    if (!data) data = Py_None;
+    PyObject *result = PyObject_CallMethodOneArg((PyObject*)self, PyUnicode_FromString("on_callback"), data);
+    Py_XDECREF(result);
   }
   // TODO: we could also test if self.on_callback exists and call that. Would that be easier?
 }

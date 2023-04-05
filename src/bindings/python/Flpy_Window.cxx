@@ -35,6 +35,14 @@ public:
     self->o->show(0, NULL);
     Py_RETURN_NONE;
   }
+  static void flpy_dealloc(Flpy_Window_Object *self) {
+    PyTypeObject *tp = Py_TYPE(self);
+    printf("Window flpy_dealloc\n");
+    // TODO: free references and buffers here
+    tp->tp_free(self);
+  }
+  static PyMethodDef flpy_methods[];
+  static PyGetSetDef flpy_getset[];
 };
 
 int Flpy_Window::flpy_init(Flpy_Window_Object *self, PyObject *args, PyObject*) {
@@ -55,20 +63,13 @@ int Flpy_Window::flpy_init(Flpy_Window_Object *self, PyObject *args, PyObject*) 
   return 0;
 }
 
-static PyMethodDef flpy_window_methods[] = {
-  { "show", (PyCFunction)Flpy_Window::flpy_show, METH_VARARGS },
+PyMethodDef Flpy_Window::flpy_methods[] = {
+  { "show", (PyCFunction)flpy_show, METH_VARARGS },
   { NULL }
 };
 
-PyTypeObject flpy_window_type = {
-  .ob_base = { PyObject_HEAD_INIT(NULL) },
-  .tp_name = "fltk.Fl_Window",
-  .tp_basicsize = sizeof(Flpy_Window_Object),
-  .tp_itemsize = 0,
-  .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, // how will we now if it is used to generate a new class?
-  .tp_doc = PyDoc_STR("Fl_Window"),
-  .tp_methods = flpy_window_methods,
-  .tp_base = &flpy_group_type,
-  .tp_init = (initproc)Flpy_Window::flpy_init,
-  .tp_new = PyType_GenericNew,
+PyGetSetDef Flpy_Window::flpy_getset[] = {
+  { NULL }
 };
+
+FlpyTYPE(Window, window, &flpy_group_type, "This widget produces a window on the desktop.")

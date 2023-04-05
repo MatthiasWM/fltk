@@ -16,6 +16,7 @@
 
 #include "Flpy.h"
 
+#include <FL/Fl_Group.H>
 #include <FL/fl_draw.H>
 
 
@@ -43,9 +44,14 @@ static PyObject *flpy_rectf(PyObject *self, PyObject *args)
   return NULL;
 }
 
+static PyObject *flpy_clear_current(PyObject *self, PyObject *args) {
+  Fl_Group::current(NULL);
+}
+
 static PyMethodDef fltk_methods[] = {
   {"fl_color", flpy_color, METH_VARARGS, "Set the current color."},
   {"fl_rectf", flpy_rectf, METH_VARARGS, "Draw a rectangle."},
+  {"fl_clear_current", flpy_clear_current, METH_VARARGS, "Fl_Group::current(NULL)"},
   {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 
@@ -78,6 +84,7 @@ extern "C" FL_EXPORT PyObject *PyInit_fltk()
     Py_RETURN_NONE;
   }
 
+  flpy_button_type.tp_base = &flpy_widget_type;
   PyType_Ready(&flpy_button_type);
   Py_INCREF(&flpy_button_type);
   if (PyModule_AddObject(m, "Fl_Button", (PyObject *)&flpy_button_type) < 0) {
@@ -85,6 +92,15 @@ extern "C" FL_EXPORT PyObject *PyInit_fltk()
     Py_RETURN_NONE;
   }
 
+  flpy_group_type.tp_base = &flpy_widget_type;
+  PyType_Ready(&flpy_group_type);
+  Py_INCREF(&flpy_group_type);
+  if (PyModule_AddObject(m, "Fl_Group", (PyObject *)&flpy_group_type) < 0) {
+    Py_DECREF(&flpy_group_type);
+    Py_RETURN_NONE;
+  }
+
+  flpy_window_type.tp_base = &flpy_group_type;
   PyType_Ready(&flpy_window_type);
   Py_INCREF(&flpy_window_type);
   if (PyModule_AddObject(m, "Fl_Window", (PyObject *)&flpy_window_type) < 0) {
