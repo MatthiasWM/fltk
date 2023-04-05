@@ -46,6 +46,9 @@
 #include <locale.h>     // setlocale()..
 #include "../src/flstring.h"
 
+#include <FL/fl_snapshot.H>
+#include "widget_panel.h"
+
 extern "C"
 {
 #if defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
@@ -2138,6 +2141,15 @@ int main(int argc,char **argv) {
 
   // Set (but do not start) timer callback for external editor updates
   ExternalCodeEditor::set_update_timer_callback(external_editor_timer);
+
+  the_panel = make_widget_panel();
+//  fl_snapshot("/Users/matt/test.png", widget_browser, 20);
+//  fl_snapshot("/Users/matt/test.png", wCallback);
+  fl_snapshot("/Users/matt/test.png", widget_x_input, widget_h_input, 70, 12, 4, 4, 8, 2.0);
+
+  fl_open_uri("file:///Users/matt/test.png");
+  return 0;
+
 
 #ifdef _WIN32
   Fl::run();
