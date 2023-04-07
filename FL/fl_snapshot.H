@@ -43,20 +43,15 @@
  \param[in] scale scale the snapshot in size before saving it
 
  \note if a widget has an outside label, we must snap that as well
- \note we must draw the top level window and possibly subwindows
- \note we must show all parents, all the way to the top level window
- \note we should allow frame widths for all sides
- \note we should allow a list of widgets to be snapped
  \note we must allow snapping of menu items
- \note do we really want that transparency thing? Or is a solid border enough?
 */
 
 //FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=0, int alphaframe=0, double scale=1.0)
 //FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget **w, int frame=0, int alphaframe=0, double scale=1.0)
 //FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=0, double scale=1.0) {
 
-static int min(int a, int b) { return a < b ? a : b; }
-static int max(int a, int b) { return a > b ? a : b; }
+static inline int fl_min(int a, int b) { return a < b ? a : b; }
+static inline int fl_max(int a, int b) { return a > b ? a : b; }
 
 FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget **w, int fx, int fy, int fr, int fb, int alpha=10, double scale=1.0) {
   int i, j, c, min_x, min_y, max_x, max_y, bb_w, bb_h, img_w, img_h;
@@ -70,8 +65,8 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget **w, int fx, in
       min_x = x; max_x = x + ww->w();
       min_y = y; max_y = y + ww->h();
     } else {
-      min_x = min(min_x, x); max_x = max(max_x, x + ww->w());
-      min_y = min(min_y, y); max_y = max(max_y, y + ww->h());
+      min_x = fl_min(min_x, x); max_x = fl_max(max_x, x + ww->w());
+      min_y = fl_min(min_y, y); max_y = fl_max(max_y, y + ww->h());
     }
 
     // this does not help us with Fl_Tab groups
@@ -149,6 +144,104 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=2
   Fl_Widget *ww[2] = { w, NULL };
   return fl_snapshot(filename, ww, frame, frame, frame, frame, alpha, scale);
 }
+
+
+
+
+FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Menu_Item *m1, Fl_Menu_Item *m2, int fh=0, int fv=10, int alpha=10, double scale=1.0) {
+  int i, j, c, min_x, min_y, max_x, max_y, bb_w, bb_h, img_w = 0, img_h, item_h = 0, n_visible = 0;
+  int hotkey_w = 0, hotkey_mod_w = 0;
+  int m1i = -1, m2i = -1;
+
+  // Get the bounding box for all widgets and make sure that all widgets are shown
+  if (m2 == NULL) m2 = m1;
+  if (m1 == NULL) m1 = menu;
+  Fl_Menu_Item *m = menu;
+  for (; m->text; m = m->next()) {
+    if (m == m1) m1i = n_visible;
+    if (m == m2) m2i = n_visible;
+    if (m->visible()) {
+      m->measure(img_w, item_h, hotkey_mod_w, hotkey_w, NULL);
+      n_visible++;
+    }
+  }
+  if ((n_visible == 0) || (m1i == -1)) return -2;
+  img_w += 12 + hotkey_mod_w + hotkey_w; // border
+  if (m2i == -1) m2i = n_visible -1;
+  min_x = 0; max_x = img_w;
+  min_y = m1i * item_h; max_y = (m2i+1) * item_h; // TODO: if this so?
+  img_h = item_h * n_visible + 8;
+
+  // Generate the Image Surface
+  Fl_Image_Surface *srfc = new Fl_Image_Surface(img_w, max_y-min_y);
+  Fl_Image_Surface::push_current(srfc);
+
+  // Draw the background
+  fl_rectf(0, 0, img_w, img_h, 0x1395bf00);
+  fl_draw_box(FL_UP_BOX, 0, -min_y, img_w, img_h, FL_BACKGROUND_COLOR);
+
+  // Draw the menu items
+  m = menu;
+  int yy = 4 - min_y;
+  for (; m->text; m = m->next()) {
+    if (!m->visible()) continue;
+    m->draw(4, yy+2, img_w-8, item_h-4, hotkey_w, 3, NULL);
+    yy += item_h;
+  }
+  Fl_Image_Surface::pop_current();
+  Fl_RGB_Image *img = srfc->image();
+
+#if 0
+  // Do we want an alpha blended frame?
+  if (alpha && (img->d() == 3)) {
+
+    // If alpha is set, create the alpha channel at 50%
+    uchar *data = new uchar[img_w * img_h * 4], *dst = data;
+    int ld = img->ld(); if (ld == 0) ld = img_w * 3;
+    int c, i, j;
+    for (i=0; i<img_h; i++) {
+      const uchar *src = (const uchar*)img->data()[0] + i * ld;
+      for (j=0; j<img_w; j++) {
+        *dst++ = *src++;
+        *dst++ = *src++;
+        *dst++ = *src++;
+        *dst++ = 128;
+      }
+    }
+
+    // Now set the bounding box of all widget plus frame to 100%
+    for (i=0; i<bb_h; i++) {
+      dst = data + img_w * 4 * (alpha+i) + alpha * 4;
+      for (j=0; j<bb_w; j++) {
+        dst[3] = 255; dst += 4;
+      }
+    }
+    Fl_RGB_Image *img4 = new Fl_RGB_Image(data, img->w(), img->h(), 4);
+    delete img;
+    img = img4;
+  }
+#endif
+  
+  // If scale is set, scale the image
+  if (scale != 1.0) {
+    Fl_Image::scaling_algorithm(FL_RGB_SCALING_BILINEAR);
+    Fl_RGB_Image *scaled_img = (Fl_RGB_Image*)img->copy(img->w()*scale, img->h()*scale);
+    delete img;
+    img = scaled_img;
+  }
+
+  // Write the image to disk
+  int ret = fl_write_png(filename, img);
+
+  // Clean up
+  delete img;
+  delete srfc;
+  return ret;
+}
+
+
+
+
 
 
 /** @} */

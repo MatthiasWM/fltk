@@ -261,6 +261,34 @@ int Fl_Menu_Item::measure(int* hp, const Fl_Menu_* m) const {
   return w;
 }
 
+void Fl_Menu_Item::measure(int &w, int &h, int &hotkey_mod_w, int &hotkey_w, const Fl_Menu_*) const {
+  int hh;
+  int w1 = measure(&hh, button);
+  if (hh+Fl::menu_linespacing()>h) h = hh+Fl::menu_linespacing();
+  if (flags&(FL_SUBMENU|FL_SUBMENU_POINTER))
+    w1 += FL_NORMAL_SIZE;
+  if (w1 > w) w = w1;
+  // calculate the maximum width of all shortcuts
+  if (shortcut_) {
+    // s is a pointer to the UTF-8 string for the entire shortcut
+    // k points only to the key part (minus the modifier keys)
+    const char *k, *s = fl_shortcut_label(shortcut_, &k);
+    if (fl_utf_nb_char((const unsigned char*)k, (int) strlen(k))<=4) {
+      // a regular shortcut has a right-justified modifier followed by a left-justified key
+      w1 = int(fl_width(s, (int) (k-s)));
+      if (w1 > hotkey_mod_w) hotkey_mod_w = w1;
+      w1 = int(fl_width(k))+4;
+      if (w1 > hotkey_w) hotkey_w = w1;
+    } else {
+      // a shortcut with a long modifier is right-justified to the menu
+      w1 = int(fl_width(s))+4;
+      if (w1 > (hotkey_mod_w+hotkey_w)) {
+        hotkey_mod_w = w1-hotkey_w;
+      }
+    }
+  }
+}
+
 /** Draws the menu item in bounding box x,y,w,h, optionally selects the item. */
 void Fl_Menu_Item::draw(int x, int y, int w, int h, const Fl_Menu_* m,
                         int selected) const {
@@ -351,6 +379,48 @@ void Fl_Menu_Item::draw(int x, int y, int w, int h, const Fl_Menu_* m,
   fl_draw_shortcut = 0;
 }
 
+void Fl_Menu_Item::draw(int x, int y, int w, int h, int shortcut_width, int frame_width, const Fl_Menu_ *menu, int selected) const {
+  draw(x, y, w, h, menu, selected);
+
+  // the shortcuts and arrows assume fl_color() was left set by draw():
+  if (submenu()) {
+
+    // calculate the bounding box of the submenu pointer (arrow)
+    int sz = (h-2) & -2;
+    int x1 = x + w - sz - 2;
+    int y1 = y + (h-sz)/2 + 1;
+
+    // draw an arrow whose style dependends on the active scheme
+    fl_draw_arrow(Fl_Rect(x1, y1, sz, sz), FL_ARROW_SINGLE, FL_ORIENT_RIGHT, fl_color());
+
+  } else if (shortcut_) {
+    Fl_Font f = labelsize_ || labelfont_ ? (Fl_Font)labelfont_ :
+    button ? button->textfont() : FL_HELVETICA;
+    fl_font(f, labelsize_ ? labelsize_ :
+            button ? button->textsize() : FL_NORMAL_SIZE);
+    const char *k, *s = fl_shortcut_label(shortcut_, &k);
+    if (fl_utf_nb_char((const unsigned char*)k, (int) strlen(k))<=4) {
+      // right-align the modifiers and left-align the key
+      char *buf = (char*)malloc(k-s+1);
+      memcpy(buf, s, k-s); buf[k-s] = 0;
+      fl_draw(buf, x, y, w-shortcut_width, h, FL_ALIGN_RIGHT);
+      fl_draw(  k, x+w-shortcut_width, y, shortcut_width, h, FL_ALIGN_LEFT);
+      free(buf);
+    } else {
+      // right-align to the menu
+      fl_draw(s, x, y, w-4, h, FL_ALIGN_RIGHT);
+    }
+  }
+
+  if (flags & FL_MENU_DIVIDER) {
+    fl_color(FL_DARK3);
+    fl_xyline(frame_width-1, y+h+(Fl::menu_linespacing()-2)/2, w+2*frame_width-1);
+    fl_color(FL_LIGHT3);
+    fl_xyline(frame_width-1, y+h+((Fl::menu_linespacing()-2)/2+1), w+2*frame_width-1);
+  }
+}
+
+
 menutitle::menutitle(int X, int Y, int W, int H, const Fl_Menu_Item* L, bool inbar) :
   window_with_items(X, Y, W, H, L) {
   in_menubar = inbar;
@@ -406,31 +476,7 @@ menuwindow::menuwindow(const Fl_Menu_Item* m, int X, int Y, int Wp, int Hp,
   if (t) Wtitle = t->measure(&Htitle, button) + 12;
   int W = 0;
   if (m) for (; m->text; m = m->next()) {
-    int hh;
-    int w1 = m->measure(&hh, button);
-    if (hh+Fl::menu_linespacing()>itemheight) itemheight = hh+Fl::menu_linespacing();
-    if (m->flags&(FL_SUBMENU|FL_SUBMENU_POINTER))
-      w1 += FL_NORMAL_SIZE;
-    if (w1 > W) W = w1;
-    // calculate the maximum width of all shortcuts
-    if (m->shortcut_) {
-      // s is a pointer to the UTF-8 string for the entire shortcut
-      // k points only to the key part (minus the modifier keys)
-      const char *k, *s = fl_shortcut_label(m->shortcut_, &k);
-      if (fl_utf_nb_char((const unsigned char*)k, (int) strlen(k))<=4) {
-        // a regular shortcut has a right-justified modifier followed by a left-justified key
-        w1 = int(fl_width(s, (int) (k-s)));
-        if (w1 > hotModsw) hotModsw = w1;
-        w1 = int(fl_width(k))+4;
-        if (w1 > hotKeysw) hotKeysw = w1;
-      } else {
-        // a shortcut with a long modifier is right-justified to the menu
-        w1 = int(fl_width(s))+4;
-        if (w1 > (hotModsw+hotKeysw)) {
-          hotModsw = w1-hotKeysw;
-        }
-      }
-    }
+    m->measure(W, itemheight, hotModsw, hotKeysw, button);
   }
   shortcutWidth = hotKeysw;
   if (selected >= 0 && !Wp) X -= W/2;
@@ -537,44 +583,7 @@ void menuwindow::drawentry(const Fl_Menu_Item* m, int n, int eraseit) {
     fl_pop_clip();
   }
 
-  m->draw(xx, yy, ww, hh, button, n==selected);
-
-  // the shortcuts and arrows assume fl_color() was left set by draw():
-  if (m->submenu()) {
-
-    // calculate the bounding box of the submenu pointer (arrow)
-    int sz = (hh-2) & -2;
-    int x1 = xx + ww - sz - 2;
-    int y1 = yy + (hh-sz)/2 + 1;
-
-    // draw an arrow whose style dependends on the active scheme
-    fl_draw_arrow(Fl_Rect(x1, y1, sz, sz), FL_ARROW_SINGLE, FL_ORIENT_RIGHT, fl_color());
-
-  } else if (m->shortcut_) {
-    Fl_Font f = m->labelsize_ || m->labelfont_ ? (Fl_Font)m->labelfont_ :
-                    button ? button->textfont() : FL_HELVETICA;
-    fl_font(f, m->labelsize_ ? m->labelsize_ :
-                   button ? button->textsize() : FL_NORMAL_SIZE);
-    const char *k, *s = fl_shortcut_label(m->shortcut_, &k);
-    if (fl_utf_nb_char((const unsigned char*)k, (int) strlen(k))<=4) {
-      // right-align the modifiers and left-align the key
-      char *buf = (char*)malloc(k-s+1);
-      memcpy(buf, s, k-s); buf[k-s] = 0;
-      fl_draw(buf, xx, yy, ww-shortcutWidth, hh, FL_ALIGN_RIGHT);
-      fl_draw(  k, xx+ww-shortcutWidth, yy, shortcutWidth, hh, FL_ALIGN_LEFT);
-      free(buf);
-    } else {
-      // right-align to the menu
-      fl_draw(s, xx, yy, ww-4, hh, FL_ALIGN_RIGHT);
-    }
-  }
-
-  if (m->flags & FL_MENU_DIVIDER) {
-    fl_color(FL_DARK3);
-    fl_xyline(BW-1, yy+hh+(Fl::menu_linespacing()-2)/2, W-2*BW+2);
-    fl_color(FL_LIGHT3);
-    fl_xyline(BW-1, yy+hh+((Fl::menu_linespacing()-2)/2+1), W-2*BW+2);
-  }
+  m->draw(xx, yy, ww, hh, shortcutWidth, BW, button, n==selected);
 }
 
 void menutitle::draw() {

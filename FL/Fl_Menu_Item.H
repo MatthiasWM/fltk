@@ -372,7 +372,9 @@ struct FL_EXPORT Fl_Menu_Item {
 
   // used by menubar:
   int measure(int* h, const Fl_Menu_*) const;
+  void measure(int &w, int &h, int &hotkey_mod_w, int &hotkey_w, const Fl_Menu_*) const;
   void draw(int x, int y, int w, int h, const Fl_Menu_*, int t=0) const;
+  void draw(int x, int y, int w, int h, int shortcut_width, int frame_width, const Fl_Menu_*, int t=0) const;
 
   // popup menus without using an Fl_Menu_ widget:
   const Fl_Menu_Item* popup(
