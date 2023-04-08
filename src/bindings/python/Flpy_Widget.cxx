@@ -106,7 +106,6 @@ public:
   void draw() FL_OVERRIDE {
     Flpy_Derived_Widget *self = (Flpy_Derived_Widget*)user_data();
     PyObject_CallMethodNoArgs((PyObject*)self, PyUnicode_FromString("draw"));
-    Py_RETURN_NONE;
   }
   // TODO: int handle(e)
   // TODO: void resize(x, y, w, h)

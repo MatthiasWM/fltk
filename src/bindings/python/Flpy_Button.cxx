@@ -152,7 +152,11 @@ PyMethodDef Flpy_Button::flpy_methods[] = {
     FlpyARG_i_TO_i(Button, value)
     FlpyARG_v_TO_i(Button, value)
   FlpyMETHOD_VARARGS_END(Button, value, "takes no arguments or one integer"),
-  FlpyMETHOD_VIRT_v_TO_v(Button, draw),
+//  FlpyMETHOD_VIRT_v_TO_v(Button, draw),
+  { "draw", [](PyObject *self, PyObject *args)->PyObject* {
+    ((Flpy_Button_Object*)self)->o->Flpy_Button::draw(); Py_RETURN_NONE;
+  }, METH_NOARGS },
+
   FlpyMETHOD_VIRT_i_TO_i(Button, handle),
   FlpyMETHOD_v_TO_v(Button, simulate_key_action),
   FlpyMETHOD_v_TO_v(Button, set),
