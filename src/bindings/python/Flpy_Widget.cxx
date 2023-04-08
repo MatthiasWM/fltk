@@ -112,7 +112,8 @@ public:
 };
 
 
-// TODO: roll this into a macro becuase it's the same for every widget class
+// TODO: roll this into a macro because it's the same for every widget class
+// TODO: we should move this into __new__ where we already have all the parameters, so the user can override __init__
 int Flpy_Widget::flpy_init(Flpy_Widget_Object *self, PyObject *args, PyObject*) {
   int x, y, w, h;
   char *label_ = NULL;
