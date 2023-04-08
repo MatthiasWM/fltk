@@ -70,6 +70,13 @@ PyObject *Flpy_Button::flpy_new(PyTypeObject *type, PyObject *args, PyObject *kw
   // own tp_new."
   Flpy_Button_Object *self;
   self = (Flpy_Button_Object*)type->tp_alloc(type, 0);
+
+  if (Py_TYPE(self) == &flpy_type) {
+    int x =3;
+  } else {
+    int x =4;
+  }
+
 //  PyObject_Print(args, stdout, 0);
   //  if (self != NULL) {
   //    self->first = PyUnicode_FromString("");
@@ -95,7 +102,7 @@ int Flpy_Button::flpy_init(Flpy_Button_Object *self, PyObject *args, PyObject*) 
   int x, y, w, h;
   char *label_ = NULL;
   if (!PyArg_ParseTuple(args, "iiii|z", &x, &y, &w, &h, &label_)) return -1;
-  if (Py_TYPE(self) == &flpy_type)
+  if (Py_TYPE(self) == &flpy_button_type)
     self->o = new Flpy_Button(x, y, w, h);
   else
     self->o = new Flpy_Derived_Button(x, y, w, h);
@@ -152,11 +159,7 @@ PyMethodDef Flpy_Button::flpy_methods[] = {
     FlpyARG_i_TO_i(Button, value)
     FlpyARG_v_TO_i(Button, value)
   FlpyMETHOD_VARARGS_END(Button, value, "takes no arguments or one integer"),
-//  FlpyMETHOD_VIRT_v_TO_v(Button, draw),
-  { "draw", [](PyObject *self, PyObject *args)->PyObject* {
-    ((Flpy_Button_Object*)self)->o->Flpy_Button::draw(); Py_RETURN_NONE;
-  }, METH_NOARGS },
-
+  FlpyMETHOD_VIRT_v_TO_v(Button, draw),
   FlpyMETHOD_VIRT_i_TO_i(Button, handle),
   FlpyMETHOD_v_TO_v(Button, simulate_key_action),
   FlpyMETHOD_v_TO_v(Button, set),
@@ -196,7 +199,8 @@ PyTypeObject flpy_button_type = {
   .tp_methods = Flpy_Button::flpy_methods,
   .tp_base = &flpy_widget_type,
   .tp_init = (initproc)Flpy_Button::flpy_init,
-  .tp_new = PyType_GenericNew, //Flpy_Button::flpy_new,
+//  .tp_new = PyType_GenericNew, //Flpy_Button::flpy_new,
+  .tp_new = Flpy_Button::flpy_new,
   .tp_finalize = (destructor)Flpy_Button::flpy_finalize,
 };
 #endif
