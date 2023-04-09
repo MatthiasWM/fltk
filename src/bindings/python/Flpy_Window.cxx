@@ -32,6 +32,7 @@ public:
   Flpy_Window(int x, int y, int w, int h) : Fl_Window(x, y, w, h) { }
   static int flpy_init(Flpy_Window_Object *self, PyObject *args, PyObject*);
   static PyObject *flpy_show(Flpy_Window_Object *self, PyObject *args) {
+    // Fl_Window.show(sys.argv)
     self->o->show(0, NULL);
     Py_RETURN_NONE;
   }
