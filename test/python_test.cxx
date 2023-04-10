@@ -64,6 +64,7 @@ const char *prg =
 "window = Fl_Window(340, 180, 'Hello Python')\n"
 "#btn = MyButton(20, 40, 300, 100, 'Hello, World!')\n"
 "btn = Fl_Button(20, 40, 300, 100, 'Hello, World!')\n"
+"Fl_Button(20, 140, 300, 20, 'Hello, World!').color(FL_RED)\n"
 "#btn = Fl_Button(20, 40, 300, 100)\n"
 "#btn.callback(test_callback, 'Callback called')\n"
 "#btn.toast = 'yum'\n"
