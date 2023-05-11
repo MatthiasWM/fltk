@@ -75,4 +75,13 @@
 
 #cmakedefine FLTK_USE_WAYLAND 1
 
+/*
+ * FLTK_USE_SDL
+ *
+ * Do we use SDL for the current platform?
+ *
+ */
+
+#cmakedefine FLTK_USE_SDL 1
+
 #endif /* _FL_fl_config_h_ */

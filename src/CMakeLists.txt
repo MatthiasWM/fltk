@@ -326,6 +326,34 @@ elseif (OPTION_USE_WAYLAND)
 
 elseif (APPLE)
 
+  if (FLTK_USE_SDL)
+
+  # MacOS and SDL2
+
+  set (DRIVER_FILES
+    drivers/SDL/Fl_SDL_Graphics_Driver.cxx
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Window_Driver.cxx
+    drivers/SDL/Fl_SDL_Screen_Driver.cxx
+    drivers/Posix/Fl_Posix_System_Driver.cxx
+#    drivers/Darwin/Fl_Darwin_System_Driver.cxx
+    Fl_get_key_SDL.cxx
+    drivers/SDL/fl_macOS_SDL_init.cxx
+  )
+  set (DRIVER_HEADER_FILES
+    drivers/Posix/Fl_Posix_System_Driver.H
+#    drivers/Darwin/Fl_Darwin_System_Driver.H
+    drivers/SDL/Fl_SDL_Screen_Driver.H
+    drivers/SDL/Fl_SDL_Window_Driver.H
+    drivers/SDL/Fl_SDL_Graphics_Driver.H
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.H
+    drivers/SDL/Fl_Font.H
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.H
+  )
+
+  else (FLTK_USE_SDL)
+
   # Apple Quartz
 
   set (DRIVER_FILES
@@ -357,6 +385,8 @@ elseif (APPLE)
     drivers/Quartz/Fl_Font.H
     drivers/Quartz/Fl_Quartz_Image_Surface_Driver.H
   )
+
+  endif (FLTK_USE_SDL)
 
 else ()
 
@@ -554,7 +584,7 @@ if (WIN32)
   )
 endif (WIN32)
 
-if (APPLE AND (NOT OPTION_APPLE_X11))
+if (APPLE AND (NOT OPTION_APPLE_X11) AND (NOT FLTK_USE_SDL))
   set (MMFILES
     Fl_cocoa.mm
     drivers/Cocoa/Fl_Cocoa_Printer_Driver.mm
@@ -564,7 +594,7 @@ if (APPLE AND (NOT OPTION_APPLE_X11))
 else()
   set (MMFILES
   )
-endif (APPLE AND (NOT OPTION_APPLE_X11))
+endif (APPLE AND (NOT OPTION_APPLE_X11) AND (NOT FLTK_USE_SDL))
 
 
 #######################################################################
@@ -599,6 +629,10 @@ endif (USE_THREADS)
 if (FLTK_USE_X11)
   list (APPEND OPTIONAL_LIBS ${X11_LIBRARIES})
 endif (FLTK_USE_X11)
+
+if (FLTK_USE_SDL)
+  list (APPEND OPTIONAL_LIBS SDL2::SDL2-static)
+endif (FLTK_USE_SDL)
 
 if (WIN32)
   list (APPEND OPTIONAL_LIBS comctl32 ws2_32)
