@@ -23,6 +23,7 @@
 #define FL_SDL_SYSTEM_DRIVER_H
 
 #include "../Posix/Fl_Posix_System_Driver.H"
+#include <SDL.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -70,6 +71,8 @@ public:
 //  Fl_Sys_Menu_Bar_Driver *sys_menu_bar_driver() FL_OVERRIDE;
   double wait(double time_to_wait) FL_OVERRIDE;
   int ready() FL_OVERRIDE;
+private:
+  int handle_mouse_events(SDL_Event &event);
 };
 
 #endif // FL_SDL_SYSTEM_DRIVER_H

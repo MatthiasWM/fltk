@@ -206,6 +206,14 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
   Mouse Events
  ==============
 
- Now to verify that our minimal structure is
+ Now to verify that our minimal event loop is working by implementing mouse
+ events. That will allow us to click on buttons, see their graphics change,
+ and trigger callbacks.
+
+ Handling mouse clicks revealed what I was afraid of. In the current mode,
+ the SDL renderer expects us to redraw the entire screen surface. FLTK is
+ very careful to redraw only things taht actually changed, which greatly
+ reduces reder times. So we have to find a way to preserve the screen contents
+ between SDL_RenderPresent calls.
 
  */

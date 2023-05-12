@@ -23,9 +23,6 @@
 #include <FL/platform.H>
 #include "../../flstring.h"
 #include <string.h>
-//#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-//#include <xlocale.h>
-//#endif
 //#include <locale.h>
 //#include <stdio.h>
 //#include <dlfcn.h>
@@ -63,13 +60,22 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
   Uint32 ticks = SDL_GetTicks();
   for (;;) {
     if (time_to_wait==0.0) {
-      int done = SDL_PollEvent(&event);
-      if (done) break;
+      int has_event = SDL_PollEvent(&event);
+      if (!has_event) break;
     } else {
-      int done = SDL_WaitEventTimeout(&event, time_to_wait*1000);
-      if (done) break;
+      int has_event;
+      if (time_to_wait >= 1e20)
+        has_event = SDL_WaitEvent(&event);
+      else
+        has_event = SDL_WaitEventTimeout(&event, time_to_wait*1000);
+      if (!has_event) break;
     }
     switch (event.type) {
+      case SDL_MOUSEMOTION:
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+        handle_mouse_events(event);
+        break;
       case SDL_QUIT: {
         // TODO:
         Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
@@ -81,8 +87,10 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
       default:
         break;
     }
+    break; // TODO: correct?
   }
-  Uint32 ticks_passed = SDL_TICKS_PASSED(ticks, SDL_GetTicks());
+  Uint32 ticks_now = SDL_GetTicks();
+  Uint32 ticks_passed = SDL_TICKS_PASSED(ticks_now, ticks);
   double time_left = time_to_wait - (ticks_passed/1000.0);
   if (time_left<0.0) time_left = 0.0;
 //  int retval = do_queued_events(time_to_wait);
@@ -91,6 +99,158 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
 //  [pool release];
   return time_left;
 }
+
+int Fl_SDL_System_Driver::handle_mouse_events(SDL_Event &event) {
+//  static int keysym[] = { 0, FL_Button+1, FL_Button+3, FL_Button+2 };
+//  static int px, py;
+
+  Fl::lock();
+
+//  Fl_Window *window = (Fl_Window*)[(FLWindow*)[theEvent window] getFl_Window];
+//  if (!window || !window->shown() ) {
+//    fl_unlock_function();
+//    return;
+//  }
+//  Fl_Window *first = Fl::first_window();
+//  if (first != window && !(first->modal() || first->non_modal())) Fl::first_window(window);
+//  NSPoint pos = [theEvent locationInWindow];
+//  float s = Fl::screen_driver()->scale(0);
+//  pos.x /= s; pos.y /= s;
+//  pos.y = window->h() - pos.y;
+//  NSInteger btn = [theEvent buttonNumber]  + 1;
+//  NSUInteger mods = [theEvent modifierFlags];
+//  int sendEvent = 0;
+//
+//  NSEventType etype = [theEvent type];
+//  if (etype == NSLeftMouseDown || etype == NSRightMouseDown || etype == NSOtherMouseDown) {
+//    if (btn == 1) Fl::e_state |= FL_BUTTON1;
+//    else if (btn == 3) Fl::e_state |= FL_BUTTON2;
+//    else if (btn == 2) Fl::e_state |= FL_BUTTON3;
+//  }
+//  else if (etype == NSLeftMouseUp || etype == NSRightMouseUp || etype == NSOtherMouseUp) {
+//    if (btn == 1) Fl::e_state &= ~FL_BUTTON1;
+//    else if (btn == 3) Fl::e_state &= ~FL_BUTTON2;
+//    else if (btn == 2) Fl::e_state &= ~FL_BUTTON3;
+//  }
+//
+//  switch ( etype ) {
+//    case NSLeftMouseDown:
+//    case NSRightMouseDown:
+//    case NSOtherMouseDown:
+//      sendEvent = FL_PUSH;
+//      Fl::e_is_click = 1;
+//      px = (int)pos.x; py = (int)pos.y;
+//      if ([theEvent clickCount] > 1)
+//        Fl::e_clicks++;
+//      else
+//        Fl::e_clicks = 0;
+//      // fall through
+//    case NSLeftMouseUp:
+//    case NSRightMouseUp:
+//    case NSOtherMouseUp:
+//      if ( !window ) break;
+//      if ( !sendEvent ) {
+//        sendEvent = FL_RELEASE;
+//      }
+//      Fl::e_keysym = keysym[ btn ];
+//      // fall through
+//    case NSMouseMoved:
+//      if ( !sendEvent ) {
+//        sendEvent = FL_MOVE;
+//      }
+//      // fall through
+//    case NSLeftMouseDragged:
+//    case NSRightMouseDragged:
+//    case NSOtherMouseDragged: {
+//      if ( !sendEvent ) {
+//        sendEvent = FL_MOVE; // Fl::handle will convert into FL_DRAG
+//        if (fabs(pos.x-px)>5 || fabs(pos.y-py)>5)
+//          Fl::e_is_click = 0;
+//      }
+//      mods_to_e_state( mods );
+//      update_e_xy_and_e_xy_root([theEvent window]);
+//      if (fl_mac_os_version < 100500) {
+//        // before 10.5, mouse moved events aren't sent to borderless windows such as tooltips
+//        Fl_Window *tooltip = Fl_Tooltip::current_window();
+//        int inside = 0;
+//        if (tooltip && tooltip->shown() ) { // check if a tooltip window is currently opened
+//          // check if mouse is inside the tooltip
+//          inside = (Fl::event_x_root() >= tooltip->x() && Fl::event_x_root() < tooltip->x() + tooltip->w() &&
+//                    Fl::event_y_root() >= tooltip->y() && Fl::event_y_root() < tooltip->y() + tooltip->h() );
+//        }
+//        // if inside, send event to tooltip window instead of background window
+//        if (inside)
+//          window = tooltip;
+//      }
+//      Fl::handle( sendEvent, window );
+//    }
+//      break;
+//    case NSMouseEntered :
+//      Fl::handle(FL_ENTER, window);
+//      break;
+//    case NSMouseExited :
+//      Fl::handle(FL_LEAVE, window);
+//      break;
+//    default:
+//      break;
+//  }
+//
+
+  // TODO: we currently support only one single window in the top left corner
+
+  int e = 0;
+  if ( (event.type == SDL_MOUSEBUTTONUP) || (event.type == SDL_MOUSEBUTTONDOWN) ) {
+    SDL_MouseButtonEvent &mb = (SDL_MouseButtonEvent&)event;
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+      e = FL_PUSH;
+      if (mb.button == SDL_BUTTON_LEFT) {
+        Fl::e_state |= FL_BUTTON1;
+        Fl::e_keysym = FL_Button + 1;
+      } else if (mb.button == SDL_BUTTON_MIDDLE) {
+        Fl::e_state |= FL_BUTTON2;
+        Fl::e_keysym = FL_Button + 2;
+      } else if (mb.button == SDL_BUTTON_RIGHT) {
+        Fl::e_state |= FL_BUTTON3;
+        Fl::e_keysym = FL_Button + 1;
+      } else {
+        e = 0;
+      }
+    } else if (event.type == SDL_MOUSEBUTTONUP) {
+      e = FL_RELEASE;
+      if (mb.button == SDL_BUTTON_LEFT) {
+        Fl::e_state &= ~FL_BUTTON1;
+        Fl::e_keysym = FL_Button + 1;
+      } else if (mb.button == SDL_BUTTON_MIDDLE) {
+        Fl::e_state &= ~FL_BUTTON2;
+        Fl::e_keysym = FL_Button + 2;
+      } else if (mb.button == SDL_BUTTON_RIGHT) {
+        Fl::e_state &= ~FL_BUTTON3;
+        Fl::e_keysym = FL_Button + 1;
+      } else {
+        e = 0;
+      }
+    }
+    if (e) {
+      Fl::e_is_click = 1;
+      Fl::e_clicks = mb.clicks - 1;
+      Fl::e_x_root = Fl::e_x = mb.x;
+      Fl::e_y_root = Fl::e_y = mb.y;
+    }
+  }
+  if (e && Fl::first_window()) {
+    Fl::handle(e, Fl::first_window());
+  }
+
+  Fl::unlock();
+
+  return 0;
+
+//  switch (event.type) {
+//    case SDL_MOUSEMOTION:
+//    case SDL_MOUSEBUTTONDOWN:
+//    case SDL_MOUSEBUTTONUP:
+}
+
 
 int Fl_SDL_System_Driver::ready()
 {
