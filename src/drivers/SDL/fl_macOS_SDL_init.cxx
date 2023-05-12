@@ -212,8 +212,46 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
 
  Handling mouse clicks revealed what I was afraid of. In the current mode,
  the SDL renderer expects us to redraw the entire screen surface. FLTK is
- very careful to redraw only things taht actually changed, which greatly
- reduces reder times. So we have to find a way to preserve the screen contents
- between SDL_RenderPresent calls.
+ very careful to redraw only things that actually changed, which greatly
+ reduces reder times.
+
+
+  Incremental Rendering
+ =======================
+
+ I have to find a way to preserve the screen contents between SDL_RenderPresent
+ calls. The solution is to render via an external buffer that is copied to the
+ renderer at every frame. What sound expensive may not be too bad because
+ blitting rectangular pixel arrays around is almost always done in hardware
+ these days. SDL provides a texture interface that is optimized to do just that.
+
+ =======================
+ === First Milestone ===
+ =======================
+
+ We have reached our first milestone here. The CMake setup can compile demo apps
+ on MacOS. We open a window that renders something (rectangles) and reacts to
+ some event (mouse clicks).
+
+ Next milestone will include the rendering of text, mouse move events, and
+ keyboard support.
+
+ I will then adapt teh build system to work on MacOS fo iOS, and compile on
+ MSWindows and Linux for that platform.  If everything goes well and I feel
+ brave, I will try to get CMake to compile for Android, preferably on all
+ three platforms.
+
+ I then need to implement a minimal desktop and window manager. They will
+ require complex clipping areas. It would also be nice to OpenGL running in
+ FLTK windows and subwindows.
+
+ After that, it's mostly refining event handling and completing all graphics
+ calls. Testing, and documentation.
+
+
+  Rendering Text
+ ================
+
+ 
 
  */
