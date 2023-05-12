@@ -42,10 +42,8 @@ void (*fl_unlock_function)() = nothing;
 
 void Fl_SDL_Screen_Driver::open_display_platform() {
   static char beenHereDoneThat = 0;
-  if (!beenHereDoneThat) {
-    beenHereDoneThat = 1;
-    return;
-  }
+  if (beenHereDoneThat) return;
+  beenHereDoneThat = 1;
 
   Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
 

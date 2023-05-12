@@ -340,6 +340,8 @@ elseif (APPLE)
     drivers/SDL/Fl_SDL_Screen_Driver.cxx
     drivers/SDL/Fl_SDL_System_Driver.cxx
     drivers/Posix/Fl_Posix_System_Driver.cxx
+    drivers/Posix/Fl_Posix_Printer_Driver.cxx
+    Fl_Native_File_Chooser_FLTK.cxx
   )
   set (DRIVER_HEADER_FILES
     drivers/SDL/Fl_SDL_Graphics_Driver.H

@@ -261,4 +261,22 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
  Also, right now, we only support low res screens and no user defined scaling.
  Let's first get the basics going, and check that out later.
 
+ We need to come up with some font caching, font file paths, and support
+ for multiple fonts.
+
+
+  Compiling Tests
+ =================
+
+ Going through the demo apps, we can check what already compiles or even runs.
+ The main thing missing if FLUID which needs to compile to generate the GUI for
+ a bunch of the test apps. So printing support must be linked using the Posix
+ driver on MacOS. We also need to link with the FLTK file chooser to emulate
+ the native file chooser in SDL by adding the constructor for the built-in one.
+
+ ZEven though a lot of demo apps are unusable or even crash, getting the
+ feedback show that I am on a good path. Fonts must be cached, multiple
+ window support must be added, almost all events are unhandled and much more,
+ but it is still great to have something on screen.
+
  */

@@ -17,6 +17,7 @@
 #include "Fl_SDL_System_Driver.H"
 #include "Fl_SDL_Graphics_Driver.H"
 #include <FL/Fl.H>
+#include <FL/Fl_Native_File_Chooser.H>
 //#include <FL/Fl_File_Browser.H>
 //#include <FL/Fl_Tree_Prefs.H>
 //#include <FL/Fl_Pixmap.H>
@@ -36,6 +37,10 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
+
+Fl_Native_File_Chooser::Fl_Native_File_Chooser(int val) {
+  platform_fnfc = new Fl_Native_File_Chooser_FLTK_Driver(val);
+}
 
 
 Fl_SDL_System_Driver::Fl_SDL_System_Driver() : Fl_Posix_System_Driver() {
@@ -59,7 +64,7 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
     time_to_wait = 0.0;
 
   SDL_Event event;
-  Uint32 ticks = SDL_GetTicks();
+  Uint64 ticks = SDL_GetTicks64(); // milliseconds
   for (;;) {
     if (time_to_wait==0.0) {
       int has_event = SDL_PollEvent(&event);
@@ -95,14 +100,10 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
     }
     break; // TODO: correct?
   }
-  Uint32 ticks_now = SDL_GetTicks();
-  Uint32 ticks_passed = SDL_TICKS_PASSED(ticks_now, ticks);
+  Uint64 ticks_now = SDL_GetTicks64();
+  Uint64 ticks_passed = ticks_now - ticks;
   double time_left = time_to_wait - (ticks_passed/1000.0);
   if (time_left<0.0) time_left = 0.0;
-//  int retval = do_queued_events(time_to_wait);
-//
-//  Fl_Cocoa_Window_Driver::q_release_context();
-//  [pool release];
   return time_left;
 }
 
