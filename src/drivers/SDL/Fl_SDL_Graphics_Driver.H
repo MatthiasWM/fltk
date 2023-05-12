@@ -25,6 +25,8 @@
 #include <FL/platform.H>
 #include <FL/Fl_Graphics_Driver.H>
 
+#include <SDL.h>
+
 struct Fl_Fontdesc;
 class Fl_SDL_Font_Descriptor;
 
@@ -46,7 +48,7 @@ class Fl_SDL_Graphics_Driver : public Fl_Graphics_Driver {
 //  int quartz_line_pattern_size;
 //  void cache_size(Fl_Image* img, int &width, int &height) FL_OVERRIDE;
 public:
-  Fl_SDL_Graphics_Driver() { }
+  Fl_SDL_Graphics_Driver();
 //  int has_feature(driver_feature mask) FL_OVERRIDE { return mask & NATIVE; }
 //  void gc(void *ctxt) FL_OVERRIDE { gc_ = (CGContextRef)ctxt; global_gc(); }
 //  void *gc() FL_OVERRIDE {return gc_;}
@@ -77,7 +79,7 @@ public:
 //  void point(int x, int y) FL_OVERRIDE;
 //  void rect(int x, int y, int w, int h) FL_OVERRIDE;
 //  void focus_rect(int x, int y, int w, int h) FL_OVERRIDE;
-//  void rectf(int x, int y, int w, int h) FL_OVERRIDE;
+  void rectf(int x, int y, int w, int h) FL_OVERRIDE;
 //  void line(int x, int y, int x1, int y1) FL_OVERRIDE;
 //  void line(int x, int y, int x1, int y1, int x2, int y2) FL_OVERRIDE;
 //  void xyline(int x, int y, int x1) FL_OVERRIDE;
@@ -103,7 +105,7 @@ public:
 //  void arc(int x, int y, int w, int h, double a1, double a2) FL_OVERRIDE;
 //  void pie(int x, int y, int w, int h, double a1, double a2) FL_OVERRIDE;
 //  void line_style(int style, int width=0, char* dashes=0) FL_OVERRIDE;
-//  void color(Fl_Color c) FL_OVERRIDE;
+  void color(Fl_Color c) FL_OVERRIDE;
 //  Fl_Color color() FL_OVERRIDE { return color_; }
 //  void color(uchar r, uchar g, uchar b) FL_OVERRIDE;
 //  void draw(const char *str, int n, int x, int y) FL_OVERRIDE;
@@ -160,7 +162,12 @@ public:
 //  void restore_scale(float) FL_OVERRIDE;
 //  void antialias(int state) FL_OVERRIDE;
 //  int antialias() FL_OVERRIDE;
+  SDL_Surface *sdl_surface;
+  SDL_Window *sdl_screen;
+  bool sdl_update_screen;
+  Uint32 sdl_color;
 };
+
 
 class Fl_SDL_Printer_Graphics_Driver : public Fl_SDL_Graphics_Driver {
 public:

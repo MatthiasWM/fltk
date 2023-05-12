@@ -53,8 +53,8 @@ class Fl_SDL_Window_Driver : public Fl_Window_Driver
 //  // whether window's view received the [FLView view_did_resize] message
 //  unsigned window_flags_;
 public:
-  Fl_SDL_Window_Driver(Fl_Window *w) : Fl_Window_Driver(w) { }
-  ~Fl_SDL_Window_Driver() { }
+  Fl_SDL_Window_Driver(Fl_Window *w);
+  ~Fl_SDL_Window_Driver();
 //  static inline Fl_Cocoa_Window_Driver* driver(const Fl_Window *w) {return (Fl_Cocoa_Window_Driver*)Fl_Window_Driver::driver(w);}
 //  CGContextRef gc;                 // graphics context
 //  NSCursor *cursor;
@@ -80,15 +80,15 @@ public:
 //  const Fl_Image* shape() FL_OVERRIDE;
 //
 //  // --- window management
-//  void makeWindow() FL_OVERRIDE;
+  void makeWindow() FL_OVERRIDE;
 //  void take_focus() FL_OVERRIDE;
 //  void flush() FL_OVERRIDE;
 //  void flush_overlay() FL_OVERRIDE;
 //  void draw_begin() FL_OVERRIDE;
 //  void draw_end() FL_OVERRIDE;
-//  void make_current() FL_OVERRIDE;
+  void make_current() FL_OVERRIDE;
 //  void label(const char *name, const char *mininame) FL_OVERRIDE;
-//  void show() FL_OVERRIDE;
+  void show() FL_OVERRIDE;
 //  void resize(int X,int Y,int W,int H) FL_OVERRIDE;
 //  void hide() FL_OVERRIDE;
 //  void map() FL_OVERRIDE;

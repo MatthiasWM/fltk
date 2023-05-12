@@ -18,7 +18,7 @@
 #include "Fl_SDL_Copy_Surface_Driver.H"
 #include "Fl_SDL_Graphics_Driver.H"
 #include "Fl_SDL_Screen_Driver.H"
-#include "../Darwin/Fl_Darwin_System_Driver.H"
+#include "Fl_SDL_System_Driver.H"
 #include "Fl_SDL_Window_Driver.H"
 #include "Fl_SDL_Image_Surface_Driver.H"
 
@@ -43,8 +43,7 @@ Fl_Screen_Driver *Fl_Screen_Driver::newScreenDriver()
 
 Fl_System_Driver *Fl_System_Driver::newSystemDriver()
 {
-  return new Fl_Posix_System_Driver();
-//  return new Fl_Darwin_System_Driver();
+  return new Fl_SDL_System_Driver();
 }
 
 
@@ -139,12 +138,71 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
 
  So the minimum required functions are: fl_open_display(),
  Fl_Window_Driver::makeWindow(), Fl::wait(), and Fl::flush()
- 
+
+
+  Show the Window
+ =================
+
+ Windows under FLTK are a bit curious. Their host counterpart is stored in
+ Fl_Window_Driver which is not so much of a driver, but a private data and
+ function collection. There is a new driver allocated for every top-level
+ window. Window drivers have an Fl_X memebr named flx which in turn manages an
+ abstract xid which is used to finally link to the host window.
+
+ Under SDL, we have no host windows, just one big screen, so we will implement
+ window behaviour in the "driver", and the xid will point back to that. I eneded
+ up taking the easy code from teh Cocoa driver and implement show()
+ and makeWindow().
+
 
   Main Event Loop
  =================
 
- Next I moved the main event loop into its final location at Fl::wait
+ Next I moved the main event loop into its final location at Fl::wait() which
+ is implemented in Fl_System_Driver. This is a bit of an annyance because we
+ will have to derive from Posix for most systems, but from the Windows API
+ for MSWindow. I am considering to derive ths SDL_System_Driver directly from
+ SDL without going through Posix, but that would be quite limiting.
+
+ Anyway, Fl_SDL_System_Driver::wait() gets a rough implementeation so it can
+ handle the main event loop and call flush() to update screen graphics.
+
+
+  Flush
+ =======
+
+ Fl::flush() calls the window driver flush() on every window that has a damage
+ flag set, and then calls the screen driver flush() in any case. For SDL, we
+ have to use the window flushes to mark the area that actually changed and
+ then swap the changed areas out to the SDL surface.
+
+ Window flush() calls make_current() which we will use to prep the graphics
+ context to have the correct screen offset and clipping area to draw the
+ window contents.
+
+ I added a flag and some pointers in the graphics driver that indicate when
+ Screen flush() must copy the SDL surface to teh SDL window. So Screen flush()
+ now calls SDL_UpdateWindowSurface() whenever we did draw something.
+
+
+  Graphics Context
+ ==================
+
+ Single-stepping through a simple app like "hello", we should now reach
+ Fl_Window::draw(). To call any SDL functions via our main graphics driver,
+ we need to fill the graphics context (gc) with data like the SDL surface
+ pointer, the window origin, and the current clipping area. Let's implement
+ Fl_SDL_Window_Driver::make_current() to prepare everything for drawing. TO
+ make things easy, the gc is simply a pointer to the graphics driver.
+
+ The first two graphics calls to implement are fl_color() and fl_rectf(). If
+ those work, we will see a gray rectangle where the window will be. If the
+ window background graphics appear, we are heading into a greta direction.
+
+
+  Mouse Events
+ ==============
+
 
 
  */

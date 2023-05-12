@@ -17,6 +17,25 @@
 #include <config.h>
 #include "Fl_SDL_Graphics_Driver.H"
 
+Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
+: sdl_surface(NULL),
+  sdl_screen(NULL),
+  sdl_update_screen(true)
+{
+}
+
+void Fl_SDL_Graphics_Driver::color(Fl_Color c) {
+  Fl_Graphics_Driver::color(c);
+  uchar r, g, b;
+  Fl::get_color(c, r, g, b);
+  sdl_color = SDL_MapRGB(sdl_surface->format, r, g, b);
+}
+
+void Fl_SDL_Graphics_Driver::rectf(int x, int y, int w, int h) {
+  if (w<=0 || h<=0) return;
+  SDL_Rect rect = { x, y, w, h };
+  SDL_FillRect(sdl_surface, &rect, sdl_color);
+}
 
 
 #if 0

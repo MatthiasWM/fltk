@@ -73,6 +73,7 @@ public:
 //  void enable_im() FL_OVERRIDE;
 //  void disable_im() FL_OVERRIDE;
   void open_display_platform() FL_OVERRIDE;
+  void flush() FL_OVERRIDE;
 //  // --- compute dimensions of an Fl_Offscreen
 //  void offscreen_size(Fl_Offscreen o, int &width, int &height) FL_OVERRIDE;
 //
