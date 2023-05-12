@@ -631,7 +631,7 @@ if (FLTK_USE_X11)
 endif (FLTK_USE_X11)
 
 if (FLTK_USE_SDL)
-  list (APPEND OPTIONAL_LIBS SDL2::SDL2-static)
+  list (APPEND OPTIONAL_LIBS SDL2::SDL2 SDL2_ttf::SDL2_ttf)
 endif (FLTK_USE_SDL)
 
 if (WIN32)

@@ -27,18 +27,41 @@ FetchContent_Declare(
    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
    GIT_TAG release-2.26.0
 )
-#FetchContent_Declare(
-#    SDL2_ttf
-#    GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf
-#    GIT_TAG SDL2
+FetchContent_Declare(
+    SDL2_ttf
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
+    GIT_TAG release-2.20.x
+)
+FetchContent_MakeAvailable(SDL2 SDL2_ttf)
+
+#include_directories (${SDL2_SOURCE_DIR}/include ${SDL2_ttf_SOURCE_DIR})
+#link_directories(${PROJECT_BINARY_DIR}/Debug)
+
+#target_link_libraries(SDL2_ttf SDL2::SDL2-static)
+#set_target_properties(SDL2_ttf PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+set (SDL_LIBRARIES SDL2 SDL2_ttf)
+
+install (TARGETS ${SDL_LIBRARIES}
+      EXPORT FLTK-Targets
+    )
+
+#install (TARGETS SDL2
+#  EXPORT FLTK-Targets
+#  RUNTIME DESTINATION ${FLTK_BINDIR}
+#  LIBRARY DESTINATION ${FLTK_LIBDIR}
+#  ARCHIVE DESTINATION ${FLTK_LIBDIR}
 #)
-#FetchContent_MakeAvailable(SDL2 SDL2_ttf)
-FetchContent_MakeAvailable(SDL2)
 
-include_directories (${SDL2_SOURCE_DIR}/include)
-link_directories(${PROJECT_BINARY_DIR}/Debug)
+#export (
+#  TARGETS
+#    SDL2_ttf
+#    SDL2   # or SDL2-static?
+#    sdl-build-options
+#  FILE
+#    ${CMAKE_CURRENT_BINARY_DIR}/SDL-Targets.cmake
+#)
 
-export (TARGETS SDL2-static sdl-build-options FILE ${CMAKE_CURRENT_BINARY_DIR}/SDL-Targets.cmake)
 
 # Set the SDL_SKIP_INSTALL option to avoid generating the uninstall target
 #set_target_properties(SDL PROPERTIES SDL2_DISABLE_INSTALL ON)

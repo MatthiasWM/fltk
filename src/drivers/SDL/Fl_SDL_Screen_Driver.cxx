@@ -28,6 +28,7 @@
 #include <stdio.h>
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 
 extern "C" void NSBeep(void);
@@ -49,7 +50,7 @@ void Fl_SDL_Screen_Driver::open_display_platform() {
   Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
 
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-    fprintf(stderr, "could not initialize sdl2: %s\n", SDL_GetError());
+    SDL_Log("could not initialize sdl2: %s\n", SDL_GetError());
     return;
   }
 
@@ -58,7 +59,8 @@ void Fl_SDL_Screen_Driver::open_display_platform() {
                                    Fl::w(), Fl::h(),
                                    0 /* | SDL_WINDOW_ALLOW_HIGHDPI */);
   if (gc.sdl_screen == NULL) {
-    fprintf(stderr, "could not create window: %s\n", SDL_GetError());
+    SDL_Log("Could not create window: %s\n", SDL_GetError());
+    SDL_Quit();
     return;
   }
 
@@ -66,15 +68,22 @@ void Fl_SDL_Screen_Driver::open_display_platform() {
   if (!gc.sdl_renderer)
     gc.sdl_renderer = SDL_CreateRenderer(gc.sdl_screen, -1, SDL_RENDERER_TARGETTEXTURE);
   if (gc.sdl_renderer == NULL) {
-    fprintf(stderr, "could not create renderer: %s\n", SDL_GetError());
+    SDL_Log("Could not create renderer: %s\n", SDL_GetError());
+    SDL_Quit();
     return;
   }
 
   gc.sdl_texture = SDL_CreateTexture(gc.sdl_renderer, SDL_PIXELFORMAT_RGB888,
                                      SDL_TEXTUREACCESS_TARGET, Fl::w(), Fl::h());
   if (gc.sdl_texture == NULL) {
-    fprintf(stderr, "could not create texture: %s\n", SDL_GetError());
+    SDL_Log("Could not create texture: %s\n", SDL_GetError());
+    SDL_Quit();
     return;
+  }
+
+  if (TTF_Init() < 0) {
+    SDL_Log("Couldn't initialize TTF: %s\n", SDL_GetError());
+    SDL_Quit();
   }
 
   SDL_SetRenderTarget(gc.sdl_renderer, gc.sdl_texture);

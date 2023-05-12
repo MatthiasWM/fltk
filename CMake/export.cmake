@@ -42,7 +42,8 @@ else ()
 endif (FLTK_BUILD_FLUID AND NOT CMAKE_CROSSCOMPILING)
 
 # generate FLTK-Targets.cmake for build directory use
-export (TARGETS ${FLUID_EXPORT} ${FLTK_LIBRARIES} FILE ${CMAKE_CURRENT_BINARY_DIR}/FLTK-Targets.cmake)
+export (TARGETS ${FLUID_EXPORT} ${FLTK_LIBRARIES} ${SDL_LIBRARIES}
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/FLTK-Targets.cmake)
 
 # generate FLTK-Functions.cmake for build directory use
 configure_file (

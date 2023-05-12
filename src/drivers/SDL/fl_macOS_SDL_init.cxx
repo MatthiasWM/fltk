@@ -252,6 +252,8 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
   Rendering Text
  ================
 
- 
+ Adding SDL2_ttf to the CMake system was more complicated than I thought. All
+ additional libraries must be exported and added to the export lists. Anyway,
+ it took me quite some experimenting, but it works pretty nicely now.
 
  */
