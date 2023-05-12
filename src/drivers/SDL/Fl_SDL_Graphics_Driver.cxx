@@ -21,6 +21,7 @@ Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
 : sdl_surface(NULL),
   sdl_screen(NULL),
   sdl_renderer(NULL),
+  sdl_texture(NULL),
   sdl_update_screen(true)
 {
 }

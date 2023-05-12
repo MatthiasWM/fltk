@@ -48,64 +48,38 @@ void Fl_SDL_Screen_Driver::open_display_platform() {
 
   Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
 
-  SDL_Window* window = NULL;
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     fprintf(stderr, "could not initialize sdl2: %s\n", SDL_GetError());
-    return 1;
+    return;
   }
-  window = SDL_CreateWindow(
-                            "FLTK on SDL",
-                            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                            Fl::w(), Fl::h(),
-                            SDL_WINDOW_SHOWN
-                            );
-  if (window == NULL) {
+
+  gc.sdl_screen = SDL_CreateWindow("FLTK on SDL",
+                                   SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                   Fl::w(), Fl::h(),
+                                   0 /* | SDL_WINDOW_ALLOW_HIGHDPI */);
+  if (gc.sdl_screen == NULL) {
     fprintf(stderr, "could not create window: %s\n", SDL_GetError());
-    return 1;
+    return;
   }
-//  SDL_Surface* screenSurface = NULL;
-//  screenSurface = SDL_GetWindowSurface(window);
-//  gc.sdl_surface = screenSurface;
 
-  gc.sdl_screen = window;
-  gc.sdl_renderer = SDL_CreateRenderer(window, 0, 0);
-  SDL_SetRenderDrawColor(gc.sdl_renderer, 0x99, 0x99, 0x99, 0);
+  gc.sdl_renderer = SDL_CreateRenderer(gc.sdl_screen, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+  if (!gc.sdl_renderer)
+    gc.sdl_renderer = SDL_CreateRenderer(gc.sdl_screen, -1, SDL_RENDERER_TARGETTEXTURE);
+  if (gc.sdl_renderer == NULL) {
+    fprintf(stderr, "could not create renderer: %s\n", SDL_GetError());
+    return;
+  }
+
+  gc.sdl_texture = SDL_CreateTexture(gc.sdl_renderer, SDL_PIXELFORMAT_RGB888,
+                                     SDL_TEXTUREACCESS_TARGET, Fl::w(), Fl::h());
+  if (gc.sdl_texture == NULL) {
+    fprintf(stderr, "could not create texture: %s\n", SDL_GetError());
+    return;
+  }
+
+  SDL_SetRenderTarget(gc.sdl_renderer, gc.sdl_texture);
+  SDL_SetRenderDrawColor(gc.sdl_renderer, 0x99, 0x99, 0x99, 0xff);
   SDL_RenderClear(gc.sdl_renderer);
-
-//  SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-//  SDL_UpdateWindowSurface(window);
-
-//  SDL_Event event;
-//  bool done = false;
-//
-//  while((!done) && (SDL_WaitEvent(&event))) {
-//    switch(event.type) {
-//      case SDL_USEREVENT:
-//        //HandleUserEvents(&event);
-//        break;
-//
-//      case SDL_KEYDOWN:
-//        // Handle any key presses here.
-//        break;
-//
-//      case SDL_MOUSEBUTTONDOWN:
-//        // Handle mouse clicks here.
-//        break;
-//
-//      case SDL_QUIT:
-//        done = true;
-//        break;
-//
-//      default:
-//        break;
-//    }   // End switch
-//
-//  }   // End while
-//
-
-//
-//  SDL_DestroyWindow(window);
-//  SDL_Quit();
 }
 
 void Fl_SDL_Screen_Driver::get_system_colors() {
@@ -117,9 +91,11 @@ void Fl_SDL_Screen_Driver::flush() {
   Fl_Screen_Driver::flush();
   Fl_SDL_Graphics_Driver &gc = ((Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver());
   if (gc.sdl_update_screen) {
-//    SDL_UpdateWindowSurface(gc.sdl_screen);
+    SDL_SetRenderTarget(gc.sdl_renderer, NULL);
+    SDL_RenderCopy(gc.sdl_renderer, gc.sdl_texture, NULL, NULL);
     SDL_RenderPresent(gc.sdl_renderer);
     gc.sdl_update_screen = false;
+    SDL_SetRenderTarget(gc.sdl_renderer, gc.sdl_texture);
   }
 }
 

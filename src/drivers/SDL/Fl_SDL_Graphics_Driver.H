@@ -165,6 +165,7 @@ public:
   SDL_Surface *sdl_surface;
   SDL_Window *sdl_screen;
   SDL_Renderer *sdl_renderer;
+  SDL_Texture *sdl_texture;
   bool sdl_update_screen;
   Uint32 sdl_color;
 };

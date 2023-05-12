@@ -23,6 +23,7 @@
 #include <FL/platform.H>
 #include "../../flstring.h"
 #include <string.h>
+#include <stdlib.h>
 //#include <locale.h>
 //#include <stdio.h>
 //#include <dlfcn.h>
@@ -79,9 +80,12 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
       case SDL_QUIT: {
         // TODO:
         Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
+        if (gc.sdl_renderer) SDL_SetRenderTarget(gc.sdl_renderer, NULL);
+        if (gc.sdl_texture) SDL_DestroyTexture(gc.sdl_texture);
         if (gc.sdl_renderer) SDL_DestroyRenderer(gc.sdl_renderer);
         if (gc.sdl_screen) SDL_DestroyWindow(gc.sdl_screen);
         SDL_Quit();
+        exit(0);
       }
         break;
       default:
