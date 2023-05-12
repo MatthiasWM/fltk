@@ -15,6 +15,7 @@
 //
 
 #include "Fl_SDL_System_Driver.H"
+#include "Fl_SDL_Graphics_Driver.H"
 #include <FL/Fl.H>
 //#include <FL/Fl_File_Browser.H>
 //#include <FL/Fl_Tree_Prefs.H>
@@ -69,8 +70,13 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
       if (done) break;
     }
     switch (event.type) {
-      case SDL_QUIT:
+      case SDL_QUIT: {
         // TODO:
+        Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
+        if (gc.sdl_renderer) SDL_DestroyRenderer(gc.sdl_renderer);
+        if (gc.sdl_screen) SDL_DestroyWindow(gc.sdl_screen);
+        SDL_Quit();
+      }
         break;
       default:
         break;

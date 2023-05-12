@@ -77,19 +77,19 @@ public:
 //  void high_resolution(bool b) { high_resolution_ = b; }
 //protected:
 //  void point(int x, int y) FL_OVERRIDE;
-//  void rect(int x, int y, int w, int h) FL_OVERRIDE;
+  void rect(int x, int y, int w, int h) FL_OVERRIDE;
 //  void focus_rect(int x, int y, int w, int h) FL_OVERRIDE;
   void rectf(int x, int y, int w, int h) FL_OVERRIDE;
-//  void line(int x, int y, int x1, int y1) FL_OVERRIDE;
-//  void line(int x, int y, int x1, int y1, int x2, int y2) FL_OVERRIDE;
-//  void xyline(int x, int y, int x1) FL_OVERRIDE;
-//  void xyline(int x, int y, int x1, int y2) FL_OVERRIDE;
-//  void xyline(int x, int y, int x1, int y2, int x3) FL_OVERRIDE;
-//  void yxline(int x, int y, int y1) FL_OVERRIDE;
-//  void yxline(int x, int y, int y1, int x2) FL_OVERRIDE;
-//  void yxline(int x, int y, int y1, int x2, int y3) FL_OVERRIDE;
-//  void loop(int x0, int y0, int x1, int y1, int x2, int y2) FL_OVERRIDE;
-//  void loop(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) FL_OVERRIDE;
+  void line(int x, int y, int x1, int y1) FL_OVERRIDE;
+  void line(int x, int y, int x1, int y1, int x2, int y2) FL_OVERRIDE;
+  void xyline(int x, int y, int x1) FL_OVERRIDE;
+  void xyline(int x, int y, int x1, int y2) FL_OVERRIDE;
+  void xyline(int x, int y, int x1, int y2, int x3) FL_OVERRIDE;
+  void yxline(int x, int y, int y1) FL_OVERRIDE;
+  void yxline(int x, int y, int y1, int x2) FL_OVERRIDE;
+  void yxline(int x, int y, int y1, int x2, int y3) FL_OVERRIDE;
+  void loop(int x0, int y0, int x1, int y1, int x2, int y2) FL_OVERRIDE;
+  void loop(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) FL_OVERRIDE;
 //  void polygon(int x0, int y0, int x1, int y1, int x2, int y2) FL_OVERRIDE;
 //  void polygon(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) FL_OVERRIDE;
 //  // --- clipping
@@ -164,6 +164,7 @@ public:
 //  int antialias() FL_OVERRIDE;
   SDL_Surface *sdl_surface;
   SDL_Window *sdl_screen;
+  SDL_Renderer *sdl_renderer;
   bool sdl_update_screen;
   Uint32 sdl_color;
 };

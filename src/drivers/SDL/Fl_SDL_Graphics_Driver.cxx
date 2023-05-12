@@ -20,23 +20,78 @@
 Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
 : sdl_surface(NULL),
   sdl_screen(NULL),
+  sdl_renderer(NULL),
   sdl_update_screen(true)
 {
 }
 
 void Fl_SDL_Graphics_Driver::color(Fl_Color c) {
   Fl_Graphics_Driver::color(c);
-  uchar r, g, b;
-  Fl::get_color(c, r, g, b);
-  sdl_color = SDL_MapRGB(sdl_surface->format, r, g, b);
+  uchar r, g, b, a;
+  Fl::get_color(c, r, g, b, a);
+//  sdl_color = SDL_MapRGB(sdl_surface->format, r, g, b);
+  SDL_SetRenderDrawColor(sdl_renderer, r, g, b, a);
+}
+
+void Fl_SDL_Graphics_Driver::rect(int x, int y, int w, int h) {
+  if (w<=0 || h<=0) return;
+  SDL_Rect rect = { x, y, w, h };
+  SDL_RenderDrawRect(sdl_renderer, &rect);
 }
 
 void Fl_SDL_Graphics_Driver::rectf(int x, int y, int w, int h) {
   if (w<=0 || h<=0) return;
   SDL_Rect rect = { x, y, w, h };
-  SDL_FillRect(sdl_surface, &rect, sdl_color);
+  SDL_RenderFillRect(sdl_renderer, &rect);
+//  SDL_FillRect(sdl_surface, &rect, sdl_color);
 }
 
+void Fl_SDL_Graphics_Driver::line(int x, int y, int x1, int y1) {
+  SDL_RenderDrawLine(sdl_renderer, x, y, x1, y1);
+}
+
+void Fl_SDL_Graphics_Driver::line(int x, int y, int x1, int y1, int x2, int y2) {
+  SDL_Point points[] = { { x, y }, { x1, y1 }, { x2, y2 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 3);
+}
+
+void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1) {
+  SDL_RenderDrawLine(sdl_renderer, x, y, x1, y);
+}
+
+void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1, int y2) {
+  SDL_Point points[] = { { x, y }, { x1, y }, { x1, y2 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 3);
+}
+
+void Fl_SDL_Graphics_Driver::xyline(int x, int y, int x1, int y2, int x3) {
+  SDL_Point points[] = { { x, y }, { x1, y }, { x1, y2 }, { x3, y2 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 4);
+}
+
+void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1) {
+  SDL_RenderDrawLine(sdl_renderer, x, y, x, y1);
+}
+
+void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1, int x2) {
+  SDL_Point points[] = { { x, y }, { x, y1 }, { x2, y1 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 3);
+}
+
+void Fl_SDL_Graphics_Driver::yxline(int x, int y, int y1, int x2, int y3) {
+  SDL_Point points[] = { { x, y }, { x, y1 }, { x2, y1 }, { x2, y3 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 4);
+}
+
+void Fl_SDL_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2) {
+  SDL_Point points[] = { { x0, y0 }, { x1, y1 }, { x2, y2 }, { x0, y0 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 4);
+}
+
+void Fl_SDL_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3) {
+  SDL_Point points[] = { { x0, y0 }, { x1, y1 }, { x2, y2 }, { x3, y3 }, { x0, y0 } };
+  SDL_RenderDrawLines(sdl_renderer, points, 5);
+}
 
 #if 0
 

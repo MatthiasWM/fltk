@@ -197,12 +197,15 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
 
  The first two graphics calls to implement are fl_color() and fl_rectf(). If
  those work, we will see a gray rectangle where the window will be. If the
- window background graphics appear, we are heading into a greta direction.
+ window background graphics appear, we are heading into a great direction.
+
+ If this was easy, let's implement all the line drawing functions while we are
+ att it. No parameters besides color yet.
 
 
   Mouse Events
  ==============
 
-
+ Now to verify that our minimal structure is
 
  */
