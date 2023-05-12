@@ -254,6 +254,11 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
 
  Adding SDL2_ttf to the CMake system was more complicated than I thought. All
  additional libraries must be exported and added to the export lists. Anyway,
- it took me quite some experimenting, but it works pretty nicely now.
+ it took me quite some experimenting, but it works pretty nicely now. I have
+ just checked for Arial, but I had to do some scaling to some of the values
+ to have comparable results to Quartz.
+
+ Also, right now, we only support low res screens and no user defined scaling.
+ Let's first get the basics going, and check that out later.
 
  */

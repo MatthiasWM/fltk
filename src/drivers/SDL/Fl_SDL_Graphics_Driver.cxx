@@ -17,6 +17,9 @@
 #include <config.h>
 #include "Fl_SDL_Graphics_Driver.H"
 
+#include <SDL_ttf.h>
+
+
 Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
 : sdl_surface(NULL),
   sdl_screen(NULL),
@@ -93,6 +96,73 @@ void Fl_SDL_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2
   SDL_Point points[] = { { x0, y0 }, { x1, y1 }, { x2, y2 }, { x3, y3 }, { x0, y0 } };
   SDL_RenderDrawLines(sdl_renderer, points, 5);
 }
+
+void Fl_SDL_Graphics_Driver::draw(const char *str, int n, int x, int y) {
+  if (n==0) return 0;
+  char *buf = (char*)str;
+  if (str[n]!=0) {
+    buf = (char*)::malloc(n+1);
+    memcpy(buf, str, n);
+    buf[n] = 0;
+  }
+  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  uchar r, g, b;
+  Fl::get_color(color_, r, g, b);
+  SDL_Color color = { r, g, b };
+  
+  SDL_Surface *surface = TTF_RenderUTF8_Blended(font, buf, color); // TODO: n
+  SDL_Texture *texture = SDL_CreateTextureFromSurface(sdl_renderer, surface);
+
+  int texW = 0;
+  int texH = 0;
+  SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
+
+  int f_hgt = height();
+  int f_ascent = f_hgt - descent();
+  int f_full_ascent = (texH-f_hgt)*3/4; // random values to make text look centered vertically
+  f_full_ascent += f_ascent;
+
+  SDL_Rect dstrect = { x, y-f_full_ascent, texW, texH };
+  SDL_RenderCopy(sdl_renderer, texture, NULL, &dstrect);
+
+  SDL_DestroyTexture(texture);
+  SDL_FreeSurface(surface);
+
+  TTF_CloseFont(font);
+  if (buf!=str) ::free(buf);
+}
+
+double Fl_SDL_Graphics_Driver::width(const char *str, int n) {
+  if (n==0) return 0;
+  char *buf = (char*)str;
+  if (str[n]!=0) {
+    buf = (char*)::malloc(n+1);
+    memcpy(buf, str, n);
+    buf[n] = 0;
+  }
+  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  int w = 0, h = 0;
+  TTF_SizeUTF8(font, buf, &w, &h);
+  TTF_CloseFont(font);
+  if (buf!=str) ::free(buf);
+  return w;
+}
+
+int Fl_SDL_Graphics_Driver::height() {
+  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  int ret = TTF_FontHeight(font);
+  TTF_CloseFont(font);
+  return ret * 0.83f; // experimental values
+}
+
+int Fl_SDL_Graphics_Driver::descent() {
+  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  int ret = -TTF_FontDescent(font);
+  TTF_CloseFont(font);
+  return (ret + 2) * 0.83f; // experimental values
+}
+
+
 
 #if 0
 

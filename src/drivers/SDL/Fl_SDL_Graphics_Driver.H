@@ -108,16 +108,16 @@ public:
   void color(Fl_Color c) FL_OVERRIDE;
 //  Fl_Color color() FL_OVERRIDE { return color_; }
 //  void color(uchar r, uchar g, uchar b) FL_OVERRIDE;
-//  void draw(const char *str, int n, int x, int y) FL_OVERRIDE;
+  void draw(const char *str, int n, int x, int y) FL_OVERRIDE;
 //  void draw(const char *str, int n, float x, float y) FL_OVERRIDE;
 //  void draw(int angle, const char *str, int n, int x, int y) FL_OVERRIDE;
 //  double width(const UniChar* txt, int n);
 //  void rtl_draw(const char *str, int n, int x, int y) FL_OVERRIDE;
 //  void font(Fl_Font face, Fl_Fontsize fsize) FL_OVERRIDE;
-//  double width(const char *str, int n) FL_OVERRIDE;
+  double width(const char *str, int n) FL_OVERRIDE;
 //  double width(unsigned int c) FL_OVERRIDE;
-//  int height() FL_OVERRIDE;
-//  int descent() FL_OVERRIDE;
+  int height() FL_OVERRIDE;
+  int descent() FL_OVERRIDE;
 //  virtual bool high_resolution() { return high_resolution_; }
 //  void global_gc() FL_OVERRIDE;
 //  void quartz_restore_line_style();

@@ -34,6 +34,7 @@
 //#include <sys/stat.h>
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 
 
@@ -84,6 +85,7 @@ double Fl_SDL_System_Driver::wait(double time_to_wait)
         if (gc.sdl_texture) SDL_DestroyTexture(gc.sdl_texture);
         if (gc.sdl_renderer) SDL_DestroyRenderer(gc.sdl_renderer);
         if (gc.sdl_screen) SDL_DestroyWindow(gc.sdl_screen);
+        TTF_Quit();
         SDL_Quit();
         exit(0);
       }
