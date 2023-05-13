@@ -90,7 +90,7 @@ public:
 //  void label(const char *name, const char *mininame) FL_OVERRIDE;
   void show() FL_OVERRIDE;
 //  void resize(int X,int Y,int W,int H) FL_OVERRIDE;
-//  void hide() FL_OVERRIDE;
+  void hide() FL_OVERRIDE;
 //  void map() FL_OVERRIDE;
 //  void unmap() FL_OVERRIDE;
 //  void fullscreen_on() FL_OVERRIDE;

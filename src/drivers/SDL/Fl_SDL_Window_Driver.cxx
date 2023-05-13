@@ -42,7 +42,6 @@ Fl_SDL_Window_Driver::~Fl_SDL_Window_Driver()
 
 }
 
-
 void Fl_SDL_Window_Driver::show() {
   Fl_X *top = NULL;
   if (parent()) top = Fl_X::flx(pWindow->top_window());
@@ -56,6 +55,19 @@ void Fl_SDL_Window_Driver::show() {
       pWindow->set_visible();
     }
   }
+}
+
+void Fl_SDL_Window_Driver::hide() {
+  Fl_X* ip = Fl_X::flx(pWindow);
+//  if (ip && !parent()) pWindow->cursor(FL_CURSOR_DEFAULT);
+  if ( hide_common() ) return;
+//  q_release_context(this);
+  if ( ip->xid == (fl_uintptr_t)fl_window )
+    fl_window = 0;
+  if (ip->region) Fl_Graphics_Driver::default_driver().XDestroyRegion(ip->region);
+//  destroy((FLWindow*)ip->xid);
+//  delete subRect();
+  delete ip;
 }
 
 void Fl_SDL_Window_Driver::makeWindow()
@@ -114,7 +126,7 @@ void Fl_SDL_Window_Driver::makeWindow()
   }
 
   Fl_X *x = new Fl_X;
-  other_xid = 0; // room for doublebuffering image map. On OS X this is only used by overlay windows
+  other_xid = 0; // room for doublebuffering image map.
   x->region = 0;
 //  subRect(0);
 //  gc = 0; // TODO: we need this for the graphics driver
@@ -185,15 +197,14 @@ void Fl_SDL_Window_Driver::makeWindow()
   x->xid = (fl_uintptr_t)cw;
   x->w = w;
   flx(x);
-//  wait_for_expose_value = 1;
-  if (!w->parent()) {
+  wait_for_expose_value = 0; // not needed
+  if (!w->parent()) { // TODO: huh? Do we allow true subwindows?
     x->next = Fl_X::first;
     Fl_X::first = x;
   } else if (Fl_X::first) {
     x->next = Fl_X::first->next;
     Fl_X::first->next = x;
-  }
-  else {
+  } else {
     x->next = NULL;
     Fl_X::first = x;
   }
@@ -282,7 +293,11 @@ void Fl_SDL_Window_Driver::makeWindow()
 
 void Fl_SDL_Window_Driver::make_current() {
   Fl_Window_Driver::make_current();
-  ((Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver()).sdl_update_screen = true;
+  Fl_Window *win = pWindow;
+  Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
+  gc.sdl_update_screen = true;
+  SDL_Rect r = { win->x(), win->y(), win->w(), win->h() };
+  SDL_RenderSetViewport(gc.sdl_renderer, &r);
 }
 
 #if 0
@@ -462,23 +477,6 @@ void Fl_Cocoa_Window_Driver::shape(const Fl_Image* img) {
   else if ((d == 1 || d == 3) && img->count() == 1) shape_alpha_((Fl_Image*)img, 0);
 #endif
   pWindow->border(false);
-}
-
-
-void Fl_Cocoa_Window_Driver::hide() {
-  Fl_X* ip = Fl_X::flx(pWindow);
-  // MacOS X manages a single pointer per application. Make sure that hiding
-  // a toplevel window will not leave us with some random pointer shape, or
-  // worst case, an invisible pointer
-  if (ip && !parent()) pWindow->cursor(FL_CURSOR_DEFAULT);
-  if ( hide_common() ) return;
-  q_release_context(this);
-  if ( ip->xid == (fl_uintptr_t)fl_window )
-    fl_window = 0;
-  if (ip->region) Fl_Graphics_Driver::default_driver().XDestroyRegion(ip->region);
-  destroy((FLWindow*)ip->xid);
-  delete subRect();
-  delete ip;
 }
 
 

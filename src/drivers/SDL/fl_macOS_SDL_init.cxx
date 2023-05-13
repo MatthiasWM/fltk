@@ -279,4 +279,13 @@ Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, i
  window support must be added, almost all events are unhandled and much more,
  but it is still great to have something on screen.
 
+
+  Multiple Windows
+ ==================
+
+ I took a huge shortcut when writing the first lines of the window code. It's
+ time now to fix this. We want to be able to have an arbitrary number of
+ windows, and we want a linked list sorted fromtop to bottom.
+
+
  */

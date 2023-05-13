@@ -98,6 +98,7 @@ void Fl_SDL_Screen_Driver::flush() {
   Fl_Screen_Driver::flush();
   Fl_SDL_Graphics_Driver &gc = ((Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver());
   if (gc.sdl_update_screen) {
+    SDL_RenderSetViewport(gc.sdl_renderer, NULL);
     SDL_SetRenderTarget(gc.sdl_renderer, NULL);
     SDL_RenderCopy(gc.sdl_renderer, gc.sdl_texture, NULL, NULL);
     SDL_RenderPresent(gc.sdl_renderer);
