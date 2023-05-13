@@ -68,6 +68,14 @@ void Fl_SDL_Window_Driver::hide() {
 //  destroy((FLWindow*)ip->xid);
 //  delete subRect();
   delete ip;
+
+  // TODO: test here if we can manually send window expose events to the windows that are made visible by the hide
+  Fl_Window *o = pWindow;
+  for (Fl_Window *w = Fl::first_window(); w; w = Fl::next_window(w)) {
+    // TODO: we should only mark the area damaged that actually overlaps and
+    // is not covered by a window above this one.
+    w->damage(FL_DAMAGE_EXPOSE, 0, 0, w->w(), w->h());
+  }
 }
 
 void Fl_SDL_Window_Driver::makeWindow()
@@ -298,6 +306,10 @@ void Fl_SDL_Window_Driver::make_current() {
   gc.sdl_update_screen = true;
   SDL_Rect r = { win->x(), win->y(), win->w(), win->h() };
   SDL_RenderSetViewport(gc.sdl_renderer, &r);
+  r.x = r.y = 0;
+  SDL_RenderSetClipRect(gc.sdl_renderer, &r);
+  // TODO: it's nice that we can clip things here, but we need clipping
+  // areas to handle overlapping windows and FLTK clipping calls.
 }
 
 #if 0

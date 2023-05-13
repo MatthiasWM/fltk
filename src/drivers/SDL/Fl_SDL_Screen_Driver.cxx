@@ -47,10 +47,17 @@ void Fl_SDL_Screen_Driver::open_display_platform() {
 
   Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
 
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-    SDL_Log("could not initialize sdl2: %s\n", SDL_GetError());
-    return;
-  }
+// Moved to be initialized with the system driver in Fl_System_Driver::newSystemDriver()
+//
+//  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+//    SDL_Log("could not initialize sdl2: %s\n", SDL_GetError());
+//    return;
+//  }
+//
+//  if (TTF_Init() < 0) {
+//    SDL_Log("Couldn't initialize TTF: %s\n", SDL_GetError());
+//    SDL_Quit();
+//  }
 
   gc.sdl_screen = SDL_CreateWindow("FLTK on SDL",
                                    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -77,11 +84,6 @@ void Fl_SDL_Screen_Driver::open_display_platform() {
     SDL_Log("Could not create texture: %s\n", SDL_GetError());
     SDL_Quit();
     return;
-  }
-
-  if (TTF_Init() < 0) {
-    SDL_Log("Couldn't initialize TTF: %s\n", SDL_GetError());
-    SDL_Quit();
   }
 
   SDL_SetRenderTarget(gc.sdl_renderer, gc.sdl_texture);

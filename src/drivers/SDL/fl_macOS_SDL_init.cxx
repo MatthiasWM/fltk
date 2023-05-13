@@ -22,6 +22,9 @@
 #include "Fl_SDL_Window_Driver.H"
 #include "Fl_SDL_Image_Surface_Driver.H"
 
+#include <SDL.h>
+#include <SDL_ttf.h>
+
 
 Fl_Copy_Surface_Driver *Fl_Copy_Surface_Driver::newCopySurfaceDriver(int w, int h)
 {
@@ -43,6 +46,15 @@ Fl_Screen_Driver *Fl_Screen_Driver::newScreenDriver()
 
 Fl_System_Driver *Fl_System_Driver::newSystemDriver()
 {
+  Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
+  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+    SDL_Log("could not initialize sdl2: %s\n", SDL_GetError());
+    return;
+  }
+  if (TTF_Init() < 0) {
+    SDL_Log("Couldn't initialize TTF: %s\n", SDL_GetError());
+    SDL_Quit();
+  }
   return new Fl_SDL_System_Driver();
 }
 

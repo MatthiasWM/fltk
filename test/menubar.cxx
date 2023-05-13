@@ -15,7 +15,7 @@
 //
 
 #include <FL/Fl.H>
-#if defined(__APPLE__)  && !(defined(FLTK_USE_X11) || defined(FLTK_USE_WAYLAND))
+#if defined(__APPLE__)  && !(defined(FLTK_USE_X11) || defined(FLTK_USE_WAYLAND) || defined(FLTK_USE_SDL))
 #  define HAS_MAC_APP_MENU 1
 #endif
 #ifdef HAS_MAC_APP_MENU
