@@ -10,6 +10,10 @@ option (FLTK_USE_SDL "generate FLTK with SDL2 backend" OFF)
 
 if (FLTK_USE_SDL)
 
+	unset (OPTION_USE_WAYLAND)
+	unset (FLTK_USE_WAYLAND)
+	unset (FLTK_USE_X11)
+
 set( SDL_STATIC ON CACHE BOOL "" FORCE )
 set( SDL_SHARED ON CACHE BOOL "" FORCE )
 set( SDL_LIBC ON CACHE BOOL "" FORCE )

@@ -20,6 +20,9 @@
 #include <SDL_ttf.h>
 
 
+static const char *font_file = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
+// "/Library/Fonts/Arial Unicode.ttf"
+
 Fl_SDL_Graphics_Driver::Fl_SDL_Graphics_Driver()
 : sdl_surface(NULL),
   sdl_screen(NULL),
@@ -98,14 +101,14 @@ void Fl_SDL_Graphics_Driver::loop(int x0, int y0, int x1, int y1, int x2, int y2
 }
 
 void Fl_SDL_Graphics_Driver::draw(const char *str, int n, int x, int y) {
-  if (n==0) return 0;
+  if (n==0) return;
   char *buf = (char*)str;
   if (str[n]!=0) {
     buf = (char*)::malloc(n+1);
     memcpy(buf, str, n);
     buf[n] = 0;
   }
-  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  TTF_Font *font = TTF_OpenFont(font_file, size_); // TODO: on macOS
   uchar r, g, b;
   Fl::get_color(color_, r, g, b);
   SDL_Color color = { r, g, b };
@@ -140,7 +143,7 @@ double Fl_SDL_Graphics_Driver::width(const char *str, int n) {
     memcpy(buf, str, n);
     buf[n] = 0;
   }
-  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  TTF_Font *font = TTF_OpenFont(font_file, size_); // TODO: on macOS
   int w = 0, h = 0;
   TTF_SizeUTF8(font, buf, &w, &h);
   TTF_CloseFont(font);
@@ -149,14 +152,14 @@ double Fl_SDL_Graphics_Driver::width(const char *str, int n) {
 }
 
 int Fl_SDL_Graphics_Driver::height() {
-  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  TTF_Font *font = TTF_OpenFont(font_file, size_); // TODO: on macOS
   int ret = TTF_FontHeight(font);
   TTF_CloseFont(font);
   return ret * 0.83f; // experimental values
 }
 
 int Fl_SDL_Graphics_Driver::descent() {
-  TTF_Font *font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", size_); // TODO: on macOS
+  TTF_Font *font = TTF_OpenFont(font_file, size_); // TODO: on macOS
   int ret = -TTF_FontDescent(font);
   TTF_CloseFont(font);
   return (ret + 2) * 0.83f; // experimental values

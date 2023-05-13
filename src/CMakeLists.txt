@@ -202,7 +202,36 @@ endif (FLTK_USE_X11 AND NOT OPTION_PRINT_SUPPORT)
 
 set (DRIVER_FILES)
 
-if (FLTK_USE_X11 AND NOT OPTION_USE_WAYLAND)
+
+if (FLTK_USE_SDL)
+
+  # MacOS and SDL2
+
+  set (DRIVER_FILES
+    Fl_get_key_SDL.cxx
+    drivers/SDL/fl_macOS_SDL_init.cxx
+    drivers/SDL/Fl_SDL_Graphics_Driver.cxx
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.cxx
+    drivers/SDL/Fl_SDL_Window_Driver.cxx
+    drivers/SDL/Fl_SDL_Screen_Driver.cxx
+    drivers/SDL/Fl_SDL_System_Driver.cxx
+    drivers/Posix/Fl_Posix_System_Driver.cxx
+    drivers/Posix/Fl_Posix_Printer_Driver.cxx
+    Fl_Native_File_Chooser_FLTK.cxx
+  )
+  set (DRIVER_HEADER_FILES
+    drivers/SDL/Fl_SDL_Graphics_Driver.H
+    drivers/SDL/Fl_SDL_Copy_Surface_Driver.H
+    drivers/SDL/Fl_SDL_Image_Surface_Driver.H
+    drivers/SDL/Fl_SDL_Window_Driver.H
+    drivers/Posix/Fl_Posix_System_Driver.H
+    drivers/SDL/Fl_SDL_Screen_Driver.H
+    drivers/SDL/Fl_SDL_System_Driver.H
+    drivers/SDL/Fl_Font.H
+  )
+
+elseif (FLTK_USE_X11 AND NOT OPTION_USE_WAYLAND)
 
   # X11 (including APPLE with X11)
 

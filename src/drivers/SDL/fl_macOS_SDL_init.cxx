@@ -49,7 +49,7 @@ Fl_System_Driver *Fl_System_Driver::newSystemDriver()
   Fl_SDL_Graphics_Driver &gc = (Fl_SDL_Graphics_Driver&)Fl_Graphics_Driver::default_driver();
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     SDL_Log("could not initialize sdl2: %s\n", SDL_GetError());
-    return;
+    SDL_Quit();
   }
   if (TTF_Init() < 0) {
     SDL_Log("Couldn't initialize TTF: %s\n", SDL_GetError());
