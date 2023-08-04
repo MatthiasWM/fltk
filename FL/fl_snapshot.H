@@ -1,5 +1,5 @@
 //
-// Widget screenshot header-only file for the Fast Light Tool Kit (FLTK).
+// Widget snapshot header-only file for the Fast Light Tool Kit (FLTK).
 //
 // Copyright 2023 by Bill Spitzak and others.
 //
@@ -15,8 +15,8 @@
 //
 
 /**
-  \file fl_screenshot.H
-  \brief header-only file to make screen shots of UI elements for documentation
+  \file fl_snapshot.H
+  \brief header-only file to take snapshots of UI elements for documentation purposes
 */
 
 #ifndef fl_screenshot_H
@@ -31,21 +31,6 @@
     @{
 */
 
-/**
- Take a snapshot of a given widget and save it as a png image.
-
- If a frame size is set, the area surrunding the widget is also drawn.
- If a scale is set, the snapshot is scaled in scaled in size before it is saved.
-
- \param[in] filename the snapshot will be written in png format to this file
- \param[in] w draw this widget
- \param[in] frame draw a half transparent frame around the snapshot, defaults to 0
- \param[in] scale scale the snapshot in size before saving it
-
- \note if a widget has an outside label, we must snap that as well
- \note we must allow snapping of menu items
-*/
-
 //FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=0, int alphaframe=0, double scale=1.0)
 //FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget **w, int frame=0, int alphaframe=0, double scale=1.0)
 //FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=0, double scale=1.0) {
@@ -53,6 +38,22 @@
 static inline int fl_min(int a, int b) { return a < b ? a : b; }
 static inline int fl_max(int a, int b) { return a > b ? a : b; }
 
+/**
+ Take a snapshot of a given widget and save it as a png image.
+
+ If a frame size is set, the area surrounding the widget is also drawn.
+ If a scale is set, the snapshot is scaled in size before it is saved.
+
+ \param[in] filename the snapshot will be written in png format to this file
+ \param[in] w draw this widget
+ \param[in] frame draw a half transparent frame around the snapshot, defaults to 0
+ \param[in] scale scale the snapshot in size before saving it
+
+ \todo w is a list of widgets here!
+ \todo if a widget has an outside label, we must snap that as well
+ \todo how does scaling work for hires displays?
+ \todo put reoccuring parameters, alpha blend, frame sizes, etc. into global variables
+*/
 FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget **w, int fx, int fy, int fr, int fb, int alpha=10, double scale=1.0) {
   int i, j, c, min_x, min_y, max_x, max_y, bb_w, bb_h, img_w, img_h;
 
@@ -135,19 +136,21 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget **w, int fx, in
   return ret;
 }
 
+// todo: document me
 FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w1, Fl_Widget *w2, int fx=4, int fy=4, int fr=4, int fb=4, int alpha=8, double scale=1.0) {
   Fl_Widget *ww[3] = { w1, w2, NULL };
   return fl_snapshot(filename, ww, fx, fy, fr, fb, alpha, scale);
 }
 
+// todo: document me
 FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=20, int alpha=10, double scale=1.0) {
   Fl_Widget *ww[2] = { w, NULL };
   return fl_snapshot(filename, ww, frame, frame, frame, frame, alpha, scale);
 }
 
-
-
-
+// todo: verify me
+// todo: calculate only the bounding box of the item range
+// todo: document me
 FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Menu_Item *m1, Fl_Menu_Item *m2, int fh=0, int fv=10, int alpha=10, double scale=1.0) {
   int i, j, c, min_x, min_y, max_x, max_y, bb_w, bb_h, img_w = 0, img_h, item_h = 0, n_visible = 0;
   int hotkey_w = 0, hotkey_mod_w = 0;
@@ -238,10 +241,6 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Me
   delete srfc;
   return ret;
 }
-
-
-
-
 
 
 /** @} */
