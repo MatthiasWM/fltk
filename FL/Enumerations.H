@@ -398,17 +398,145 @@ enum Fl_Event { // events
    This event is sent to the window's handle method.
    */
   FL_FULLSCREEN         = 25,
-  /** The user has made a zoom/pinch/magnification gesture (Mac OS platform only).
-      The Fl::event_dy() method can be used to find magnification amount,
-      Fl::event_x() and Fl::event_y() are set as well.
-      This event is sent to the window's handle method.
-     */
+
+  /** The user has made a zoom/pinch/magnification gesture (experimental).
+
+    The Fl::event_value() method can be used to find the relative magnification
+    of this gesture. A value \> 1.0 means "zoom in", \< 1.0 means "zoom out".
+    Values are always \> 0.
+
+    This event can be sent multiple times while the fingers are moved. The amount
+    sent by each event is relative to the previous event state (typically near 1.0).
+    You should multiply your current internal zoom factor with this value.
+
+    Fl::event_x() and Fl::event_y() are set as well.
+
+    This event is sent to the window's handle method and will primarily be sent
+    to the widget under the mouse or the finger position.
+
+    \since 1.4.0
+
+    \note In FLTK 1.3.x this event was implemented only on macOS and used
+      the Fl::event_dy() method to send the magnification amount in an
+      undocumented unit. This is still supported in FLTK 1.4.0 for backwards
+      compatibility but will be removed in a later version.\n
+      For reference: the old Fl::event_dy() value can be calculated from
+      Fl::event_value() with code like this:
+      \code int dy = int((Fl::event_value() - 1.0) * 1000); \endcode
+  */
   FL_ZOOM_GESTURE       = 26,
+
   /** A zoom event (ctrl/+/-/0/ or cmd/+/-/0/) was processed.
-   Use Fl::add_handler() to be notified of this event.
-   */
-  FL_ZOOM_EVENT = 27
-// DEV NOTE: Keep this list in sync with FL/names.h
+    Use Fl::add_handler() to be notified of this event.
+  */
+  FL_ZOOM_EVENT         = 27,
+
+  /** The user has made a multitouch rotate gesture.
+
+    Use Fl::event_value() to find the rotation angle in degrees.
+    Fl::event_x() and Fl::event_y() are set as well.
+    This event is sent to the window's handle method.
+    Positive values are counter-clockwise.
+
+    \see Fl::event_value(int)
+
+    \since 1.4.0
+
+    \note Delivery of this event is experimental and details
+      may be changed after FLTK 1.4.0 has been released.
+      This event may not be generated on all FLTK platforms.
+  */
+  FL_ROTATE_GESTURE     = 28,
+
+  /** The user has made a multitouch scroll gesture.
+
+    The Fl::event_value(int) method can be used to find the
+    amount to scroll horizontally and vertically.
+    This event is sent to the window's handle method.
+    Example:
+    \code
+      double scroll_x = Fl::event_value(FL_GESTURE_X);
+      double scroll_y = Fl::event_value(FL_GESTURE_Y);
+      // use scroll_x and scroll_y ...
+    \endcode
+
+    \see Fl::event_value(int)
+
+    \since 1.4.0
+
+    \note Delivery of this event is experimental and details
+      may be changed after FLTK 1.4.0 has been released.
+      This event may not be generated on all FLTK platforms.
+  */
+  FL_SCROLL_GESTURE     = 29,
+
+  /** The user has made a three-finger swipe gesture.
+
+    The Fl::event_value(int) method can be used to find the
+    horizontal and vertical amount of the gesture. This is
+    similar to the FL_SCROLL_GESTURE.
+
+    Example:
+    \code
+      double swipe_x = Fl::event_value(FL_GESTURE_X);
+      double swipe_y = Fl::event_value(FL_GESTURE_Y);
+      // use swipe_x and swipe_y ...
+    \endcode
+
+    The measurement units of FL_SWIPE_GESTURE \p X and \p Y
+    values are currently undefined, maybe platform dependent.
+    This may be changed later.
+
+    \todo Check and document the units of FL_SWIPE_GESTURE values?
+
+    This event is sent to the window's handle method.
+
+    \see Fl::event_value(int)
+
+    \since 1.4.0
+
+    \note Delivery of this event is experimental and details
+      may be changed after FLTK 1.4.0 has been released.
+      This event may not be generated on all FLTK platforms.
+    \n
+    \note
+      On macOS three-finger swipe gestures are used by the system
+      and are therefore not delivered to the application, at least
+      not with default settings in macOS 13 (Ventura).
+      There may be system options to change this (currently untested).
+  */
+  FL_SWIPE_GESTURE      = 30,
+
+  // NOTE: add new events *above* this comment
+
+  /** This is the highest defined event number + 1.
+    It is not a real event and will never be sent.
+  */
+  FL_EVENT_LAST  // no number (defined by compiler)
+
+  // DEV NOTE: Keep this list in sync with FL/names.h
+};
+
+/**
+  Index of floating point values returned by multitouch events and others.
+
+  Use this index to access gesture values like this:
+  \code
+    double scroll_x = Fl::event_value(FL_GESTURE_X);
+    double scroll_y = Fl::event_value(FL_GESTURE_Y);
+  \endcode
+
+  \see Fl::event_value(int)
+
+  \todo WIP - for more info see API description in Issue #733
+    (link below) and following comments.
+    https://github.com/fltk/fltk/issues/733#issuecomment-1666846866
+*/
+enum Fl_Event_Value { // event value index for floating point values
+  FL_GESTURE_X      = 0, ///< X or main value (e.g. Fl_SCROLL_GESTURE)
+  FL_GESTURE_Y      = 1, ///< Y or 2nd value (e.g. Fl_SCROLL_GESTURE)
+  FL_ZOOM_VALUE     = 0, ///< zoom value (magnification factor)
+  FL_ROTATE_VALUE   = 0  ///< rotation angle in degrees
 };
 
 /** \name When Conditions */

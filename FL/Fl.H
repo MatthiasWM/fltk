@@ -213,6 +213,11 @@ public: // should be private!
   static Fl_Window* grab_;
   static int compose_state; // used for dead keys (Windows) or marked text (MacOS)
   static void call_screen_init(); // recompute screen number and dimensions
+
+  // floating point values for multitouch gestures and maybe for other events
+  // FIXME: array size and enum for access indices, see Issue #733!
+  static double e_value[4];
+
 #endif // FL_DOXYGEN
 
 
@@ -827,6 +832,28 @@ public:
    */
   static const char *event_clipboard_type() {return e_clipboard_type; }
 
+  /**
+    Returns one value of a multitouch gesture and maybe other events.
+
+    This value can be a relative zoom factor or anything else, as
+    documented for the event.
+
+    The default index (\c 0) returns the main or \p X value of the
+    event. Many events like \p FL_ZOOM_GESTURE deliver only one
+    value, hence the default Fl::event_value() can be used.
+
+    Please refer to the particular event documentation.
+
+    It is guaranteed that multitouch gesture events that return both
+    \p X and \p Y values return these in indices 0 (\p FL_GESTURE_X) and
+    1 (\p FL_GESTURE_Y), respectively but we recommend to use symbolic
+    names as defined in the event descriptions.
+
+    \see enum Fl_Event and enum Fl_Event_Value
+  */
+  static double event_value(int idx = 0) {
+    return e_value[idx];    // FIXME: check array bounds
+  }
 
   static int compose(int &del);
   static void compose_reset();

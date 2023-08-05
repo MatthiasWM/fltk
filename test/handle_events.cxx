@@ -23,6 +23,8 @@
 #include <FL/names.h>
 #include <stdio.h>
 
+#define SKIP_MOVE_EVENTS (1)
+
 // define WINDOW_TYPE as either "Fl_Gl_Window" or "Fl_Double_Window"
 #define WINDOW_TYPE Fl_Double_Window
 
@@ -42,6 +44,9 @@ public:
   // evaluates and prints the current event
   void print_event(int ev) {
     eventnum++;
+#if (SKIP_MOVE_EVENTS)
+    if (ev == FL_MOVE) return; // skip mouse move events (test only)
+#endif
     ex = Fl::event_x();
     ey = Fl::event_y();
     int screen_num = Fl_Window::screen_num();
@@ -52,7 +57,7 @@ public:
 #endif
     eventname = fl_eventnames[ev];
     fprintf(stderr,
-            "[%3d, win(%d,%d,%d,%d), screen %d, scale %3d%%] %-18.18s at (%4d, %4d)",
+            "[%3d, win(%d,%d,%d,%d), screen %d (%3d%%)] %-18.18s at (%4d, %4d)",
             eventnum, x(), y(), w(), h(), screen_num, scale, eventname, ex, ey);
     eventnum %= 999;
   }
@@ -76,11 +81,18 @@ int app::handle(int ev) {
       fprintf(stderr, ", dx = %d, dy = %d", Fl::event_dx(), Fl::event_dy());
       res = 1;
       break;
+    case FL_SCROLL_GESTURE:
+      fprintf(stderr, ", dx = %5.3f, dy = %5.3f", Fl::event_value(0), Fl::event_value(1));
+      res = 0; // show event, but don't consume it (test)
+      break;
     case FL_ENTER:
     case FL_LEAVE:
       res = 1;
       break;
     case FL_MOVE:
+#if (SKIP_MOVE_EVENTS)
+      return 0;
+#endif
     case FL_DRAG:
       fprintf(stderr, ",          mouse buttons = 0x%x", buttons);
       res = 1;

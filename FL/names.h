@@ -45,37 +45,49 @@
  */
 const char * const fl_eventnames[] =
 {
-  "FL_NO_EVENT",
+  "FL_NO_EVENT",        //  0
   "FL_PUSH",
   "FL_RELEASE",
   "FL_ENTER",
   "FL_LEAVE",
-  "FL_DRAG",
+  "FL_DRAG",            //  5
   "FL_FOCUS",
   "FL_UNFOCUS",
   "FL_KEYDOWN",
   "FL_KEYUP",
-  "FL_CLOSE",
+  "FL_CLOSE",           // 10
   "FL_MOVE",
   "FL_SHORTCUT",
   "FL_DEACTIVATE",
   "FL_ACTIVATE",
-  "FL_HIDE",
+  "FL_HIDE",            // 15
   "FL_SHOW",
   "FL_PASTE",
   "FL_SELECTIONCLEAR",
   "FL_MOUSEWHEEL",
-  "FL_DND_ENTER",
+  "FL_DND_ENTER",       // 20
   "FL_DND_DRAG",
   "FL_DND_LEAVE",
   "FL_DND_RELEASE",
   "FL_SCREEN_CONFIGURATION_CHANGED",
-  "FL_FULLSCREEN",
+  "FL_FULLSCREEN",      // 25
   "FL_ZOOM_GESTURE",
   "FL_ZOOM_EVENT",
-  "FL_EVENT_28", // not yet defined, just in case it /will/ be defined ...
-  "FL_EVENT_29", // not yet defined, just in case it /will/ be defined ...
-  "FL_EVENT_30"  // not yet defined, just in case it /will/ be defined ...
+  "FL_ROTATE_GESTURE",
+  "FL_SCROLL_GESTURE",
+  "FL_SWIPE_GESTURE",   // 30
+
+  // add new events *above* this comment !
+
+  "FL_EVENT_LAST",   // highest event number + 1 (see Enumerations.H)
+
+  // The following event names are defined to catch inconsistencies if
+  // new events were defined in FL/Enumerations.H but not added above.
+  // This should not happen (devs need to sync these two files manually).
+
+  "FL_EVENT_NN00",   // not yet defined, just in case it /will/ be defined ...
+  "FL_EVENT_NN01",   // not yet defined, just in case it /will/ be defined ...
+  "FL_EVENT_NN02"    // not yet defined, just in case it /will/ be defined ...
 };
 
 /**
