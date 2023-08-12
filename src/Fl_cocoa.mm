@@ -911,9 +911,72 @@ static void update_e_xy_and_e_xy_root(NSWindow *nsw)
   Fl::e_y_root = int((main_screen_height - pt.y)/s);
 }
 
+// FIXME: This function has been copied from Windows code.
+// We MUST make this a common function for better compatibility.
+// See src/Fl_win32_gestures.cxx
+
+#define DEBUG_TOUCH (0)
+
+static int handle_scroll(Fl_Window *window, int dx, int dy) {
+
+  int ret_x = 0;
+  int ret_y = 0;
+
+  // handle dx first
+
+  if (dx != 0) {
+
+    Fl::e_value[0] = dx;
+    Fl::e_value[1] = 0;
+
+#if (DEBUG_TOUCH & 0xf00)
+  printf("*** handle(FL_SCROLL_GESTURE) [%5.3f, %5.3f]\n",
+         Fl::e_value[0], Fl::e_value[1]);
+#endif
+
+    ret_x = Fl::handle(FL_SCROLL_GESTURE, window);
+    if (!ret_x) {
+      Fl::e_dx = -dx;
+      Fl::e_dy = 0;
+#if (DEBUG_TOUCH & 0xf00)
+      printf("--- handle(FL_MOUSEWHEEL) [%d, %d]\n",
+            Fl::e_dx, Fl::e_dy);
+#endif
+      ret_x = Fl::handle(FL_MOUSEWHEEL, window);
+    }
+  }
+
+  if (dy == 0)
+    return ret_x;
+
+  // now handle dy
+
+  Fl::e_value[0] = 0;
+  Fl::e_value[1] = dy;
+
+#if (DEBUG_TOUCH & 0xf00)
+  printf("*** handle(FL_SCROLL_GESTURE) [%5.3f, %5.3f]\n",
+         Fl::e_value[0], Fl::e_value[1]);
+#endif
+
+  ret_y = Fl::handle(FL_SCROLL_GESTURE, window);
+  if (!ret_y) {
+    Fl::e_dx = 0;
+    Fl::e_dy = -dy;
+#if (DEBUG_TOUCH & 0xf00)
+    printf("--- handle(FL_MOUSEWHEEL) [%d, %d]\n",
+          Fl::e_dx, Fl::e_dy);
+#endif
+    ret_y = Fl::handle(FL_MOUSEWHEEL, window);
+  }
+
+  return (ret_x || ret_y);
+
+} // handle_scroll
+
 
 /*
- * Cocoa Mousewheel handler
+ * Cocoa Mousewheel handler - used for both mousewheel and touch gestures
  */
 static void cocoaMouseWheelHandler(NSEvent *theEvent)
 {
@@ -931,9 +994,8 @@ static void cocoaMouseWheelHandler(NSEvent *theEvent)
     int dx = roundf([theEvent deltaX] / s);
     int dy = roundf([theEvent deltaY] / s);
     // allow both horizontal and vertical movements to be processed by the widget
-    // FIXME: Do we really need to send two distinct events?
-    // FIXME: We could probably send both delta values in one event.
-    // FIXME: Note: check FLTK documentation: is this documented behavior?
+    // Note: We really need to send two distinct X and Y mousewheel events, e.g.
+    // for horizontal and vertical scrollbars, respectively.
     printf("cocoaMouseWheelHandler (subtype = mouse): s = %3d%%, dx = %3d, dy = %3d\n",
            int(s * 100.), dx, dy);
     if (dx) {
@@ -950,17 +1012,11 @@ static void cocoaMouseWheelHandler(NSEvent *theEvent)
   else {
     double dx = [theEvent scrollingDeltaX];
     double dy = [theEvent scrollingDeltaY];
-    // allow both horizontal and vertical movements to be processed by the widget
-    // simultaneously in a single FL_SCROLL_GESTURE event
+    // Allow both horizontal and vertical movements to be processed by the widget.
     printf("cocoaMouseWheelHandler (subtype = touch): scale = %3d%%, dx = %5.3f, dy = %5.3f\n",
            int(s * 100.), dx, dy);
     // FIXME: do we need scaling?
-    Fl::e_dx = int(dx);   // FIXME: compatibility (not officially supported)
-    Fl::e_dy = int(dy);   // FIXME: compatibility (not officially supported)
-    // FIXME: do we need scaling?
-    Fl::e_value[0] = dx;  // scrolling delta (x)
-    Fl::e_value[1] = dy;  // scrolling delta (y)
-    Fl::handle(FL_SCROLL_GESTURE, window);
+    handle_scroll(window, dx, dy);
   }
   fl_unlock_function();
 }
