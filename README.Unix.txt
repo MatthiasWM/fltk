@@ -96,6 +96,7 @@ Open a shell and install some development software:
   sudo apt-get install libpng-dev
   sudo apt-get install libpango1.0-dev
   sudo apt-get install libxinerama-dev
+  sudo apt-get install libxi-dev
 
 If you want to build FLTK for Wayland (the supposed successor of X) you need
 some more packages. Please refer to README.Wayland.txt for more information.

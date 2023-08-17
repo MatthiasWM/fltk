@@ -139,6 +139,14 @@
 #define HAVE_XRENDER 0
 
 /*
+ * HAVE_XINPUT:
+ *
+ * Do we have the XInput library and the XInput2 header?
+ */
+
+#define HAVE_XINPUT 0
+
+/*
  * HAVE_X11_XREGION_H:
  *
  * Do we have the X11 Xregion.h header file ?

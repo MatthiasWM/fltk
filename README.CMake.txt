@@ -165,6 +165,9 @@ OPTION_USE_XRENDER  - default ON
    These are X11 extended libraries. These libs are used if found on the
    build system unless the respective option is turned off.
 
+OPTION_USE_XINPUT   - default ON
+   Optional, needed to enable touch and gesture event.
+
 OPTION_USE_CAIRO - default OFF
    Makes all drawing operations use the Cairo library (rather than Xlib)
    producing antialiased graphics (X11 platform, implies OPTION_USE_PANGO).

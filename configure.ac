@@ -140,6 +140,8 @@ AC_ARG_ENABLE([xinerama], AS_HELP_STRING([--disable-xinerama], [turn off Xineram
 
 AC_ARG_ENABLE([xrender], AS_HELP_STRING([--disable-xrender], [turn off Xrender support]))
 
+AC_ARG_ENABLE([xinput], AS_HELP_STRING([--disable-xinput], [turn off XInput support]))
+
 AC_ARG_ENABLE([fluid], AS_HELP_STRING([--disable-fluid], [turn off fluid building]))
 
 AS_CASE([$host_os], [cygwin* | mingw*], [
@@ -1143,6 +1145,14 @@ AS_CASE([$host_os_gui], [cygwin* | mingw*], [
           xrender_found=yes
         ])
 
+        xinput_found=no
+        AS_IF([$PKGCONFIG --exists xi], [
+	  dnl We must also check for X11/extensions/XInput2.h
+          AC_DEFINE(HAVE_XINPUT)
+          LIBS="$LIBS $($PKGCONFIG --libs xi)"
+          xinput_found=yes
+        ])
+
         AC_CHECK_HEADER([X11/Xregion.h], [
           AC_DEFINE([HAVE_X11_XREGION_H])
         ], [], [#include <X11/Xlib.h>])
@@ -1371,6 +1381,18 @@ AS_CASE([$host_os_gui], [cygwin* | mingw*], [
                 AC_DEFINE([HAVE_XRENDER])
                 LIBS="-lXrender $LIBS"
                 xrender_found=yes
+            ])
+        ], [], [#include <X11/Xlib.h>])
+    ])
+
+    dnl Check for the XInput library unless disabled...
+    xinput_found=no
+    AS_IF([test x$enable_xinput != xno], [
+        AC_CHECK_HEADER([X11/extensions/XInput2.h], [
+            AC_CHECK_LIB([Xi], [XIQueryVersion], [
+                AC_DEFINE([HAVE_XINPUT])
+                LIBS="-lXi $LIBS"
+                xinput_found=yes
             ])
         ], [], [#include <X11/Xlib.h>])
     ])
@@ -1748,6 +1770,9 @@ AS_CASE([$host_os_gui], [cygwin* | mingw*], [
     ])
     AS_IF([test x$xrender_found = xyes], [
         graphics="$graphics + Xrender"
+    ])
+    AS_IF([test x$xinput_found = xyes], [
+        graphics="$graphics + XInput"
     ])
     AS_IF([test x$enable_usecairo = xyes], [
         graphics="$graphics + Cairo"

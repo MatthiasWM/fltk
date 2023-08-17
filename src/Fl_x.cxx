@@ -87,6 +87,9 @@ static bool have_xfixes = false;
 #  if HAVE_XRENDER
 #    include <X11/extensions/Xrender.h>
 #  endif
+#  if HAVE_XINPUT
+#    include <X11/extensions/XInput2.h>
+#  endif
 
 #  if USE_POLL
 #    include <poll.h>
@@ -528,6 +531,52 @@ void Fl_X11_Screen_Driver::disable_im() {
   xim_deactivate();
 }
 
+#if HAVE_XINPUT
+static void open_xinput(Display* d) {
+  printf("Opening XInput2\n");
+  int event, err, xinput2_opcode;
+
+  if (!XQueryExtension(d, "XInputExtension", &xinput2_opcode, &event, &err)) {
+    printf("XInput2 Extension not found.\n");
+    return;
+  }
+  
+  int major = 2, minor = 4;
+  if (XIQueryVersion(d, &major, &minor) != Success) {
+    printf("XInput2 can't query version.\n");
+    return;
+  }
+  if ( (major * 1000) + minor < (2 * 1000) + 2) {
+	  // Version 2.2 has Touch and RawTouch events
+	  // Version 2.4 has pinch and rotation gesture, but is not availabel one Raspbian? (Aug. 2023)
+    printf("XInput2 Extension %d.%d too old for multitouch support.\n", major, minor);
+    return;
+  }
+
+  XIEventMask eventmask;
+  unsigned char mask[(XI_LASTEVENT + 7)/8] = { };
+  
+  eventmask.deviceid = XIAllMasterDevices;
+  eventmask.mask_len = sizeof(mask);
+  eventmask.mask = mask;
+
+  XISetMask(mask, XI_TouchBegin);
+  XISetMask(mask, XI_TouchUpdate);
+  XISetMask(mask, XI_TouchEnd);
+  XISetMask(mask, XI_TouchOwnership);
+  XISetMask(mask, XI_RawTouchBegin);
+  XISetMask(mask, XI_RawTouchUpdate);
+  XISetMask(mask, XI_RawTouchEnd);
+  XISetMask(mask, XI_RawButtonPress);
+
+  if (XISelectEvents(d, DefaultRootWindow(d), &eventmask, 1) != Success) {
+    printf("XInput2 event selection failed.\n");
+    return;
+  }
+  printf("XInput2 event selection OK!\n");
+}
+#endif
+
 void Fl_X11_Screen_Driver::open_display_platform() {
   if (fl_display) return;
 
@@ -546,6 +595,9 @@ void Fl_X11_Screen_Driver::open_display_platform() {
   open_display_i(d);
   // the unique GC used by all X windows
   GC gc = XCreateGC(fl_display, RootWindow(fl_display, fl_screen), 0, 0);
+#if HAVE_XINPUT
+  open_xinput(d);
+#endif
   Fl_Graphics_Driver::default_driver().gc(gc);
   fl_create_print_window();
 }
@@ -1236,6 +1288,25 @@ int fl_handle(const XEvent& thisevent)
   XEvent xevent = thisevent;
   fl_xevent = &thisevent;
   Window xid = xevent.xany.window;
+
+// FIXME:
+if (xevent.type==GenericEvent) {
+  XGenericEventCookie *cookie = (XGenericEventCookie*)&xevent.xcookie;
+  if (  XGetEventData(fl_display, cookie) &&
+        cookie->type == GenericEvent ) { //&&
+        //cookie->extension == xi_opcode) {
+    switch (cookie->evtype) {
+	    case XI_RawTouchBegin: printf("XI_RawTouchBegin\n"); break;
+	    case XI_RawTouchUpdate: printf("XI_RawTouchUpdate\n"); break;
+	    case XI_RawTouchEnd: printf("XI_RawTouchEnd\n"); break;
+	    case XI_TouchBegin: printf("XI_TouchBegin\n"); break;
+	    case XI_TouchUpdate: printf("XI_TouchUpdate\n"); break;
+	    case XI_TouchEnd: printf("XI_TouchEnd\n"); break;
+	    case XI_TouchOwnership: printf("XI_TouchOwnership\n"); break;
+	    default: printf("XI_EVENT %d\n", cookie->evtype); break;
+    }
+    }
+}
 
   if (Fl_X11_Screen_Driver::xim_ic && xevent.type == DestroyNotify &&
         xid != Fl_X11_Screen_Driver::xim_win && !fl_find(xid))
