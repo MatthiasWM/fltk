@@ -541,33 +541,37 @@ static void open_xinput(Display* d) {
     return;
   }
   
-  int major = 2, minor = 4;
+  int major = 2, minor = 2;
+  // set minor to 4 when we support gesture events
+  // one single device supports either gestures or multitouch, but not both
+  // touch screens generate multitouch events, touchpads generate gestures if we have 2.4
+  // Pinch gestures also contain rotation information
   if (XIQueryVersion(d, &major, &minor) != Success) {
     printf("XInput2 can't query version.\n");
     return;
   }
   if ( (major * 1000) + minor < (2 * 1000) + 2) {
 	  // Version 2.2 has Touch and RawTouch events
-	  // Version 2.4 has pinch and rotation gesture, but is not availabel one Raspbian? (Aug. 2023)
+	  // Version 2.4 has pinch and rotation gesture, but is not available one Raspbian? (Aug. 2023)
     printf("XInput2 Extension %d.%d too old for multitouch support.\n", major, minor);
     return;
   }
 
   XIEventMask eventmask;
-  unsigned char mask[(XI_LASTEVENT + 7)/8] = { };
+  unsigned char mask[XIMaskLen(XI_LASTEVENT)] = { };
   
   eventmask.deviceid = XIAllMasterDevices;
   eventmask.mask_len = sizeof(mask);
   eventmask.mask = mask;
 
+  // TouchBegin is sent on the touch screen when the second finger touches the screen
   XISetMask(mask, XI_TouchBegin);
   XISetMask(mask, XI_TouchUpdate);
   XISetMask(mask, XI_TouchEnd);
-  XISetMask(mask, XI_TouchOwnership);
-  XISetMask(mask, XI_RawTouchBegin);
-  XISetMask(mask, XI_RawTouchUpdate);
-  XISetMask(mask, XI_RawTouchEnd);
-  XISetMask(mask, XI_RawButtonPress);
+  //XISetMask(mask, XI_TouchOwnership); // receive all events even before we grabbed them
+  //XISetMask(mask, XI_RawTouchBegin);  // receive single finger touches too
+  //XISetMask(mask, XI_RawTouchUpdate);
+  //XISetMask(mask, XI_RawTouchEnd);
 
   if (XISelectEvents(d, DefaultRootWindow(d), &eventmask, 1) != Success) {
     printf("XInput2 event selection failed.\n");
@@ -1291,7 +1295,57 @@ int fl_handle(const XEvent& thisevent)
 
 // FIXME:
 if (xevent.type==GenericEvent) {
+  static int active_touch_sequence = 0;
   XGenericEventCookie *cookie = (XGenericEventCookie*)&xevent.xcookie;
+  if (XGetEventData(fl_display, cookie)) {
+    // if (cookie.extension==xi_opcode)
+    do { // do..while makes it easy to release resource by calling break;
+      XIDeviceEvent *d = (XIDeviceEvent*)(cookie->data);
+      // If we are not in the middle of handling a touch event sequence yet,
+      // check if our client is interested in multitouch and gestures.
+      if (active_touch_sequence == 0 && cookie->evtype == XI_TouchBegin) {
+        // we must first verify that we own the event window
+        //Fl_Window *window = fl_find(xid);
+        //Fl_Window *window = fl_find(d->root);
+        //Fl_Window *window = fl_find(d->event);
+        Fl_Window *window = fl_find(d->child); // matches!
+        if (!window) {
+	  printf("Multitouch OUTSIDE window (%08x %08x)\n", xid, window);
+	  Status st = XIAllowTouchEvents(fl_display, d->deviceid, d->sourceid, d->child, XIRejectTouch);
+	  printf("Status %d\n", st);
+	  break;
+	}
+	printf("Multitouch inside window\n");
+        // now we must determine if our user app actually wants to handle this event
+	//   e_value([dx, dy])
+	//   Fl::handle(FL_SCROLL_GESTURE, window);
+	//   deviceid, sourceid, touchid  for XI_TouchOwnership -> XITouchOwnershipEvent
+	//   deviecid, detail, event -> Qt
+	//   deviceid, touchid, window
+	Status st = XIAllowEvents(fl_display, d->deviceid, XIAcceptTouch, CurrentTime);
+	//Status st = XIAllowTouchEvents(fl_display, d->deviceid, d->serial, d->child, XIAcceptTouch);
+	printf("Status %d\n", st);
+	//      function with XIRejectTouch
+	//  XIAllowTouchEvents() function with XIAcceptTouch
+        // indicate that we want the following Touch events, too
+      }
+      if (cookie->evtype == XI_TouchBegin) {
+	active_touch_sequence++;
+        printf("XI_TouchBegin %d\n", active_touch_sequence);
+      }
+      if (cookie->evtype == XI_TouchUpdate) {
+        printf("XI_TouchUpdate %d\n", active_touch_sequence);
+      }
+      if (cookie->evtype == XI_TouchEnd) {
+        printf("XI_TouchEnd %d\n", active_touch_sequence);
+	active_touch_sequence--;
+      }
+      if (cookie->evtype == XI_TouchOwnership) {
+        printf("XI_TouchOwnership %d\n", active_touch_sequence);
+      }
+
+    /*
+  Fl_Window* window = fl_find(xid);
   if (  XGetEventData(fl_display, cookie) &&
         cookie->type == GenericEvent ) { //&&
         //cookie->extension == xi_opcode) {
@@ -1306,6 +1360,12 @@ if (xevent.type==GenericEvent) {
 	    default: printf("XI_EVENT %d\n", cookie->evtype); break;
     }
     }
+    */
+    } while (0);
+    XFreeEventData(fl_display, cookie);
+  }
+  // ReleaseEventData
+  // XIAllowEvents
 }
 
   if (Fl_X11_Screen_Driver::xim_ic && xevent.type == DestroyNotify &&
