@@ -59,13 +59,15 @@
 // Default sizes...
 //
 
-#define GROUP_SIZE      160
-#define CELL_SIZE       50
-#define CELL_OFFSET     5
+const int kPuzzleMargin = 10;
+const int kBorderSize = 1;
+const int kCellSize = 45;
+const int kGroupSize = 3 * kCellSize + 2 * kBorderSize;
+const int kPuzzleSize = 3 * kGroupSize + 2 * kBorderSize;
 #ifdef __APPLE__
-#  define MENU_OFFSET   0
+const int kMenuHeight = 0;
 #else
-#  define MENU_OFFSET   25
+const int kMenuHeight = 25;
 #endif // __APPLE__
 
 // Sound class for Sudoku...
@@ -504,8 +506,7 @@ SudokuCell::draw() {
 
 
   // Draw the cell box...
-  if (readonly()) fl_draw_box(FL_UP_BOX, x(), y(), w(), h(), color());
-  else fl_draw_box(FL_DOWN_BOX, x(), y(), w(), h(), color());
+  fl_draw_box(box(), x(), y(), w(), h(), color());
 
   // Draw the cell background...
   if (Fl::focus() == this) {
@@ -523,7 +524,10 @@ SudokuCell::draw() {
   if (value_) {
     s[0] = value_ + '0';
 
-    fl_font(FL_HELVETICA_BOLD, h() - 10);
+    if (readonly())
+      fl_font(FL_HELVETICA_BOLD, h() - 10);
+    else
+      fl_font(FL_HELVETICA, h() - 10);
     fl_draw(s, x(), y(), w(), h(), FL_ALIGN_CENTER);
   }
 
@@ -630,7 +634,8 @@ Fl_Preferences  Sudoku::prefs_(Fl_Preferences::USER_L, "fltk.org", "sudoku");
 
 // Create a Sudoku game window...
 Sudoku::Sudoku()
-  : Fl_Double_Window(GROUP_SIZE * 3, GROUP_SIZE * 3 + MENU_OFFSET, "Sudoku")
+  : Fl_Double_Window( kPuzzleSize + 2*kPuzzleMargin, 
+                      kPuzzleSize + 2*kPuzzleMargin + kMenuHeight, "FLTK Sudoku")
 {
   int j, k;
   Fl_Group *g;
@@ -672,16 +677,24 @@ Sudoku::Sudoku()
 
   items[10 + difficulty_].flags |= FL_MENU_VALUE;
 
-  menubar_ = new Fl_Sys_Menu_Bar(0, 0, 3 * GROUP_SIZE, 25);
+  menubar_ = new Fl_Sys_Menu_Bar(0, 0, 3 * w(), kMenuHeight);
   menubar_->menu(items);
 
   // Create the grids...
-  grid_ = new Fl_Group(0, MENU_OFFSET, 3 * GROUP_SIZE, 3 * GROUP_SIZE);
+  grid_ = new Fl_Group(kPuzzleMargin, kMenuHeight + kPuzzleMargin, 
+                       kPuzzleSize, kPuzzleSize);
+  Fl_Group *grid_resizable = new Fl_Group(grid_->x()+kBorderSize, grid_->y()+kBorderSize, 
+                                          grid_->w()-2*kBorderSize, grid_->h()-2*kBorderSize);
+  grid_->resizable(grid_resizable);
+  grid_->box(FL_BORDER_BOX);
 
-  for (j = 0; j < 3; j ++)
+  for (j = 0; j < 3; j ++) {
     for (k = 0; k < 3; k ++) {
-      g = new Fl_Group(k * GROUP_SIZE, j * GROUP_SIZE + MENU_OFFSET,
-                       GROUP_SIZE, GROUP_SIZE);
+      g = new Fl_Group(grid_resizable->x() + k*kGroupSize, grid_resizable->y()+j*kGroupSize,
+                       kGroupSize, kGroupSize);
+      Fl_Group *g_resizable = new Fl_Group(g->x()+kBorderSize, g->y()+kBorderSize, 
+                                          g->w()-2*kBorderSize, g->h()-2*kBorderSize);
+      g->resizable(g_resizable);
       g->box(FL_BORDER_BOX);
       if ((int)(j == 1) ^ (int)(k == 1)) g->color(FL_DARK3);
       else g->color(FL_DARK2);
@@ -689,14 +702,15 @@ Sudoku::Sudoku()
 
       grid_groups_[j][k] = g;
     }
+  }
 
   for (j = 0; j < 9; j ++)
     for (k = 0; k < 9; k ++) {
-      cell = new SudokuCell(k * CELL_SIZE + CELL_OFFSET +
-                                (k / 3) * (GROUP_SIZE - 3 * CELL_SIZE),
-                            j * CELL_SIZE + CELL_OFFSET + MENU_OFFSET +
-                                (j / 3) * (GROUP_SIZE - 3 * CELL_SIZE),
-                            CELL_SIZE, CELL_SIZE);
+      g = (Fl_Group*)(grid_groups_[j/3][k/3]->child(0));
+      g->begin();
+      cell = new SudokuCell(g->x() + (k%3)*kCellSize, g->y() + (j%3)*kCellSize,
+                            kCellSize, kCellSize);
+      cell->box(FL_BORDER_BOX);
       cell->callback(reset_cb);
       grid_cells_[j][k] = cell;
     }
@@ -717,15 +731,15 @@ Sudoku::Sudoku()
 
   // Make the window resizable...
   resizable(grid_);
-  size_range(3 * GROUP_SIZE, 3 * GROUP_SIZE + MENU_OFFSET, 0, 0, 5, 5, 1);
+  // TODO: size_range(3 * GROUP_SIZE, 3 * GROUP_SIZE + MENU_OFFSET, 0, 0, 5, 5, 1);
 
   // Restore the previous window dimensions...
   int X, Y, W, H;
 
   if (prefs_.get("x", X, -1)) {
     prefs_.get("y", Y, -1);
-    prefs_.get("width", W, 3 * GROUP_SIZE);
-    prefs_.get("height", H, 3 * GROUP_SIZE + MENU_OFFSET);
+    prefs_.get("width", W, w());
+    prefs_.get("height", H, h());
 
     resize(X, Y, W, H);
   }
