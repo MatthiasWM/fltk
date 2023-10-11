@@ -20,7 +20,9 @@
 #include "Fl_Widget_Type.h"
 
 static void cb_(Fl_Tabs* o, void* v) {
+//~~0~4~ffff~~
   propagate_load((Fl_Group *)o,v);
+//~~2~4~ffff~~
 }
 
 Fl_Menu_Item menu_[] = {
@@ -95,8 +97,10 @@ Fl_Menu_Item menu_3[] = {
 Fl_Input *v_input[4]={(Fl_Input *)0};
 
 static void cb_1(Fl_Tile*, void* v) {
+//~~0~4~ffff~~
   wComment->do_callback(wComment, v);
   wCallback->do_callback(wCallback, v);
+//~~2~4~ffff~~
 }
 
 Fl_Text_Editor *wComment=(Fl_Text_Editor *)0;

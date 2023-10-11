@@ -40,6 +40,7 @@ protected:
   Fd_Text_Tree *text_in_header;
   Fd_Text_Tree *text_in_code;
   Fd_Pointer_Tree *ptr_in_code;
+  size_t tag_start;
 
 public:
   int indentation;
@@ -74,6 +75,8 @@ public:
   Fl_Type* write_code(Fl_Type* p);
   int write_code(const char *cfile, const char *hfile, bool to_sourceview=false);
   void write_public(int state); // writes pubic:/private: as needed
+  void line_tag(int kind, unsigned short uid, const char *text=NULL);
+  int merge_back(const char *s, const char *t);
 };
 
 #endif // _FLUID_CODE_H

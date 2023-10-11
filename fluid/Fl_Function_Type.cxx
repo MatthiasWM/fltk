@@ -666,7 +666,9 @@ void Fl_Code_Type::write_code1(Fd_Code_Writer& f) {
     main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
   }
 
+  f.line_tag(0, get_uid()); // FIXME: no need for the uuid!
   f.write_c_indented(name(), 0, '\n');
+  f.line_tag(1, get_uid());
 }
 
 /**

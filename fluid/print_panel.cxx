@@ -30,13 +30,17 @@ Fl_Group *print_panel_controls=(Fl_Group *)0;
 Fl_Choice *print_choice=(Fl_Choice *)0;
 
 static void cb_print_choice(Fl_Choice*, void*) {
+//~~0~4~fdd5~~
   print_update_status();
+//~~2~4~8662~~
 }
 
 Fl_Button *print_properties=(Fl_Button *)0;
 
 static void cb_print_properties(Fl_Button*, void*) {
+//~~0~4~93e3~~
   print_properties_panel->show();
+//~~2~4~2c69~~
 }
 
 Fl_Box *print_status=(Fl_Box *)0;
@@ -44,22 +48,28 @@ Fl_Box *print_status=(Fl_Box *)0;
 Fl_Round_Button *print_all=(Fl_Round_Button *)0;
 
 static void cb_print_all(Fl_Round_Button*, void*) {
+//~~0~4~46e5~~
   print_from->deactivate();
   print_to->deactivate();
+//~~2~4~a421~~
 }
 
 Fl_Round_Button *print_pages=(Fl_Round_Button *)0;
 
 static void cb_print_pages(Fl_Round_Button*, void*) {
+//~~0~4~011d~~
   print_from->activate();
   print_to->activate();
+//~~2~4~9b00~~
 }
 
 Fl_Round_Button *print_selection=(Fl_Round_Button *)0;
 
 static void cb_print_selection(Fl_Round_Button*, void*) {
+//~~0~4~f450~~
   print_from->deactivate();
   print_to->deactivate();
+//~~2~4~a421~~
 }
 
 Fl_Int_Input *print_from=(Fl_Int_Input *)0;
@@ -69,6 +79,7 @@ Fl_Int_Input *print_to=(Fl_Int_Input *)0;
 Fl_Spinner *print_copies=(Fl_Spinner *)0;
 
 static void cb_print_copies(Fl_Spinner*, void*) {
+//~~0~4~cdbe~~
   if (print_copies->value() == 1) {
     print_collate_button->deactivate();
     print_collate_group[0]->deactivate();
@@ -78,20 +89,25 @@ static void cb_print_copies(Fl_Spinner*, void*) {
     print_collate_group[0]->activate();
     print_collate_group[1]->activate();
   }
+//~~2~4~4e1a~~
 }
 
 Fl_Check_Button *print_collate_button=(Fl_Check_Button *)0;
 
 static void cb_print_collate_button(Fl_Check_Button*, void*) {
+//~~0~4~a5be~~
   int i = print_collate_button->value() != 0;
   print_collate_group[i]->show();
   print_collate_group[1 - i]->hide();
+//~~2~4~51af~~
 }
 
 Fl_Group *print_collate_group[2]={(Fl_Group *)0};
 
 static void cb_Cancel(Fl_Button*, void*) {
+//~~0~4~54a0~~
   print_panel->hide();
+//~~2~4~d82b~~
 }
 
 Fl_Progress *print_progress=(Fl_Progress *)0;
@@ -99,8 +115,10 @@ Fl_Progress *print_progress=(Fl_Progress *)0;
 Fl_Double_Window *print_properties_panel=(Fl_Double_Window *)0;
 
 static void cb_print_properties_panel(Fl_Double_Window*, void*) {
+//~~0~4~5490~~
   print_properties_panel->hide();
   print_update_status();
+//~~2~4~f121~~
 }
 
 Fl_Choice *print_page_size=(Fl_Choice *)0;
@@ -218,6 +236,7 @@ static Fl_Image *image_print_gray() {
 Fl_Button *print_output_mode[4]={(Fl_Button *)0};
 
 static void cb_Save(Fl_Return_Button*, void*) {
+//~~0~4~c6f4~~
   print_properties_panel->hide();
 
   char name[1024];
@@ -232,15 +251,20 @@ static void cb_Save(Fl_Return_Button*, void*) {
     if (print_output_mode[val]->value()) break;
   }
   fluid_prefs.set(name, val);
+//~~2~4~717e~~
 }
 
 static void cb_Cancel1(Fl_Button*, void*) {
+//~~0~4~fb8f~~
   print_properties_panel->hide();
   print_update_status();
+//~~2~4~f121~~
 }
 
 static void cb_Use(Fl_Button*, void*) {
+//~~0~4~681d~~
   print_properties_panel->hide();
+//~~2~4~2b80~~
 }
 
 Fl_Double_Window* make_print_panel() {
@@ -511,6 +535,7 @@ Fl_Double_Window* make_print_panel() {
 void print_cb(Fl_Return_Button *, void *);
 
 void print_load() {
+//~~0~3~f102~~
   FILE *lpstat;
   char line[1024], name[1024], *nptr, qname[2048], *qptr, defname[1024];
   int i;
@@ -555,9 +580,11 @@ void print_load() {
 
 
   print_update_status();
+//~~1~3~29fb~~
 }
 
 void print_update_status() {
+//~~0~3~36ef~~
   FILE *lpstat;
   char command[1024];
   static char status[1024];
@@ -583,4 +610,5 @@ void print_update_status() {
   snprintf(name, sizeof(name), "%s/output_mode", printer);
   fluid_prefs.get(name, val, 0);
   print_output_mode[val]->setonly();
+//~~1~3~a905~~
 }

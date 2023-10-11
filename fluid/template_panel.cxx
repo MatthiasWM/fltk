@@ -18,6 +18,7 @@
 
 #include "template_panel.h"
 #include "fluid.h"
+#include "fluid.h"
 #include <FL/Fl_Shared_Image.H>
 #include <FL/fl_ask.H>
 #include <FL/fl_string_functions.h>
@@ -35,6 +36,7 @@
 Fl_Double_Window *template_panel=(Fl_Double_Window *)0;
 
 static void cb_template_panel(Fl_Double_Window*, void*) {
+//~~0~3747~ac63~~
   Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
   if (img) img->release();
   template_preview->image(0);
@@ -43,11 +45,13 @@ static void cb_template_panel(Fl_Double_Window*, void*) {
   template_name->value("");
   template_instance->value("");
   template_panel->hide();
+//~~2~3747~3690~~
 }
 
 Fl_Browser *template_browser=(Fl_Browser *)0;
 
 static void cb_template_browser(Fl_Browser*, void*) {
+//~~0~66f5~34bc~~
   if (Fl::event_clicks()) {
     template_panel->hide();
     return;
@@ -92,6 +96,7 @@ static void cb_template_browser(Fl_Browser*, void*) {
     template_preview->image(img);
     template_preview->redraw();
   }
+//~~2~66f5~51da~~
 }
 
 Fl_Box *template_preview=(Fl_Box *)0;
@@ -99,10 +104,12 @@ Fl_Box *template_preview=(Fl_Box *)0;
 Fl_Input *template_name=(Fl_Input *)0;
 
 static void cb_template_name(Fl_Input*, void*) {
+//~~0~c398~a7f9~~
   if (strlen(template_name->value())) {
     template_submit->activate();
     if (Fl::event_key() == FL_Enter) template_panel->hide();
   } else template_submit->deactivate();
+//~~2~c398~ec48~~
 }
 
 Fl_Input *template_instance=(Fl_Input *)0;
@@ -110,6 +117,7 @@ Fl_Input *template_instance=(Fl_Input *)0;
 Fl_Button *template_delete=(Fl_Button *)0;
 
 static void cb_Cancel(Fl_Button*, void*) {
+//~~0~8b05~4919~~
   Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
   if (img) img->release();
   template_preview->image(0);
@@ -118,16 +126,19 @@ static void cb_Cancel(Fl_Button*, void*) {
   template_name->value("");
   template_instance->value("");
   template_panel->hide();
+//~~2~8b05~3690~~
 }
 
 Fl_Return_Button *template_submit=(Fl_Return_Button *)0;
 
 static void cb_template_submit(Fl_Return_Button*, void*) {
+//~~0~3258~8b74~~
   Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
   if (img) img->release();
   template_preview->image(0);
 
   template_panel->hide();
+//~~2~3258~c352~~
 }
 
 Fl_Double_Window* make_template_panel() {
@@ -178,6 +189,7 @@ Fl_Double_Window* make_template_panel() {
 }
 
 void template_clear() {
+//~~0~816b~664e~~
   int i;
   void *filename;
 
@@ -187,9 +199,11 @@ void template_clear() {
 
   template_browser->deselect();
   template_browser->clear();
+//~~1~816b~e598~~
 }
 
 void template_delete_cb(Fl_Button *, void *) {
+//~~0~7788~acd0~~
   int item = template_browser->value();
   if (item < 1) return;
 
@@ -207,9 +221,11 @@ void template_delete_cb(Fl_Button *, void *) {
 
   template_browser->remove(item);
   template_browser->do_callback();
+//~~1~7788~bf53~~
 }
 
 void template_load() {
+//~~0~6499~db65~~
   int i;
   char name[1024], filename[1400], path[1024], *ptr;
   struct dirent **files;
@@ -264,4 +280,5 @@ void template_load() {
   }
 
   if (num_files > 0) free(files);
+//~~1~6499~67fe~~
 }

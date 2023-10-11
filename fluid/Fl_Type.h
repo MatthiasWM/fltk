@@ -61,6 +61,7 @@ protected:
   const char *user_data_;
   const char *user_data_type_;
   const char *comment_;
+  unsigned short uid_; // unique ID within the project
 
 public: // things that should not be public:
 
@@ -202,6 +203,10 @@ public:
 
   const char* class_name(const int need_nest) const;
   const class Fl_Class_Type* is_in_class() const;
+
+  unsigned short set_uid(unsigned short suggested_uid=0);
+  unsigned short get_uid() { return uid_; }
+  static Fl_Type *find_by_uid(unsigned short uid);
 };
 
 #endif // _FLUID_FL_TYPE_H

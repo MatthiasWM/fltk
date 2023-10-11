@@ -1260,11 +1260,31 @@ int write_code_files()
   return 0;
 }
 
+int mergeback_code_files()
+{
+  flush_text_widgets();
+  if (!filename) return 1;
+  
+  // -- generate the file names with absolute paths
+  Fd_Code_Writer f;
+  Fl_String code_filename = g_project.codefile_path() + g_project.codefile_name();
+  Fl_String header_filename = g_project.headerfile_path() + g_project.headerfile_name();
+  
+  // -- write the code and header files
+  if (!batch_mode) enter_project_dir();
+  int x = f.merge_back(code_filename.c_str(), header_filename.c_str());
+  if (!batch_mode) leave_project_dir();
+}
+
 /**
  Callback to write C++ code and header files.
  */
 void write_cb(Fl_Widget *, void *) {
     write_code_files();
+}
+
+void mergeback_cb(Fl_Widget *, void *) {
+  mergeback_code_files();
 }
 
 /**
@@ -1618,6 +1638,7 @@ Fl_Menu_Item Main_Menu[] = {
   {"Save As &Template...", 0, save_template_cb, 0, FL_MENU_DIVIDER},
   {"&Print...", FL_COMMAND+'p', print_menu_cb},
   {"Write &Code...", FL_COMMAND+FL_SHIFT+'c', write_cb, 0},
+  {"Mergeback Code", FL_COMMAND+FL_SHIFT+'m', mergeback_cb, 0},
   {"&Write Strings...", FL_COMMAND+FL_SHIFT+'w', write_strings_cb, 0, FL_MENU_DIVIDER},
   {relative_history[0], FL_COMMAND+'0', menu_file_open_history_cb, absolute_history[0]},
   {relative_history[1], FL_COMMAND+'1', menu_file_open_history_cb, absolute_history[1]},

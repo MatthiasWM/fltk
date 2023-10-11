@@ -17,49 +17,52 @@ comment {//
 //
 //     https://www.fltk.org/bugs.php
 //
-} {in_source in_header
+} {uid 16807 in_source in_header
 }
 
-decl {\#include "fluid.h"} {private local
+decl {\#include "fluid.h"} {uid 44249 private local
 }
 
-decl {\#include <FL/Fl_Shared_Image.H>} {private local
+decl {\#include "fluid.h"} {uid 46978 private local
 }
 
-decl {\#include <FL/fl_ask.H>} {private local
+decl {\#include <FL/Fl_Shared_Image.H>} {uid 3114 private local
 }
 
-decl {\#include <FL/fl_string_functions.h>} {private local
+decl {\#include <FL/fl_ask.H>} {uid 2558 private local
 }
 
-decl {\#include <FL/filename.H>} {private local
+decl {\#include <FL/fl_string_functions.h>} {uid 1101 private local
 }
 
-decl {\#include "../src/flstring.h"} {private local
+decl {\#include <FL/filename.H>} {uid 56008 private local
 }
 
-decl {\#include <stdio.h>} {private local
+decl {\#include "../src/flstring.h"} {uid 36568 private local
 }
 
-decl {\#include <stdlib.h>} {private local
+decl {\#include <stdio.h>} {uid 56290 private local
 }
 
-decl {\#include <errno.h>} {private local
+decl {\#include <stdlib.h>} {uid 12099 private local
 }
 
-declblock {\#if defined(_WIN32) && !defined(__CYGWIN__)} {after {\#endif // _WIN32 && !__CYGWIN__}
+decl {\#include <errno.h>} {uid 14615 private local
+}
+
+declblock {\#if defined(_WIN32) && !defined(__CYGWIN__)} {uid 39064 after {\#endif // _WIN32 && !__CYGWIN__}
 } {
-  decl {\#include <io.h>} {private local
+  decl {\#include <io.h>} {uid 15445 private local
   }
-  decl {\#else} {private local
+  decl {\#else} {uid 4748 private local
   }
-  decl {\#include <unistd.h>} {private local
+  decl {\#include <unistd.h>} {uid 11025 private local
   }
 }
 
-Function {make_template_panel()} {open
+Function {make_template_panel()} {uid 54451 open
 } {
-  Fl_Window template_panel {
+  Fl_Window template_panel {uid 14151
     label {New/Save Template}
     callback {Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
 if (img) img->release();
@@ -68,10 +71,10 @@ template_preview->image(0);
 template_browser->deselect();
 template_name->value("");
 template_instance->value("");
-template_panel->hide();}
+template_panel->hide();} open
     xywh {478 284 460 355} type Double resizable modal visible
   } {
-    Fl_Browser template_browser {
+    Fl_Browser template_browser {uid 26357
       label {Available Templates:}
       callback {if (Fl::event_clicks()) {
   template_panel->hide();
@@ -119,10 +122,10 @@ if (img) {
 }}
       xywh {10 28 180 250} type Hold labelfont 1 align 5 when 3
     }
-    Fl_Box template_preview {
+    Fl_Box template_preview {uid 16657
       xywh {200 28 250 250} box THIN_DOWN_BOX align 85 resizable
     }
-    Fl_Input template_name {
+    Fl_Input template_name {uid 50072
       label {Template Name:}
       callback {if (strlen(template_name->value())) {
   template_submit->activate();
@@ -130,22 +133,22 @@ if (img) {
 } else template_submit->deactivate();}
       xywh {198 288 252 25} labelfont 1 when 3 textfont 4
     }
-    Fl_Input template_instance {
+    Fl_Input template_instance {uid 18772
       label {Instance Name:}
       xywh {198 288 252 25} labelfont 1 textfont 4 hide
     }
-    Fl_Group {} {
+    Fl_Group {} {uid 11823 open
       xywh {10 323 440 25}
     } {
-      Fl_Button template_delete {
+      Fl_Button template_delete {uid 46226
         label {Delete Template}
         callback template_delete_cb
         xywh {10 323 143 25}
       }
-      Fl_Box {} {
+      Fl_Box {} {uid 38445
         xywh {153 323 126 25} resizable
       }
-      Fl_Button {} {
+      Fl_Button {} {uid 35589
         label Cancel
         callback {Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
 if (img) img->release();
@@ -157,7 +160,7 @@ template_instance->value("");
 template_panel->hide();}
         xywh {289 323 72 25}
       }
-      Fl_Return_Button template_submit {
+      Fl_Return_Button template_submit {uid 12888
         label Save
         callback {Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
 if (img) img->release();
@@ -170,7 +173,7 @@ template_panel->hide();}
   }
 }
 
-Function {template_clear()} {return_type void
+Function {template_clear()} {uid 19699 return_type void
 } {
   code {int i;
 void *filename;
@@ -180,10 +183,11 @@ for (i = 1; i <= template_browser->size(); i ++) {
 }
 
 template_browser->deselect();
-template_browser->clear();} {}
+template_browser->clear();} {uid 33131
+  }
 }
 
-Function {template_delete_cb(Fl_Button *, void *)} {return_type void
+Function {template_delete_cb(Fl_Button *, void *)} {uid 40406 return_type void
 } {
   code {int item = template_browser->value();
 if (item < 1) return;
@@ -201,10 +205,11 @@ if (fl_unlink(flfile)) {
 }
 
 template_browser->remove(item);
-template_browser->do_callback();} {}
+template_browser->do_callback();} {uid 30600
+  }
 }
 
-Function {template_load()} {open return_type void
+Function {template_load()} {uid 40199 open return_type void
 } {
   code {int i;
 char name[1024], filename[1400], path[1024], *ptr;
@@ -259,6 +264,6 @@ for (i = 0; i < num_files; i ++) {
   free(files[i]);
 }
 
-if (num_files > 0) free(files);} {selected
+if (num_files > 0) free(files);} {uid 25753
   }
 }
