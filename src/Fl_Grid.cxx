@@ -585,6 +585,31 @@ void Fl_Grid::margin(int left, int top, int right, int bottom) {
     margin_bottom_ = bottom;
 }
 
+/** Returns all (four) margin sizes of the widget.
+
+ All margin sizes are returned in the given arguments. If any argument
+ is \p NULL the respective value is not returned.
+
+ \param[in]  left    returns left margin if not \p NULL
+ \param[in]  top     returns top margin if not \p NULL
+ \param[in]  right   returns right margin if not \p NULL
+ \param[in]  bottom  returns bottom margin if not \p NULL
+
+ \return     whether all margins are equal
+ \retval  1  all margins have the same size
+ \retval  0  at least one margin has a different size
+ */
+int Fl_Grid::margin(int *left, int *top, int *right, int *bottom) const {
+  if (left) *left = margin_left_;
+  if (top) *top = margin_top_;
+  if (right) *right = margin_right_;
+  if (bottom) *bottom = margin_bottom_;
+  if (margin_left_ == margin_top_ && margin_top_ == margin_right_ && margin_right_ == margin_bottom_)
+    return 1;
+  return 0;
+}
+
+
 /**
   Set default gaps for rows and columns.
 

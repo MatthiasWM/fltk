@@ -2214,9 +2214,10 @@ void value_cb(Fl_Value_Input* i, void* v) {
 
 void values_group_cb(Fl_Group* g, void* v) {
   if (v == LOAD) {
-    if (current_widget->is_a(Fl_Type::ID_Flex)) {
-      g->hide();
-    } else if (current_widget->is_a(Fl_Type::ID_Window)) {
+    if (   current_widget->is_a(Fl_Type::ID_Flex)
+        || current_widget->is_a(Fl_Type::ID_Grid)
+        || current_widget->is_a(Fl_Type::ID_Window))
+    {
       g->hide();
     } else {
       g->show();
@@ -2228,6 +2229,17 @@ void values_group_cb(Fl_Group* g, void* v) {
 void flex_margin_group_cb(Fl_Group* g, void* v) {
   if (v == LOAD) {
     if (current_widget->is_a(Fl_Type::ID_Flex)) {
+      g->show();
+    } else {
+      g->hide();
+    }
+    propagate_load(g, v);
+  }
+}
+
+void grid_margin_group_cb(Fl_Group* g, void* v) {
+  if (v == LOAD) {
+    if (current_widget->is_a(Fl_Type::ID_Grid)) {
       g->show();
     } else {
       g->hide();
@@ -2474,6 +2486,39 @@ void flex_fixed_cb(Fl_Check_Button* i, void* v) {
   }
 }
 
+
+void grid_margin_left_cb(Fl_Value_Input* i, void* v) {
+  if (v == LOAD) {
+    if (current_widget->is_a(Fl_Type::ID_Flex)) {
+      int v; ((Fl_Flex*)current_widget->o)->margin(&v, NULL, NULL, NULL);
+      i->value(v);
+    }
+  } else {
+    int mod = 0;
+    int v_old, v = (int)i->value();
+    for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
+      if (o->selected && o->is_a(Fl_Type::ID_Flex)) {
+        int v_old; ((Fl_Flex*)((Fl_Widget_Type*)o)->o)->margin(&v_old, NULL, NULL, NULL);
+        if (v!=v_old) {
+          ((Fl_Flex*)((Fl_Widget_Type*)o)->o)->margin(&v, NULL, NULL, NULL);
+          ((Fl_Flex*)((Fl_Widget_Type*)o)->o)->layout();
+          mod = 1;
+        }
+      }
+    }
+    if (mod) set_modflag(1);
+  }
+}
+void grid_margin_right_cb(Fl_Value_Input* i, void* v) {
+}
+void grid_margin_top_cb(Fl_Value_Input* i, void* v) {
+}
+void grid_margin_bottom_cb(Fl_Value_Input* i, void* v) {
+}
+void grid_margin_hgap_cb(Fl_Value_Input* i, void* v) {
+}
+void grid_margin_vgap_cb(Fl_Value_Input* i, void* v) {
+}
 ////////////////////////////////////////////////////////////////
 
 // subtypes:

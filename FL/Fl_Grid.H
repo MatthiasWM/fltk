@@ -236,6 +236,8 @@ public:
   // set individual margins
 
   virtual void margin(int left, int top = -1, int right = -1, int bottom = -1);
+  int margin() const { return margin_left_; }
+  int margin(int *left, int *top, int *right, int *bottom) const;
 
   // set default row and column gaps for all rows and columns, respectively
 
