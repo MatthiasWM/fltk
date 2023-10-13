@@ -82,6 +82,7 @@
 #include "pixmaps/flCheckMenuitem.xpm"
 #include "pixmaps/flRadioMenuitem.xpm"
 #include "pixmaps/flFlex.xpm"
+#include "pixmaps/flGrid.xpm"
 
 Fl_Pixmap *bind_pixmap;
 Fl_Pixmap *lock_pixmap;
@@ -218,6 +219,7 @@ void loadPixmaps()
   pixmap[Fl_Type::ID_Radio_Menu_Item] = tmp = new Fl_Pixmap(flRadioMenuitem_xpm); tmp->scale(16, 16);
 
   pixmap[Fl_Type::ID_Flex] = tmp = new Fl_Pixmap(flFlex_xpm); tmp->scale(16, 16);
+  pixmap[Fl_Type::ID_Grid] = tmp = new Fl_Pixmap(flGrid_xpm); tmp->scale(16, 16);
 
   fl_add_symbol("fd_zoom", fd_zoom, 1);
 }

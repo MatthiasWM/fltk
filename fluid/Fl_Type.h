@@ -97,7 +97,7 @@ public:
     // groups
     ID_Window, ID_Group, ID_Pack,
     ID_Flex, ID_Tabs, ID_Scroll,
-    ID_Tile, ID_Wizard,
+    ID_Tile, ID_Wizard, ID_Grid,
     // buttons
     ID_Button, ID_Return_Button, ID_Light_Button,
     ID_Check_Button, ID_Repeat_Button, ID_Round_Button,

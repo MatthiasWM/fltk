@@ -116,6 +116,41 @@ public:
   static int is_fixed(Fl_Type*);
 };
 
+// ---- Fl_Grid_Type --------------------------------------------------- MARK: -
+
+extern const char grid_type_name[];
+
+class Fl_Grid_Type : public Fl_Group_Type
+{
+  typedef Fl_Group_Type super;
+//  Fl_Menu_Item *subtypes() FL_OVERRIDE {return flex_type_menu;}
+//  int fixedSizeTupleSize; /* number of pairs in array */
+//  int *fixedSizeTuple; /* [ index, size, index2, size2, ... ] */
+//  int suspend_auto_layout;
+public:
+  Fl_Grid_Type();
+//  Fl_Flex_Type() : fixedSizeTupleSize(0), fixedSizeTuple(NULL), suspend_auto_layout(0) { }
+  const char *type_name() FL_OVERRIDE {return grid_type_name;}
+  const char *alt_type_name() FL_OVERRIDE {return "fltk::GridGroup";}
+  Fl_Widget_Type *_make() FL_OVERRIDE { return new Fl_Grid_Type(); }
+  Fl_Widget *widget(int X,int Y,int W,int H) FL_OVERRIDE;
+  ID id() const FL_OVERRIDE { return ID_Grid; }
+  bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Grid) ? true : super::is_a(inID); }
+//  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
+//  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+//  Fl_Widget *enter_live_mode(int top=0) FL_OVERRIDE;
+//  void copy_properties() FL_OVERRIDE;
+//  void postprocess_read() FL_OVERRIDE;
+//  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
+//  void add_child(Fl_Type*, Fl_Type*) FL_OVERRIDE;
+//  void move_child(Fl_Type*, Fl_Type*) FL_OVERRIDE;
+//  void remove_child(Fl_Type*) FL_OVERRIDE;
+//  void change_subtype_to(int n);
+//  static int parent_is_flex(Fl_Type*);
+//  static int size(Fl_Type*, char fixed_only=0);
+//  static int is_fixed(Fl_Type*);
+};
+
 // ---- Fl_Table_Type -------------------------------------------------- MARK: -
 
 class Fl_Table_Type : public Fl_Group_Type

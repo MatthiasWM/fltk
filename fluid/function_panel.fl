@@ -535,18 +535,17 @@ Function {type_make_cb(Fl_Widget*,void*d)} {open return_type void
 if (Fl_Type::current && Fl_Type::current->is_parent())
   add_new_widget_from_user(type_name, kAddAsLastChild);
 else
-  add_new_widget_from_user(type_name, kAddAfterCurrent);} {selected
-  }
+  add_new_widget_from_user(type_name, kAddAfterCurrent);} {}
 }
 
-Function {make_widgetbin()} {open
+Function {make_widgetbin()} {open selected
 } {
   Fl_Window widgetbin_panel {
     label {Widget Bin}
     callback {if (Fl::event()==FL_SHORTCUT && Fl::event_key()==FL_Escape)
   exit_cb((Fl_Widget*)o, v);
 else
-  toggle_widgetbin_cb((Fl_Widget*)o, v);}
+  toggle_widgetbin_cb((Fl_Widget*)o, v);} open
     xywh {395 227 600 102} type Single align 80 non_modal visible
   } {
     Fl_Group {} {
@@ -667,6 +666,13 @@ else
         callback type_make_cb
         tooltip Wizard xywh {114 71 24 24} box THIN_UP_BOX
         code0 {o->image(pixmap[Fl_Type::ID_Wizard]);}
+        class Widget_Bin_Button
+      }
+      Fl_Button {} {
+        user_data {"Fl_Grid"}
+        callback type_make_cb
+        tooltip Grid xywh {139 71 24 24} box THIN_UP_BOX
+        code0 {o->image(pixmap[Fl_Type::ID_Grid]);}
         class Widget_Bin_Button
       }
     }

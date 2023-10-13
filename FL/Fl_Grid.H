@@ -1,0 +1,279 @@
+//
+// Fl_Grid widget header for the Fast Light Tool Kit (FLTK).
+//
+// Copyright 2021-2022 by Albrecht Schlosser.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
+//
+
+#ifndef _FL_FL_GRID_H_
+#define _FL_FL_GRID_H_
+
+/** \file FL/Fl_Grid.H
+  Fl_Grid container widget.
+*/
+
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Rect.H>
+
+/** Fl_Grid type for child widget alignment control. */
+typedef unsigned short Fl_Grid_Align;
+
+/** Align the widget in the middle of the cell (default). */
+const Fl_Grid_Align  FL_GRID_CENTER          = 0x0000;
+
+/** Align the widget at the top of the cell. */
+const Fl_Grid_Align  FL_GRID_TOP             = 0x0001;
+
+/** Align the widget at the bottom of the cell. */
+const Fl_Grid_Align  FL_GRID_BOTTOM          = 0x0002;
+
+/** Align the widget at the left side of the cell. */
+const Fl_Grid_Align  FL_GRID_LEFT            = 0x0004;
+
+/** Align the widget at the right side of the cell. */
+const Fl_Grid_Align  FL_GRID_RIGHT           = 0x0008;
+
+/** Stretch the widget horizontally to fill the cell. */
+const Fl_Grid_Align  FL_GRID_HORIZONTAL      = 0x0010;
+
+/** Stretch the widget vertically to fill the cell. */
+const Fl_Grid_Align  FL_GRID_VERTICAL        = 0x0020;
+
+/** Stretch the widget in both directions to fill the cell. */
+const Fl_Grid_Align  FL_GRID_FILL            = 0x0030;
+
+/** Stretch the widget proportionally. */
+const Fl_Grid_Align  FL_GRID_PROPORTIONAL    = 0x0040;
+
+const Fl_Grid_Align  FL_GRID_TOP_LEFT        =  FL_GRID_TOP |  FL_GRID_LEFT;
+const Fl_Grid_Align  FL_GRID_TOP_RIGHT       =  FL_GRID_TOP |  FL_GRID_RIGHT;
+const Fl_Grid_Align  FL_GRID_BOTTOM_LEFT     =  FL_GRID_BOTTOM |  FL_GRID_LEFT;
+const Fl_Grid_Align  FL_GRID_BOTTOM_RIGHT    =  FL_GRID_BOTTOM |  FL_GRID_RIGHT;
+
+/**
+  Fl_Grid is a container (layout) widget with multiple columns and rows.
+
+  This container widget features very flexible layouts in columns and rows
+  w/o the need to position each child widget in x/y coordinates.
+
+  Widgets are assigned to grid cells (column, row) with their minimal sizes
+  in \p w() and \p h(). The \p x() and \p y() positions are ignored and can
+  be (0, 0). Fl_Grid calculates widget positions and resizes the widgets to
+  fit into the grid. It is possible to create a single row or column of
+  widgets with Fl_Grid.
+
+  You should design your grid with the smallest possible sizes of all widgets
+  in mind. Fl_Grid will automatically assign additional space to cells
+  according to some rules (described later) when resizing the Fl_Grid widget.
+
+  \b Hint: You should set a minimum window size to make sure the Fl_Grid is
+    never resized below its minimal sizes. Resizing below the given widget
+    sizes results in undefined behavior.
+
+  Fl_Grid and other container widgets (e.g. Fl_Group) can be nested. One main
+  advantage of this usage is that widget coordinates in embedded Fl_Group
+  widgets become relative to the group and will be positioned as expected.
+  \todo This (relative group coordinates of nested groups of Fl_Grid)
+    needs explanation and maybe an example.
+
+  Fl_Grid child widgets are handled by its base class Fl_Group but Fl_Grid
+  stores additional data corresponding to each widget in internal grid cells.
+
+  Fl_Grid children are allowed to span multiple columns and rows like HTML
+  \<table\> cells. Individual children can have fixed sizes or be aligned
+  inside their cells (left, right, top, bottom, and more) and/or follow
+  their cell sizes when the Fl_Grid container is resized.
+
+  Note to resizing: since Fl_Grid uses its own layout algorithm the normal
+  Fl_Group::resizable() widget is ignored (if set). Calling init_sizes()
+  is not necessary.
+
+  \note Fl_Grid is, as of FLTK 1.4.0, still in experimental state and
+    should be used with caution. The API can still be changed although it is
+    assumed to be almost stable - as stable as possible for a first release.
+
+  Example: Simple 3×3 Fl_Grid with five buttons:
+  \n
+  \code
+  #include <FL/Fl.H>
+  #include <FL/Fl_Window.H>
+  #include <FL/Fl_Grid.H>
+  #include <FL/Fl_Button.H>
+
+  int main(int argc, char **argv) {
+    Fl_Window *win = new Fl_Window(320, 180, "3×3 Fl_Grid with Buttons");
+    // create the Fl_Grid container with five buttons
+    Fl_Grid *grid = new Fl_Grid(0, 0, win->w(), win->h());
+    grid->layout(3, 3, 10, 10);
+    Fl_Button *b0 = new Fl_Button(0, 0, 0, 0, "New");
+    Fl_Button *b1 = new Fl_Button(0, 0, 0, 0, "Options");
+    Fl_Button *b3 = new Fl_Button(0, 0, 0, 0, "About");
+    Fl_Button *b4 = new Fl_Button(0, 0, 0, 0, "Help");
+    Fl_Button *b6 = new Fl_Button(0, 0, 0, 0, "Quit");
+    // assign buttons to grid positions
+    grid->widget(b0, 0, 0);
+    grid->widget(b1, 0, 2);
+    grid->widget(b3, 1, 1);
+    grid->widget(b4, 2, 0);
+    grid->widget(b6, 2, 2);
+    win->end();
+    win->resizable(grid);
+    win->size_range(300, 100);
+    win->show(argc, argv);
+    return Fl::run();
+  }
+  \endcode
+
+  \image html  Fl_Grid.png
+  \image latex Fl_Grid.png "Simple 3×3 Fl_Grid" width=7cm
+*/
+class Fl_Grid : public Fl_Group {
+
+public:
+  class Cell {
+    friend class Fl_Grid;
+  private:
+    Cell *next_;                // next cell in row
+    short row_;                 // row number
+    short col_;                 // column number
+    short rowspan_;             // row span (1 - n)
+    short colspan_;             // column span (1 - n)
+    Fl_Grid_Align align_;       // widget alignment in its cell
+    Fl_Widget *widget_;         // assigned widget
+    int w_;                     // minimal widget width
+    int h_;                     // minimal widget height
+
+  public:
+
+    Cell(int row, int col) {
+#if (0)
+      fprintf(stderr, "Cell::Cell() Allocate cell (%2d, %2d)\n", row, col);
+#endif
+      next_ = NULL;
+      row_ = row;
+      col_ = col;
+      rowspan_ = 1;
+      colspan_ = 1;
+      widget_ = NULL;
+      w_ = 0;
+      h_ = 0;
+      align_ = 0;
+    }
+
+    ~Cell() {
+#if (0)
+      fprintf(stderr, "Cell::~Cell() Delete cell (%2d, %2d)\n", row_, col_);
+#endif
+    }
+
+    Fl_Widget *widget() { return widget_; }
+    void align(Fl_Grid_Align align) {
+      align_ = align;
+    }
+  }; // class Cell
+
+private:
+  class Row;
+  class Col;
+  short rows_;
+  short cols_;
+  short margin_left_;
+  short margin_top_;
+  short margin_right_;
+  short margin_bottom_;
+  short gap_row_;
+  short gap_col_;
+  Fl_Rect old_size; // only for resize callback (TBD)
+  Col  *Cols_;
+  Row  *Rows_;
+
+  bool need_layout_;           // true if layout needs to be calculated
+
+  void init();
+  Cell *add_cell(int row, int col);
+  void remove_cell(int row, int col);
+
+public:
+  Fl_Grid(int X, int Y, int W, int H, const char *L = 0);
+  virtual ~Fl_Grid();
+
+  // define and manage the layout and resizing
+
+  virtual void layout(int rows, int cols, int margin = -1, int gap = -1);
+  virtual void layout();
+  virtual void clear_layout();
+  virtual void resize(int X, int Y, int W, int H) FL_OVERRIDE;
+
+protected:
+  virtual void draw() FL_OVERRIDE;
+  void on_remove(int) FL_OVERRIDE;
+
+  /**
+    Request or reset request to calculate layout of children.
+  */
+  void need_layout(int set) {
+    if (set) need_layout_ = true;
+    else need_layout_ = false;
+  }
+  /**
+    Return whether layout calculation is required.
+  */
+  bool need_layout() const {
+    return need_layout_;
+  }
+
+public:
+
+  // set individual margins
+
+  virtual void margin(int left, int top = -1, int right = -1, int bottom = -1);
+
+  // set default row and column gaps for all rows and columns, respectively
+
+  virtual void gap(int row_gap, int col_gap = -1);   // set default row and column gap(s)
+
+  // find cells, get cell pointers
+
+  Fl_Grid::Cell* cell(int row, int col) const;
+  Fl_Grid::Cell* cell(Fl_Widget *widget) const;
+
+  // assign a widget to a cell
+
+  Fl_Grid::Cell* widget(Fl_Widget *wi, int row, int col, Fl_Grid_Align align = FL_GRID_FILL);
+  Fl_Grid::Cell* widget(Fl_Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align = FL_GRID_FILL);
+
+  // set minimal column and row sizes (widths and heights, respectively),
+  // set row and column specific gaps and weights
+
+  void col_width(int col, int value);
+  void col_width(const int *value, size_t size);
+
+  void col_weight(int col, int value);
+  void col_weight(const int *value, size_t size);
+
+  void col_gap(int col, int value);
+  void col_gap(const int *value, size_t size);
+
+  void row_height(int row, int value);
+  void row_height(const int *value, size_t size);
+
+  void row_weight(int row, int value);
+  void row_weight(const int *value, size_t size);
+
+  void row_gap(int row, int value);
+  void row_gap(const int *value, size_t size);
+
+  void debug(int level = 127);
+
+};
+
+#endif // _FL_FL_GRID_H_
