@@ -21,7 +21,11 @@
 #include <FL/Fl.H>
 #include "custom_widgets.h"
 #include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Grid.H>
+#include <FL/Fl_Button.H>
+Fl_Double_Window* make_window();
 #include <FL/Fl_Tabs.H>
+extern Fl_Tabs *widget_tabs;
 #include <FL/Fl_Group.H>
 extern void propagate_load(Fl_Group*, void*);
 #include <FL/Fl_Input.H>
@@ -30,7 +34,6 @@ extern void label_cb(Fl_Input*, void*);
 extern Fl_Menu_Item labeltypemenu[];
 extern void labeltype_cb(Fl_Choice*, void*);
 extern void image_cb(Fl_Input*, void*);
-#include <FL/Fl_Button.H>
 extern void image_browse_cb(Fl_Button*, void*);
 #include "pixmaps.h"
 extern void compress_image_cb(Fl_Button*, void*);
@@ -142,6 +145,13 @@ extern void when_cb(Fl_Menu_Button*, void*);
 #include <FL/Fl_Input_Choice.H>
 extern void user_data_type_cb(Fl_Input_Choice*, void*);
 extern Fl_Box *w_when_box;
+extern Fl_Tabs *widget_tabs_repo;
+extern Fl_Group *widget_tab_grid;
+extern void grid_set_row_cb(Fluid_Coord_Input*, void*);
+extern void grid_set_col_cb(Fluid_Coord_Input*, void*);
+extern void grid_align_cb(Fl_Choice*, void*);
+extern void grid_set_rowspan_cb(Fluid_Coord_Input*, void*);
+extern void grid_set_colspan_cb(Fluid_Coord_Input*, void*);
 extern void live_mode_cb(Fl_Button*, void*);
 extern Fl_Button *wLiveMode;
 extern void overlay_cb(Fl_Button*, void*);
@@ -155,4 +165,5 @@ extern Fl_Menu_Item menu_Children[];
 extern Fl_Menu_Item menu_2[];
 extern Fl_Menu_Item menu_3[];
 extern Fl_Menu_Item menu_4[];
+extern Fl_Menu_Item menu_Align[];
 #endif

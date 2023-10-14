@@ -44,14 +44,13 @@ Fl_Grid_Type::Fl_Grid_Type() {
 
 Fl_Widget *Fl_Grid_Type::widget(int X,int Y,int W,int H) {
   Fl_Grid *g = new Fl_Grid(X,Y,W,H);
-
   g->layout(3, 3);
-  Fl_Button *b0 = new Fl_Button(0, 0, 100, 25, "Hello");
-  g->widget(b0, 0, 0);
-  Fl_Button *b1 = new Fl_Button(0, 0, 100, 25, "Huhu");
-  g->widget(b1, 0, 1);
-  Fl_Button *b2 = new Fl_Button(0, 0, 100, 25, "Hey!");
-  g->widget(b2, 1, 2);
+//  Fl_Button *b0 = new Fl_Button(0, 0, 100, 25, "Hello");
+//  g->widget(b0, 0, 0);
+//  Fl_Button *b1 = new Fl_Button(0, 0, 100, 25, "Huhu");
+//  g->widget(b1, 0, 1);
+//  Fl_Button *b2 = new Fl_Button(0, 0, 100, 25, "Hey!");
+//  g->widget(b2, 1, 2);
   Fl_Group::current(0);
   return g;
 }
@@ -177,12 +176,28 @@ void Fl_Grid_Type::write_code2(Fd_Code_Writer& f) {
   Fl_Group_Type::write_code2(f);
 }
 
-//void Fl_Grid_Type::add_child(Fl_Type* a, Fl_Type* b) {
-//  Fl_Group_Type::add_child(a, b);
-//  if (!suspend_auto_layout)
-//    ((Fl_Flex*)o)->layout();
-//}
-//
+void Fl_Grid_Type::add_child(Fl_Type* a, Fl_Type* b) {
+  Fl_Group_Type::add_child(a, b);
+  Fl_Grid* grid = (Fl_Grid*)o;
+  int i, j;
+  for (i=0; i<grid->rows(); ++i) {
+    for (j=0; j<grid->cols(); ++j) {
+      if (grid->cell(i, j)==NULL) goto done;
+    }
+  }
+done:
+  if (i==grid->rows()) {
+    grid->layout(grid->rows()+1, grid->cols());
+    j = 0;
+  }
+  if (a->is_true_widget()) {
+    Fl_Widget_Type *wt = (Fl_Widget_Type*)a;
+    grid->widget(wt->o, i, j);
+    grid->need_layout(1);
+    grid->redraw();
+  }
+}
+
 //void Fl_Grid_Type::move_child(Fl_Type* a, Fl_Type* b) {
 //  Fl_Group_Type::move_child(a, b);
 //  if (!suspend_auto_layout)
@@ -233,6 +248,25 @@ void grid_cb(Fl_Value_Input* i, void* v, int what) {
     if (mod) set_modflag(1);
   }
 }
+void grid_margin_left_cb(Fl_Value_Input* i, void* v) {
+  grid_cb(i, v, 0);
+}
+void grid_margin_top_cb(Fl_Value_Input* i, void* v) {
+  grid_cb(i, v, 1);
+}
+void grid_margin_right_cb(Fl_Value_Input* i, void* v) {
+  grid_cb(i, v, 2);
+}
+void grid_margin_bottom_cb(Fl_Value_Input* i, void* v) {
+  grid_cb(i, v, 3);
+}
+void grid_row_gap_cb(Fl_Value_Input* i, void* v) {
+  grid_cb(i, v, 4);
+}
+void grid_col_gap_cb(Fl_Value_Input* i, void* v) {
+  grid_cb(i, v, 5);
+}
+
 void grid_cb(Fluid_Coord_Input* i, void* v, int what) {
   if (v == LOAD) {
     if (current_widget->is_a(Fl_Type::ID_Grid)) {
@@ -268,27 +302,64 @@ void grid_cb(Fluid_Coord_Input* i, void* v, int what) {
     if (mod) set_modflag(1);
   }
 }
-void grid_margin_left_cb(Fl_Value_Input* i, void* v) {
-  grid_cb(i, v, 0);
-}
-void grid_margin_top_cb(Fl_Value_Input* i, void* v) {
-  grid_cb(i, v, 1);
-}
-void grid_margin_right_cb(Fl_Value_Input* i, void* v) {
-  grid_cb(i, v, 2);
-}
-void grid_margin_bottom_cb(Fl_Value_Input* i, void* v) {
-  grid_cb(i, v, 3);
-}
-void grid_row_gap_cb(Fl_Value_Input* i, void* v) {
-  grid_cb(i, v, 4);
-}
-void grid_col_gap_cb(Fl_Value_Input* i, void* v) {
-  grid_cb(i, v, 5);
-}
 void grid_rows_cb(Fluid_Coord_Input* i, void* v) {
   grid_cb(i, v, 6);
 }
 void grid_cols_cb(Fluid_Coord_Input* i, void* v) {
   grid_cb(i, v, 7);
+}
+
+void grid_child_cb(Fluid_Coord_Input* i, void* v, int what) {
+  if (   !current_widget
+      || !current_widget->parent
+      || !current_widget->parent->is_a(Fl_Type::ID_Grid))
+  {
+    return;
+  }
+  Fl_Grid *g = ((Fl_Grid*)((Fl_Widget_Type*)current_widget->parent)->o);
+  if (v == LOAD) {
+    int v = -1;
+    Fl_Grid::Cell *cell = g->cell(current_widget->o);
+    if (cell) {
+      switch (what) {
+        case 8: v = cell->row(); break;
+        case 9: v = cell->col(); break;
+      }
+    }
+    i->value(v);
+  } else {
+    int mod = 0;
+    int v2 = 0, old_v = -1, v = (int)i->value();
+    Fl_Grid::Cell *cell = g->cell(current_widget->o);
+    if (cell) {
+      switch (what) {
+        case 8: old_v = cell->row(); v2 = cell->col(); break;
+        case 9: old_v = cell->col(); v2 = cell->row(); break;
+      }
+    }
+    if (old_v != v) {
+      switch (what) {
+        case 8: g->widget(current_widget->o, v, v2); break;
+        case 9: g->widget(current_widget->o, v2, v); break;
+      }
+      g->need_layout(true);
+      g->redraw();
+      mod = 1;
+      if (mod) set_modflag(1);
+    }
+  }
+}
+void grid_set_row_cb(Fluid_Coord_Input* i, void* v) {
+  grid_child_cb(i, v, 8);
+}
+void grid_set_col_cb(Fluid_Coord_Input* i, void* v) {
+  grid_child_cb(i, v, 9);
+}
+void grid_set_colspan_cb(Fluid_Coord_Input* i, void* v) {
+  grid_child_cb(i, v, 10);
+}
+void grid_set_rowspan_cb(Fluid_Coord_Input* i, void* v) {
+  grid_child_cb(i, v, 11);
+}
+void grid_align_cb(Fl_Choice* i, void* v) {
 }

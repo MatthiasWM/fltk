@@ -174,7 +174,8 @@ public:
       fprintf(stderr, "Cell::~Cell() Delete cell (%2d, %2d)\n", row_, col_);
 #endif
     }
-
+    short row() const { return row_; }
+    short col() const { return col_; }
     Fl_Widget *widget() { return widget_; }
     void align(Fl_Grid_Align align) {
       align_ = align;
