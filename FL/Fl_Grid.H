@@ -213,10 +213,16 @@ public:
   virtual void clear_layout();
   virtual void resize(int X, int Y, int W, int H) FL_OVERRIDE;
 
+  short rows() const { return rows_; }
+  short cols() const { return cols_; }
+
 protected:
   virtual void draw() FL_OVERRIDE;
   void on_remove(int) FL_OVERRIDE;
 
+public:
+
+  // MATT: made this public
   /**
     Request or reset request to calculate layout of children.
   */
@@ -224,14 +230,14 @@ protected:
     if (set) need_layout_ = true;
     else need_layout_ = false;
   }
+
+  // MATT: made this public
   /**
     Return whether layout calculation is required.
   */
   bool need_layout() const {
     return need_layout_;
   }
-
-public:
 
   // set individual margins
 
@@ -242,6 +248,7 @@ public:
   // set default row and column gaps for all rows and columns, respectively
 
   virtual void gap(int row_gap, int col_gap = -1);   // set default row and column gap(s)
+  void gap(int *row_gap, int *col_gap) const;
 
   // find cells, get cell pointers
 

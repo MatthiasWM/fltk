@@ -906,5 +906,5 @@ void Fl_Type::write_code1(Fd_Code_Writer& f) {
 void Fl_Type::write_code2(Fd_Code_Writer&) {
 }
 
-/// \}
 
+/// \}
