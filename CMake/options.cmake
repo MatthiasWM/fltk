@@ -375,6 +375,10 @@ endif (DEFINED OPTION_BUILD_EXAMPLES)
 if (DOXYGEN_FOUND)
   option (OPTION_BUILD_HTML_DOCUMENTATION "build html docs" ON)
   option (OPTION_INSTALL_HTML_DOCUMENTATION "install html docs" OFF)
+  option (OPTION_BUILD_FLUID_USER_HTML_DOCS "build FLUID user html docs" OFF)
+  option (OPTION_INSTALL_FLUID_USER_HTML_DOCS "install FLUID user html docs" OFF)
+  option (OPTION_BUILD_FLUID_CORE_HTML_DOCS "build FLUID core developer html docs" OFF)
+  option (OPTION_INSTALL_FLUID_CORE_HTML_DOCS "install FLUID core developer html docs" OFF)
 
   option (OPTION_INCLUDE_DRIVER_DOCUMENTATION "include driver (developer) docs" OFF)
   mark_as_advanced (OPTION_INCLUDE_DRIVER_DOCUMENTATION)
@@ -382,12 +386,24 @@ if (DOXYGEN_FOUND)
   if (LATEX_FOUND)
     option (OPTION_BUILD_PDF_DOCUMENTATION "build pdf docs" ON)
     option (OPTION_INSTALL_PDF_DOCUMENTATION "install pdf docs" OFF)
+    option (OPTION_BUILD_FLUID_USER_PDF_DOCS "build FLUID user pdf docs" OFF)
+    option (OPTION_INSTALL_FLUID_USER_PDF_DOCS "install FLUID user pdf docs" OFF)
+    option (OPTION_BUILD_FLUID_CORE_PDF_DOCS "build FLUID core developer pdf docs" OFF)
+    option (OPTION_INSTALL_FLUID_CORE_PDF_DOCS "install FLUID core developer pdf docs" OFF)
   endif (LATEX_FOUND)
 endif (DOXYGEN_FOUND)
 
 if (OPTION_BUILD_HTML_DOCUMENTATION OR OPTION_BUILD_PDF_DOCUMENTATION)
   add_subdirectory (documentation)
 endif (OPTION_BUILD_HTML_DOCUMENTATION OR OPTION_BUILD_PDF_DOCUMENTATION)
+
+if (OPTION_BUILD_FLUID_USER_HTML_DOCS OR OPTION_BUILD_FLUID_USER_PDF_DOCS)
+  add_subdirectory (fluid/user-docs)
+endif (OPTION_BUILD_FLUID_USER_HTML_DOCS OR OPTION_BUILD_FLUID_USER_PDF_DOCS)
+
+if (OPTION_BUILD_FLUID_CORE_HTML_DOCS OR OPTION_BUILD_FLUID_CORE_PDF_DOCS)
+  add_subdirectory (fluid/core-docs)
+endif (OPTION_BUILD_FLUID_CORE_HTML_DOCS OR OPTION_BUILD_FLUID_CORE_PDF_DOCS)
 
 #######################################################################
 # Include optional Cairo support
