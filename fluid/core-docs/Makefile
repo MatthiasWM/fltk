@@ -83,7 +83,7 @@ Doxybook: Doxyfile.in generated.dox copyright.dox
 	sed -e's,@FLTK_VERSION@,$(FLTK_VERSION),' \
 	    -e's,@GENERATE_HTML@,NO,' \
 	    -e's,@GENERATE_LATEX@,YES,' \
-	    -e's,@LATEX_HEADER@,src/fltk-book.tex,' \
+	    -e's,@LATEX_HEADER@,src/fluid-core-book.tex,' \
 	    -e's,@CMAKE_CURRENT_SOURCE_DIR@,.,' \
 	    -e's,@CMAKE_CURRENT_BINARY_DIR@,,' \
 	    -e's,@FLTK_SOURCE_DIR@,..,' \
