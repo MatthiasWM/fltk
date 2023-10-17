@@ -1,7 +1,7 @@
 #
 # Makefile for the Fast Light Tool Kit (FLTK) documentation.
 #
-# Copyright 1998-2022 by Bill Spitzak and others.
+# Copyright 1998-2023 by Bill Spitzak and others.
 #
 # This library is free software. Distribution and use rights are outlined in
 # the file "COPYING" which should have been included with this file.  If this
@@ -158,7 +158,7 @@ Doxyfile: Doxyfile.in generated.dox copyright.dox
 	    -e's,@CMAKE_CURRENT_SOURCE_DIR@,.,' \
 	    -e's,@CMAKE_CURRENT_BINARY_DIR@,,' \
 	    -e's,@FLTK_SOURCE_DIR@,..,' \
-	    -i $@
+	    -i.bak $@
 
 Doxybook: Doxyfile.in generated.dox copyright.dox
 	echo "Generating Doxybook ..."
@@ -172,7 +172,7 @@ Doxybook: Doxyfile.in generated.dox copyright.dox
 	    -e's,@CMAKE_CURRENT_SOURCE_DIR@,.,' \
 	    -e's,@CMAKE_CURRENT_BINARY_DIR@,,' \
 	    -e's,@FLTK_SOURCE_DIR@,..,' \
-	    -i $@
+	    -i.bak $@
 
 # The HTML files are generated using doxygen, and this needs
 # an installed doxygen version and may take some time, so this target

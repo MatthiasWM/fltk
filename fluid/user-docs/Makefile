@@ -1,7 +1,7 @@
 #
-# Makefile for the Fast Light Tool Kit (FLTK) documentation.
+# Makefile for the Fast Light Tool Kit (FLTK) FLUID user documentation.
 #
-# Copyright 1998-2022 by Bill Spitzak and others.
+# Copyright 1998-2023 by Bill Spitzak and others.
 #
 # This library is free software. Distribution and use rights are outlined in
 # the file "COPYING" which should have been included with this file.  If this
@@ -15,69 +15,41 @@
 #
 
 # Get configuration stuff...
-include ../makeinclude
+include ../../makeinclude
 
 # make sure that all docs are (re-)created independent of missing deps
-.PHONY: pdf html refman.pdf
+.PHONY: fluid-user-pdf fluid-user-html refman.pdf
 
 SRC_DOCDIR      = 	./src
 
 # These are the HTML "source" files...
 HTMLFILES	= 	 \
 			 $(SRC_DOCDIR)/index.dox \
-                         $(SRC_DOCDIR)/preface.dox \
-                         $(SRC_DOCDIR)/intro.dox \
-                         $(SRC_DOCDIR)/basics.dox \
-                         $(SRC_DOCDIR)/common.dox \
-                         $(SRC_DOCDIR)/coordinates.dox \
-                         $(SRC_DOCDIR)/resize.dox \
-                         $(SRC_DOCDIR)/editor.dox \
-                         $(SRC_DOCDIR)/drawing.dox \
-                         $(SRC_DOCDIR)/events.dox \
-                         $(SRC_DOCDIR)/subclassing.dox \
-                         $(SRC_DOCDIR)/opengl.dox \
-                         $(SRC_DOCDIR)/fluid.dox \
-                         $(SRC_DOCDIR)/fltk-options.dox \
-                         $(SRC_DOCDIR)/advanced.dox \
-                         $(SRC_DOCDIR)/unicode.dox \
-                         $(SRC_DOCDIR)/enumerations.dox \
-                         $(SRC_DOCDIR)/glut.dox \
-                         $(SRC_DOCDIR)/forms.dox \
-                         $(SRC_DOCDIR)/osissues.dox \
-                         $(SRC_DOCDIR)/migration_1_4.dox \
-                         $(SRC_DOCDIR)/development.dox \
-                         $(SRC_DOCDIR)/license.dox \
-                         $(SRC_DOCDIR)/examples.dox \
-                         $(SRC_DOCDIR)/faq.dox
+			 $(SRC_DOCDIR)/fluid.dox
 
-MANPAGES =	$(SRC_DOCDIR)/fltk.$(CAT3EXT) $(SRC_DOCDIR)/fltk-config.$(CAT1EXT) \
-		$(SRC_DOCDIR)/fluid.$(CAT1EXT) $(SRC_DOCDIR)/blocks.$(CAT6EXT) \
-		$(SRC_DOCDIR)/checkers.$(CAT6EXT) $(SRC_DOCDIR)/sudoku.$(CAT6EXT) \
-		$(SRC_DOCDIR)/fltk-options.$(CAT1EXT)
-
-all:	$(MANPAGES)
+all:
 
 # Use `make docs' to create all docs for distribution files.
 # You need installed versions of Doxygen and LaTeX for this.
 
-docs:	all html pdf
+docs:	all fluid-user-html fluid-user-pdf
 
 # Synonyms for docs:
 
-alldocs: docs
-dist:	docs
+alldocs: fluid-user-docs
+dist:	fluid-user-docs
 
 clean:
 	$(RM) Doxyfile Doxybook
 	$(RM) copyright.dox generated.dox
-	$(RM) fltk.pdf refman.pdf src/fltk-title.tex src/fltk-book.tex.in src/fltk-book.tex
+	$(RM) fluid-user.pdf refman.pdf src/fluid-user-title.tex src/fluid-user-book.tex.in src/fluid-user-book.tex
 	$(RMDIR) html latex
 	$(RM) *~ *.bck *.bak *.log
 	$(RM) $(MANPAGES) $(SRC_DOCDIR)/*.0
 
 depend:
 
-install: $(MANPAGES)
+install:
 	echo "Installing documentation files in $(DESTDIR)$(docdir) ..."
 	-$(INSTALL_DIR) $(DESTDIR)$(docdir)
 	if test -f html/index.html ; then \
@@ -87,65 +59,11 @@ install: $(MANPAGES)
 	fi
 	if test -f fltk.pdf ; then \
 	  echo "Installing fltk.pdf in $(DESTDIR)$(docdir) ..."; \
-	  $(INSTALL_DATA) fltk.pdf $(DESTDIR)$(docdir); \
+	  $(INSTALL_DATA) fluid-user.pdf $(DESTDIR)$(docdir); \
 	fi
-	echo "Installing man pages in $(DESTDIR)$(mandir) ..."
-	-$(INSTALL_DIR) $(DESTDIR)$(mandir)/cat1
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fluid.$(CAT1EXT) $(DESTDIR)$(mandir)/cat1
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fltk-config.$(CAT1EXT) $(DESTDIR)$(mandir)/cat1
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fltk-options.$(CAT1EXT) $(DESTDIR)$(mandir)/cat1
-	-$(INSTALL_DIR) $(DESTDIR)$(mandir)/cat3
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fltk.$(CAT3EXT) $(DESTDIR)$(mandir)/cat3
-	-$(INSTALL_DIR) $(DESTDIR)$(mandir)/man1
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fluid.man $(DESTDIR)$(mandir)/man1/fluid.1
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fltk-config.man $(DESTDIR)$(mandir)/man1/fltk-config.1
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fltk-options.man $(DESTDIR)$(mandir)/man1/fltk-options.1
-	-$(INSTALL_DIR) $(DESTDIR)$(mandir)/man3
-	$(INSTALL_MAN) $(SRC_DOCDIR)/fltk.man $(DESTDIR)$(mandir)/man3/fltk.3
-
-install-linux install-osx:
-	-$(INSTALL_DIR) $(DESTDIR)$(mandir)/cat6
-	$(INSTALL_MAN) $(SRC_DOCDIR)/blocks.$(CAT6EXT) $(DESTDIR)$(mandir)/cat6
-	$(INSTALL_MAN) $(SRC_DOCDIR)/checkers.$(CAT6EXT) $(DESTDIR)$(mandir)/cat6
-	$(INSTALL_MAN) $(SRC_DOCDIR)/sudoku.$(CAT6EXT) $(DESTDIR)$(mandir)/cat6
-	-$(INSTALL_DIR) $(DESTDIR)$(mandir)/man6
-	$(INSTALL_MAN) $(SRC_DOCDIR)/blocks.man $(DESTDIR)$(mandir)/man6/blocks.6
-	$(INSTALL_MAN) $(SRC_DOCDIR)/checkers.man $(DESTDIR)$(mandir)/man6/checkers.6
-	$(INSTALL_MAN) $(SRC_DOCDIR)/sudoku.man $(DESTDIR)$(mandir)/man6/sudoku.6
-
 
 uninstall:
 	$(RMDIR) $(DESTDIR)$(docdir)
-	$(RM) $(DESTDIR)$(mandir)/cat1/fluid.$(CAT1EXT)
-	$(RM) $(DESTDIR)$(mandir)/man1/fluid.1
-	$(RM) $(DESTDIR)$(mandir)/cat1/fltk-config.$(CAT1EXT)
-	$(RM) $(DESTDIR)$(mandir)/man1/fltk-config.1
-	$(RM) $(DESTDIR)$(mandir)/cat1/fltk-options.$(CAT1EXT)
-	$(RM) $(DESTDIR)$(mandir)/man1/fltk-options.1
-	$(RM) $(DESTDIR)$(mandir)/cat3/fltk.$(CAT3EXT)
-	$(RM) $(DESTDIR)$(mandir)/man3/fltk.3
-
-uninstall-linux uninstall-osx:
-	$(RM) $(DESTDIR)$(mandir)/cat6/blocks.$(CAT6EXT)
-	$(RM) $(DESTDIR)$(mandir)/cat6/checkers.$(CAT6EXT)
-	$(RM) $(DESTDIR)$(mandir)/cat6/sudoku.$(CAT6EXT)
-	$(RM) $(DESTDIR)$(mandir)/man6/blocks.6
-	$(RM) $(DESTDIR)$(mandir)/man6/checkers.6
-	$(RM) $(DESTDIR)$(mandir)/man6/sudoku.6
-
-# The documentation is generated using doxygen. There are two control files
-# for doxygen: Doxyfile for html documentation and Doxybook for pdf docs.
-# Both files are generated from the common source file Doxyfile.in.
-# Note that Doxyfile.in is shared with CMake to configure these files.
-
-# Note: There's no way to enable the "Driver Documentation" via configure+make,
-#       please use CMake 'OPTION_INCLUDE_DRIVER_DOCUMENTATION' instead.
-#       Alternatively (if you really need it) edit this Makefile and
-#       replace the two lines below containing "@DRIVER_DOCS@" to read:
-#	    -e's, @DRIVER_DOCS@, DriverDev,' \
-#       (w/o leading '#') to enable the "Driver Documentation" section.
-#       Please take care of copying tabs and spaces literally.
-# Note: There's no intention to enable this via configure option (use CMake).
 
 Doxyfile: Doxyfile.in generated.dox copyright.dox
 	echo "Generating Doxyfile ..."
@@ -154,11 +72,10 @@ Doxyfile: Doxyfile.in generated.dox copyright.dox
 	    -e's,@GENERATE_HTML@,YES,' \
 	    -e's,@GENERATE_LATEX@,NO,' \
 	    -e's, @LATEX_HEADER@,,' \
-	    -e's, @DRIVER_DOCS@,,' \
 	    -e's,@CMAKE_CURRENT_SOURCE_DIR@,.,' \
 	    -e's,@CMAKE_CURRENT_BINARY_DIR@,,' \
 	    -e's,@FLTK_SOURCE_DIR@,..,' \
-	    -i $@
+	    -i.bak $@
 
 Doxybook: Doxyfile.in generated.dox copyright.dox
 	echo "Generating Doxybook ..."
@@ -168,19 +85,18 @@ Doxybook: Doxyfile.in generated.dox copyright.dox
 	    -e's,@GENERATE_HTML@,NO,' \
 	    -e's,@GENERATE_LATEX@,YES,' \
 	    -e's,@LATEX_HEADER@,src/fltk-book.tex,' \
-	    -e's, @DRIVER_DOCS@,,' \
 	    -e's,@CMAKE_CURRENT_SOURCE_DIR@,.,' \
 	    -e's,@CMAKE_CURRENT_BINARY_DIR@,,' \
 	    -e's,@FLTK_SOURCE_DIR@,..,' \
-	    -i $@
+	    -i.bak $@
 
 # The HTML files are generated using doxygen, and this needs
 # an installed doxygen version and may take some time, so this target
 # is not made by default.
 # Use `make html' or `make docs' to create the html docs.
 
-html:	$(HTMLFILES) Doxyfile
-	echo "Generating HTML documentation..."
+fluid-user-html:	$(HTMLFILES) Doxyfile
+	echo "Generating HTML FLUID user documentation..."
 	-$(RMDIR) html
 	-$(INSTALL_DIR) html
 	-$(DOXYDOC)
@@ -188,31 +104,31 @@ html:	$(HTMLFILES) Doxyfile
 	  echo "Sorry - doxygen not found. Please install doxygen and run configure."; \
 	fi
 
-# The PDF documentation (fltk.pdf) is generated using doxygen and LaTeX, and
+# The PDF documentation (fluid-user.pdf) is generated using doxygen and LaTeX, and
 # this needs installed Doxygen and LaTeX programs and may take some time, so
 # this target is not made by default.
 # Use `make pdf' or `make docs' to create the PDF docs.
 
-pdf:	refman.pdf
-	cp -f latex/refman.pdf fltk.pdf
+fluid-user-pdf:	refman.pdf
+	cp -f latex/refman.pdf fluid-user.pdf
 
-refman.pdf: $(HTMLFILES) Doxybook src/fltk-book.tex
+refman.pdf: $(HTMLFILES) Doxybook src/fluid-user-book.tex
 	-$(RMDIR) latex
 	echo "Generating PDF documentation ..."
 	$(DOXYDOC) Doxybook
 	./make_pdf
 
-src/fltk-title.tex: src/fltk-title.tex.in
+src/fluid-user-title.tex: src/fluid-user-title.tex.in
 	echo "Generating $@ ..."
 	GIT_REVISION=`git rev-parse --short=10 HEAD`; \
 	sed -e"s/@GIT_REVISION@/$$GIT_REVISION/g" \
 	    < $< > $@
 
-src/fltk-book.tex.in: src/fltk-title.tex
+src/fluid-user-book.tex.in: src/fluid-user-title.tex
 	echo "Generating $@ ..."
 	./make_header $(DOXYDOC) $< $@
 
-src/fltk-book.tex: src/fltk-book.tex.in
+src/fluid-user-book.tex: src/fluid-user-book.tex.in
 	echo "Generating $@ ..."
 	DOXY_VERSION=`$(DOXYDOC) --version|cut -f1 -d' '`; \
 	YEAR=`date +%Y`; \
