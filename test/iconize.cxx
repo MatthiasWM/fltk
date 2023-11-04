@@ -35,6 +35,16 @@ void hide_cb(Fl_Widget *, void *v) {
   w->hide();
 }
 
+void maximize1_cb(Fl_Widget *, void *v) {
+  Fl_Window *w = (Fl_Window *)v;
+  w->maximize(1);
+}
+
+void maximize0_cb(Fl_Widget *, void *v) {
+  Fl_Window *w = (Fl_Window *)v;
+  w->maximize(0);
+}
+
 void window_cb(Fl_Widget*, void*) {
   exit(0);
 }
@@ -42,10 +52,11 @@ void window_cb(Fl_Widget*, void*) {
 int main(int argc, char **argv) {
 
   Fl_Window mainw(200,200);
+  mainw.resizable(mainw);
   mainw.end();
   mainw.show(argc,argv);
 
-  Fl_Window control(120,120);
+  Fl_Window control(120,180);
 
   Fl_Button hide_button(0,0,120,30,"hide()");
   hide_button.callback(hide_cb, &mainw);
@@ -56,7 +67,13 @@ int main(int argc, char **argv) {
   Fl_Button show_button(0,60,120,30,"show()");
   show_button.callback(show_cb, &mainw);
 
-  Fl_Button show_button2(0,90,120,30,"show this");
+  Fl_Button maximize1_button(0,90,120,30,"maximize(1)");
+  maximize1_button.callback(maximize1_cb, &mainw);
+
+  Fl_Button maximize0_button(0,120,120,30,"maximize(0)");
+  maximize0_button.callback(maximize0_cb, &mainw);
+
+  Fl_Button show_button2(0,150,120,30,"show this");
   show_button2.callback(show_cb, &control);
 
   //  Fl_Box box(FL_NO_BOX,0,60,120,30,"Also try running\nwith -i switch");

@@ -134,6 +134,7 @@ public:
   void use_border() FL_OVERRIDE;
   void size_range() FL_OVERRIDE;
   void iconize() FL_OVERRIDE;
+  void maximize(int v) FL_OVERRIDE;
   void decoration_sizes(int *top, int *left,  int *right, int *bottom) FL_OVERRIDE;
   // --- window cursor stuff
   int set_cursor(Fl_Cursor) FL_OVERRIDE;

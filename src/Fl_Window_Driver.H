@@ -112,6 +112,8 @@ public:
   void current(Fl_Window *c);
   char show_iconic() { return Fl_Window::show_iconic_; }
   void show_iconic(char c) { Fl_Window::show_iconic_ = c; }
+  char show_maximized() { return Fl_Window::show_maximized_; }
+  void show_maximized(char c) { Fl_Window::show_maximized_ = c; }
   void flx(Fl_X *x) { pWindow->flx_ = x; }
   Fl_Cursor cursor_default() { return pWindow->cursor_default; }
   /** for an Fl_Overlay_Window, returns the value of its overlay_ member variable */
@@ -126,7 +128,7 @@ public:
   void resize_after_scale_change(int ns, float old_f, float new_f);
 
   // --- window data
-  virtual int decorated_w() { return w(); } // default, should be overidden by driver
+  virtual int decorated_w() { return w(); } // default, should be overridden by driver
   virtual int decorated_h() { return h(); }
   virtual const Fl_Image* shape() { return NULL; }
 
@@ -157,6 +159,7 @@ public:
   virtual void use_border();
   virtual void size_range();
   virtual void iconize() {}
+  virtual void maximize(int v) {}
   virtual void decoration_sizes(int *top, int *left,  int *right, int *bottom) {
     *top = *left = *right = *bottom = 0;
   }

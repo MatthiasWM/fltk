@@ -59,6 +59,7 @@ class FL_EXPORT Fl_Window : public Fl_Group {
 private:
   static char *default_xclass_;
   static char show_iconic_; // 1 means create next window in iconic form
+  static char show_maximized_; // 1 means create next window in maximized form
 
   int no_fullscreen_x;
   int no_fullscreen_y;
@@ -510,6 +511,17 @@ public:
     window managers displaying the icons.
   */
   void iconize();
+  /**
+   Maximizes the window, or normalizes it if it was maximized.
+
+   Calling this will most certainly change the size of the window contents
+   and trigger a resize() call, followed by a redraw.
+
+   Only a resizable window can be maximized.
+
+   \param[in] 1 to maximize, 0 to normalize
+   */
+  void maximize(int v);
 
   int x_root() const ;
   int y_root() const ;

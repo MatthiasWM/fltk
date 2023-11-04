@@ -25,3 +25,11 @@ void Fl_Window::iconize() {
     pWindowDriver->iconize();
   }
 }
+
+void Fl_Window::maximize(int v) {
+  if (!shown()) {
+    show_maximized_ = v;
+  } else if (resizable()) {
+    pWindowDriver->maximize(v);
+  }
+}

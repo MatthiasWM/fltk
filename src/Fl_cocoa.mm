@@ -3020,6 +3020,10 @@ void Fl_Cocoa_Window_Driver::makeWindow()
     this->x(round(crect.origin.x/s));
     this->y( round((main_screen_height - crect.origin.y)/s) - w->h() );
   }
+  if (!w->parent() && show_maximized()) {
+    [cw zoom:nil];
+  }
+  show_maximized(0);
   if(w->menu_window()) { // make menu windows slightly transparent
     [cw setAlphaValue:0.97];
   }
@@ -3650,6 +3654,17 @@ void Fl_Cocoa_Window_Driver::unmap() {
 
 void Fl_Cocoa_Window_Driver::iconize() {
   [fl_xid(pWindow) miniaturize:nil];
+}
+
+void Fl_Cocoa_Window_Driver::maximize(int v) {
+  FLWindow *win = fl_xid(pWindow);
+  if (v) {
+    if (![win isZoomed])
+      [win zoom:nil];
+  } else {
+    if ([win isZoomed])
+      [win zoom:nil];
+  }
 }
 
 static NSImage *CGBitmapContextToNSImage(CGContextRef c)

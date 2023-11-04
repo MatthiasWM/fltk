@@ -85,6 +85,10 @@ extern const char *fl_bg2;
   <br>
   Iconifies the window using Fl_Window::iconize().
 
+  \li -maximized
+  <br>
+  Maximizes the window using Fl_Window::maximize(1).
+
   \li -kbd and -nokbd
   <br>
   Enables or disables visible keyboard focus for
@@ -127,6 +131,10 @@ int Fl::arg(int argc, char **argv, int &i) {
 
   if (fl_match(s, "iconic")) {
     Fl_Window::show_iconic_ = 1;
+    i++;
+    return 1;
+  } else if (fl_match(s, "maximized")) {
+    Fl_Window::show_maximized_ = 1;
     i++;
     return 1;
   } else if (fl_match(s, "kbd")) {
