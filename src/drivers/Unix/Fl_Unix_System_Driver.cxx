@@ -453,7 +453,7 @@ char *Fl_Unix_System_Driver::preference_rootnode(Fl_Preferences * /*prefs*/,
                                                  const char *vendor,
                                                  const char *application)
 {
-  // Create a static buffer fo our filename
+  // Create a static buffer for our filename
   static char *buffer = 0L;
   if (!buffer) buffer = (char*)::calloc(1, FL_PATH_MAX);
   buffer[0] = '\0';
@@ -485,7 +485,7 @@ char *Fl_Unix_System_Driver::preference_rootnode(Fl_Preferences * /*prefs*/,
 
 /*
  Memory based preferences are never saved to any file, so the path is
- just and empty string.
+ just an empty string.
  */
 char *Fl_Unix_System_Driver::preference_memory_rootnode(
     const char * /*vendor*/, 
