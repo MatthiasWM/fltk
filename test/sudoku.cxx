@@ -133,25 +133,27 @@ class SudokuSound {
 
 // Sudoku cell class...
 class SudokuCell : public Fl_Widget {
-  bool          readonly_;
   int           value_;
-  int           test_value_[9];
+  bool          candidate_[9];
+  bool          readonly_;
 
-  public:
+public:
 
                 SudokuCell(int X, int Y, int W, int H);
-  void  draw() FL_OVERRIDE;
-  int   handle(int event) FL_OVERRIDE;
+  void          draw() FL_OVERRIDE;
+  int           handle(int event) FL_OVERRIDE;
   void          readonly(bool r) { readonly_ = r; redraw(); }
   bool          readonly() const { return readonly_; }
-  void          test_value(int v, int n) { test_value_[n] = v; redraw(); }
-  int           test_value(int n) const { return test_value_[n]; }
   void          value(int v) {
                   value_ = v;
-                  for (int i = 0; i < 8; i ++) test_value_[i] = 0;
                   redraw();
                 }
   int           value() const { return value_; }
+  void          set_candidate(int i, bool v) { candidate_[i] = v; }
+  bool          is_candidate(int i) { return candidate_[i]; }
+  void          clear_candidates() {
+                  for (int i=0; i<9; i++) candidate_[i] = false;
+                }
 };
 
 
@@ -169,7 +171,7 @@ class Sudoku : public Fl_Double_Window {
   static void   check_cb(Fl_Widget *widget, void *);
   static void   close_cb(Fl_Widget *widget, void *);
   static void   diff_cb(Fl_Widget *widget, void *d);
-  static void   update_helpers_cb(Fl_Widget *, void *);
+  static void   update_candidates_cb(Fl_Widget *, void *);
   static void   help_cb(Fl_Widget *, void *);
   static void   mute_cb(Fl_Widget *widget, void *);
   static void   new_cb(Fl_Widget *widget, void *);
@@ -189,10 +191,10 @@ class Sudoku : public Fl_Double_Window {
   void          load_game();
   void          new_game(time_t seed);
   int           next_value(SudokuCell *c);
-  void  resize(int X, int Y, int W, int H) FL_OVERRIDE;
+  void          resize(int X, int Y, int W, int H) FL_OVERRIDE;
   void          save_game();
   void          solve_game();
-  void          update_helpers();
+  void          update_candidates();
 };
 
 
@@ -483,25 +485,28 @@ void SudokuSound::play(char note) {
 
 // Create a cell widget
 SudokuCell::SudokuCell(int X, int Y, int W, int H)
-  : Fl_Widget(X, Y, W, H, 0) {
-  value(0);
+  : Fl_Widget(X, Y, W, H, 0),
+    value_(0),
+    candidate_(),
+    readonly_(false)
+{
 }
 
 
 // Draw cell
 void
 SudokuCell::draw() {
-  static Fl_Align align[8] = {
+  static Fl_Align align_lut[9] = {
     FL_ALIGN_TOP_LEFT,
     FL_ALIGN_TOP,
     FL_ALIGN_TOP_RIGHT,
+    FL_ALIGN_LEFT,
+    FL_ALIGN_CENTER,
     FL_ALIGN_RIGHT,
-    FL_ALIGN_BOTTOM_RIGHT,
-    FL_ALIGN_BOTTOM,
     FL_ALIGN_BOTTOM_LEFT,
-    FL_ALIGN_LEFT
+    FL_ALIGN_BOTTOM,
+    FL_ALIGN_BOTTOM_RIGHT
   };
-
 
   // Draw the cell box...
   if (readonly()) fl_draw_box(FL_UP_BOX, x(), y(), w(), h(), color());
@@ -516,23 +521,18 @@ SudokuCell::draw() {
   } else fl_color(labelcolor());
 
   // Draw the cell value...
-  char s[2];
-
-  s[1] = '\0';
-
+  char s[2] = " ";
   if (value_) {
     s[0] = value_ + '0';
-
     fl_font(FL_HELVETICA_BOLD, h() - 10);
     fl_draw(s, x(), y(), w(), h(), FL_ALIGN_CENTER);
-  }
-
-  fl_font(FL_HELVETICA_BOLD, h() / 5);
-
-  for (int i = 0; i < 8; i ++) {
-    if (test_value_[i]) {
-      s[0] = test_value_[i] + '0';
-      fl_draw(s, x() + 5, y() + 5, w() - 10, h() - 10, align[i]);
+  } else {
+    fl_font(FL_HELVETICA_BOLD, h() / 5);
+    for (int i = 0; i < 9; i ++) {
+      if (candidate_[i]) {
+        s[0] = i + '1';
+        fl_draw(s, x() + 5, y() + 5, w() - 10, h() - 10, align_lut[i]);
+      }
     }
   }
 }
@@ -576,29 +576,8 @@ SudokuCell::handle(int event) {
           fl_beep(FL_BEEP_ERROR);
           return 1;
         }
-
         if (Fl::event_state() & (FL_SHIFT | FL_CAPS_LOCK)) {
-          int i;
-
-          for (i = 0; i < 8; i ++)
-            if (test_value_[i] == key) {
-              test_value_[i] = 0;
-              break;
-            }
-
-          if (i >= 8) {
-            for (i = 0; i < 8; i ++)
-              if (!test_value_[i]) {
-                test_value_[i] = key;
-                break;
-              }
-          }
-
-          if (i >= 8) {
-            for (i = 0; i < 7; i ++) test_value_[i] = test_value_[i + 1];
-            test_value_[i] = key;
-          }
-
+          candidate_[key-1] = !candidate_[key-1];
           redraw();
         } else {
           value(key);
@@ -611,7 +590,6 @@ SudokuCell::handle(int event) {
           fl_beep(FL_BEEP_ERROR);
           return 1;
         }
-
         value(0);
         do_callback();
         return 1;
@@ -641,7 +619,7 @@ Sudoku::Sudoku()
     { "&Check Game", FL_COMMAND | 'c', check_cb, 0, 0 },
     { "&Restart Game", FL_COMMAND | 'r', restart_cb, 0, 0 },
     { "&Solve Game", FL_COMMAND | 's', solve_cb, 0, FL_MENU_DIVIDER },
-    { "&Update Helpers", 0, update_helpers_cb, 0, 0 },
+    { "&Update Candidates", FL_COMMAND | 'u', update_candidates_cb, 0, 0 },
     { "&Mute Sound", FL_COMMAND | 'm', mute_cb, 0, FL_MENU_TOGGLE | FL_MENU_DIVIDER },
 #ifndef USE_MACOS
     { "&Quit", FL_COMMAND | 'q', close_cb, 0, 0 },
@@ -877,26 +855,16 @@ Sudoku::diff_cb(Fl_Widget *widget, void *d) {
 
 // Update the little marker numbers in all cells
 void
-Sudoku::update_helpers_cb(Fl_Widget *widget, void *) {
+Sudoku::update_candidates_cb(Fl_Widget *widget, void *) {
   Sudoku *s = (Sudoku *)(widget->window() ? widget->window() : widget);
-  s->update_helpers();
+  s->update_candidates();
 }
 
 void
-Sudoku::update_helpers() {
+Sudoku::update_candidates() {
   int j, k, m;
 
-  // First we delete any entries that the user may have made
-  for (j = 0; j < 9; j ++) {
-    for (k = 0; k < 9; k ++) {
-      SudokuCell *cell = grid_cells_[j][k];
-      for (m = 0; m < 8; m ++) {
-        cell->test_value(0, m);
-      }
-    }
-  }
-
-  // Now go through all cells and find out, what we can not be
+  // go through all cells and find out, what we can not be
   for (j = 0; j < 81; j ++) {
     char taken[10] = { 0 };
     // Find our destination cell
@@ -904,6 +872,7 @@ Sudoku::update_helpers() {
     int col = j % 9;
     SudokuCell *dst_cell = grid_cells_[row][col];
     if (dst_cell->value()) continue;
+    for (m = 0; m < 9; m++) dst_cell->set_candidate(m, false);
     // Find all values already taken in this row
     for (k = 0; k < 9; k ++) {
       SudokuCell *cell = grid_cells_[row][k];
@@ -927,10 +896,11 @@ Sudoku::update_helpers() {
       }
     }
     // transfer our findings to the markers
-    for (m = 1, k = 0; m <= 9; m ++) {
+    for (m = 1; m <= 9; m ++) {
       if (!taken[m])
-        dst_cell->test_value(m, k ++);
+        dst_cell->set_candidate(m-1, true);
     }
+    dst_cell->redraw();
   }
 }
 
@@ -1031,11 +1001,13 @@ Sudoku::load_game() {
         solved = false;
       }
 
-      for (int m = 0; m < 8; m ++) {
-        snprintf(name, sizeof(name), "test%d%d.%d", m, j, k);
-        prefs_.get(name, val, 0);
-        cell->test_value(val, m);
+      int candidates = 0;
+      prefs_.get(Fl_Preferences::Name("candidates%d.%d", j, k), candidates, 0);
+      for (int m = 0; m < 9; m ++) {
+        bool v = ( (candidates & (1<<m)) != 0);
+        cell->set_candidate(m, v);
       }
+      cell->redraw();
     }
 
   // If we didn't load any values or the last game was solved, then
@@ -1134,6 +1106,7 @@ Sudoku::new_game(time_t seed) {
       cell->value(0);
       cell->readonly(0);
       cell->color(FL_LIGHT3);
+      cell->clear_candidates();
     }
 
   // Show N cells...
@@ -1272,10 +1245,12 @@ Sudoku::save_game() {
       snprintf(name, sizeof(name), "readonly%d.%d", j, k);
       prefs_.set(name, cell->readonly());
 
-      for (int m = 0; m < 8; m ++) {
-        snprintf(name, sizeof(name), "test%d%d.%d", m, j, k);
-        prefs_.set(name, cell->test_value(m));
+      int candidates = 0;
+      for (int m = 0; m < 9; m ++) {
+        if (cell->is_candidate(m))
+          candidates |= (1<<m);
       }
+      prefs_.set(Fl_Preferences::Name("candidates%d.%d", j, k), candidates);
     }
 }
 
