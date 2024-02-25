@@ -85,7 +85,7 @@ public:
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
   void write(Fd_Project_Writer &f) FL_OVERRIDE;
   void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { }
+  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { (void)f; }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "code";}
   int is_code_block() const FL_OVERRIDE {return 0;}
@@ -135,7 +135,7 @@ public:
   Fl_Decl_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
   void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { }
+  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { (void)f; }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "decl";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
@@ -158,7 +158,7 @@ public:
   ~Fl_Data_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
   void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE {}
+  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { (void)f; }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "data";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
@@ -203,7 +203,7 @@ public:
   Fl_Comment_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
   void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { }
+  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { (void)f; }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "comment";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;

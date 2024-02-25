@@ -820,13 +820,13 @@ void grid_set_row_cb(Fluid_Coord_Input* i, void* v) {
   grid_child_cb(i, v, 8);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
-void grid_dec_row_cb(Fl_Button* i, void* v) {
+void grid_dec_row_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_row_input, v, 0x0100 + 8);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_inc_row_cb(Fl_Button* i, void* v) {
+void grid_inc_row_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_row_input, v, 0x0200 + 8);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
@@ -836,13 +836,13 @@ void grid_set_col_cb(Fluid_Coord_Input* i, void* v) {
   grid_child_cb(i, v, 9);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
-void grid_dec_col_cb(Fl_Button* i, void* v) {
+void grid_dec_col_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_col_input, v, 0x0100 + 9);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_inc_col_cb(Fl_Button* i, void* v) {
+void grid_inc_col_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_col_input, v, 0x0200 + 9);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
@@ -852,13 +852,13 @@ void grid_set_rowspan_cb(Fluid_Coord_Input* i, void* v) {
   grid_child_cb(i, v, 10);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
-void grid_dec_rowspan_cb(Fl_Button* i, void* v) {
+void grid_dec_rowspan_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_rowspan_input, v, 0x0100 + 10);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_inc_rowspan_cb(Fl_Button* i, void* v) {
+void grid_inc_rowspan_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_rowspan_input, v, 0x0200 + 10);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
@@ -868,13 +868,13 @@ void grid_set_colspan_cb(Fluid_Coord_Input* i, void* v) {
   grid_child_cb(i, v, 11);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
-void grid_dec_colspan_cb(Fl_Button* i, void* v) {
+void grid_dec_colspan_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_colspan_input, v, 0x0100 + 11);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_inc_colspan_cb(Fl_Button* i, void* v) {
+void grid_inc_colspan_cb(Fl_Button*, void* v) {
   if (v!=LOAD) {
     grid_child_cb(widget_grid_colspan_input, v, 0x0200 + 11);
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);

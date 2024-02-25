@@ -178,7 +178,7 @@ public:
   Fd_Snap_Action() : ex(0x7fff), ey(0x7fff), dx(128), dy(128), type(0), mask(0) { }
   virtual ~Fd_Snap_Action() { }
   virtual void check(Fd_Snap_Data &d) = 0;
-  virtual void draw(Fd_Snap_Data &d) { }
+  virtual void draw(Fd_Snap_Data &d) { (void)d; }
   virtual bool matches(Fd_Snap_Data &d);
 public:
   static int eex, eey;

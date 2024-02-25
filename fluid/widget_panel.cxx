@@ -520,6 +520,7 @@ Fluid_Coord_Input *widget_grid_col_input=(Fluid_Coord_Input *)0;
 Fl_Box *widget_grid_transient=(Fl_Box *)0;
 
 static void cb_widget_grid_transient(Fl_Box* o, void* v) {
+  (void)o; 
   if (v==LOAD) {
     Fl_Widget *child = ((Fl_Widget_Type*)current_widget)->o;
     Fl_Grid_Proxy *g = ((Fl_Grid_Proxy*)((Fl_Widget_Type*)current_widget->parent)->o);

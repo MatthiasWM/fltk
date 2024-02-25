@@ -137,6 +137,14 @@ else()
 
 endif()
 
+if (MSVC)
+    target_compile_options(fluid-lib PRIVATE /W4 /WX)
+    target_compile_options(fluid PRIVATE /W4 /WX)
+else()
+    target_compile_options(fluid-lib PRIVATE -std=c++11 -Wall -Wextra -pedantic -Werror -Wno-missing-field-initializers)
+    target_compile_options(fluid PRIVATE -std=c++11 -Wall -Wextra -pedantic -Werror -Wno-missing-field-initializers)
+endif()
+
 target_link_libraries(fluid PRIVATE fluid-lib)
 
 # Build the console app on Windows

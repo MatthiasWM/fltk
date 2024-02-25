@@ -282,6 +282,7 @@ void Fluid_Image::write_code(Fd_Code_Writer& f, int bind, const char *var, int i
 }
 
 void Fluid_Image::write_inline(Fd_Code_Writer& f, int inactive) {
+  (void)inactive; 
   if (img)
     f.write_c("%s()", function_name_);
 }

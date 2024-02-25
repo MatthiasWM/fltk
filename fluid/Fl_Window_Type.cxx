@@ -783,6 +783,8 @@ void toggle_guides(Fl_Widget *,void *) {
  This is called from the check button in the Settings dialog.
  */
 void toggle_guides_cb(Fl_Check_Button *o, void *v) {
+  (void)o;
+  (void)v;
   toggle_guides(NULL, NULL);
 }
 
@@ -829,6 +831,8 @@ void toggle_ghosted_outline_cb(Fl_Check_Button *,void *) {
  This is called from the check button in the Settings dialog.
  */
 void toggle_restricted_cb(Fl_Check_Button *o, void *v) {
+  (void)o;
+  (void)v; 
   toggle_restricted(NULL, NULL);
 }
 

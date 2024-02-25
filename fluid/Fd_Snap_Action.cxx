@@ -1410,6 +1410,7 @@ public:
                                  layout->top_window_margin, layout->window_grid_y, d.win->o->h()-layout->bottom_window_margin);
   }
   void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+    (void)d;
     draw_grid(nearest_x, nearest_y, layout->window_grid_x, layout->window_grid_y);
   };
 };
@@ -1428,7 +1429,7 @@ public:
                  g->y()+layout->top_group_margin, layout->group_grid_y, g->y()+g->h()-layout->bottom_group_margin);
     }
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     draw_grid(nearest_x, nearest_y, layout->group_grid_x, layout->group_grid_y);
   };
 };
@@ -1482,7 +1483,7 @@ public:
   int sibling_check(Fd_Snap_Data &d, Fl_Widget *s) FL_OVERRIDE {
     return check_x_(d, d.bx, s->x());
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_left_brace(best_match);
   };
 };
@@ -1498,7 +1499,7 @@ public:
     return fd_min(check_x_(d, d.bx, s->x()+s->w()),
                   check_x_(d, d.bx, s->x()+s->w()+layout->widget_gap_x) );
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_right_brace(best_match);
   };
 };
@@ -1510,7 +1511,7 @@ public:
   int sibling_check(Fd_Snap_Data &d, Fl_Widget *s) FL_OVERRIDE {
     return check_x_(d, d.br, s->x()+s->w());
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_right_brace(best_match);
   };
 };
@@ -1523,7 +1524,7 @@ public:
     return fd_min(check_x_(d, d.br, s->x()),
                   check_x_(d, d.br, s->x()-layout->widget_gap_x));
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_left_brace(best_match);
   };
 };
@@ -1535,7 +1536,7 @@ public:
   int sibling_check(Fd_Snap_Data &d, Fl_Widget *s) FL_OVERRIDE {
     return check_y_(d, d.by, s->y());
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_top_brace(best_match);
   };
 };
@@ -1548,7 +1549,7 @@ public:
     return fd_min(check_y_(d, d.by, s->y()+s->h()),
                   check_y_(d, d.by, s->y()+s->h()+layout->widget_gap_y));
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_bottom_brace(best_match);
   };
 };
@@ -1560,7 +1561,7 @@ public:
   int sibling_check(Fd_Snap_Data &d, Fl_Widget *s) FL_OVERRIDE {
     return check_y_(d, d.bt, s->y()+s->h());
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_bottom_brace(best_match);
   };
 };
@@ -1573,7 +1574,7 @@ public:
     return fd_min(check_y_(d, d.bt, s->y()),
                   check_y_(d, d.bt, s->y()-layout->widget_gap_y));
   }
-  void draw(Fd_Snap_Data &d) FL_OVERRIDE {
+  void draw(Fd_Snap_Data &) FL_OVERRIDE {
     if (best_match) draw_top_brace(best_match);
   };
 };

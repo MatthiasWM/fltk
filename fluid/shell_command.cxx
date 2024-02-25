@@ -713,6 +713,7 @@ void Fd_Shell_Command_List::clear(Fd_Tool_Store storage) {
  Read shell configuration from a preferences group.
  */
 void Fd_Shell_Command_List::read(Fl_Preferences &prefs, Fd_Tool_Store storage) {
+  (void)storage;
   // import the old shell commands from previous user settings
   if (&fluid_prefs == &prefs) {
     int version;
@@ -751,6 +752,7 @@ void Fd_Shell_Command_List::read(Fl_Preferences &prefs, Fd_Tool_Store storage) {
  Write shell configuration to a preferences group.
  */
 void Fd_Shell_Command_List::write(Fl_Preferences &prefs, Fd_Tool_Store storage) {
+  (void)storage; 
   Fl_Preferences shell_commands(prefs, "shell_commands");
   shell_commands.delete_all_groups();
   int index = 0;

@@ -624,6 +624,7 @@ Fluid_Coord_Input *x_input, *y_input, *w_input, *h_input;
 static int widget_i = 0;
 
 static int vars_i_cb(const Fluid_Coord_Input*, void *v) {
+  (void)v; 
   return widget_i;
 }
 

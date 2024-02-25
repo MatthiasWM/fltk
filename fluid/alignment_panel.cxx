@@ -1158,6 +1158,7 @@ Fl_Menu_Item menu_Condition[] = {
 };
 
 static void cb_Label(Fl_Input* o, void* v) {
+  (void)o;
   if (v == LOAD) {
   //  o->value(g_shell_command.c_str());
   } else {
@@ -2438,6 +2439,7 @@ Fl_Double_Window* make_settings_window() {
         o->image( image_general_64() );
         o->image()->scale(36, 24, 0, 1);
         o->labelsize(11);
+        o->hide();
         { Fl_Group* o = new Fl_Group(120, 78, 130, 25);
           o->callback((Fl_Callback*)cb_);
           { scheme_choice = new Fl_Scheme_Choice(120, 78, 120, 25, "Scheme: ");
@@ -2999,7 +3001,6 @@ itional data in code and project files.");
         w_settings_shell_tab->image()->scale(36, 24, 0, 1);
         w_settings_shell_tab->labelsize(11);
         w_settings_shell_tab->callback((Fl_Callback*)propagate_load);
-        w_settings_shell_tab->hide();
         { Fl_Group* o = new Fl_Group(10, 90, 320, 132);
           o->callback((Fl_Callback*)propagate_load);
           { w_settings_shell_list = new Fl_Browser(100, 90, 220, 110, "Shell\ncommand\nlist:");
