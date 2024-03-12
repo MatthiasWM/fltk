@@ -151,7 +151,12 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Widget *w, int frame=2
 // todo: verify me
 // todo: calculate only the bounding box of the item range
 // todo: document me
-FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Menu_Item *m1, Fl_Menu_Item *m2, int fh=0, int fv=10, int alpha=10, double scale=1.0) {
+FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Menu_Item *m1, Fl_Menu_Item *m2, int fh=20, int fv=20, int alpha=10, double scale=1.0) {
+  
+
+
+
+
   int i, j, c, min_x, min_y, max_x, max_y, bb_w, bb_h, img_w = 0, img_h, item_h = 0, n_visible = 0;
   int hotkey_w = 0, hotkey_mod_w = 0;
   int m1i = -1, m2i = -1;
@@ -163,6 +168,7 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Me
   for (; m->text; m = m->next()) {
     if (m == m1) m1i = n_visible;
     if (m == m2) m2i = n_visible;
+    if (m > m2) break;
     if (m->visible()) {
       m->measure(img_w, item_h, hotkey_mod_w, hotkey_w, NULL);
       n_visible++;
@@ -176,21 +182,27 @@ FL_EXPORT inline int fl_snapshot(const char *filename, Fl_Menu_Item *menu, Fl_Me
   img_h = item_h * n_visible + 8;
 
   // Generate the Image Surface
-  Fl_Image_Surface *srfc = new Fl_Image_Surface(img_w, max_y-min_y);
+  Fl_Image_Surface *srfc = new Fl_Image_Surface(img_w + 2*fh, max_y-min_y+2*fv);
   Fl_Image_Surface::push_current(srfc);
 
   // Draw the background
-  fl_rectf(0, 0, img_w, img_h, 0x1395bf00);
-  fl_draw_box(FL_UP_BOX, 0, -min_y, img_w, img_h, FL_BACKGROUND_COLOR);
+  fl_rectf(0, 0, img_w+2*fh, img_h+2*fv, 0x1395bf00);
+  // FIXME: the box position and height depends on menus that may exist above and below m1 and m2
+  fl_draw_box(FL_UP_BOX, fh, fv-min_y-Fl::box_dy(FL_UP_BOX), img_w, img_h, FL_BACKGROUND_COLOR);
+
+  Fl_Window *mw = menu->build_menu_window(menu, 10, 10, 100, 1024, NULL, NULL);
+  mw->draw();
+
 
   // Draw the menu items
-  m = menu;
-  int yy = 4 - min_y;
-  for (; m->text; m = m->next()) {
-    if (!m->visible()) continue;
-    m->draw(4, yy+2, img_w-8, item_h-4, hotkey_w, 3, NULL);
-    yy += item_h;
-  }
+//  m = menu;
+//  int yy = min_y;
+//  for (; m->text; m = m->next()) {
+//    if (m->visible()) {
+//      m->draw(fh+4, fv+yy+2, img_w-8, item_h-4, hotkey_w, 4, NULL);
+//      yy += item_h;
+//    }
+//  }
   Fl_Image_Surface::pop_current();
   Fl_RGB_Image *img = srfc->image();
 

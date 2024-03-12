@@ -92,7 +92,7 @@ private:
   Fl_Window(const Fl_Window&);
   Fl_Window& operator=(const Fl_Window&);
 
-protected:
+  public:
 
   /** Stores the last window that was made current. See current() const */
   static Fl_Window *current_;

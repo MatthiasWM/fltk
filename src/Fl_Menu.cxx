@@ -390,7 +390,7 @@ void Fl_Menu_Item::draw(int x, int y, int w, int h, int shortcut_width, int fram
     int x1 = x + w - sz - 2;
     int y1 = y + (h-sz)/2 + 1;
 
-    // draw an arrow whose style dependends on the active scheme
+    // draw an arrow whose style dependents on the active scheme
     fl_draw_arrow(Fl_Rect(x1, y1, sz, sz), FL_ARROW_SINGLE, FL_ORIENT_RIGHT, fl_color());
 
   } else if (shortcut_) {
@@ -413,10 +413,26 @@ void Fl_Menu_Item::draw(int x, int y, int w, int h, int shortcut_width, int fram
   }
 
   if (flags & FL_MENU_DIVIDER) {
+#if 0
+//    int BW = Fl::box_dx(box());
+//    int xx = BW;
+//    int W = w();
+//    int ww = W-2*BW-1;
+//    int yy = BW+1+n*itemheight+Fl::menu_linespacing()/2-2;
+//    int hh = itemheight - Fl::menu_linespacing();
+
     fl_color(FL_DARK3);
-    fl_xyline(frame_width-1, y+h+(Fl::menu_linespacing()-2)/2, w+2*frame_width-1);
+    fl_xyline(BW-1, yy+hh+(Fl::menu_linespacing()-2)/2, W-2*BW+2);
     fl_color(FL_LIGHT3);
-    fl_xyline(frame_width-1, y+h+((Fl::menu_linespacing()-2)/2+1), w+2*frame_width-1);
+    fl_xyline(BW-1, yy+hh+((Fl::menu_linespacing()-2)/2+1), W-2*BW+2);
+#else
+    int dx1 = frame_width-1;// +x-frame_width;
+    int dx2 = w-2*frame_width+2; //
+    fl_color(FL_DARK3);
+    fl_xyline(dx1, y+h+(Fl::menu_linespacing()-2)/2, dx2);
+    fl_color(FL_LIGHT3);
+    fl_xyline(dx1, y+h+((Fl::menu_linespacing()-2)/2+1), dx2);
+#endif
   }
 }
 
@@ -1130,6 +1146,13 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
   Fl::grab(0);
   menuwindow::parent_ = NULL;
   return m;
+}
+
+Fl_Window *Fl_Menu_Item::build_menu_window(const Fl_Menu_Item* m, int X, int Y, int W, int H,
+                             const Fl_Menu_Item* picked, const Fl_Menu_Item* title,
+                             int menubar, int menubar_title, int right_edge)
+{
+  return new menuwindow(m, X, Y, W, H, picked, title, menubar, menubar_title, right_edge);
 }
 
 /**

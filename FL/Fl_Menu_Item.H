@@ -391,6 +391,10 @@ struct FL_EXPORT Fl_Menu_Item {
   const Fl_Menu_Item* test_shortcut() const;
   const Fl_Menu_Item* find_shortcut(int *ip=0, const bool require_alt = false) const;
 
+  Fl_Window *build_menu_window(const Fl_Menu_Item* m, int X, int Y, int W, int H,
+             const Fl_Menu_Item* picked, const Fl_Menu_Item* title,
+             int menubar = 0, int menubar_title = 0, int right_edge = 0);
+
   /**
     Calls the Fl_Menu_Item item's callback, and provides the Fl_Widget argument.
     The callback is called with the stored user_data() as its second argument.

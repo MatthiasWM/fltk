@@ -2144,9 +2144,13 @@ int main(int argc,char **argv) {
 
   the_panel = make_widget_panel();
 //  fl_snapshot("/Users/matt/test.png", widget_browser, 20);
-//  fl_snapshot("/Users/matt/test.png", wCallback);
-  fl_snapshot("/Users/matt/test.png", widget_x_input, widget_h_input, 70, 12, 10, 10, 20, 4.0);
-//  fl_snapshot("/Users/matt/test.png", Main_Menu+1, Main_Menu+3, NULL);
+//  fl_snapshot("/Users/matt/test.png", the_panel);
+//  fl_snapshot("/Users/matt/test.png", widget_x_input, widget_h_input, 70, 12, 10, 10, 20, 2.0);
+//  fl_snapshot("/Users/matt/test.png", Main_Menu+1, Main_Menu+1, Main_Menu+4, 10, 10, 20, 2.0);
+  Fl_Menu_Item *mi1 = (Fl_Menu_Item*)main_menubar->find_item("&Layout/&Align");
+  Fl_Menu_Item *mi2 = (Fl_Menu_Item*)main_menubar->find_item("&Layout/Presets");
+  fl_snapshot("/Users/matt/test.png", mi1, mi1, mi2, 10, 10, 20, 2.0);
+//  fl_snapshot("/Users/matt/test.png", New_Menu+1, New_Menu+1, New_Menu+4, 10, 10, 20, 2.0);
 
   fl_open_uri("file:///Users/matt/test.png");
   return 0;
