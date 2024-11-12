@@ -1322,7 +1322,7 @@ void Fl_Window_Type::read_property(Fd_Project_Reader &f, const char *c) {
   } else if (!strcmp(c,"non_modal")) {
     non_modal = 1;
   } else if (!strcmp(c, "visible")) {
-    if (batch_mode) // don't actually open any windows in batch mode
+    if (Fluid.batch_mode) // don't actually open any windows in batch mode
       override_visible_ = 1;
     else // in interactive mode, we simply show the window
       open_();

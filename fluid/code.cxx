@@ -462,7 +462,7 @@ void Fd_Code_Writer::write_cstring(const char *s, int length) {
         break;
       }
       // if the UTF-8 option is checked, write unicode characters verbatim
-      if (g_project.utf8_in_src && (c&0x80)) {
+      if (project().utf8_in_src && (c&0x80)) {
         if ((c&0x40)) {
           // This is the first character in a utf-8 sequence (0b11......).
           // A line break would be ok here. Do not put linebreak in front of
@@ -796,8 +796,8 @@ int Fd_Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
     header_file = f;
   }
   // Remember the last code file location for MergeBack
-  if (s && g_project.write_mergeback_data && !to_codeview) {
-    Fl_String proj_filename = g_project.projectfile_path() + g_project.projectfile_name();
+  if (s && project().write_mergeback_data && !to_codeview) {
+    Fl_String proj_filename = project().projectfile_path() + project().projectfile_name();
     int i, n = proj_filename.size();
     for (i=0; i<n; i++) if (proj_filename[i]=='\\') proj_filename[i] = '/';
     Fl_Preferences build_records(Fl_Preferences::USER_L, "fltk.org", "fluid-build");
@@ -836,27 +836,27 @@ int Fd_Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   fprintf(header_file, "#define %s\n", define_name);
   }
 
-  if (g_project.avoid_early_includes==0) {
+  if (project().avoid_early_includes==0) {
     write_h_once("#include <FL/Fl.H>");
   }
-  if (t && g_project.include_H_from_C) {
+  if (t && project().include_H_from_C) {
     if (to_codeview) {
       write_c("#include \"CodeView.h\"\n");
-    } else if (g_project.header_file_name[0] == '.' && strchr(g_project.header_file_name.c_str(), '/') == NULL) {
+    } else if (project().header_file_name[0] == '.' && strchr(project().header_file_name.c_str(), '/') == NULL) {
       write_c("#include \"%s\"\n", fl_filename_name(t));
     } else {
-      write_c("#include \"%s\"\n", g_project.header_file_name.c_str());
+      write_c("#include \"%s\"\n", project().header_file_name.c_str());
     }
   }
   Fl_String loc_include, loc_conditional;
-  if (g_project.i18n_type==Fd_I18n_Type::GNU) {
-    loc_include = g_project.i18n_gnu_include;
-    loc_conditional = g_project.i18n_gnu_conditional;
+  if (project().i18n_type==Fd_I18n_Type::GNU) {
+    loc_include = project().i18n_gnu_include;
+    loc_conditional = project().i18n_gnu_conditional;
   } else {
-    loc_include = g_project.i18n_pos_include;
-    loc_conditional = g_project.i18n_pos_conditional;
+    loc_include = project().i18n_pos_include;
+    loc_conditional = project().i18n_pos_conditional;
   }
-  if ( (g_project.i18n_type!=Fd_I18n_Type::NONE) && !loc_include.empty()) {
+  if ( (project().i18n_type!=Fd_I18n_Type::NONE) && !loc_include.empty()) {
     int conditional = !loc_conditional.empty();
     if (conditional) {
       write_c("#ifdef %s\n", loc_conditional.c_str());
@@ -866,26 +866,26 @@ int Fd_Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
       write_c("#%sinclude \"%s\"\n", indent(), loc_include.c_str());
     else
       write_c("#%sinclude %s\n", indent(), loc_include.c_str());
-    if (g_project.i18n_type == Fd_I18n_Type::POSIX) {
-      if (!g_project.i18n_pos_file.empty()) {
-        write_c("extern nl_catd %s;\n", g_project.i18n_pos_file.c_str());
+    if (project().i18n_type == Fd_I18n_Type::POSIX) {
+      if (!project().i18n_pos_file.empty()) {
+        write_c("extern nl_catd %s;\n", project().i18n_pos_file.c_str());
       } else {
         write_c("// Initialize I18N stuff now for menus...\n");
         write_c("#%sinclude <locale.h>\n", indent());
         write_c("static char *_locale = setlocale(LC_MESSAGES, \"\");\n");
-        write_c("static nl_catd _catalog = catopen(\"%s\", 0);\n", g_project.basename().c_str());
+        write_c("static nl_catd _catalog = catopen(\"%s\", 0);\n", project().basename().c_str());
       }
     }
     if (conditional) {
       write_c("#else\n");
-      if (g_project.i18n_type == Fd_I18n_Type::GNU) {
-        if (!g_project.i18n_gnu_function.empty()) {
-          write_c("#%sifndef %s\n", indent(), g_project.i18n_gnu_function.c_str());
-          write_c("#%sdefine %s(text) text\n", indent_plus(1), g_project.i18n_gnu_function.c_str());
+      if (project().i18n_type == Fd_I18n_Type::GNU) {
+        if (!project().i18n_gnu_function.empty()) {
+          write_c("#%sifndef %s\n", indent(), project().i18n_gnu_function.c_str());
+          write_c("#%sdefine %s(text) text\n", indent_plus(1), project().i18n_gnu_function.c_str());
           write_c("#%sendif\n", indent());
         }
       }
-      if (g_project.i18n_type == Fd_I18n_Type::POSIX) {
+      if (project().i18n_type == Fd_I18n_Type::POSIX) {
         write_c("#%sifndef catgets\n", indent());
         write_c("#%sdefine catgets(catalog, set, msgid, text) text\n", indent_plus(1));
         write_c("#%sendif\n", indent());
@@ -893,9 +893,9 @@ int Fd_Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
       indentation--;
       write_c("#endif\n");
     }
-    if (g_project.i18n_type == Fd_I18n_Type::GNU && g_project.i18n_gnu_static_function[0]) {
-      write_c("#ifndef %s\n", g_project.i18n_gnu_static_function.c_str());
-      write_c("#%sdefine %s(text) text\n", indent_plus(1), g_project.i18n_gnu_static_function.c_str());
+    if (project().i18n_type == Fd_I18n_Type::GNU && project().i18n_gnu_static_function[0]) {
+      write_c("#ifndef %s\n", project().i18n_gnu_static_function.c_str());
+      write_c("#%sdefine %s(text) text\n", indent_plus(1), project().i18n_gnu_static_function.c_str());
       write_c("#endif\n");
     }
   }
@@ -955,8 +955,9 @@ void Fd_Code_Writer::write_public(int state) {
 /**
  Create and initialize a new C++ source code writer.
  */
-Fd_Code_Writer::Fd_Code_Writer()
-: code_file(NULL),
+Fd_Code_Writer::Fd_Code_Writer(FLUID::Project &project)
+: project_(project),
+  code_file(NULL),
   header_file(NULL),
   id_root(NULL),
   text_in_header(NULL),
@@ -995,7 +996,7 @@ Fd_Code_Writer::~Fd_Code_Writer()
  \param[in] uid the unique id of the current type
  */
 void Fd_Code_Writer::tag(int type, unsigned short uid) {
-  if (g_project.write_mergeback_data)
+  if (project().write_mergeback_data)
     fprintf(code_file, "//~fl~%d~%04x~%08x~~\n", type, (int)uid, (unsigned int)block_crc_);
   block_crc_ = crc32(0, NULL, 0);
 }
@@ -1062,7 +1063,7 @@ int Fd_Code_Writer::crc_printf(const char *format, ...) {
  \return see fprintf(FILE *, *const char*, ...)
  */
 int Fd_Code_Writer::crc_vprintf(const char *format, va_list args) {
-  if (g_project.write_mergeback_data) {
+  if (project().write_mergeback_data) {
     int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
     if (n > block_buffer_size_) {
       block_buffer_size_ = n + 128;
@@ -1083,7 +1084,7 @@ int Fd_Code_Writer::crc_vprintf(const char *format, va_list args) {
  \return see fputs(const char*, FILE*)
  */
 int Fd_Code_Writer::crc_puts(const char *text) {
-  if (g_project.write_mergeback_data) {
+  if (project().write_mergeback_data) {
     crc_add(text);
   }
   return fputs(text, code_file);
@@ -1096,7 +1097,7 @@ int Fd_Code_Writer::crc_puts(const char *text) {
  \return see fputc(int, FILE*)
  */
 int Fd_Code_Writer::crc_putc(int c) {
-  if (g_project.write_mergeback_data) {
+  if (project().write_mergeback_data) {
     uchar uc = (uchar)c;
     crc_add(&uc, 1);
   }

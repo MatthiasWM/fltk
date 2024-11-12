@@ -19,6 +19,8 @@
 
 #include "Fl_Type.h"
 
+#include "fluid.h"
+
 #include <FL/fl_attr.h>
 
 class Fl_Type;
@@ -31,6 +33,8 @@ int write_file(const char *, int selected_only = 0, bool to_codeview = false);
 class Fd_Project_Reader
 {
 protected:
+  /// Reference to the project that will be read.
+  FLUID::Project &project_;
   /// Project input file
   FILE *fin;
   /// Number of most recently read line
@@ -51,8 +55,9 @@ public:
   double read_version;
 
 public:
-  Fd_Project_Reader();
+  Fd_Project_Reader(FLUID::Project &project);
   ~Fd_Project_Reader();
+  FLUID::Project &project() const { return project_; }
   int open_read(const char *s);
   int close_read();
   const char *filename_name();
@@ -69,6 +74,8 @@ public:
 class Fd_Project_Writer
 {
 protected:
+  /// Reference to the project that will be written.
+  FLUID::Project &project_;
   // Project output file, always opened in "wb" mode
   FILE *fout;
   /// If set, one space is written before text unless the format starts with a newline character
@@ -77,8 +84,9 @@ protected:
   bool write_codeview_;
 
 public:
-  Fd_Project_Writer();
+  Fd_Project_Writer(FLUID::Project &project);
   ~Fd_Project_Writer();
+  FLUID::Project &project() const { return project_; }
   int open_write(const char *s);
   int close_write();
   int write_project(const char *filename, int selected_only, bool codeview);

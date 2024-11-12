@@ -40,9 +40,6 @@ decl {\#include <FL/Fl_Grid.H>} {private global
 decl {\#include "custom_widgets.h"} {public global
 }
 
-decl {extern void set_modflag(int mf, int mfc=-1);} {private local
-}
-
 Function {make_image_panel()} {
   comment {Create a panel for editing widget image data} open
 } {
@@ -332,7 +329,7 @@ Function {make_widget_panel()} {
   comment {Create a panel that can be used with all known widgets} open
 } {
   Fl_Window {} {
-    comment {Use a Double Window to avoid flickering.} open selected
+    comment {Use a Double Window to avoid flickering.} open
     xywh {372 208 420 400} type Double labelsize 11 align 80 resizable hotspot
     code0 {o->size_range(o->w(), o->h());} size_range {420 400 0 0} visible
   } {

@@ -3095,19 +3095,19 @@ void Fl_Widget_Type::write_code1(Fd_Code_Writer& f) {
   }
   if (label() && *label()) {
     f.write_c(", ");
-    switch (g_project.i18n_type) {
+    switch (f.project().i18n_type) {
     case Fd_I18n_Type::NONE : /* None */
         f.write_cstring(label());
         break;
     case Fd_I18n_Type::GNU : /* GNU gettext */
-        f.write_c("%s(", g_project.i18n_gnu_function.c_str());
+        f.write_c("%s(", f.project().i18n_gnu_function.c_str());
         f.write_cstring(label());
         f.write_c(")");
         break;
     case Fd_I18n_Type::POSIX : /* POSIX catgets */
         f.write_c("catgets(%s,%s,%d,",
-                  g_project.i18n_pos_file.empty() ? "_catalog" : g_project.i18n_pos_file.c_str(),
-                  g_project.i18n_pos_set.c_str(), msgnum());
+                  f.project().i18n_pos_file.empty() ? "_catalog" : f.project().i18n_pos_file.c_str(),
+                  f.project().i18n_pos_set.c_str(), msgnum());
         f.write_cstring(label());
         f.write_c(")");
         break;
@@ -3169,19 +3169,19 @@ void Fl_Widget_Type::write_widget_code(Fd_Code_Writer& f) {
 
   if (tooltip() && *tooltip()) {
     f.write_c("%s%s->tooltip(",f.indent(), var);
-    switch (g_project.i18n_type) {
+    switch (f.project().i18n_type) {
     case Fd_I18n_Type::NONE : /* None */
         f.write_cstring(tooltip());
         break;
     case Fd_I18n_Type::GNU : /* GNU gettext */
-        f.write_c("%s(", g_project.i18n_gnu_function.c_str());
+        f.write_c("%s(", f.project().i18n_gnu_function.c_str());
         f.write_cstring(tooltip());
         f.write_c(")");
         break;
     case Fd_I18n_Type::POSIX : /* POSIX catgets */
         f.write_c("catgets(%s,%s,%d,",
-                  g_project.i18n_pos_file.empty() ? "_catalog" : g_project.i18n_pos_file.c_str(),
-                  g_project.i18n_pos_set.c_str(),
+                  f.project().i18n_pos_file.empty() ? "_catalog" : f.project().i18n_pos_file.c_str(),
+                  f.project().i18n_pos_set.c_str(),
                   msgnum() + 1);
         f.write_cstring(tooltip());
         f.write_c(")");
@@ -3206,7 +3206,7 @@ void Fl_Widget_Type::write_widget_code(Fd_Code_Writer& f) {
   if (shortcut) {
     int s = shortcut;
     f.write_c("%s%s->shortcut(", f.indent(), var);
-    if (g_project.use_FL_COMMAND) {
+    if (f.project().use_FL_COMMAND) {
       if (s & FL_CTRL) { f.write_c("FL_CONTROL|"); s &= ~FL_CTRL; }
       if (s & FL_META) { f.write_c("FL_COMMAND|"); s &= ~FL_META; }
     } else {

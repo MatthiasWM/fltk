@@ -62,7 +62,7 @@ int fdesign_flip = 0;
  \return 0 if the operation failed, 1 if it succeeded
  */
 int read_file(const char *filename, int merge, Strategy strategy) {
-  Fd_Project_Reader f;
+  Fd_Project_Reader f { g_project };
   return f.read_project(filename, merge, strategy);
 }
 
@@ -76,7 +76,7 @@ int read_file(const char *filename, int merge, Strategy strategy) {
  \return 0 if the operation failed, 1 if it succeeded
  */
 int write_file(const char *filename, int selected_only, bool to_codeview) {
-  Fd_Project_Writer out;
+  Fd_Project_Writer out { g_project };
   return out.write_project(filename, selected_only, to_codeview);
 }
 
@@ -114,8 +114,9 @@ void Fd_Project_Reader::expand_buffer(int length) {
 }
 
 /** \brief Construct local project reader. */
-Fd_Project_Reader::Fd_Project_Reader()
-: fin(NULL),
+Fd_Project_Reader::Fd_Project_Reader(FLUID::Project &project)
+: project_(project),
+  fin(NULL),
   lineno(0),
   fname(NULL),
   buffer(NULL),
@@ -268,63 +269,63 @@ Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strate
       }
 
       if (!strcmp(c,"do_not_include_H_from_C")) {
-        g_project.include_H_from_C=0;
+        project().include_H_from_C=0;
         goto CONTINUE;
       }
       if (!strcmp(c,"use_FL_COMMAND")) {
-        g_project.use_FL_COMMAND=1;
+        project().use_FL_COMMAND=1;
         goto CONTINUE;
       }
       if (!strcmp(c,"utf8_in_src")) {
-        g_project.utf8_in_src=1;
+        project().utf8_in_src=1;
         goto CONTINUE;
       }
       if (!strcmp(c,"avoid_early_includes")) {
-        g_project.avoid_early_includes=1;
+        project().avoid_early_includes=1;
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_type")) {
-        g_project.i18n_type = static_cast<Fd_I18n_Type>(atoi(read_word()));
+        project().i18n_type = static_cast<Fd_I18n_Type>(atoi(read_word()));
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_gnu_function")) {
-        g_project.i18n_gnu_function = read_word();
+        project().i18n_gnu_function = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_gnu_static_function")) {
-        g_project.i18n_gnu_static_function = read_word();
+        project().i18n_gnu_static_function = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_pos_file")) {
-        g_project.i18n_pos_file = read_word();
+        project().i18n_pos_file = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_pos_set")) {
-        g_project.i18n_pos_set = read_word();
+        project().i18n_pos_set = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_include")) {
-        if (g_project.i18n_type == Fd_I18n_Type::GNU)
-          g_project.i18n_gnu_include = read_word();
-        else if (g_project.i18n_type == Fd_I18n_Type::POSIX)
-          g_project.i18n_pos_include = read_word();
+        if (project().i18n_type == Fd_I18n_Type::GNU)
+          project().i18n_gnu_include = read_word();
+        else if (project().i18n_type == Fd_I18n_Type::POSIX)
+          project().i18n_pos_include = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_conditional")) {
-        if (g_project.i18n_type == Fd_I18n_Type::GNU)
-          g_project.i18n_gnu_conditional = read_word();
-        else if (g_project.i18n_type == Fd_I18n_Type::POSIX)
-          g_project.i18n_pos_conditional = read_word();
+        if (project().i18n_type == Fd_I18n_Type::GNU)
+          project().i18n_gnu_conditional = read_word();
+        else if (project().i18n_type == Fd_I18n_Type::POSIX)
+          project().i18n_pos_conditional = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"header_name")) {
-        if (!g_project.header_file_set) g_project.header_file_name = read_word();
+        if (!project().header_file_set) project().header_file_name = read_word();
         else read_word();
         goto CONTINUE;
       }
 
       if (!strcmp(c,"code_name")) {
-        if (!g_project.code_file_set) g_project.code_file_name = read_word();
+        if (!project().code_file_set) project().code_file_name = read_word();
         else read_word();
         goto CONTINUE;
       }
@@ -350,7 +351,7 @@ Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strate
       }
 
       if (!strcmp(c, "mergeback")) {
-        g_project.write_mergeback_data = read_int();
+        project().write_mergeback_data = read_int();
         goto CONTINUE;
       }
     }
@@ -442,7 +443,7 @@ int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy st
   if (merge)
     deselect();
   else
-    g_project.reset();
+    project().reset();
   read_children(Fl_Type::current, merge, strategy);
   // clear this
   Fl_Type::current = 0;
@@ -464,7 +465,7 @@ int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy st
     g_shell_config->update_settings_dialog();
   }
   g_layout_list.update_dialogs();
-  g_project.update_settings_dialog();
+  project().update_settings_dialog();
   int ret = close_read();
   undo_resume();
   return ret;
@@ -474,8 +475,8 @@ int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy st
  Display an error while reading the file.
  If the .fl file isn't opened for reading, pop up an FLTK dialog, otherwise
  print to stdout.
- \note Matt: I am not sure why it is done this way. Shouldn't this depend on \c batch_mode?
- \todo Not happy about this function. Output channel should depend on `batch_mode`
+ \note Matt: I am not sure why it is done this way. Shouldn't this depend on \c Fluid.batch_mode?
+ \todo Not happy about this function. Output channel should depend on `Fluid.batch_mode`
        as the note above already states. I want to make all file readers and writers
        depend on an error handling base class that outputs a useful analysis of file
        operations.
@@ -784,8 +785,9 @@ void Fd_Project_Reader::read_fdesign() {
 // ---- Fd_Project_Writer ---------------------------------------------- MARK: -
 
 /** \brief Construct local project writer. */
-Fd_Project_Writer::Fd_Project_Writer()
-: fout(NULL),
+Fd_Project_Writer::Fd_Project_Writer(FLUID::Project &project)
+: project_(project),
+  fout(NULL),
   needspace(0),
   write_codeview_(false)
 {
@@ -843,45 +845,45 @@ int Fd_Project_Writer::write_project(const char *filename, int selected_only, bo
   }
   write_string("# data file for the Fltk User Interface Designer (fluid)\n"
                "version %.4f",FL_VERSION);
-  if(!g_project.include_H_from_C)
+  if(!project().include_H_from_C)
     write_string("\ndo_not_include_H_from_C");
-  if(g_project.use_FL_COMMAND)
+  if(project().use_FL_COMMAND)
     write_string("\nuse_FL_COMMAND");
-  if (g_project.utf8_in_src)
+  if (project().utf8_in_src)
     write_string("\nutf8_in_src");
-  if (g_project.avoid_early_includes)
+  if (project().avoid_early_includes)
     write_string("\navoid_early_includes");
-  if (g_project.i18n_type!=Fd_I18n_Type::NONE) {
-    write_string("\ni18n_type %d", g_project.i18n_type);
-    switch (g_project.i18n_type) {
+  if (project().i18n_type!=Fd_I18n_Type::NONE) {
+    write_string("\ni18n_type %d", project().i18n_type);
+    switch (project().i18n_type) {
       case Fd_I18n_Type::NONE:
         break;
       case Fd_I18n_Type::GNU : /* GNU gettext */
-        write_string("\ni18n_include"); write_word(g_project.i18n_gnu_include.c_str());
-        write_string("\ni18n_conditional"); write_word(g_project.i18n_gnu_conditional.c_str());
-        write_string("\ni18n_gnu_function"); write_word(g_project.i18n_gnu_function.c_str());
-        write_string("\ni18n_gnu_static_function"); write_word(g_project.i18n_gnu_static_function.c_str());
+        write_string("\ni18n_include"); write_word(project().i18n_gnu_include.c_str());
+        write_string("\ni18n_conditional"); write_word(project().i18n_gnu_conditional.c_str());
+        write_string("\ni18n_gnu_function"); write_word(project().i18n_gnu_function.c_str());
+        write_string("\ni18n_gnu_static_function"); write_word(project().i18n_gnu_static_function.c_str());
         break;
       case Fd_I18n_Type::POSIX : /* POSIX catgets */
-        write_string("\ni18n_include"); write_word(g_project.i18n_pos_include.c_str());
-        write_string("\ni18n_conditional"); write_word(g_project.i18n_pos_conditional.c_str());
-        if (!g_project.i18n_pos_file.empty()) {
+        write_string("\ni18n_include"); write_word(project().i18n_pos_include.c_str());
+        write_string("\ni18n_conditional"); write_word(project().i18n_pos_conditional.c_str());
+        if (!project().i18n_pos_file.empty()) {
           write_string("\ni18n_pos_file");
-          write_word(g_project.i18n_pos_file.c_str());
+          write_word(project().i18n_pos_file.c_str());
         }
-        write_string("\ni18n_pos_set"); write_word(g_project.i18n_pos_set.c_str());
+        write_string("\ni18n_pos_set"); write_word(project().i18n_pos_set.c_str());
         break;
     }
   }
 
   if (!selected_only) {
-    write_string("\nheader_name"); write_word(g_project.header_file_name.c_str());
-    write_string("\ncode_name"); write_word(g_project.code_file_name.c_str());
+    write_string("\nheader_name"); write_word(project().header_file_name.c_str());
+    write_string("\ncode_name"); write_word(project().code_file_name.c_str());
     g_layout_list.write(this);
     if (g_shell_config)
       g_shell_config->write(this);
-    if (g_project.write_mergeback_data)
-      write_string("\nmergeback %d", g_project.write_mergeback_data);
+    if (project().write_mergeback_data)
+      write_string("\nmergeback %d", project().write_mergeback_data);
   }
 
   for (Fl_Type *p = Fl_Type::first; p;) {

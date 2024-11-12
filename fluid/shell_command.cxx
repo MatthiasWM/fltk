@@ -304,10 +304,10 @@ static bool prepare_shell_command(int flags)  {
     return false;
   }
   if (flags & Fd_Shell_Command::SAVE_PROJECT) {
-    save_cb(0, 0);
+    FLUID::Callbacks::save(0, 0);
   }
   if (flags & Fd_Shell_Command::SAVE_SOURCECODE) {
-    write_code_files(true);
+    g_project.write_code_files(true);
   }
   if (flags & Fd_Shell_Command::SAVE_STRINGS) {
     write_strings_cb(0, 0);

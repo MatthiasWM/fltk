@@ -312,7 +312,7 @@ Fluid_Image* Fluid_Image::find(const char *iname) {
   enter_project_dir();
   FILE *f = fl_fopen(iname,"rb");
   if (!f) {
-    if (batch_mode)
+    if (Fluid.batch_mode)
       fprintf(stderr, "Can't open image file:\n%s\n%s",iname,strerror(errno));
     else
       fl_message("Can't open image file:\n%s\n%s",iname,strerror(errno));
@@ -326,7 +326,7 @@ Fluid_Image* Fluid_Image::find(const char *iname) {
   if (!ret->img || !ret->img->w() || !ret->img->h()) {
     delete ret;
     ret = 0;
-    if (batch_mode)
+    if (Fluid.batch_mode)
       fprintf(stderr, "Can't read image file:\n%s\nunrecognized image format",iname);
     else
       fl_message("Can't read image file:\n%s\nunrecognized image format",iname);

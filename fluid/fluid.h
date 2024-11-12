@@ -62,7 +62,6 @@ extern int show_ghosted_outline;
 extern int show_comments;
 
 extern int G_use_external_editor;
-extern int G_debug;
 extern char G_external_editor_command[512];
 
 extern int reading_file;
@@ -85,18 +84,7 @@ extern Fl_Check_Button *guides_button;
 
 extern int modflag;
 
-extern int update_file;            // fluid -u
-extern int compile_file;           // fluid -c
-extern int compile_strings;        // fluic -cs
-extern int batch_mode;
-
 extern int pasteoffset;
-
-extern Fl_String g_code_filename_arg;
-extern Fl_String g_header_filename_arg;
-extern Fl_String g_launch_path;
-
-extern Fl_String g_autodoc_path;
 
 // ---- project class declaration
 
@@ -109,17 +97,20 @@ enum class Fd_I18n_Type {
   POSIX     ///< Posix catgets internationalization
 };
 
+namespace FLUID {
+
 /**
  Data and settings for a FLUID project file.
  */
-class Fluid_Project {
+class Project {
 public:
   /// Project constructor
-  Fluid_Project() = default;
+  Project() = default;
   /// Project destructor - not implemented
-  ~Fluid_Project() = default;
+  ~Project() = default;
   void reset();
   void update_settings_dialog();
+  int write_code_files(bool dont_show_completion_dialog=false);
 
   Fl_String projectfile_path() const;
   Fl_String projectfile_name() const;
@@ -174,11 +165,54 @@ public:
   Fl_String code_file_name { ".cxx" };
 };
 
-extern Fluid_Project g_project;
+class App_Args {
+public:
+  /// Read command line args.
+  bool read(int argc, char **argv);
+  /// Read one command line argument
+  static int arg(int argc, char** argv, int& i);
+  /// `-o filename`: override the generate code file extension or name
+  Fl_String code_filename { };
+  /// `-h filename`: override the generate header file extension or name
+  Fl_String header_filename { };
+  /// `--autodoc path`: if set, generate images for automatic documentation in this directory
+  Fl_String autodoc_path { };
+  /// `-u`: update the project file
+  bool update { false };
+  /// `-c`: compile the project file into source code
+  bool compile { false };
+  /// `-cs`: compile the project file into source code and write i18n strings file
+  bool strings { false };
+  /// `-d`: debug mode (used by external code editor)
+  bool debug { false };
+};
+
+class Callbacks {
+public:
+  static void save(Fl_Widget *, void *v);
+};
+
+class App {
+public:
+  /// Command line arguments.
+  App_Args args;
+  /// Set if the application is running from the command line and not in interactive mode.
+  bool batch_mode { false };
+  /// current directory path at application launch
+  Fl_String launch_path { };
+
+  bool new_project(bool user_must_confirm = true);
+  Project &project();
+};
+
+
+}; // namespace FLUID
+
+extern FLUID::Project g_project;
+extern FLUID::App Fluid;
 
 // ---- public functions
 
-extern bool new_project(bool user_must_confirm = true);
 extern void enter_project_dir();
 extern void leave_project_dir();
 extern void set_filename(const char *c);
@@ -188,12 +222,10 @@ extern const Fl_String &get_tmpdir();
 
 // ---- public callback functions
 
-extern void save_cb(Fl_Widget *, void *v);
 extern void save_template_cb(Fl_Widget *, void *);
 extern void revert_cb(Fl_Widget *,void *);
 extern void exit_cb(Fl_Widget *,void *);
 
-extern int write_code_files(bool dont_show_completion_dialog=false);
 extern void write_strings_cb(Fl_Widget *, void *);
 extern void align_widget_cb(Fl_Widget *, long);
 extern void toggle_widgetbin_cb(Fl_Widget *, void *);

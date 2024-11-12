@@ -382,7 +382,7 @@ static void delete_children(Fl_Type *p) {
 
 /** Delete all nodes in the Types tree and reset project settings, or delete selected nodes.
  Also calls the browser to refresh.
- \note Please refactor this into two separate methods of Fluid_Project.
+ \note Please refactor this into two separate methods of FLUID::Project.
  \param[in] selected_only if set, delete only the selected widgets and
  don't reset the project.
  */
@@ -908,7 +908,7 @@ void Fl_Type::write(Fd_Project_Writer &f) {
 
 void Fl_Type::write_properties(Fd_Project_Writer &f) {
   // repeat this for each attribute:
-  if (g_project.write_mergeback_data && uid_) {
+  if (f.project().write_mergeback_data && uid_) {
     f.write_word("uid");
     f.write_string("%04x", uid_);
   }

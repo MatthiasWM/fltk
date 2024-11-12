@@ -1420,9 +1420,9 @@ void Fl_Data_Type::write_code1(Fd_Code_Writer& f) {
     }
   }
   // if we are in interactive mode, we pop up a warning dialog
-  // giving the error: (batch_mode && !write_codeview) ???
+  // giving the error: (Fluid.batch_mode && !write_codeview) ???
   if (message && !f.write_codeview) {
-    if (batch_mode)
+    if (Fluid.batch_mode)
       fprintf(stderr, "FLUID ERROR: %s %s\n", message, fn);
     else
       fl_alert("%s\n%s\n", message, fn);

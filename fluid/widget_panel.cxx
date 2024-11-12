@@ -21,7 +21,6 @@
 #include "Fl_Widget_Type.h"
 #include "Fl_Grid_Type.h"
 #include <FL/Fl_Grid.H>
-extern void set_modflag(int mf, int mfc=-1);
 
 Fl_Double_Window *image_panel_window=(Fl_Double_Window *)0;
 

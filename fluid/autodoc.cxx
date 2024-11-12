@@ -380,7 +380,7 @@ void run_autodoc(const Fl_String &target_dir) {
 //  Fl::scheme("gtk+");
 
   // Create a silly project that contains all widgets that we want to document
-  new_project(false);
+  Fluid.new_project(false);
 
   /*Fl_Type *t_func = */ add_new_widget_from_user("Function", kAddAsLastChild, false);
   Fl_Window_Type *t_win = (Fl_Window_Type*)add_new_widget_from_user("Fl_Window", kAddAsLastChild, false);

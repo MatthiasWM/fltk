@@ -188,7 +188,7 @@ void update_codeview_cb(class Fl_Button*, void*) {
       g_project.header_file_name = cv_header_filename;
 
       // generate the code and load the files
-      Fd_Code_Writer f;
+      Fd_Code_Writer f { g_project };
       // generate files
       if (f.write_code(cv_source_filename, cv_header_filename, true))
       {

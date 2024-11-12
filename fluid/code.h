@@ -23,6 +23,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "fluid.h"
+
 class Fl_Type;
 struct Fd_Identifier_Tree;
 struct Fd_Text_Tree;
@@ -34,6 +36,8 @@ int write_strings(const Fl_String &filename);
 class Fd_Code_Writer
 {
 protected:
+  /// Reference to the project that will be written.
+  FLUID::Project &project_;
   /// file pointer for the C++ code file
   FILE *code_file;
   /// file pointer for the C++ header file
@@ -77,8 +81,9 @@ public:
   int varused;
 
 public:
-  Fd_Code_Writer();
+  Fd_Code_Writer(FLUID::Project &project);
   ~Fd_Code_Writer();
+  FLUID::Project &project() { return project_; }
   const char* unique_id(void* o, const char*, const char*, const char*);
   /// Increment source code indentation level.
   void indent_more() { indentation++; }

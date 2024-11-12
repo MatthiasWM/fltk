@@ -99,9 +99,6 @@ int show_comments = 1;
 /// Use external editor for editing Fl_Code_Type, saved in app preferences.
 int G_use_external_editor = 0;
 
-/// Debugging help for external Fl_Code_Type editor.
-int G_debug = 0;
-
 /// Run this command to load an Fl_Code_Type into an external editor, save in app preferences.
 char G_external_editor_command[512];
 
@@ -151,37 +148,9 @@ int modflag = 0;
 /// Set if the code files are older than the current design.
 int modflag_c = 0;
 
-/// Application work directory, stored here when temporarily changing to the source code directory.
-/// \see goto_source_dir()
-static Fl_String app_work_dir;
-
 /// Used as a counter to set the .fl project dir as the current directory.
 /// \see enter_project_dir(), leave_project_dir()
 static char in_project_dir = 0;
-
-/// Set, if Fluid was started with the command line argument -u
-int update_file = 0;            // fluid -u
-
-/// Set, if Fluid was started with the command line argument -c
-int compile_file = 0;           // fluid -c
-
-/// Set, if Fluid was started with the command line argument -cs
-int compile_strings = 0;        // fluid -cs
-
-/// Set, if Fluid runs in batch mode, and no user interface is activated.
-int batch_mode = 0;             // if set (-c, -u) don't open display
-
-/// command line arguments that overrides the generate code file extension or name
-Fl_String g_code_filename_arg;
-
-/// command line arguments that overrides the generate header file extension or name
-Fl_String g_header_filename_arg;
-
-/// current directory path at application launch
-Fl_String g_launch_path;
-
-/// if set, generate images for automatic documentation in this directory
-Fl_String g_autodoc_path;
 
 /// path to store temporary files during app run
 /// \see tmpdir_create_called
@@ -201,12 +170,15 @@ static int ipasteoffset = 0;
 // ---- project settings
 
 /// The current project, possibly a new, empty roject
-Fluid_Project g_project;
+FLUID::Project g_project;
+
+/// Global reference to FLUID application
+FLUID::App Fluid;
 
 /**
  Reset all project setting to create a new empty project.
  */
-void Fluid_Project::reset() {
+void FLUID::Project::reset() {
   ::delete_all();
   i18n_type = Fd_I18n_Type::NONE;
 
@@ -234,7 +206,7 @@ void Fluid_Project::reset() {
 /**
  Tell the project and i18n tab of the settings dialog to refresh themselves.
  */
-void Fluid_Project::update_settings_dialog() {
+void FLUID::Project::update_settings_dialog() {
   if (settings_window) {
     w_settings_project_tab->do_callback(w_settings_project_tab, LOAD);
     w_settings_i18n_tab->do_callback(w_settings_i18n_tab, LOAD);
@@ -313,7 +285,7 @@ static void create_tmpdir() {
     if (fl_access(path.c_str(), 6) == 0) tmpdir_path = path;
   }
   if (tmpdir_path.empty()) {
-    if (batch_mode) {
+    if (Fluid.batch_mode) {
       fprintf(stderr, "ERROR: Can't create directory for temporary data storage.\n");
     } else {
       fl_alert("Can't create directory for temporary data storage.");
@@ -344,7 +316,7 @@ static void delete_tmpdir() {
 
   // then delete the directory itself
   if (fl_rmdir(tmpdir_path.c_str()) < 0) {
-    if (batch_mode) {
+    if (Fluid.batch_mode) {
       fprintf(stderr, "WARNING: Can't delete tmpdir '%s': %s", tmpdir_path.c_str(), strerror(errno));
     } else {
       fl_alert("WARNING: Can't delete tmpdir '%s': %s", tmpdir_path.c_str(), strerror(errno));
@@ -386,7 +358,7 @@ bool confirm_project_clear() {
     case 0 : /* Cancel */
       return false;
     case 1 : /* Save */
-      save_cb(NULL, NULL);
+      FLUID::Callbacks::save(NULL, NULL);
       if (modflag) return false;  // user canceled the "Save As" dialog
   }
   return true;
@@ -441,8 +413,6 @@ void enter_project_dir() {
     fprintf(stderr, "** Fluid internal error: enter_project_dir() no filename set\n");
     return;
   }
-  // store the current working directory for later
-  app_work_dir = fl_getcwd();
   // set the current directory to the path of our .fl file
   Fl_String project_path = fl_filename_path(fl_filename_absolute(filename));
   if (fl_chdir(project_path.c_str()) == -1) {
@@ -450,7 +420,6 @@ void enter_project_dir() {
             project_path.c_str(), strerror(errno));
     return;
   }
-  //fprintf(stderr, "chdir from %s to %s\n", app_work_dir.c_str(), fl_getcwd().c_str());
 }
 
 /**
@@ -466,9 +435,9 @@ void leave_project_dir() {
   // still nested, stay in the project directory
   if (in_project_dir > 0) return;
   // no longer nested, return to the original, usually the application working directory
-  if (fl_chdir(app_work_dir.c_str()) < 0) {
+  if (fl_chdir(Fluid.launch_path.c_str()) < 0) {
     fprintf(stderr, "** Fluid internal error: leave_project_dir() can't chdir back to %s : %s\n",
-            app_work_dir.c_str(), strerror(errno));
+            Fluid.launch_path.c_str(), strerror(errno));
   }
 }
 
@@ -543,7 +512,7 @@ static char* cutfname(int which = 0) {
  */
 static void external_editor_timer(void*) {
   int editors_open = ExternalCodeEditor::editors_open();
-  if ( G_debug ) printf("--- TIMER --- External editors open=%d\n", editors_open);
+  if ( Fluid.args.debug ) printf("--- TIMER --- External editors open=%d\n", editors_open);
   if ( editors_open > 0 ) {
     // Walk tree looking for files modified by external editors.
     int modified = 0;
@@ -578,7 +547,7 @@ static void external_editor_timer(void*) {
  verify with the user.
  \param[in] v if v is not NULL, or no filename is set, open a filechooser.
  */
-void save_cb(Fl_Widget *, void *v) {
+void FLUID::Callbacks::save(Fl_Widget *, void *v) {
   flush_text_widgets();
   Fl_Native_File_Chooser fnfc;
   const char *c = filename;
@@ -817,21 +786,30 @@ void exit_cb(Fl_Widget *,void *) {
     user before resetting the project. Default is `true`.
  \return false if the operation was canceled
  */
-bool new_project(bool user_must_confirm) {
+bool FLUID::App::new_project(bool user_must_confirm) {
   // verify user intention
   if ((user_must_confirm) &&  (confirm_project_clear() == false))
     return false;
 
   // clear the current project
-  g_project.reset();
+  project().reset();
   set_filename(NULL);
   set_modflag(0, 0);
   widget_browser->rebuild();
-  g_project.update_settings_dialog();
+  project().update_settings_dialog();
 
   // all is clear to continue
   return true;
 }
+
+/**
+ * Return a reference to the current project.
+ */
+FLUID::Project &FLUID::App::project() 
+{ 
+  return g_project; 
+}
+
 
 /**
  Open the template browser and load a new file from templates.
@@ -843,7 +821,7 @@ bool new_project(bool user_must_confirm) {
  */
 bool new_project_from_template() {
   // clear the current project first
-  if (new_project() == false)
+  if (Fluid.new_project() == false)
     return false;
 
   // Setup the template panel...
@@ -1046,7 +1024,7 @@ bool open_project_file(const Fl_String &filename_arg) {
   }
 
   // clear the project and merge a file by the given name
-  new_project(false);
+  Fluid.new_project(false);
   return merge_project_file(new_filename);
 }
 
@@ -1065,15 +1043,15 @@ void apple_open_cb(const char *c) {
  Get the absolute path of the project file, for example `/Users/matt/dev/`.
  \return the path ending in '/'
  */
-Fl_String Fluid_Project::projectfile_path() const {
-  return end_with_slash(fl_filename_absolute(fl_filename_path(filename), g_launch_path));
+Fl_String FLUID::Project::projectfile_path() const {
+  return end_with_slash(fl_filename_absolute(fl_filename_path(filename), Fluid.launch_path));
 }
 
 /**
  Get the project file name including extension, for example `test.fl`.
  \return the file name without path
  */
-Fl_String Fluid_Project::projectfile_name() const {
+Fl_String FLUID::Project::projectfile_name() const {
   return fl_filename_name(filename);
 }
 
@@ -1081,10 +1059,10 @@ Fl_String Fluid_Project::projectfile_name() const {
  Get the absolute path of the generated C++ code file, for example `/Users/matt/dev/src/`.
  \return the path ending in '/'
  */
-Fl_String Fluid_Project::codefile_path() const {
+Fl_String FLUID::Project::codefile_path() const {
   Fl_String path = fl_filename_path(code_file_name);
-  if (batch_mode)
-    return end_with_slash(fl_filename_absolute(path, g_launch_path));
+  if (Fluid.batch_mode)
+    return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
   else
     return end_with_slash(fl_filename_absolute(path, projectfile_path()));
 }
@@ -1093,7 +1071,7 @@ Fl_String Fluid_Project::codefile_path() const {
  Get the generated C++ code file name including extension, for example `test.cxx`.
  \return the file name without path
  */
-Fl_String Fluid_Project::codefile_name() const {
+Fl_String FLUID::Project::codefile_name() const {
   Fl_String name = fl_filename_name(code_file_name);
   if (name.empty()) {
     return fl_filename_setext(fl_filename_name(filename), ".cxx");
@@ -1108,10 +1086,10 @@ Fl_String Fluid_Project::codefile_name() const {
  Get the absolute path of the generated C++ header file, for example `/Users/matt/dev/src/`.
  \return the path ending in '/'
  */
-Fl_String Fluid_Project::headerfile_path() const {
+Fl_String FLUID::Project::headerfile_path() const {
   Fl_String path = fl_filename_path(header_file_name);
-  if (batch_mode)
-    return end_with_slash(fl_filename_absolute(path, g_launch_path));
+  if (Fluid.batch_mode)
+    return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
   else
     return end_with_slash(fl_filename_absolute(path, projectfile_path()));
 }
@@ -1120,7 +1098,7 @@ Fl_String Fluid_Project::headerfile_path() const {
  Get the generated C++ header file name including extension, for example `test.cxx`.
  \return the file name without path
  */
-Fl_String Fluid_Project::headerfile_name() const {
+Fl_String FLUID::Project::headerfile_name() const {
   Fl_String name = fl_filename_name(header_file_name);
   if (name.empty()) {
     return fl_filename_setext(fl_filename_name(filename), ".h");
@@ -1139,9 +1117,9 @@ Fl_String Fluid_Project::headerfile_name() const {
  batch mode.
  \return the path ending in '/'
  */
-Fl_String Fluid_Project::stringsfile_path() const {
-  if (batch_mode)
-    return g_launch_path;
+Fl_String FLUID::Project::stringsfile_path() const {
+  if (Fluid.batch_mode)
+    return Fluid.launch_path;
   else
     return projectfile_path();
 }
@@ -1150,7 +1128,7 @@ Fl_String Fluid_Project::stringsfile_path() const {
  Get the generated i18n text file name including extension, for example `test.po`.
  \return the file name without path
  */
-Fl_String Fluid_Project::stringsfile_name() const {
+Fl_String FLUID::Project::stringsfile_name() const {
   switch (i18n_type) {
     default: return fl_filename_setext(fl_filename_name(filename), ".txt");
     case Fd_I18n_Type::GNU: return fl_filename_setext(fl_filename_name(filename), ".po");
@@ -1162,7 +1140,7 @@ Fl_String Fluid_Project::stringsfile_name() const {
  Get the name of the project file without the filename extension.
  \return the file name without path or extension
  */
-Fl_String Fluid_Project::basename() const {
+Fl_String FLUID::Project::basename() const {
   return fl_filename_setext(fl_filename_name(filename), "");
 }
 
@@ -1186,29 +1164,29 @@ Fl_String Fluid_Project::basename() const {
  \param[in] dont_show_completion_dialog don't show the completion dialog
  \return 1 if the operation failed, 0 if it succeeded
  */
-int write_code_files(bool dont_show_completion_dialog)
+int FLUID::Project::write_code_files(bool dont_show_completion_dialog)
 {
   // -- handle user interface issues
   flush_text_widgets();
   if (!filename) {
-    save_cb(0,0);
+    FLUID::Callbacks::save(0,0);
     if (!filename) return 1;
   }
 
   // -- generate the file names with absolute paths
-  Fd_Code_Writer f;
+  Fd_Code_Writer f { g_project };
   Fl_String code_filename = g_project.codefile_path() + g_project.codefile_name();
   Fl_String header_filename = g_project.headerfile_path() + g_project.headerfile_name();
 
   // -- write the code and header files
-  if (!batch_mode) enter_project_dir();
+  if (!Fluid.batch_mode) enter_project_dir();
   int x = f.write_code(code_filename.c_str(), header_filename.c_str());
   Fl_String code_filename_rel = fl_filename_relative(code_filename);
   Fl_String header_filename_rel = fl_filename_relative(header_filename);
-  if (!batch_mode) leave_project_dir();
+  if (!Fluid.batch_mode) leave_project_dir();
 
   // -- print error message in batch mode or pop up an error or confirmation dialog box
-  if (batch_mode) {
+  if (Fluid.batch_mode) {
     if (!x) {
       fprintf(stderr, "%s and %s: %s\n",
               code_filename_rel.c_str(),
@@ -1238,7 +1216,7 @@ int write_code_files(bool dont_show_completion_dialog)
  Callback to write C++ code and header files.
  */
 void write_cb(Fl_Widget *, void *) {
-    write_code_files();
+    g_project.write_code_files();
 }
 
 #if 0
@@ -1260,7 +1238,7 @@ int mergeback_code_files()
   Fl_String proj_filename = g_project.projectfile_path() + g_project.projectfile_name();
   Fl_String code_filename;
 #if 1
-  if (!batch_mode) {
+  if (!Fluid.batch_mode) {
     Fl_Preferences build_records(Fl_Preferences::USER_L, "fltk.org", "fluid-build");
     Fl_Preferences path(build_records, proj_filename.c_str());
     int i, n = proj_filename.size();
@@ -1270,9 +1248,9 @@ int mergeback_code_files()
 #endif
   if (code_filename.empty())
     code_filename = g_project.codefile_path() + g_project.codefile_name();
-  if (!batch_mode) enter_project_dir();
+  if (!Fluid.batch_mode) enter_project_dir();
   int c = merge_back(code_filename, proj_filename, FD_MERGEBACK_INTERACTIVE);
-  if (!batch_mode) leave_project_dir();
+  if (!Fluid.batch_mode) leave_project_dir();
 
   if (c==0) fl_message("Comparing\n  \"%s\"\nto\n  \"%s\"\n\n"
                        "MergeBack found no external modifications\n"
@@ -1293,12 +1271,12 @@ void mergeback_cb(Fl_Widget *, void *) {
 void write_strings_cb(Fl_Widget *, void *) {
   flush_text_widgets();
   if (!filename) {
-    save_cb(0,0);
+    FLUID::Callbacks::save(0,0);
     if (!filename) return;
   }
   Fl_String filename = g_project.stringsfile_path() + g_project.stringsfile_name();
   int x = write_strings(filename);
-  if (batch_mode) {
+  if (Fluid.batch_mode) {
     if (x) {
       fprintf(stderr, "%s : %s\n", filename.c_str(), strerror(errno));
       exit(1);
@@ -1632,7 +1610,7 @@ void print_menu_cb(Fl_Widget *, void *) {
 extern void select_layout_preset_cb(Fl_Widget *, void *user_data);
 extern void layout_suite_marker(Fl_Widget *, void *user_data);
 
-static void menu_file_new_cb(Fl_Widget *, void *) { new_project(); }
+static void menu_file_new_cb(Fl_Widget *, void *) { Fluid.new_project(); }
 static void menu_file_new_from_template_cb(Fl_Widget *, void *) { new_project_from_template(); }
 static void menu_file_open_cb(Fl_Widget *, void *) { open_project_file(""); }
 static void menu_file_insert_cb(Fl_Widget *, void *) { merge_project_file(""); }
@@ -1659,9 +1637,9 @@ Fl_Menu_Item Main_Menu[] = {
   {"&New", FL_COMMAND+'n', menu_file_new_cb},
   {"&Open...", FL_COMMAND+'o', menu_file_open_cb},
   {"&Insert...", FL_COMMAND+'i', menu_file_insert_cb, 0, FL_MENU_DIVIDER},
-  {"&Save", FL_COMMAND+'s', save_cb, 0},
-  {"Save &As...", FL_COMMAND+FL_SHIFT+'s', save_cb, (void*)1},
-  {"Sa&ve A Copy...", 0, save_cb, (void*)2},
+  {"&Save", FL_COMMAND+'s', FLUID::Callbacks::save, 0},
+  {"Save &As...", FL_COMMAND+FL_SHIFT+'s', FLUID::Callbacks::save, (void*)1},
+  {"Sa&ve A Copy...", 0, FLUID::Callbacks::save, (void*)2},
   {"&Revert...", 0, revert_cb, 0, FL_MENU_DIVIDER},
   {"New &From Template...", FL_COMMAND+'N', menu_file_new_from_template_cb, 0},
   {"Save As &Template...", 0, save_template_cb, 0, FL_MENU_DIVIDER},
@@ -1757,7 +1735,7 @@ Fl_Menu_Item Main_Menu[] = {
  \see init_scheme() for choice values and backwards compatibility
  */
 void scheme_cb(Fl_Scheme_Choice *choice, void *) {
-  if (batch_mode)
+  if (Fluid.batch_mode)
     return;
 
   // set the new scheme only if the scheme was changed
@@ -1864,7 +1842,7 @@ void toggle_codeview_b_cb(Fl_Button*, void *) {
  Build the main app window and create a few other dialogs.
  */
 void make_main_window() {
-  if (!batch_mode) {
+  if (!Fluid.batch_mode) {
     fluid_prefs.get("show_guides", show_guides, 1);
     fluid_prefs.get("show_restricted", show_restricted, 1);
     fluid_prefs.get("show_ghosted_outline", show_ghosted_outline, 0);
@@ -1884,7 +1862,7 @@ void make_main_window() {
     main_menubar = new Fl_Menu_Bar(0,0,BROWSERWIDTH,MENUHEIGHT);
     main_menubar->menu(Main_Menu);
     // quick access to all dynamic menu items
-    save_item = (Fl_Menu_Item*)main_menubar->find_item(save_cb);
+    save_item = (Fl_Menu_Item*)main_menubar->find_item(FLUID::Callbacks::save);
     history_item = (Fl_Menu_Item*)main_menubar->find_item(menu_file_open_history_cb);
     widgetbin_item = (Fl_Menu_Item*)main_menubar->find_item(toggle_widgetbin_cb);
     codeview_item = (Fl_Menu_Item*)main_menubar->find_item((Fl_Callback*)toggle_codeview_cb);
@@ -1896,7 +1874,7 @@ void make_main_window() {
     main_window->end();
   }
 
-  if (!batch_mode) {
+  if (!Fluid.batch_mode) {
     load_history();
     g_shell_config = new Fd_Shell_Command_List;
     widget_browser->load_prefs();
@@ -2005,7 +1983,7 @@ void set_filename(const char *c) {
   if (filename) free((void *)filename);
   filename = c ? fl_strdup(c) : NULL;
 
-  if (filename && !batch_mode)
+  if (filename && !Fluid.batch_mode)
     update_history(filename);
 
   set_modflag(modflag);
@@ -2064,53 +2042,56 @@ void set_modflag(int mf, int mfc) {
     codeview_defer_update();
 }
 
-// ---- Main program entry point
-
 /**
- Handle command line arguments.
+ Handle one command line argument.
+
+ If an argument is not recognized, it is not supported and the function
+ returns 0. If the argument is supported, the function returns the number
+ of arguments used. The argument is then removed from the list.
+
  \param[in] argc number of arguments in the list
  \param[in] argv pointer to an array of arguments
  \param[inout] i current argument index
  \return number of arguments used; if 0, the argument is not supported
  */
-static int arg(int argc, char** argv, int& i) {
+int FLUID::App_Args::arg(int argc, char** argv, int& i) {
   if (argv[i][0] != '-')
     return 0;
   if (argv[i][1] == 'd' && !argv[i][2]) {
-    G_debug=1;
+    Fluid.args.debug = true;
     i++; return 1;
   }
   if (argv[i][1] == 'u' && !argv[i][2]) {
-    update_file++;
-    batch_mode++;
+    Fluid.args.update = true;
+    Fluid.batch_mode = true;
     i++; return 1;
   }
   if (argv[i][1] == 'c' && !argv[i][2]) {
-    compile_file++;
-    batch_mode++;
+    Fluid.args.compile = true;
+    Fluid.batch_mode = true;
     i++; return 1;
   }
   if (argv[i][1] == 'c' && argv[i][2] == 's' && !argv[i][3]) {
-    compile_file++;
-    compile_strings++;
-    batch_mode++;
+    Fluid.args.compile = true;
+    Fluid.args.strings = true;
+    Fluid.batch_mode = true;
     i++; return 1;
   }
   if (argv[i][1] == 'o' && !argv[i][2] && i+1 < argc) {
-    g_code_filename_arg = argv[i+1];
-    batch_mode++;
+    Fluid.args.code_filename = argv[i+1];
+    Fluid.batch_mode = true;
     i += 2; return 2;
   }
 #ifndef NDEBUG
   if ((i+1 < argc) && (strcmp(argv[i], "--autodoc") == 0)) {
-    g_autodoc_path = argv[i+1];
+    Fluid.args.autodoc_path = argv[i+1];
     i += 2; return 2;
   }
 #endif
   if (argv[i][1] == 'h' && !argv[i][2]) {
     if ( (i+1 < argc) && (argv[i+1][0] != '-') ) {
-      g_header_filename_arg = argv[i+1];
-      batch_mode++;
+      Fluid.args.header_filename = argv[i+1];
+      Fluid.batch_mode = true;
       i += 2;
       return 2;
     } else {
@@ -2120,6 +2101,48 @@ static int arg(int argc, char** argv, int& i) {
   }
   return 0;
 }
+
+/**
+ * Parses the command line arguments and sets the appropriate flags in the
+ * FLUID::App_Args object. If an unsupported argument is found, or if the
+ * number of arguments is incorrect, prints an error message and returns false.
+ * Otherwise, returns true.
+ *
+ * \param[in] argc Number of arguments in the list.
+ * \param[in] argv Pointer to an array of arguments. 
+ * \return True if the arguments are valid, false otherwise.
+ */
+bool FLUID::App_Args::read(int argc, char **argv) {
+  Fl::args_to_utf8(argc, argv); // for MSYS2/MinGW
+  int i = 0;
+  if (   (Fl::args(argc, argv, i, arg) == 0)     // unsupported argument found
+      || (Fluid.batch_mode && (i != argc-1))        // .fl filename missing
+      || (!Fluid.batch_mode && (i < argc-1))        // more than one filename found
+      || (argv[i] && (argv[i][0] == '-'))) {  // unknown option
+    static const char *msg =
+      "usage: %s <switches> name.fl\n"
+      " -u : update .fl file and exit (may be combined with '-c' or '-cs')\n"
+      " -c : write .cxx and .h and exit\n"
+      " -cs : write .cxx and .h and strings and exit\n"
+      " -o <name> : .cxx output filename, or extension if <name> starts with '.'\n"
+      " -h <name> : .h output filename, or extension if <name> starts with '.'\n"
+      " -d : enable internal debugging\n";
+    const char *app_name = NULL;
+    if ( (argc > 0) && argv[0] && argv[0][0] )
+      app_name = fl_filename_name(argv[0]);
+    if ( !app_name || !app_name[0])
+      app_name = "fluid";
+#ifdef _MSC_VER
+    fl_message(msg, app_name);
+#else
+    fprintf(stderr, msg, app_name);
+#endif
+    return false;
+  }
+  return true;
+}
+
+// ---- Main program entry point
 
 #if ! (defined(_WIN32) && !defined (__CYGWIN__))
 
@@ -2167,36 +2190,14 @@ int main(int argc,char **argv) {
 
   setlocale(LC_ALL, "");      // enable multi-language errors in file chooser
   setlocale(LC_NUMERIC, "C"); // make sure numeric values are written correctly
-  g_launch_path = end_with_slash(fl_getcwd()); // store the current path at launch
+  Fluid.launch_path = end_with_slash(fl_getcwd()); // store the current path at launch
 
-  Fl::args_to_utf8(argc, argv); // for MSYS2/MinGW
-  if (   (Fl::args(argc,argv,i,arg) == 0)     // unsupported argument found
-      || (batch_mode && (i != argc-1))        // .fl filename missing
-      || (!batch_mode && (i < argc-1))        // more than one filename found
-      || (argv[i] && (argv[i][0] == '-'))) {  // unknown option
-    static const char *msg =
-      "usage: %s <switches> name.fl\n"
-      " -u : update .fl file and exit (may be combined with '-c' or '-cs')\n"
-      " -c : write .cxx and .h and exit\n"
-      " -cs : write .cxx and .h and strings and exit\n"
-      " -o <name> : .cxx output filename, or extension if <name> starts with '.'\n"
-      " -h <name> : .h output filename, or extension if <name> starts with '.'\n"
-      " -d : enable internal debugging\n";
-    const char *app_name = NULL;
-    if ( (argc > 0) && argv[0] && argv[0][0] )
-      app_name = fl_filename_name(argv[0]);
-    if ( !app_name || !app_name[0])
-      app_name = "fluid";
-#ifdef _MSC_VER
-    fl_message(msg, app_name);
-#else
-    fprintf(stderr, msg, app_name);
-#endif
+  if (Fluid.args.read(argc, argv)==false) {
     return 1;
   }
 
   const char *c = NULL;
-  if (g_autodoc_path.empty())
+  if (Fluid.args.autodoc_path.empty())
     c = argv[i];
 
   fl_register_images();
@@ -2204,7 +2205,7 @@ int main(int argc,char **argv) {
   make_main_window();
 
   if (c) set_filename(c);
-  if (!batch_mode) {
+  if (!Fluid.batch_mode) {
 #ifdef __APPLE__
     fl_open_callback(apple_open_cb);
 #endif // __APPLE__
@@ -2221,14 +2222,14 @@ int main(int argc,char **argv) {
     main_window->show(argc,argv);
     toggle_widgetbin_cb(0,0);
     toggle_codeview_cb(0,0);
-    if (!c && openlast_button->value() && absolute_history[0][0] && g_autodoc_path.empty()) {
+    if (!c && openlast_button->value() && absolute_history[0][0] && Fluid.args.autodoc_path.empty()) {
       // Open previous file when no file specified...
       open_project_file(absolute_history[0]);
     }
   }
   undo_suspend();
   if (c && !read_file(c,0)) {
-    if (batch_mode) {
+    if (Fluid.batch_mode) {
       fprintf(stderr,"%s : %s\n", c, strerror(errno));
       exit(1);
     }
@@ -2238,32 +2239,32 @@ int main(int argc,char **argv) {
 
   // command line args override code and header filenames from the project file
   // in batch mode only
-  if (batch_mode) {
-    if (!g_code_filename_arg.empty()) {
+  if (Fluid.batch_mode) {
+    if (!Fluid.args.code_filename.empty()) {
       g_project.code_file_set = 1;
-      g_project.code_file_name = g_code_filename_arg;
+      g_project.code_file_name = Fluid.args.code_filename;
     }
-    if (!g_header_filename_arg.empty()) {
+    if (!Fluid.args.header_filename.empty()) {
       g_project.header_file_set = 1;
-      g_project.header_file_name = g_header_filename_arg;
+      g_project.header_file_name = Fluid.args.header_filename;
     }
   }
 
-  if (update_file) {            // fluid -u
+  if (Fluid.args.update) {            // fluid -u
     write_file(c,0);
-    if (!compile_file)
+    if (!Fluid.args.compile)
       exit(0);
   }
 
-  if (compile_file) {           // fluid -c[s]
-    if (compile_strings)
+  if (Fluid.args.compile) {           // fluid -c[s]
+    if (Fluid.args.strings)
       write_strings_cb(0,0);
     write_cb(0,0);
     exit(0);
   }
 
   // don't lock up if inconsistent command line arguments were given
-  if (batch_mode)
+  if (Fluid.batch_mode)
     exit(0);
 
 #ifdef WIN32
@@ -2283,8 +2284,8 @@ int main(int argc,char **argv) {
 
 #ifndef NDEBUG
   // check if the user wants FLUID to generate image for the user documentation
-  if (!g_autodoc_path.empty()) {
-    run_autodoc(g_autodoc_path);
+  if (!Fluid.args.autodoc_path.empty()) {
+    run_autodoc(Fluid.args.autodoc_path);
     return 0;
   }
 #endif
