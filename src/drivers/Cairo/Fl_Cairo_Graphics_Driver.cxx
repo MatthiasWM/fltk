@@ -426,13 +426,6 @@ void Fl_Cairo_Graphics_Driver::reconcat(){
   cairo_transform(cairo_, &mat);
 }
 
-void Fl_Cairo_Graphics_Driver::begin_points() {
-  cairo_save(cairo_);
-  concat();
-  cairo_new_path(cairo_);
-  gap_=1;
-  what=POINTS;
-}
 
 void Fl_Cairo_Graphics_Driver::begin_line() {
   cairo_save(cairo_);
@@ -460,11 +453,7 @@ void Fl_Cairo_Graphics_Driver::begin_polygon() {
 
 void Fl_Cairo_Graphics_Driver::vertex(double x, double y) {
   if (what==POINTS){
-    cairo_move_to(cairo_, x, y);
-    cairo_rectangle(cairo_, x-0.5, y-0.5, 1, 1);
-    cairo_fill(cairo_);
-    gap_=1;
-    return;
+    return Fl_Graphics_Driver::vertex(x, y);
   }
   if (gap_){
     cairo_move_to(cairo_, x, y);
@@ -541,7 +530,9 @@ void Fl_Cairo_Graphics_Driver::pie(int x, int y, int w, int h, double a1, double
 }
 
 void Fl_Cairo_Graphics_Driver::end_points() {
-  end_line();
+ for (int i = 0; i < n; i++) {
+   point(xpoint[i].x, xpoint[i].y);
+ }
 }
 
 void Fl_Cairo_Graphics_Driver::end_line() {
@@ -575,9 +566,7 @@ void Fl_Cairo_Graphics_Driver::end_polygon() {
 
 void Fl_Cairo_Graphics_Driver::transformed_vertex(double x, double y) {
   if (what == POINTS) {
-    cairo_move_to(cairo_, x, y);
-    point(x, y);
-    gap_ = 1;
+    Fl_Graphics_Driver::transformed_vertex(x, y);
   } else {
     reconcat();
     if (gap_) {
@@ -678,7 +667,6 @@ void Fl_Cairo_Graphics_Driver::draw_image_mono(const uchar *data, int ix, int iy
   struct callback_data cb_data;
   const size_t aD = abs(D);
   if (!LD) LD = iw * aD;
-  if (D<0) data += iw * aD;
   cb_data.data = data;
   cb_data.D = D;
   cb_data.LD = LD;
@@ -751,7 +739,6 @@ void Fl_Cairo_Graphics_Driver::draw_image(const uchar *data, int ix, int iy, int
   }
   struct callback_data cb_data;
   if (!LD) LD = iw*abs(D);
-  if (D<0) data += iw*abs(D);
   cb_data.data = data;
   cb_data.D = D;
   cb_data.LD = LD;
@@ -1488,7 +1475,9 @@ void Fl_Cairo_Graphics_Driver::restore_clip() {
       clip_->y = rect.y;
       clip_->w = rect.width;
       clip_->h = rect.height;
+      cairo_set_antialias(cairo_, CAIRO_ANTIALIAS_NONE);
       cairo_clip(cairo_);
+      cairo_set_antialias(cairo_, CAIRO_ANTIALIAS_DEFAULT );
     } else if (clip_) {
       clip_->w = -1;
     }
