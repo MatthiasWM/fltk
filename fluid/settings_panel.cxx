@@ -527,7 +527,7 @@ Fl_Menu_Button *w_layout_menu=(Fl_Menu_Button *)0;
 static void cb_w_layout_menu(Fl_Menu_Button*, void* v) {
   if (v == LOAD) {
     Fd_Layout_Suite &suite = g_layout_list[g_layout_list.current_suite()];
-    if (suite.storage_ == FD_STORE_INTERNAL) {
+    if (suite.storage_ == Fd_Tool_Store::INTERNAL) {
       w_layout_menu_rename->deactivate();
       for (int i=1; i<4; i++) w_layout_menu_storage[i]->deactivate();
       w_layout_menu_delete->deactivate();
@@ -536,7 +536,7 @@ static void cb_w_layout_menu(Fl_Menu_Button*, void* v) {
       for (int i=1; i<4; i++) w_layout_menu_storage[i]->activate();
       w_layout_menu_delete->activate();
     }
-    w_layout_menu_storage[suite.storage_]->setonly();
+    w_layout_menu_storage[static_cast<size_t>(suite.storage_)]->setonly();
   }
 }
 
@@ -554,25 +554,25 @@ static void cb_w_layout_menu_rename(Fl_Menu_*, void*) {
 
 static void cb_w_layout_menu_storage(Fl_Menu_*, void*) {
   Fd_Layout_Suite &suite = g_layout_list[g_layout_list.current_suite()];
-  suite.storage(FD_STORE_INTERNAL);
+  suite.storage(Fd_Tool_Store::INTERNAL);
   g_layout_list.update_dialogs();
 }
 
 static void cb_w_layout_menu_storage1(Fl_Menu_*, void*) {
   Fd_Layout_Suite &suite = g_layout_list[g_layout_list.current_suite()];
-  suite.storage(FD_STORE_USER);
+  suite.storage(Fd_Tool_Store::USER);
   g_layout_list.update_dialogs();
 }
 
 static void cb_w_layout_menu_storage2(Fl_Menu_*, void*) {
   Fd_Layout_Suite &suite = g_layout_list[g_layout_list.current_suite()];
-  suite.storage(FD_STORE_PROJECT);
+  suite.storage(Fd_Tool_Store::PROJECT);
   g_layout_list.update_dialogs();
 }
 
 static void cb_w_layout_menu_storage3(Fl_Menu_*, void*) {
   Fd_Layout_Suite &suite = g_layout_list[g_layout_list.current_suite()];
-  suite.storage(FD_STORE_FILE);
+  suite.storage(Fd_Tool_Store::FILE);
   g_layout_list.update_dialogs();
 }
 
@@ -878,9 +878,9 @@ static void cb_w_settings_shell_list(Fl_Browser* o, void* v) {
       for (int i=0; i<g_shell_config->list_size; i++) {
         Fd_Shell_Command *cmd = g_shell_config->list[i];
         o->add(cmd->name.c_str());
-        if (cmd->storage == FD_STORE_USER)
+        if (cmd->storage == Fd_Tool_Store::USER)
           o->icon(i+1, w_settings_shell_fd_user->image());
-        else if (cmd->storage == FD_STORE_PROJECT)
+        else if (cmd->storage == Fd_Tool_Store::PROJECT)
           o->icon(i+1, w_settings_shell_fd_project->image());
       }
     }
@@ -913,9 +913,9 @@ static void cb_a(Fl_Button*, void* v) {
     w_settings_shell_list->insert(selected+1, cmd->name.c_str());
     w_settings_shell_list->deselect();
     w_settings_shell_list->value(selected+1);
-    if (cmd->storage == FD_STORE_USER)
+    if (cmd->storage == Fd_Tool_Store::USER)
       w_settings_shell_list->icon(selected+1, w_settings_shell_fd_user->image());
-    else if (cmd->storage == FD_STORE_PROJECT)
+    else if (cmd->storage == Fd_Tool_Store::PROJECT)
       w_settings_shell_list->icon(selected+1, w_settings_shell_fd_project->image());
     w_settings_shell_list->do_callback();
     w_settings_shell_cmd->do_callback(w_settings_shell_cmd, LOAD);
@@ -942,9 +942,9 @@ static void cb_w_settings_shell_dup(Fl_Button* o, void* v) {
     w_settings_shell_list->deselect();
     w_settings_shell_list->deselect();
     w_settings_shell_list->value(selected+1);
-    if (cmd->storage == FD_STORE_USER)
+    if (cmd->storage == Fd_Tool_Store::USER)
       w_settings_shell_list->icon(selected+1, w_settings_shell_fd_user->image());
-    else if (cmd->storage == FD_STORE_PROJECT)
+    else if (cmd->storage == Fd_Tool_Store::PROJECT)
       w_settings_shell_list->icon(selected+1, w_settings_shell_fd_project->image());
     w_settings_shell_list->do_callback();
     w_settings_shell_cmd->do_callback(w_settings_shell_cmd, LOAD);
@@ -1052,7 +1052,7 @@ static void cb_Name(Fl_Input* o, void* v) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->name = o->value();
       w_settings_shell_list->text(selected, o->value());
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1070,7 +1070,7 @@ static void cb_Menu(Fl_Input* o, void* v) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->label = o->value();
       cmd->update_shell_menu();
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1093,7 +1093,7 @@ static void cb_Shortcut(Fl_Shortcut_Button* o, void* v) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->shortcut = o->value();
       cmd->update_shell_menu();
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1105,27 +1105,27 @@ static void cb_Store(Fl_Choice* o, void* v) {
       Fd_Tool_Store ts = g_shell_config->list[selected-1]->storage;
       o->value(o->find_item_with_argument((long)ts));
     } else {
-      o->value(o->find_item_with_argument((long)FD_STORE_USER));
+      o->value(o->find_item_with_argument((long)Fd_Tool_Store::USER));
     }
   } else {
     if (selected) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       Fd_Tool_Store ts = (Fd_Tool_Store)(o->mvalue()->argument());
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
       cmd->storage = ts;
       //w_settings_shell_list->text(selected, cmd->name.c_str());
-      if (cmd->storage == FD_STORE_USER)
+      if (cmd->storage == Fd_Tool_Store::USER)
         w_settings_shell_list->icon(selected, w_settings_shell_fd_user->image());
-      else if (cmd->storage == FD_STORE_PROJECT)
+      else if (cmd->storage == Fd_Tool_Store::PROJECT)
         w_settings_shell_list->icon(selected, w_settings_shell_fd_project->image());
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
 
 Fl_Menu_Item menu_Store[] = {
- {"@fd_user User Setting", 0,  0, (void*)(FD_STORE_USER), 0, (uchar)FL_NORMAL_LABEL, 0, 11, 0},
- {"@fd_project Project File", 0,  0, (void*)(FD_STORE_PROJECT), 0, (uchar)FL_NORMAL_LABEL, 0, 11, 0},
+ {"@fd_user User Setting", 0,  0, (void*)(Fd_Tool_Store::USER), 0, (uchar)FL_NORMAL_LABEL, 0, 11, 0},
+ {"@fd_project Project File", 0,  0, (void*)(Fd_Tool_Store::PROJECT), 0, (uchar)FL_NORMAL_LABEL, 0, 11, 0},
  {0,0,0,0,0,0,0,0,0}
 };
 
@@ -1144,7 +1144,7 @@ static void cb_Condition(Fl_Choice* o, void* v) {
       int cond = (int)(o->mvalue()->argument());
       cmd->condition = cond;
       g_shell_config->rebuild_shell_menu();
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1181,7 +1181,7 @@ static void cb_w_settings_shell_command(Fl_Text_Editor* o, void* v) {
     if (selected) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->command = o->buffer()->text();
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1260,7 +1260,7 @@ static void cb_save(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::SAVE_PROJECT;
       }
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1282,7 +1282,7 @@ static void cb_save1(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::SAVE_SOURCECODE;
       }
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1304,7 +1304,7 @@ static void cb_save2(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::SAVE_STRINGS;
       }
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1326,7 +1326,7 @@ static void cb_show(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::DONT_SHOW_TERMINAL;
       }
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1348,7 +1348,7 @@ static void cb_clear(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::CLEAR_TERMINAL;
       }
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -1370,7 +1370,7 @@ static void cb_clear1(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::CLEAR_HISTORY;
       }
-      if (cmd->storage == FD_STORE_PROJECT) set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) set_modflag(1);
     }
   }
 }
@@ -2425,8 +2425,8 @@ Fl_Choice *w_settings_user_commenttext=(Fl_Choice *)0;
 
 static void cb_Close(Fl_Button*, void*) {
   if (g_shell_config)
-    g_shell_config->write(fluid_prefs, FD_STORE_USER);
-  g_layout_list.write(fluid_prefs, FD_STORE_USER);
+    g_shell_config->write(fluid_prefs, Fd_Tool_Store::USER);
+  g_layout_list.write(fluid_prefs, Fd_Tool_Store::USER);
   settings_window->hide();
 }
 

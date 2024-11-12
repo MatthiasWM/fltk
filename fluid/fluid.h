@@ -22,11 +22,11 @@
 #include <FL/Fl_Menu_Item.H>
 #include "../src/Fl_String.H"
 
-#define BROWSERWIDTH 300
-#define BROWSERHEIGHT 500
-#define WINWIDTH 300
-#define MENUHEIGHT 25
-#define WINHEIGHT (BROWSERHEIGHT+MENUHEIGHT)
+constexpr int BROWSERWIDTH { 300 };
+constexpr int BROWSERHEIGHT { 500 };
+constexpr int WINWIDTH { 300 };
+constexpr int MENUHEIGHT { 25 };
+constexpr int WINHEIGHT { BROWSERHEIGHT+MENUHEIGHT };
 
 // ---- types
 
@@ -42,12 +42,12 @@ class Fl_Check_Button;
  Indicate the storage location for tools like layout suites and shell macros.
  \see class Fd_Shell_Command, class Fd_Layout_Suite
  */
-typedef enum {
-  FD_STORE_INTERNAL,  ///< stored inside FLUID app
-  FD_STORE_USER,      ///< suite is stored in the user wide FLUID settings
-  FD_STORE_PROJECT,   ///< suite is stored within the current .fl project file
-  FD_STORE_FILE       ///< store suite in external file
-} Fd_Tool_Store;
+enum class Fd_Tool_Store {
+  INTERNAL,  ///< stored inside FLUID app
+  USER,      ///< suite is stored in the user wide FLUID settings
+  PROJECT,   ///< suite is stored within the current .fl project file
+  FILE       ///< store suite in external file
+};
 
 // ---- global variables
 
@@ -103,19 +103,21 @@ extern Fl_String g_autodoc_path;
 /**
  Enumeration of available internationalization types.
  */
-typedef enum {
-  FD_I18N_NONE = 0, ///< No i18n, all strings are litearals
-  FD_I18N_GNU,      ///< GNU gettext internationalization
-  FD_I18N_POSIX     ///< Posix catgets internationalization
-} Fd_I18n_Type;
+enum class Fd_I18n_Type {
+  NONE = 0, ///< No i18n, all strings are litearals
+  GNU,      ///< GNU gettext internationalization
+  POSIX     ///< Posix catgets internationalization
+};
 
 /**
  Data and settings for a FLUID project file.
  */
 class Fluid_Project {
 public:
-  Fluid_Project();
-  ~Fluid_Project();
+  /// Project constructor
+  Fluid_Project() = default;
+  /// Project destructor - not implemented
+  ~Fluid_Project() = default;
   void reset();
   void update_settings_dialog();
 
@@ -130,46 +132,46 @@ public:
   Fl_String basename() const;
 
   /// One of the available internationalization types.
-  Fd_I18n_Type i18n_type;
+  Fd_I18n_Type i18n_type { Fd_I18n_Type::NONE };
   /// Include file for GNU i18n, writes an #include statement into the source
   /// file. This is usually `<libintl.h>` or `"gettext.h"` for GNU gettext.
-  Fl_String i18n_gnu_include;
+  Fl_String i18n_gnu_include { "<libintl.h>" };
   // Optional name of a macro for conditional i18n compilation.
-  Fl_String i18n_gnu_conditional;
+  Fl_String i18n_gnu_conditional { };
   /// For the gettext/intl.h options, this is the function that translates text
   /// at runtime. This is usually "gettext" or "_".
-  Fl_String i18n_gnu_function;
+  Fl_String i18n_gnu_function { "gettext" };
   /// For the gettext/intl.h options, this is the function that marks the translation
   /// of text at initialisation time. This is usually "gettext_noop" or "N_".
-  Fl_String i18n_gnu_static_function;
+  Fl_String i18n_gnu_static_function { "gettext_noop" };
 
   /// Include file for Posix i18n, write a #include statement into the source
   /// file. This is usually `<nl_types.h>` for Posix catgets.
-  Fl_String i18n_pos_include;
+  Fl_String i18n_pos_include { "<nl_types.h>" };
   // Optional name of a macro for conditional i18n compilation.
-  Fl_String i18n_pos_conditional;
+  Fl_String i18n_pos_conditional { };
   /// Name of the nl_catd database
-  Fl_String i18n_pos_file;
+  Fl_String i18n_pos_file { };
   /// Message set ID for the catalog.
-  Fl_String i18n_pos_set;
+  Fl_String i18n_pos_set { "1" };
 
   /// If set, generate code to include the header file form the c++ file
-  int include_H_from_C;
+  int include_H_from_C { 1 };
   /// If set, handle keyboard shortcut Ctrl on macOS using Cmd instead
-  int use_FL_COMMAND;
+  int use_FL_COMMAND { 0 };
   /// Clear if UTF-8 characters in statics texts are written as escape sequences
-  int utf8_in_src;
+  int utf8_in_src { 0 };
   /// If set, <FL/Fl.H> will not be included from the header code before anything else
-  int avoid_early_includes;
+  int avoid_early_includes { 0 };
   /// If set, command line overrides header file name in .fl file.
-  int header_file_set;
+  int header_file_set { 0 };
   ///  If set, command line overrides source code file name in .fl file.
-  int code_file_set;
-  int write_mergeback_data;
+  int code_file_set { 0 };
+  int write_mergeback_data { 0 };
   /// Hold the default extension for header files, or the entire filename if set via command line.
-  Fl_String header_file_name;
+  Fl_String header_file_name { ".h" };
   /// Hold the default extension for source code  files, or the entire filename if set via command line.
-  Fl_String code_file_name;
+  Fl_String code_file_name { ".cxx" };
 };
 
 extern Fluid_Project g_project;
@@ -197,9 +199,5 @@ extern void align_widget_cb(Fl_Widget *, long);
 extern void toggle_widgetbin_cb(Fl_Widget *, void *);
 
 extern char position_window(Fl_Window *w, const char *prefsName, int Visible, int X, int Y, int W=0, int H=0);
-
-inline int fd_min(int a, int b) { return (a < b ? a : b); }
-inline int fd_max(int a, int b) { return (a > b ? a : b); }
-inline int fd_min(int a, int b, int c) { return fd_min(a, fd_min(b, c)); }
 
 #endif // _FLUID_FLUID_H

@@ -47,6 +47,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <algorithm> // min, max
+
 extern Fl_Window *the_panel;
 extern void draw_width(int x, int y, int r, Fl_Align a);
 extern void draw_height(int x, int y, int b, Fl_Align a);
@@ -70,22 +72,22 @@ static void update_xywh() {
 
 void i18n_type_cb(Fl_Choice *c, void *v) {
   if (v == LOAD) {
-    c->value(g_project.i18n_type);
+    c->value(static_cast<int>(g_project.i18n_type));
   } else {
     undo_checkpoint();
     g_project.i18n_type = static_cast<Fd_I18n_Type>(c->value());
     set_modflag(1);
   }
   switch (g_project.i18n_type) {
-  case FD_I18N_NONE : /* None */
+  case Fd_I18n_Type::NONE : /* None */
       i18n_gnu_group->hide();
       i18n_posix_group->hide();
       break;
-  case FD_I18N_GNU : /* GNU gettext */
+  case Fd_I18n_Type::GNU : /* GNU gettext */
       i18n_gnu_group->show();
       i18n_posix_group->hide();
       break;
-  case FD_I18N_POSIX : /* POSIX cat */
+  case Fd_I18n_Type::POSIX : /* POSIX cat */
       i18n_gnu_group->hide();
       i18n_posix_group->show();
       break;
@@ -333,7 +335,7 @@ void Fl_Window_Type::ideal_size(int &w, int &h) {
     Fl_Window *win = main_window;
     int screen = Fl::screen_num(win->x(), win->y());
     Fl::screen_work_area(sx, sy, sw, sh, screen);
-    w = fd_min(w, sw*3/4); h = fd_min(h, sh*3/4);
+    w = std::min(w, sw*3/4); h = std::min(h, sh*3/4);
   }
   Fd_Snap_Action::better_size(w, h);
 }
@@ -586,10 +588,10 @@ void Fl_Window_Type::draw_overlaps() {
           if (p->level==q->level && p->is_true_widget()) {
             Fl_Widget_Type *wp = (Fl_Widget_Type*)p;
             if (wp->o->visible()) {
-              int px = fd_max(x, wp->o->x());
-              int py = fd_max(y, wp->o->y());
-              int pr = fd_min(r, wp->o->x() + wp->o->w());
-              int pb = fd_min(b, wp->o->y() + wp->o->h());
+              int px = std::max(x, wp->o->x());
+              int py = std::max(y, wp->o->y());
+              int pr = std::min(r, wp->o->x() + wp->o->w());
+              int pb = std::min(b, wp->o->y() + wp->o->h());
               if (pr > px && pb > py)
                 fd_hatch(px, py, pr-px, pb-py);
             }

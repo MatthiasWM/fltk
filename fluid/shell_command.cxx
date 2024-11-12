@@ -451,7 +451,7 @@ void run_shell_command(const Fl_String &cmd, int flags) {
  */
 Fd_Shell_Command::Fd_Shell_Command()
 : shortcut(0),
-  storage(FD_STORE_USER),
+  storage(Fd_Tool_Store::USER),
   condition(0),
   flags(0),
   shell_menu_item_(NULL)
@@ -485,7 +485,7 @@ Fd_Shell_Command::Fd_Shell_Command(const Fl_String &in_name)
 : name(in_name),
   label(in_name),
   shortcut(0),
-  storage(FD_STORE_USER),
+  storage(Fd_Tool_Store::USER),
   condition(Fd_Shell_Command::ALWAYS),
   command("echo \"Hello, FLUID!\""),
   flags(Fd_Shell_Command::SAVE_PROJECT|Fd_Shell_Command::SAVE_SOURCECODE),
@@ -615,7 +615,7 @@ void Fd_Shell_Command::write(Fl_Preferences &prefs, bool save_location) {
 void Fd_Shell_Command::read(class Fd_Project_Reader *in) {
   const char *c = in->read_word(1);
   if (strcmp(c, "{")!=0) return; // expecting start of group
-  storage = FD_STORE_PROJECT;
+  storage = Fd_Tool_Store::PROJECT;
   for (;;) {
     c = in->read_word(1);
     if (strcmp(c, "}")==0) break; // end of command list
@@ -720,7 +720,7 @@ void Fd_Shell_Command_List::read(Fl_Preferences &prefs, Fd_Tool_Store storage) {
     if (version == 0) {
       int save_fl, save_code, save_strings;
       Fd_Shell_Command *cmd = new Fd_Shell_Command();
-      cmd->storage = FD_STORE_USER;
+      cmd->storage = Fd_Tool_Store::USER;
       cmd->name = "Sample Shell Command";
       cmd->label = "Sample Shell Command";
       cmd->shortcut = FL_ALT+'g';
@@ -741,7 +741,7 @@ void Fd_Shell_Command_List::read(Fl_Preferences &prefs, Fd_Tool_Store storage) {
   for (int i=0; i<n; i++) {
     Fl_Preferences cmd_prefs(shell_commands, Fl_Preferences::Name(i));
     Fd_Shell_Command *cmd = new Fd_Shell_Command();
-    cmd->storage = FD_STORE_USER;
+    cmd->storage = Fd_Tool_Store::USER;
     cmd->read(cmd_prefs);
     add(cmd);
   }
@@ -755,7 +755,7 @@ void Fd_Shell_Command_List::write(Fl_Preferences &prefs, Fd_Tool_Store storage) 
   shell_commands.delete_all_groups();
   int index = 0;
   for (int i=0; i<list_size; i++) {
-    if (list[i]->storage == FD_STORE_USER) {
+    if (list[i]->storage == Fd_Tool_Store::USER) {
       Fl_Preferences cmd(shell_commands, Fl_Preferences::Name(index++));
       list[i]->write(cmd);
     }
@@ -768,7 +768,7 @@ void Fd_Shell_Command_List::write(Fl_Preferences &prefs, Fd_Tool_Store storage) 
 void Fd_Shell_Command_List::read(Fd_Project_Reader *in) {
   const char *c = in->read_word(1);
   if (strcmp(c, "{")!=0) return; // expecting start of group
-  clear(FD_STORE_PROJECT);
+  clear(Fd_Tool_Store::PROJECT);
   for (;;) {
     c = in->read_word(1);
     if (strcmp(c, "}")==0) break; // end of command list
@@ -788,13 +788,13 @@ void Fd_Shell_Command_List::read(Fd_Project_Reader *in) {
 void Fd_Shell_Command_List::write(Fd_Project_Writer *out) {
   int n_in_project_file = 0;
   for (int i=0; i<list_size; i++) {
-    if (list[i]->storage == FD_STORE_PROJECT)
+    if (list[i]->storage == Fd_Tool_Store::PROJECT)
       n_in_project_file++;
   }
   if (n_in_project_file > 0) {
     out->write_string("\nshell_commands {");
     for (int i=0; i<list_size; i++) {
-      if (list[i]->storage == FD_STORE_PROJECT)
+      if (list[i]->storage == Fd_Tool_Store::PROJECT)
         list[i]->write(out);
     }
     out->write_string("\n}");
@@ -982,7 +982,7 @@ void Fd_Shell_Command_List::import_from_file() {
   for (i = 0; i < n; i++) {
     Fl_Preferences cmd_prefs(shell_commands, Fl_Preferences::Name(i));
     Fd_Shell_Command *cmd = new Fd_Shell_Command();
-    cmd->storage = FD_STORE_USER;
+    cmd->storage = Fd_Tool_Store::USER;
     cmd->read(cmd_prefs);
     g_shell_config->add(cmd);
   }

@@ -204,34 +204,11 @@ static int ipasteoffset = 0;
 Fluid_Project g_project;
 
 /**
- Initialize a new project.
- */
-Fluid_Project::Fluid_Project() :
-  i18n_type(FD_I18N_NONE),
-  include_H_from_C(1),
-  use_FL_COMMAND(0),
-  utf8_in_src(0),
-  avoid_early_includes(0),
-  header_file_set(0),
-  code_file_set(0),
-  write_mergeback_data(0),
-  header_file_name(".h"),
-  code_file_name(".cxx")
-{ }
-
-/**
- Clear all project resources.
- Not implemented.
- */
-Fluid_Project::~Fluid_Project() {
-}
-
-/**
  Reset all project setting to create a new empty project.
  */
 void Fluid_Project::reset() {
   ::delete_all();
-  i18n_type = FD_I18N_NONE;
+  i18n_type = Fd_I18n_Type::NONE;
 
   i18n_gnu_include = "<libintl.h>";
   i18n_gnu_conditional = "";
@@ -815,8 +792,8 @@ void exit_cb(Fl_Widget *,void *) {
     delete help_dialog;
 
   if (g_shell_config)
-    g_shell_config->write(fluid_prefs, FD_STORE_USER);
-  g_layout_list.write(fluid_prefs, FD_STORE_USER);
+    g_shell_config->write(fluid_prefs, Fd_Tool_Store::USER);
+  g_layout_list.write(fluid_prefs, Fd_Tool_Store::USER);
 
   undo_clear();
 
@@ -1176,8 +1153,8 @@ Fl_String Fluid_Project::stringsfile_path() const {
 Fl_String Fluid_Project::stringsfile_name() const {
   switch (i18n_type) {
     default: return fl_filename_setext(fl_filename_name(filename), ".txt");
-    case FD_I18N_GNU: return fl_filename_setext(fl_filename_name(filename), ".po");
-    case FD_I18N_POSIX: return fl_filename_setext(fl_filename_name(filename), ".msg");
+    case Fd_I18n_Type::GNU: return fl_filename_setext(fl_filename_name(filename), ".po");
+    case Fd_I18n_Type::POSIX: return fl_filename_setext(fl_filename_name(filename), ".msg");
   }
 }
 
@@ -2236,11 +2213,11 @@ int main(int argc,char **argv) {
     main_window->callback(exit_cb);
     position_window(main_window,"main_window_pos", 1, 10, 30, WINWIDTH, WINHEIGHT );
     if (g_shell_config) {
-      g_shell_config->read(fluid_prefs, FD_STORE_USER);
+      g_shell_config->read(fluid_prefs, Fd_Tool_Store::USER);
       g_shell_config->update_settings_dialog();
       g_shell_config->rebuild_shell_menu();
     }
-    g_layout_list.read(fluid_prefs, FD_STORE_USER);
+    g_layout_list.read(fluid_prefs, Fd_Tool_Store::USER);
     main_window->show(argc,argv);
     toggle_widgetbin_cb(0,0);
     toggle_codeview_cb(0,0);

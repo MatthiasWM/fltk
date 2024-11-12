@@ -304,16 +304,16 @@ Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strate
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_include")) {
-        if (g_project.i18n_type == FD_I18N_GNU)
+        if (g_project.i18n_type == Fd_I18n_Type::GNU)
           g_project.i18n_gnu_include = read_word();
-        else if (g_project.i18n_type == FD_I18N_POSIX)
+        else if (g_project.i18n_type == Fd_I18n_Type::POSIX)
           g_project.i18n_pos_include = read_word();
         goto CONTINUE;
       }
       if (!strcmp(c,"i18n_conditional")) {
-        if (g_project.i18n_type == FD_I18N_GNU)
+        if (g_project.i18n_type == Fd_I18n_Type::GNU)
           g_project.i18n_gnu_conditional = read_word();
-        else if (g_project.i18n_type == FD_I18N_POSIX)
+        else if (g_project.i18n_type == Fd_I18n_Type::POSIX)
           g_project.i18n_pos_conditional = read_word();
         goto CONTINUE;
       }
@@ -851,18 +851,18 @@ int Fd_Project_Writer::write_project(const char *filename, int selected_only, bo
     write_string("\nutf8_in_src");
   if (g_project.avoid_early_includes)
     write_string("\navoid_early_includes");
-  if (g_project.i18n_type) {
+  if (g_project.i18n_type!=Fd_I18n_Type::NONE) {
     write_string("\ni18n_type %d", g_project.i18n_type);
     switch (g_project.i18n_type) {
-      case FD_I18N_NONE:
+      case Fd_I18n_Type::NONE:
         break;
-      case FD_I18N_GNU : /* GNU gettext */
+      case Fd_I18n_Type::GNU : /* GNU gettext */
         write_string("\ni18n_include"); write_word(g_project.i18n_gnu_include.c_str());
         write_string("\ni18n_conditional"); write_word(g_project.i18n_gnu_conditional.c_str());
         write_string("\ni18n_gnu_function"); write_word(g_project.i18n_gnu_function.c_str());
         write_string("\ni18n_gnu_static_function"); write_word(g_project.i18n_gnu_static_function.c_str());
         break;
-      case FD_I18N_POSIX : /* POSIX catgets */
+      case Fd_I18n_Type::POSIX : /* POSIX catgets */
         write_string("\ni18n_include"); write_word(g_project.i18n_pos_include.c_str());
         write_string("\ni18n_conditional"); write_word(g_project.i18n_pos_conditional.c_str());
         if (!g_project.i18n_pos_file.empty()) {

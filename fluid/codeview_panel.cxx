@@ -176,7 +176,7 @@ void update_codeview_cb(class Fl_Button*, void*) {
       char fn[FL_PATH_MAX+1];
       fl_strlcpy(fn, get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(fn, "strings", FL_PATH_MAX);
-      fl_filename_setext(fn, FL_PATH_MAX, exts[g_project.i18n_type]);
+      fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<size_t>(g_project.i18n_type)]);
       write_strings(fn);
       int top = cv_strings->top_line();
       cv_strings->buffer()->loadfile(fn);
