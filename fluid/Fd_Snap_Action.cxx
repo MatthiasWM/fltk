@@ -14,6 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
+#ifdef _WIN32
+#define NOMINMAX
+#endif // _WIN32
+
 #include "Fd_Snap_Action.h"
 
 #include "Fl_Group_Type.h"

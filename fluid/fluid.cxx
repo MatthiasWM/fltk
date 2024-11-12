@@ -2266,6 +2266,12 @@ int main(int argc,char **argv) {
   if (batch_mode)
     exit(0);
 
+#ifdef WIN32
+  Fl::set_font(FL_COURIER, " Consolas");
+  Fl::set_font(FL_COURIER_BOLD, "BConsolas");
+  Fl::set_font(FL_COURIER_ITALIC, "IConsolas");
+  Fl::set_font(FL_COURIER_BOLD_ITALIC, "PConsolas");
+#endif
   set_modflag(0);
   undo_clear();
 #ifndef _WIN32

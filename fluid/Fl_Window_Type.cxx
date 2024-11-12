@@ -18,6 +18,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
+#ifdef _WIN32
+#define NOMINMAX
+#endif // _WIN32
+
 #include "Fl_Window_Type.h"
 
 #include "Fl_Group_Type.h"
