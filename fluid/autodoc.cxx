@@ -18,6 +18,7 @@
 
 #include "autodoc.h"
 #include "fluid.h"
+#include "application/application.h"
 #include "factory.h"
 #include "widget_browser.h"
 #include "widget_panel.h"

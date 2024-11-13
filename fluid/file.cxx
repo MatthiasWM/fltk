@@ -114,7 +114,7 @@ void Fd_Project_Reader::expand_buffer(int length) {
 }
 
 /** \brief Construct local project reader. */
-Fd_Project_Reader::Fd_Project_Reader(FLUID::Project &project)
+Fd_Project_Reader::Fd_Project_Reader(fluid::Project &project)
 : project_(project),
   fin(NULL),
   lineno(0),
@@ -785,7 +785,7 @@ void Fd_Project_Reader::read_fdesign() {
 // ---- Fd_Project_Writer ---------------------------------------------- MARK: -
 
 /** \brief Construct local project writer. */
-Fd_Project_Writer::Fd_Project_Writer(FLUID::Project &project)
+Fd_Project_Writer::Fd_Project_Writer(fluid::Project &project)
 : project_(project),
   fout(NULL),
   needspace(0),

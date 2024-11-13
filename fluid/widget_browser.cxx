@@ -17,6 +17,7 @@
 #include "widget_browser.h"
 
 #include "fluid.h"
+#include "application/application.h"
 #include "Fl_Widget_Type.h"
 #include "pixmaps.h"
 

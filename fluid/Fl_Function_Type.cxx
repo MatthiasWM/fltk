@@ -17,6 +17,7 @@
 #include "Fl_Function_Type.h"
 
 #include "fluid.h"
+#include "application/application.h"
 #include "Fl_Window_Type.h"
 #include "Fl_Group_Type.h"
 #include "widget_browser.h"

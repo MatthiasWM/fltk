@@ -24,6 +24,7 @@
 
 #include "Fl_Window_Type.h"
 
+#include "application/application.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Grid_Type.h"
 #include "fluid.h"

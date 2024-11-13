@@ -37,7 +37,7 @@ class Fd_Code_Writer
 {
 protected:
   /// Reference to the project that will be written.
-  FLUID::Project &project_;
+  fluid::Project &project_;
   /// file pointer for the C++ code file
   FILE *code_file;
   /// file pointer for the C++ header file
@@ -81,9 +81,9 @@ public:
   int varused;
 
 public:
-  Fd_Code_Writer(FLUID::Project &project);
+  Fd_Code_Writer(fluid::Project &project);
   ~Fd_Code_Writer();
-  FLUID::Project &project() { return project_; }
+  fluid::Project &project() { return project_; }
   const char* unique_id(void* o, const char*, const char*, const char*);
   /// Increment source code indentation level.
   void indent_more() { indentation++; }

@@ -52,6 +52,9 @@ comment {//
 decl {\#include "fluid.h"} {public global
 }
 
+decl {\#include "application/application.h"} {public global
+}
+
 decl {\#include "undo.h"} {private global
 }
 

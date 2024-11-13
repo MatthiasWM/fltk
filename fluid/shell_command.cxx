@@ -304,7 +304,7 @@ static bool prepare_shell_command(int flags)  {
     return false;
   }
   if (flags & Fd_Shell_Command::SAVE_PROJECT) {
-    FLUID::Callbacks::save(0, 0);
+    fluid::Callbacks::save(0, 0);
   }
   if (flags & Fd_Shell_Command::SAVE_SOURCECODE) {
     g_project.write_code_files(true);

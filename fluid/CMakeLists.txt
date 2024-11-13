@@ -23,6 +23,7 @@ set(TARGETS fluid)
 # program fluid properly
 
 set(CPPFILES
+  application/application.cxx
   CodeEditor.cxx
   StyleParse.cxx
   Fd_Snap_Action.cxx
@@ -58,6 +59,7 @@ set(CPPFILES
 # List header files in Apple's Xcode IDE
 
 set(HEADERFILES
+  application/application.h
   CodeEditor.h
   Fd_Snap_Action.h
   Fl_Function_Type.h
@@ -140,6 +142,8 @@ else()
 endif()
 
 target_link_libraries(fluid PRIVATE fluid-lib)
+target_include_directories(fluid-lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(fluid PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Build the console app on Windows
 # This is done for all Windows targets, even if cross-compiling.

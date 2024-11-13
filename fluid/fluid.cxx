@@ -16,6 +16,7 @@
 
 #include "fluid.h"
 
+#include "application/application.h"
 #include "Fl_Type.h"
 #include "Fl_Function_Type.h"
 #include "Fl_Group_Type.h"
@@ -138,15 +139,15 @@ static int ipasteoffset = 0;
 // ---- project settings
 
 /// The current project, possibly a new, empty roject
-FLUID::Project g_project;
+fluid::Project g_project;
 
 /// Global reference to FLUID application
-FLUID::App Fluid;
+fluid::Application Fluid;
 
 /**
  Reset all project setting to create a new empty project.
  */
-void FLUID::Project::reset() {
+void fluid::Project::reset() {
   ::delete_all();
   i18n_type = Fd_I18n_Type::NONE;
 
@@ -174,7 +175,7 @@ void FLUID::Project::reset() {
 /**
  Tell the project and i18n tab of the settings dialog to refresh themselves.
  */
-void FLUID::Project::update_settings_dialog() {
+void fluid::Project::update_settings_dialog() {
   if (settings_window) {
     w_settings_project_tab->do_callback(w_settings_project_tab, LOAD);
     w_settings_i18n_tab->do_callback(w_settings_i18n_tab, LOAD);
@@ -326,7 +327,7 @@ bool confirm_project_clear() {
     case 0 : /* Cancel */
       return false;
     case 1 : /* Save */
-      FLUID::Callbacks::save(NULL, NULL);
+      fluid::Callbacks::save(NULL, NULL);
       if (modflag) return false;  // user canceled the "Save As" dialog
   }
   return true;
@@ -514,7 +515,7 @@ static void external_editor_timer(void*) {
 
  \param[in] v v is (void *)1 for "Save As...", and (void *)2 for "Save a Copy..."
  */
-void FLUID::Callbacks::save(Fl_Widget *, void *v) {
+void fluid::Callbacks::save(Fl_Widget *, void *v) {
   Fluid.project().save(v != NULL, v != (void *)2);
 }
 
@@ -536,7 +537,7 @@ void FLUID::Callbacks::save(Fl_Widget *, void *v) {
  \param[in] ask_for_filename if true, open a filechooser and warn if file exists.
  \param[in] update_filename if true, update filename and modification flags
  */
-void FLUID::Project::save(bool ask_for_filename, bool update_filename) {
+void fluid::Project::save(bool ask_for_filename, bool update_filename) {
   flush_text_widgets();
   Fl_Native_File_Chooser fnfc;
   const char *c = filename;
@@ -764,41 +765,6 @@ void exit_cb(Fl_Widget *,void *) {
 
   exit(0);
 }
-
-/**
- Clear the current project and create a new, empty one.
-
- If the current project was modified, FLUID will give the user the opportunity
- to save the old project first.
-
- \param[in] user_must_confirm if set, a confimation dialog is presented to the
-    user before resetting the project. Default is `true`.
- \return false if the operation was canceled
- */
-bool FLUID::App::new_project(bool user_must_confirm) {
-  // verify user intention
-  if ((user_must_confirm) &&  (confirm_project_clear() == false))
-    return false;
-
-  // clear the current project
-  project().reset();
-  set_filename(NULL);
-  set_modflag(0, 0);
-  widget_browser->rebuild();
-  project().update_settings_dialog();
-
-  // all is clear to continue
-  return true;
-}
-
-/**
- * Return a reference to the current project.
- */
-FLUID::Project &FLUID::App::project() 
-{ 
-  return g_project; 
-}
-
 
 /**
  Open the template browser and load a new file from templates.
@@ -1032,7 +998,7 @@ void apple_open_cb(const char *c) {
  Get the absolute path of the project file, for example `/Users/matt/dev/`.
  \return the path ending in '/'
  */
-Fl_String FLUID::Project::projectfile_path() const {
+Fl_String fluid::Project::projectfile_path() const {
   return end_with_slash(fl_filename_absolute(fl_filename_path(filename), Fluid.launch_path));
 }
 
@@ -1040,7 +1006,7 @@ Fl_String FLUID::Project::projectfile_path() const {
  Get the project file name including extension, for example `test.fl`.
  \return the file name without path
  */
-Fl_String FLUID::Project::projectfile_name() const {
+Fl_String fluid::Project::projectfile_name() const {
   return fl_filename_name(filename);
 }
 
@@ -1048,7 +1014,7 @@ Fl_String FLUID::Project::projectfile_name() const {
  Get the absolute path of the generated C++ code file, for example `/Users/matt/dev/src/`.
  \return the path ending in '/'
  */
-Fl_String FLUID::Project::codefile_path() const {
+Fl_String fluid::Project::codefile_path() const {
   Fl_String path = fl_filename_path(code_file_name);
   if (Fluid.batch_mode)
     return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
@@ -1060,7 +1026,7 @@ Fl_String FLUID::Project::codefile_path() const {
  Get the generated C++ code file name including extension, for example `test.cxx`.
  \return the file name without path
  */
-Fl_String FLUID::Project::codefile_name() const {
+Fl_String fluid::Project::codefile_name() const {
   Fl_String name = fl_filename_name(code_file_name);
   if (name.empty()) {
     return fl_filename_setext(fl_filename_name(filename), ".cxx");
@@ -1075,7 +1041,7 @@ Fl_String FLUID::Project::codefile_name() const {
  Get the absolute path of the generated C++ header file, for example `/Users/matt/dev/src/`.
  \return the path ending in '/'
  */
-Fl_String FLUID::Project::headerfile_path() const {
+Fl_String fluid::Project::headerfile_path() const {
   Fl_String path = fl_filename_path(header_file_name);
   if (Fluid.batch_mode)
     return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
@@ -1087,7 +1053,7 @@ Fl_String FLUID::Project::headerfile_path() const {
  Get the generated C++ header file name including extension, for example `test.cxx`.
  \return the file name without path
  */
-Fl_String FLUID::Project::headerfile_name() const {
+Fl_String fluid::Project::headerfile_name() const {
   Fl_String name = fl_filename_name(header_file_name);
   if (name.empty()) {
     return fl_filename_setext(fl_filename_name(filename), ".h");
@@ -1106,7 +1072,7 @@ Fl_String FLUID::Project::headerfile_name() const {
  batch mode.
  \return the path ending in '/'
  */
-Fl_String FLUID::Project::stringsfile_path() const {
+Fl_String fluid::Project::stringsfile_path() const {
   if (Fluid.batch_mode)
     return Fluid.launch_path;
   else
@@ -1117,7 +1083,7 @@ Fl_String FLUID::Project::stringsfile_path() const {
  Get the generated i18n text file name including extension, for example `test.po`.
  \return the file name without path
  */
-Fl_String FLUID::Project::stringsfile_name() const {
+Fl_String fluid::Project::stringsfile_name() const {
   switch (i18n_type) {
     default: return fl_filename_setext(fl_filename_name(filename), ".txt");
     case Fd_I18n_Type::GNU: return fl_filename_setext(fl_filename_name(filename), ".po");
@@ -1129,7 +1095,7 @@ Fl_String FLUID::Project::stringsfile_name() const {
  Get the name of the project file without the filename extension.
  \return the file name without path or extension
  */
-Fl_String FLUID::Project::basename() const {
+Fl_String fluid::Project::basename() const {
   return fl_filename_setext(fl_filename_name(filename), "");
 }
 
@@ -1153,12 +1119,12 @@ Fl_String FLUID::Project::basename() const {
  \param[in] dont_show_completion_dialog don't show the completion dialog
  \return 1 if the operation failed, 0 if it succeeded
  */
-int FLUID::Project::write_code_files(bool dont_show_completion_dialog)
+int fluid::Project::write_code_files(bool dont_show_completion_dialog)
 {
   // -- handle user interface issues
   flush_text_widgets();
   if (!filename) {
-    FLUID::Callbacks::save(0,0);
+    fluid::Callbacks::save(0,0);
     if (!filename) return 1;
   }
 
@@ -1260,7 +1226,7 @@ void mergeback_cb(Fl_Widget *, void *) {
 void write_strings_cb(Fl_Widget *, void *) {
   flush_text_widgets();
   if (!filename) {
-    FLUID::Callbacks::save(0,0);
+    fluid::Callbacks::save(0,0);
     if (!filename) return;
   }
   Fl_String filename = g_project.stringsfile_path() + g_project.stringsfile_name();
@@ -1626,9 +1592,9 @@ Fl_Menu_Item Main_Menu[] = {
   {"&New", FL_COMMAND+'n', menu_file_new_cb},
   {"&Open...", FL_COMMAND+'o', menu_file_open_cb},
   {"&Insert...", FL_COMMAND+'i', menu_file_insert_cb, 0, FL_MENU_DIVIDER},
-  {"&Save", FL_COMMAND+'s', FLUID::Callbacks::save, 0},
-  {"Save &As...", FL_COMMAND+FL_SHIFT+'s', FLUID::Callbacks::save, (void*)1},
-  {"Sa&ve A Copy...", 0, FLUID::Callbacks::save, (void*)2},
+  {"&Save", FL_COMMAND+'s', fluid::Callbacks::save, 0},
+  {"Save &As...", FL_COMMAND+FL_SHIFT+'s', fluid::Callbacks::save, (void*)1},
+  {"Sa&ve A Copy...", 0, fluid::Callbacks::save, (void*)2},
   {"&Revert...", 0, revert_cb, 0, FL_MENU_DIVIDER},
   {"New &From Template...", FL_COMMAND+'N', menu_file_new_from_template_cb, 0},
   {"Save As &Template...", 0, save_template_cb, 0, FL_MENU_DIVIDER},
@@ -1851,7 +1817,7 @@ void make_main_window() {
     main_menubar = new Fl_Menu_Bar(0,0,BROWSERWIDTH,MENUHEIGHT);
     main_menubar->menu(Main_Menu);
     // quick access to all dynamic menu items
-    save_item = (Fl_Menu_Item*)main_menubar->find_item(FLUID::Callbacks::save);
+    save_item = (Fl_Menu_Item*)main_menubar->find_item(fluid::Callbacks::save);
     history_item = (Fl_Menu_Item*)main_menubar->find_item(menu_file_open_history_cb);
     widgetbin_item = (Fl_Menu_Item*)main_menubar->find_item(toggle_widgetbin_cb);
     codeview_item = (Fl_Menu_Item*)main_menubar->find_item((Fl_Callback*)toggle_codeview_cb);
@@ -1872,19 +1838,19 @@ void make_main_window() {
 }
 
 // File history info...
-char FLUID::App_History::full_path[10][FL_PATH_MAX];
-char FLUID::App_History::short_path[10][FL_PATH_MAX];
+char fluid::App_History::full_path[10][FL_PATH_MAX];
+char fluid::App_History::short_path[10][FL_PATH_MAX];
 
 /**
  Load project file history from preferences.
 
- This C++ function, FLUID::App_History::load(), loads the last 10 used 
+ This C++ function, fluid::App_History::load(), loads the last 10 used 
  .fl project files' absolute and relative paths from the application 
  preferences and updates the main menu accordingly. It ensures the 
  history list is limited to 10 files and handles empty or 
  non-existent file paths. 
  */
-void FLUID::App_History::load() {
+void fluid::App_History::load() {
   int   i;              // Looping var
   int   max_files;
 
@@ -1913,7 +1879,7 @@ void FLUID::App_History::load() {
 /**
  Add a file to the project file history.
 
- This C++ function, FLUID::App_History::add, adds a new file path to the 
+ This C++ function, fluid::App_History::add, adds a new file path to the 
  application's file history, which is stored in the application's preferences.
 
  The function ensures that the history is limited to a maximum of 10 files,
@@ -1923,7 +1889,7 @@ void FLUID::App_History::load() {
  \param[in] flname path or filename of .fl file, will be converted into an
     absolute file path based on the current working directory.
  */
-void FLUID::App_History::add(const char *flname) {
+void fluid::App_History::add(const char *flname) {
   int   i;              // Looping var
   char  absolute[FL_PATH_MAX];
   int   max_files;
@@ -2053,7 +2019,7 @@ void set_modflag(int mf, int mfc) {
  \param[inout] i current argument index
  \return number of arguments used; if 0, the argument is not supported
  */
-int FLUID::App_Args::arg(int argc, char** argv, int& i) {
+int fluid::App_Args::arg(int argc, char** argv, int& i) {
   if (argv[i][0] != '-')
     return 0;
   if (argv[i][1] == 'd' && !argv[i][2]) {
@@ -2103,7 +2069,7 @@ int FLUID::App_Args::arg(int argc, char** argv, int& i) {
 
 /**
  * Parses the command line arguments and sets the appropriate flags in the
- * FLUID::App_Args object. If an unsupported argument is found, or if the
+ * fluid::App_Args object. If an unsupported argument is found, or if the
  * number of arguments is incorrect, prints an error message and returns false.
  * Otherwise, returns true.
  *
@@ -2112,7 +2078,7 @@ int FLUID::App_Args::arg(int argc, char** argv, int& i) {
  * \return -1 if there was an error in the command line
  *         or the index of the .fl project file
  */
-int FLUID::App_Args::read(int argc, char **argv) {
+int fluid::App_Args::read(int argc, char **argv) {
   Fl::args_to_utf8(argc, argv); // for MSYS2/MinGW
   int i = 1;
   if (   (Fl::args(argc, argv, i, arg) == 0)     // unsupported argument found

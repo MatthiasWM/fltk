@@ -85,7 +85,9 @@ enum class Fd_I18n_Type {
   POSIX     ///< Posix catgets internationalization
 };
 
-namespace FLUID {
+namespace fluid {
+
+class Application;
 
 /**
  Data and settings for a FLUID project file.
@@ -213,30 +215,10 @@ public:
   static void save(Fl_Widget *, void *v);
 };
 
-class App {
-public:
-  /// Command line arguments.
-  App_Args args;
-  /// Application settings.
-  App_Settings settings;
-  /// Application history.
-  App_History history;
-  /// Set if the application is running from the command line and not in interactive mode.
-  bool batch_mode { false };
-  /// current directory path at application launch
-  Fl_String launch_path { };
-
-  /// Clear the current project and create a new, empty one.
-  bool new_project(bool user_must_confirm = true);
-  /// Get the current project.
-  Project &project();
-};
-
-
 }; // namespace FLUID
 
-extern FLUID::Project g_project;
-extern FLUID::App Fluid;
+extern fluid::Project g_project;
+extern fluid::Application Fluid;
 
 // ---- public functions
 

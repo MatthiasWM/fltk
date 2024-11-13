@@ -955,7 +955,7 @@ void Fd_Code_Writer::write_public(int state) {
 /**
  Create and initialize a new C++ source code writer.
  */
-Fd_Code_Writer::Fd_Code_Writer(FLUID::Project &project)
+Fd_Code_Writer::Fd_Code_Writer(fluid::Project &project)
 : project_(project),
   code_file(NULL),
   header_file(NULL),

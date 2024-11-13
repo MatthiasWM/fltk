@@ -17,6 +17,7 @@
 #include "Fl_Grid_Type.h"
 
 #include "fluid.h"
+#include "application/application.h"
 #include "file.h"
 #include "code.h"
 #include "widget_browser.h"

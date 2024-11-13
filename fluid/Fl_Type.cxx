@@ -382,7 +382,7 @@ static void delete_children(Fl_Type *p) {
 
 /** Delete all nodes in the Types tree and reset project settings, or delete selected nodes.
  Also calls the browser to refresh.
- \note Please refactor this into two separate methods of FLUID::Project.
+ \note Please refactor this into two separate methods of fluid::Project.
  \param[in] selected_only if set, delete only the selected widgets and
  don't reset the project.
  */

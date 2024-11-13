@@ -25,6 +25,7 @@
 #include "factory.h"
 
 #include "fluid.h"
+#include "application/application.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Grid_Type.h"
 #include "Fl_Menu_Type.h"
