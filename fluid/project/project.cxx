@@ -63,3 +63,33 @@ void Project::update_settings_dialog() {
   }
 }
 
+
+/**
+ Give the user the opportunity to save a project before clearing it.
+
+ If the project has unsaved changes, this function pops up a dialog, that
+ allows the user to save the project, continue without saving the project,
+ or to cancel the operation.
+
+ If the user chooses to save, and no filename was set, a file dialog allows
+ the user to pick a name and location, or to cancel the operation.
+
+ \return false if the user aborted the operation and the calling function
+ should abort as well
+ */
+bool Project::confirm_clear() {
+  if (modflag == 0) return true;
+  switch (fl_choice("This project has unsaved changes. Do you want to save\n"
+                    "the project file before proceeding?",
+                    "Cancel", "Save", "Don't Save"))
+  {
+    case 0 : /* Cancel */
+      return false;
+    case 1 : /* Save */
+      fluid::Callbacks::save(NULL, NULL);
+      if (modflag) return false;  // user canceled the "Save As" dialog
+  }
+  return true;
+}
+
+

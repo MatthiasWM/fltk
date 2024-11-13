@@ -27,6 +27,10 @@
 namespace fluid {
 
 class Application {
+  /// path to store temporary files during app run
+  Fl_String tmpdir_path { };
+  /// true if the temporary file path was already created
+  bool tmpdir_create_called { false };
 public:
   /// Command line arguments.
   application::Args args { *this };
@@ -43,6 +47,14 @@ public:
   bool new_project(bool user_must_confirm = true);
   /// Get the current project.
   Project &project();
+
+  /// Generate a path to a directory for temporary data storage.
+  void create_tmpdir();
+  /// Delete the temporary directory that was created in set_tmpdir.
+  void delete_tmpdir();
+  /// Return the path to a temporary directory for this instance of FLUID.
+  const Fl_String &get_tmpdir();
+
 };
 
 }; // namespace FLUID

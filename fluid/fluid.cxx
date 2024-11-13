@@ -122,14 +122,6 @@ int modflag_c = 0;
 /// \see enter_project_dir(), leave_project_dir()
 static char in_project_dir = 0;
 
-/// path to store temporary files during app run
-/// \see tmpdir_create_called
-Fl_String tmpdir_path;
-
-/// true if the temporary file path was already created
-/// \see tmpdir_path
-bool tmpdir_create_called = false;
-
 
 /// Offset in pixels when adding widgets from an .fl file.
 int pasteoffset = 0;
@@ -146,150 +138,12 @@ fluid::Application Fluid;
  \param[in] str directory or path name
  \return a new string, ending with a '/'
  */
-static Fl_String end_with_slash(const Fl_String &str) {
+Fl_String end_with_slash(const Fl_String &str) {
   char last = str[str.size()-1];
   if (last !='/' && last != '\\')
     return str + "/";
   else
     return str;
-}
-
-/**
- Generate a path to a directory for temporary data storage.
- The path is stored in g_tmpdir.
- */
-static void create_tmpdir() {
-  if (tmpdir_create_called)
-    return;
-  tmpdir_create_called = true;
-
-  char buf[128];
-#if _WIN32
-  // The usual temp file locations on Windows are
-  //    %system%\Windows\Temp
-  //    %userprofiles%\AppData\Local
-  // usually resolving into
-  //    C:/Windows/Temp/
-  //    C:\Users\<username>\AppData\Local\Temp
-  fl_snprintf(buf, sizeof(buf)-1, "fluid-%d/", (long)GetCurrentProcessId());
-  Fl_String name = buf;
-  wchar_t tempdirW[FL_PATH_MAX+1];
-  char tempdir[FL_PATH_MAX+1];
-  unsigned len = GetTempPathW(FL_PATH_MAX, tempdirW);
-  if (len == 0) {
-    strcpy(tempdir, "c:/windows/temp/");
-  } else {
-    unsigned wn = fl_utf8fromwc(tempdir, FL_PATH_MAX, tempdirW, len);
-    tempdir[wn] = 0;
-  }
-  Fl_String path = tempdir;
-  end_with_slash(path);
-  path += name;
-  fl_make_path(path.c_str());
-  if (fl_access(path.c_str(), 6) == 0) tmpdir_path = path;
-#else
-  fl_snprintf(buf, sizeof(buf)-1, "fluid-%d/", getpid());
-  Fl_String name = buf;
-  Fl_String path = fl_getenv("TMPDIR");
-  if (!path.empty()) {
-    end_with_slash(path);
-    path += name;
-    fl_make_path(path.c_str());
-    if (fl_access(path.c_str(), 6) == 0) tmpdir_path = path;
-  }
-  if (tmpdir_path.empty()) {
-    path = Fl_String("/tmp/") + name;
-    fl_make_path(path.c_str());
-    if (fl_access(path.c_str(), 6) == 0) tmpdir_path = path;
-  }
-#endif
-  if (tmpdir_path.empty()) {
-    char pbuf[FL_PATH_MAX+1];
-    fluid_prefs.get_userdata_path(pbuf, FL_PATH_MAX);
-    path = Fl_String(pbuf);
-    end_with_slash(path);
-    path += name;
-    fl_make_path(path.c_str());
-    if (fl_access(path.c_str(), 6) == 0) tmpdir_path = path;
-  }
-  if (tmpdir_path.empty()) {
-    if (Fluid.batch_mode) {
-      fprintf(stderr, "ERROR: Can't create directory for temporary data storage.\n");
-    } else {
-      fl_alert("Can't create directory for temporary data storage.");
-    }
-  }
-}
-
-/**
- Delete the temporary directory that was created in set_tmpdir.
- */
-static void delete_tmpdir() {
-  // was a temporary directory created
-  if (!tmpdir_create_called)
-    return;
-  if (tmpdir_path.empty())
-    return;
-
-  // first delete all files that may still be left in the temp directory
-  struct dirent **de;
-  int n_de = fl_filename_list(tmpdir_path.c_str(), &de);
-  if (n_de >= 0) {
-    for (int i=0; i<n_de; i++) {
-      Fl_String path = tmpdir_path + de[i]->d_name;
-      fl_unlink(path.c_str());
-    }
-    fl_filename_free_list(&de, n_de);
-  }
-
-  // then delete the directory itself
-  if (fl_rmdir(tmpdir_path.c_str()) < 0) {
-    if (Fluid.batch_mode) {
-      fprintf(stderr, "WARNING: Can't delete tmpdir '%s': %s", tmpdir_path.c_str(), strerror(errno));
-    } else {
-      fl_alert("WARNING: Can't delete tmpdir '%s': %s", tmpdir_path.c_str(), strerror(errno));
-    }
-  }
-}
-
-/**
- Return the path to a temporary directory for this instance of FLUID.
- Fluid will do its best to clear and delete this directory when exiting.
- \return the path to the temporary directory, ending in a '/', or and empty
-      string if no directory could be created.
- */
-const Fl_String &get_tmpdir() {
-  if (!tmpdir_create_called)
-    create_tmpdir();
-  return tmpdir_path;
-}
-
-/**
- Give the user the opportunity to save a project before clearing it.
-
- If the project has unsaved changes, this function pops up a dialog, that
- allows the user to save the project, continue without saving the project,
- or to cancel the operation.
-
- If the user chooses to save, and no filename was set, a file dialog allows
- the user to pick a name and location, or to cancel the operation.
-
- \return false if the user aborted the operation and the calling function
- should abort as well
- */
-bool confirm_project_clear() {
-  if (modflag == 0) return true;
-  switch (fl_choice("This project has unsaved changes. Do you want to save\n"
-                    "the project file before proceeding?",
-                    "Cancel", "Save", "Don't Save"))
-  {
-    case 0 : /* Cancel */
-      return false;
-    case 1 : /* Save */
-      fluid::Callbacks::save(NULL, NULL);
-      if (modflag) return false;  // user canceled the "Save As" dialog
-  }
-  return true;
 }
 
 // ----
@@ -678,7 +532,7 @@ void exit_cb(Fl_Widget *,void *) {
   flush_text_widgets();
 
   // verify user intention
-  if (confirm_project_clear() == false)
+  if (Fluid.project().confirm_clear() == false)
     return;
 
   // Stop any external editor update timers
@@ -720,7 +574,7 @@ void exit_cb(Fl_Widget *,void *) {
   //    and cleans up editor tmp files. Then remove fluid tmpdir /last/.
   g_project.reset();
   ExternalCodeEditor::tmpdir_clear();
-  delete_tmpdir();
+  Fluid.delete_tmpdir();
 
   exit(0);
 }
@@ -925,7 +779,7 @@ bool merge_project_file(const Fl_String &filename_arg) {
  */
 bool open_project_file(const Fl_String &filename_arg) {
   // verify user intention
-  if (confirm_project_clear() == false)
+  if (Fluid.project().confirm_clear() == false)
     return false;
 
   // ask for a filename if none was given

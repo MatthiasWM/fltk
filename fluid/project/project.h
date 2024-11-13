@@ -37,6 +37,8 @@ public:
   void update_settings_dialog();
   void save(bool ask_for_filename, bool update_filename);
   int write_code_files(bool dont_show_completion_dialog=false);
+  /// Give the user the opportunity to save a project before clearing it.
+  bool confirm_clear();
 
   Fl_String projectfile_path() const;
   Fl_String projectfile_name() const;

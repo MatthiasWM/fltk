@@ -90,6 +90,7 @@
  */
 
 #include "shell_command.h"
+#include "application/application.h"
 #include "project/project.h"
 #include "fluid.h"
 #include "file.h"
@@ -380,7 +381,7 @@ static void expand_macros(Fl_String &cmd) {
 //    expand_macro(cmd, "@FLTK_CONFIG@",      fltk_config_cmd.c_str());
 //  }
   if (cmd.find("@TMPDIR@") != Fl_String::npos)
-    expand_macro(cmd, "@TMPDIR@",           get_tmpdir());
+    expand_macro(cmd, "@TMPDIR@",           Fluid.get_tmpdir());
 }
 
 /**

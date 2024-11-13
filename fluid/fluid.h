@@ -105,7 +105,7 @@ extern void leave_project_dir();
 extern void set_filename(const char *c);
 extern void set_modflag(int mf, int mfc=-1);
 
-extern const Fl_String &get_tmpdir();
+extern Fl_String end_with_slash(const Fl_String &str);
 
 // ---- public callback functions
 

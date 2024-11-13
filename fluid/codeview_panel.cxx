@@ -18,6 +18,7 @@
 
 #include "codeview_panel.h"
 #include "fluid.h"
+#include "application/application.h"
 #include "project/project.h"
 #include "file.h"
 #include "../src/flstring.h"
@@ -153,17 +154,17 @@ void update_codeview_cb(class Fl_Button*, void*) {
 
     if (!cv_source_filename) {
       cv_source_filename = (char*)malloc(FL_PATH_MAX);
-      fl_strlcpy(cv_source_filename, get_tmpdir().c_str(), FL_PATH_MAX);
+      fl_strlcpy(cv_source_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(cv_source_filename, "codeview_tmp.cxx", FL_PATH_MAX);
     }
     if (!cv_header_filename) {
       cv_header_filename = (char*)malloc(FL_PATH_MAX);
-      fl_strlcpy(cv_header_filename, get_tmpdir().c_str(), FL_PATH_MAX);
+      fl_strlcpy(cv_header_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(cv_header_filename, "codeview_tmp.h", FL_PATH_MAX);
     }
     if (!cv_design_filename) {
       cv_design_filename = (char*)malloc(FL_PATH_MAX);
-      fl_strlcpy(cv_design_filename, get_tmpdir().c_str(), FL_PATH_MAX);
+      fl_strlcpy(cv_design_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(cv_design_filename, "codeview_tmp.fl", FL_PATH_MAX);
     }
 
@@ -175,7 +176,7 @@ void update_codeview_cb(class Fl_Button*, void*) {
     } else if (cv_strings->visible_r()) {
       static const char *exts[] = { ".txt", ".po", ".msg" };
       char fn[FL_PATH_MAX+1];
-      fl_strlcpy(fn, get_tmpdir().c_str(), FL_PATH_MAX);
+      fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(fn, "strings", FL_PATH_MAX);
       fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<size_t>(g_project.i18n_type)]);
       write_strings(fn);
