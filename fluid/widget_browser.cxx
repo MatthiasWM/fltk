@@ -264,7 +264,7 @@ void Widget_Browser::item_select(void *l,int v) {
 int Widget_Browser::item_height(void *l) const {
   Fl_Type *t = (Fl_Type*)l;
   if (t->visible) {
-    if (show_comments && t->comment())
+    if (Fluid.settings.show_comments && t->comment())
       return textsize()*2+4;
     else
       return textsize()+5;
@@ -321,7 +321,7 @@ void Widget_Browser::item_draw(void *v, int X, int Y, int, int) const {
   // items can contain a comment. If they do, the comment gets a second text
   // line inside this browser line
   int comment_incr = 0;
-  if (show_comments && l->comment()) {
+  if (Fluid.settings.show_comments && l->comment()) {
     // -- comment
     copy_trunc(buf, l->comment(), 80, 0, 1);
     comment_incr = textsize()-1;

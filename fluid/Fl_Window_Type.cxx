@@ -168,7 +168,7 @@ void Overlay_Window::draw() {
         fl_rectf(X,Y,CHECKSIZE,CHECKSIZE);
       }
   }
-  if (show_ghosted_outline) {
+  if (Fluid.settings.show_ghosted_outline) {
     Fl_Box_Draw_F *old_flat_box = Fl::get_boxtype(FL_FLAT_BOX);
     Fl::set_boxtype(FL_FLAT_BOX, fd_flat_box_ghosted, 0, 0, 0, 0);
     Fl_Overlay_Window::draw();
@@ -454,7 +454,7 @@ void Fl_Window_Type::newdx() {
     dy = 0;
   }
 
-  if (show_guides && (drag & (FD_DRAG|FD_TOP|FD_LEFT|FD_BOTTOM|FD_RIGHT))) {
+  if (Fluid.settings.show_guides && (drag & (FD_DRAG|FD_TOP|FD_LEFT|FD_BOTTOM|FD_RIGHT))) {
     Fl_Type *selection = 0L; // special power for the first selected widget
     for (Fl_Type *q=next; q && q->level>level; q = q->next) {
       if (q->selected && q->is_true_widget()) {
@@ -634,7 +634,7 @@ void Fl_Window_Type::draw_overlay() {
   }
   if (overlays_invisible && !drag) return;
 
-  if (show_restricted) {
+  if (Fluid.settings.show_restricted) {
     draw_out_of_bounds();
     draw_overlaps();
     // TODO: for Fl_Tile, find all areas that are not covered by visible children
@@ -652,14 +652,14 @@ void Fl_Window_Type::draw_overlay() {
       Fl_Widget_Type* myo = (Fl_Widget_Type*)q;
       int x,y,r,t;
       newposition(myo,x,y,r,t);
-      if (show_guides) {
+      if (Fluid.settings.show_guides) {
         // If we are in a drag operation, and the parent is a grid, show the grid overlay
         if (drag && q->parent && q->parent->is_a(ID_Grid)) {
           Fl_Grid_Proxy *grid = ((Fl_Grid_Proxy*)((Fl_Grid_Type*)q->parent)->o);
           grid->draw_overlay();
         }
       }
-      if (!show_guides || !drag || numselected != 1) {
+      if (!Fluid.settings.show_guides || !drag || numselected != 1) {
         if (Fl_Flex_Type::parent_is_flex(q) && Fl_Flex_Type::is_fixed(q)) {
           Fl_Flex *flex = ((Fl_Flex*)((Fl_Flex_Type*)q->parent)->o);
           Fl_Widget *wgt = myo->o;
@@ -709,7 +709,7 @@ void Fl_Window_Type::draw_overlay() {
   fl_rectf(mysr-5,myst-5,5,5);
   fl_rectf(mysx,myst-5,5,5);
 
-  if (show_guides && (drag & (FD_DRAG|FD_TOP|FD_LEFT|FD_BOTTOM|FD_RIGHT))) {
+  if (Fluid.settings.show_guides && (drag & (FD_DRAG|FD_TOP|FD_LEFT|FD_BOTTOM|FD_RIGHT))) {
     Fd_Snap_Data data = { dx, dy, sx, sy, sr, st, drag, 4, 4, dx, dy, (Fl_Widget_Type*)selection, this};
     Fd_Snap_Action::draw_all(data);
   }
@@ -776,15 +776,15 @@ void toggle_overlays(Fl_Widget *,void *) {
  dialog.
  */
 void toggle_guides(Fl_Widget *,void *) {
-  show_guides = !show_guides;
-  fluid_prefs.set("show_guides", show_guides);
+  Fluid.settings.show_guides = !Fluid.settings.show_guides;
+  fluid_prefs.set("show_guides", Fluid.settings.show_guides);
 
-  if (show_guides)
+  if (Fluid.settings.show_guides)
     guides_item->label("Hide Guides");
   else
     guides_item->label("Show Guides");
   if (guides_button)
-    guides_button->value(show_guides);
+    guides_button->value(Fluid.settings.show_guides);
 
   for (Fl_Type *o=Fl_Type::first; o; o=o->next) {
     if (o->is_a(ID_Window)) {
@@ -808,15 +808,15 @@ void toggle_guides_cb(Fl_Check_Button *o, void *v) {
  dialog.
  */
 void toggle_restricted(Fl_Widget *,void *) {
-  show_restricted = !show_restricted;
-  fluid_prefs.set("show_restricted", show_restricted);
+  Fluid.settings.show_restricted = !Fluid.settings.show_restricted;
+  fluid_prefs.set("show_restricted", Fluid.settings.show_restricted);
 
-  if (show_restricted)
+  if (Fluid.settings.show_restricted)
     restricted_item->label("Hide Restricted");
   else
     restricted_item->label("Show Restricted");
   if (restricted_button)
-    restricted_button->value(show_restricted);
+    restricted_button->value(Fluid.settings.show_restricted);
 
   for (Fl_Type *o=Fl_Type::first; o; o=o->next) {
     if (o->is_a(ID_Window)) {
@@ -830,8 +830,8 @@ void toggle_restricted(Fl_Widget *,void *) {
  \brief User changes settings to show low contrast groups with a ghosted outline.
  */
 void toggle_ghosted_outline_cb(Fl_Check_Button *,void *) {
-  show_ghosted_outline = !show_ghosted_outline;
-  fluid_prefs.set("show_ghosted_outline", show_ghosted_outline);
+  Fluid.settings.show_ghosted_outline = !Fluid.settings.show_ghosted_outline;
+  fluid_prefs.set("show_ghosted_outline", Fluid.settings.show_ghosted_outline);
   for (Fl_Type *o=Fl_Type::first; o; o=o->next) {
     if (o->is_a(ID_Window)) {
       Fl_Widget_Type* w = (Fl_Widget_Type*)o;

@@ -268,8 +268,8 @@ static void cb_prevpos_button(Fl_Check_Button*, void*) {
 Fl_Check_Button *show_comments_button=(Fl_Check_Button *)0;
 
 static void cb_show_comments_button(Fl_Check_Button*, void*) {
-  show_comments = show_comments_button->value();
-  fluid_prefs.set("show_comments", show_comments);
+  Fluid.settings.show_comments = show_comments_button->value();
+  fluid_prefs.set("show_comments", Fluid.settings.show_comments);
   redraw_browser();
 }
 
@@ -281,23 +281,22 @@ Fl_Spinner *recent_spinner=(Fl_Spinner *)0;
 
 static void cb_recent_spinner(Fl_Spinner*, void*) {
   fluid_prefs.set("recent_files", recent_spinner->value());
-  load_history();
+  Fluid.history.load();
 }
 
 Fl_Check_Button *use_external_editor_button=(Fl_Check_Button *)0;
 
 static void cb_use_external_editor_button(Fl_Check_Button*, void*) {
-  G_use_external_editor = use_external_editor_button->value();
-  fluid_prefs.set("use_external_editor", G_use_external_editor);
+  Fluid.settings.use_external_editor = use_external_editor_button->value();
+  fluid_prefs.set("use_external_editor", Fluid.settings.use_external_editor);
   redraw_browser();
 }
 
 Fl_Input *editor_command_input=(Fl_Input *)0;
 
 static void cb_editor_command_input(Fl_Input*, void*) {
-  strncpy(G_external_editor_command, editor_command_input->value(), sizeof(G_external_editor_command)-1);
-  G_external_editor_command[sizeof(G_external_editor_command)-1] = 0;
-  fluid_prefs.set("external_editor_command", G_external_editor_command);
+  Fluid.settings.external_editor_command = editor_command_input->value();
+  fluid_prefs.set("external_editor_command", Fluid.settings.external_editor_command);
   redraw_browser();
 }
 
@@ -2506,8 +2505,8 @@ Fl_Double_Window* make_settings_window() {
           show_comments_button->down_box(FL_DOWN_BOX);
           show_comments_button->labelsize(11);
           show_comments_button->callback((Fl_Callback*)cb_show_comments_button);
-          fluid_prefs.get("show_comments", show_comments, 1);
-          show_comments_button->value(show_comments);
+          fluid_prefs.get("show_comments", Fluid.settings.show_comments, 1);
+          show_comments_button->value(Fluid.settings.show_comments);
         } // Fl_Check_Button* show_comments_button
         { Fl_Group* o = new Fl_Group(120, 225, 50, 20);
           o->callback((Fl_Callback*)cb_1);
@@ -2533,8 +2532,8 @@ Fl_Double_Window* make_settings_window() {
           use_external_editor_button->down_box(FL_DOWN_BOX);
           use_external_editor_button->labelsize(11);
           use_external_editor_button->callback((Fl_Callback*)cb_use_external_editor_button);
-          fluid_prefs.get("use_external_editor", G_use_external_editor, 0);
-          use_external_editor_button->value(G_use_external_editor);
+          fluid_prefs.get("use_external_editor", Fluid.settings.use_external_editor, 0);
+          use_external_editor_button->value(Fluid.settings.use_external_editor);
         } // Fl_Check_Button* use_external_editor_button
         { editor_command_input = new Fl_Input(120, 255, 200, 20, "External Editor:");
           editor_command_input->tooltip("The editor command to open your external text editor.\nInclude any necessary "
@@ -2546,8 +2545,8 @@ Fl_Double_Window* make_settings_window() {
           editor_command_input->textsize(11);
           editor_command_input->callback((Fl_Callback*)cb_editor_command_input);
           editor_command_input->when(FL_WHEN_CHANGED);
-          fluid_prefs.get("external_editor_command", G_external_editor_command, "", sizeof(G_external_editor_command)-1);
-          editor_command_input->value(G_external_editor_command);
+          fluid_prefs.get("external_editor_command", Fluid.settings.external_editor_command, "");
+          editor_command_input->value(Fluid.settings.external_editor_command.c_str());
         } // Fl_Input* editor_command_input
         { Fl_Box* o = new Fl_Box(120, 300, 0, 20, "Overlays: ");
           o->labelfont(1);
@@ -2559,7 +2558,7 @@ Fl_Double_Window* make_settings_window() {
           guides_button->down_box(FL_DOWN_BOX);
           guides_button->labelsize(11);
           guides_button->callback((Fl_Callback*)toggle_guides_cb);
-          o->value(show_guides);
+          o->value(Fluid.settings.show_guides);
         } // Fl_Check_Button* guides_button
         { Fl_Check_Button* o = restricted_button = new Fl_Check_Button(120, 320, 200, 20, "Show Restricted Areas");
           restricted_button->tooltip("show overlapping and out of bounds areas, show unfilled areas in Fl_Pack grou"
@@ -2567,7 +2566,7 @@ Fl_Double_Window* make_settings_window() {
           restricted_button->down_box(FL_DOWN_BOX);
           restricted_button->labelsize(11);
           restricted_button->callback((Fl_Callback*)toggle_restricted_cb);
-          o->value(show_restricted);
+          o->value(Fluid.settings.show_restricted);
         } // Fl_Check_Button* restricted_button
         { Fl_Check_Button* o = ghosted_outline_button = new Fl_Check_Button(120, 340, 200, 20, "Show Ghosted Group Outlines");
           ghosted_outline_button->tooltip("groups with no box type or flat boxtypes without contrast will be rendered wi"
@@ -2575,7 +2574,7 @@ Fl_Double_Window* make_settings_window() {
           ghosted_outline_button->down_box(FL_DOWN_BOX);
           ghosted_outline_button->labelsize(11);
           ghosted_outline_button->callback((Fl_Callback*)toggle_ghosted_outline_cb);
-          o->value(show_ghosted_outline);
+          o->value(Fluid.settings.show_ghosted_outline);
         } // Fl_Check_Button* ghosted_outline_button
         { Fl_Box* o = new Fl_Box(120, 530, 200, 10);
           o->hide();

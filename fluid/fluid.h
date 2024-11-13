@@ -22,6 +22,8 @@
 #include <FL/Fl_Menu_Item.H>
 #include "../src/Fl_String.H"
 
+#include <string>
+
 constexpr int BROWSERWIDTH { 300 };
 constexpr int BROWSERHEIGHT { 500 };
 constexpr int WINWIDTH { 300 };
@@ -56,21 +58,7 @@ extern Fl_Menu_Item Main_Menu[];
 extern Fl_Menu_Bar *main_menubar;
 extern Fl_Window *main_window;
 
-extern int show_guides;
-extern int show_restricted;
-extern int show_ghosted_outline;
-extern int show_comments;
-
-extern int G_use_external_editor;
-extern char G_external_editor_command[512];
-
 extern int reading_file;
-
-// File history info...
-extern char absolute_history[10][FL_PATH_MAX];
-extern char relative_history[10][FL_PATH_MAX];
-extern void load_history();
-extern void update_history(const char *);
 
 extern Fl_Menu_Item *save_item;
 extern Fl_Menu_Item *history_item;
@@ -110,6 +98,7 @@ public:
   ~Project() = default;
   void reset();
   void update_settings_dialog();
+  void save(bool ask_for_filename, bool update_filename);
   int write_code_files(bool dont_show_completion_dialog=false);
 
   Fl_String projectfile_path() const;
@@ -187,6 +176,38 @@ public:
   bool debug { false };
 };
 
+class App_Settings {
+public:
+  /// Show guides in the design window when positioning widgets, saved in app preferences.
+  int show_guides { 1 };
+  /// Show areas of restricted use in overlay plane.
+  /// Restricted areas are widget that overlap each other, widgets that are outside
+  /// of their parent's bounds (except children of Scroll groups), and areas
+  /// within an Fl_Tile that are not covered by children.
+  int show_restricted { 1 };
+  /// Show a ghosted outline for groups that have very little contrast.
+  /// This makes groups with NO_BOX or FLAT_BOX better editable.
+  int show_ghosted_outline { 1 };
+  /// Show widget comments in the browser, saved in app preferences.
+  int show_comments { 1 };
+  /// Use external editor for editing Fl_Code_Type, saved in app preferences.
+  int use_external_editor { 0 };
+  /// Run this command to load an Fl_Code_Type into an external editor, save in app preferences.
+  std::string external_editor_command { };
+};
+
+class App_History {
+public:
+  /// Stores the absolute filename of the last 10 design files, saved in app preferences.
+  static char full_path[10][FL_PATH_MAX];
+  /// This list of filenames is computed from \c full_path and displayed in the main menu.
+  static char short_path[10][FL_PATH_MAX];
+  /// \brief Load project file history from preferences.
+  void load();
+  /// \brief Add a file to the project file history.
+  void add(const char *);
+};
+
 class Callbacks {
 public:
   static void save(Fl_Widget *, void *v);
@@ -196,12 +217,18 @@ class App {
 public:
   /// Command line arguments.
   App_Args args;
+  /// Application settings.
+  App_Settings settings;
+  /// Application history.
+  App_History history;
   /// Set if the application is running from the command line and not in interactive mode.
   bool batch_mode { false };
   /// current directory path at application launch
   Fl_String launch_path { };
 
+  /// Clear the current project and create a new, empty one.
   bool new_project(bool user_must_confirm = true);
+  /// Get the current project.
   Project &project();
 };
 

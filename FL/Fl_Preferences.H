@@ -1,7 +1,7 @@
 //
 // Preferences implementation for the Fast Light Tool Kit (FLTK).
 //
-// Copyright 2002-2023 by Matthias Melcher.
+// Copyright 2002-2024 by Matthias Melcher.
 //
 // This library is free software. Distribution and use rights are outlined in
 // the file "COPYING" which should have been included with this file.  If this
@@ -24,10 +24,7 @@
 #  include "Fl_Export.H"
 #  include "fl_attr.h"
 
-//class Fl_String;
-#if (FLTK_USE_STD)
 #include <string>
-#endif
 
 /**
  \brief Fl_Preferences store user settings between application starts.
@@ -254,14 +251,8 @@ public:
   char get( const char *entry, void *&value,  const void *defaultValue, int defaultSize );
   char get( const char *entry, void *value,   const void *defaultValue, int defaultSize, int maxSize );
   char get( const char *entry, void *value,   const void *defaultValue, int defaultSize, int *size );
-
-//  char set( const char *entry, const Fl_String &value );
-//  char get( const char *entry, Fl_String &value, const Fl_String &defaultValue );
-
-#if (FLTK_USE_STD)
   char set( const char *entry, const std::string &value );
   char get( const char *entry, std::string &value, const std::string &defaultValue );
-#endif
 
   int size( const char *entry );
 

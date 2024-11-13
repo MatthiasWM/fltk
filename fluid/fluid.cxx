@@ -80,41 +80,9 @@ Fl_Window *main_window;
 /// Fluid application preferences, always accessible, will be flushed when app closes.
 Fl_Preferences fluid_prefs(Fl_Preferences::USER_L, "fltk.org", "fluid");
 
-/// Show guides in the design window when positioning widgets, saved in app preferences.
-int show_guides = 1;
-
-/// Show areas of restricted use in overlay plane.
-/// Restricted areas are widget that overlap each other, widgets that are outside
-/// of their parent's bounds (except children of Scroll groups), and areas
-/// within an Fl_Tile that are not covered by children.
-int show_restricted = 1;
-
-/// Show a ghosted outline for groups that have very little contrast.
-/// This makes groups with NO_BOX or FLAT_BOX better editable.
-int show_ghosted_outline = 1;
-
-/// Show widget comments in the browser, saved in app preferences.
-int show_comments = 1;
-
-/// Use external editor for editing Fl_Code_Type, saved in app preferences.
-int G_use_external_editor = 0;
-
-/// Run this command to load an Fl_Code_Type into an external editor, save in app preferences.
-char G_external_editor_command[512];
-
-
 /// This is set to create different labels when creating new widgets.
 /// \todo Details unclear.
 int reading_file = 0;
-
-
-// File history info...
-
-/// Stores the absolute filename of the last 10 design files, saved in app preferences.
-char absolute_history[10][FL_PATH_MAX];
-
-/// This list of filenames is computed from \c absolute_history and displayed in the main menu.
-char relative_history[10][FL_PATH_MAX];
 
 /// Menuitem to save a .fl design file, will be deactivated if the design is unchanged.
 Fl_Menu_Item *save_item = NULL;
@@ -543,15 +511,36 @@ static void external_editor_timer(void*) {
 
 /**
  Save the current design to the file given by \c filename.
- If automatic, this overwrites an existing file. If interactive, if will
- verify with the user.
- \param[in] v if v is not NULL, or no filename is set, open a filechooser.
+
+ \param[in] v v is (void *)1 for "Save As...", and (void *)2 for "Save a Copy..."
  */
 void FLUID::Callbacks::save(Fl_Widget *, void *v) {
+  Fluid.project().save(v != NULL, v != (void *)2);
+}
+
+/**
+ Save the current project to the file given by \c filename.
+
+ This C++ function saves the current design to a file. Setting 
+ \c ask_for_filename to true, or if no filename is set yet, it 
+ will open a file chooser dialog. If the file already exists, it 
+ prompts the user to confirm replacement. 
+ 
+ After saving, it updates the filename and modification flags 
+ if update_filename is true.
+
+ "Save" sets ask_for_filename and update_filename to false.
+ "Save As..." sets ask_for_filename and update_filename to true.
+ "Save a Copy..." sets ask_for_filename to true and update_filename to false.
+
+ \param[in] ask_for_filename if true, open a filechooser and warn if file exists.
+ \param[in] update_filename if true, update filename and modification flags
+ */
+void FLUID::Project::save(bool ask_for_filename, bool update_filename) {
   flush_text_widgets();
   Fl_Native_File_Chooser fnfc;
   const char *c = filename;
-  if (v || !c || !*c) {
+  if (ask_for_filename || !c || !*c) {
     fnfc.title("Save To:");
     fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
     fnfc.filter("FLUID Files\t*.f[ld]");
@@ -564,14 +553,14 @@ void FLUID::Callbacks::save(Fl_Widget *, void *v) {
                     "Replace", NULL, basename.c_str()) == 0) return;
     }
 
-    if (v != (void *)2) set_filename(c);
+    if (update_filename) set_filename(c);
   }
   if (!write_file(c)) {
     fl_alert("Error writing %s: %s", c, strerror(errno));
     return;
   }
 
-  if (v != (void *)2) {
+  if (update_filename) {
     set_modflag(0, 1);
     undo_save = undo_current;
   }
@@ -1647,16 +1636,16 @@ Fl_Menu_Item Main_Menu[] = {
   {"Write &Code", FL_COMMAND+FL_SHIFT+'c', write_cb, 0},
 // Matt: disabled {"MergeBack Code", FL_COMMAND+FL_SHIFT+'m', mergeback_cb, 0},
   {"&Write Strings", FL_COMMAND+FL_SHIFT+'w', write_strings_cb, 0, FL_MENU_DIVIDER},
-  {relative_history[0], FL_COMMAND+'1', menu_file_open_history_cb, absolute_history[0]},
-  {relative_history[1], FL_COMMAND+'2', menu_file_open_history_cb, absolute_history[1]},
-  {relative_history[2], FL_COMMAND+'3', menu_file_open_history_cb, absolute_history[2]},
-  {relative_history[3], FL_COMMAND+'4', menu_file_open_history_cb, absolute_history[3]},
-  {relative_history[4], FL_COMMAND+'5', menu_file_open_history_cb, absolute_history[4]},
-  {relative_history[5], FL_COMMAND+'6', menu_file_open_history_cb, absolute_history[5]},
-  {relative_history[6], FL_COMMAND+'7', menu_file_open_history_cb, absolute_history[6]},
-  {relative_history[7], FL_COMMAND+'8', menu_file_open_history_cb, absolute_history[7]},
-  {relative_history[8], FL_COMMAND+'9', menu_file_open_history_cb, absolute_history[8]},
-  {relative_history[9], 0, menu_file_open_history_cb, absolute_history[9], FL_MENU_DIVIDER},
+  {Fluid.history.short_path[0], FL_COMMAND+'1', menu_file_open_history_cb, Fluid.history.full_path[0]},
+  {Fluid.history.short_path[1], FL_COMMAND+'2', menu_file_open_history_cb, Fluid.history.full_path[1]},
+  {Fluid.history.short_path[2], FL_COMMAND+'3', menu_file_open_history_cb, Fluid.history.full_path[2]},
+  {Fluid.history.short_path[3], FL_COMMAND+'4', menu_file_open_history_cb, Fluid.history.full_path[3]},
+  {Fluid.history.short_path[4], FL_COMMAND+'5', menu_file_open_history_cb, Fluid.history.full_path[4]},
+  {Fluid.history.short_path[5], FL_COMMAND+'6', menu_file_open_history_cb, Fluid.history.full_path[5]},
+  {Fluid.history.short_path[6], FL_COMMAND+'7', menu_file_open_history_cb, Fluid.history.full_path[6]},
+  {Fluid.history.short_path[7], FL_COMMAND+'8', menu_file_open_history_cb, Fluid.history.full_path[7]},
+  {Fluid.history.short_path[8], FL_COMMAND+'9', menu_file_open_history_cb, Fluid.history.full_path[8]},
+  {Fluid.history.short_path[9], 0, menu_file_open_history_cb, Fluid.history.full_path[9], FL_MENU_DIVIDER},
   {"&Quit", FL_COMMAND+'q', exit_cb},
   {0},
 {"&Edit",0,0,0,FL_SUBMENU},
@@ -1843,10 +1832,10 @@ void toggle_codeview_b_cb(Fl_Button*, void *) {
  */
 void make_main_window() {
   if (!Fluid.batch_mode) {
-    fluid_prefs.get("show_guides", show_guides, 1);
-    fluid_prefs.get("show_restricted", show_restricted, 1);
-    fluid_prefs.get("show_ghosted_outline", show_ghosted_outline, 0);
-    fluid_prefs.get("show_comments", show_comments, 1);
+    fluid_prefs.get("show_guides", Fluid.settings.show_guides, 1);
+    fluid_prefs.get("show_restricted", Fluid.settings.show_restricted, 1);
+    fluid_prefs.get("show_ghosted_outline", Fluid.settings.show_ghosted_outline, 0);
+    fluid_prefs.get("show_comments", Fluid.settings.show_comments, 1);
     make_shell_window();
   }
 
@@ -1875,21 +1864,27 @@ void make_main_window() {
   }
 
   if (!Fluid.batch_mode) {
-    load_history();
+    Fluid.history.load();
     g_shell_config = new Fd_Shell_Command_List;
     widget_browser->load_prefs();
     make_settings_window();
   }
 }
 
-/**
- Load file history from preferences.
+// File history info...
+char FLUID::App_History::full_path[10][FL_PATH_MAX];
+char FLUID::App_History::short_path[10][FL_PATH_MAX];
 
- This loads the absolute filepaths of the last 10 used design files.
- It also computes and stores the relative filepaths for display in
- the main menu.
+/**
+ Load project file history from preferences.
+
+ This C++ function, FLUID::App_History::load(), loads the last 10 used 
+ .fl project files' absolute and relative paths from the application 
+ preferences and updates the main menu accordingly. It ensures the 
+ history list is limited to 10 files and handles empty or 
+ non-existent file paths. 
  */
-void load_history() {
+void FLUID::App_History::load() {
   int   i;              // Looping var
   int   max_files;
 
@@ -1898,11 +1893,11 @@ void load_history() {
   if (max_files > 10) max_files = 10;
 
   for (i = 0; i < max_files; i ++) {
-    fluid_prefs.get( Fl_Preferences::Name("file%d", i), absolute_history[i], "", sizeof(absolute_history[i]));
-    if (absolute_history[i][0]) {
+    fluid_prefs.get( Fl_Preferences::Name("file%d", i), full_path[i], "", sizeof(full_path[i]));
+    if (full_path[i][0]) {
       // Make a relative version of the filename for the menu...
-      fl_filename_relative(relative_history[i], sizeof(relative_history[i]),
-                           absolute_history[i]);
+      fl_filename_relative(short_path[i], sizeof(short_path[i]),
+                           full_path[i]);
 
       if (i == 9) history_item[i].flags = FL_MENU_DIVIDER;
       else history_item[i].flags = 0;
@@ -1916,15 +1911,19 @@ void load_history() {
 }
 
 /**
- Update file history from preferences.
+ Add a file to the project file history.
 
- Add this new filepath to the history and update the main menu.
- Writes the new file history to the app preferences.
+ This C++ function, FLUID::App_History::add, adds a new file path to the 
+ application's file history, which is stored in the application's preferences.
+
+ The function ensures that the history is limited to a maximum of 10 files,
+ and it handles the case where the new file is already in the history to
+ prevent duplicates.
 
  \param[in] flname path or filename of .fl file, will be converted into an
     absolute file path based on the current working directory.
  */
-void update_history(const char *flname) {
+void FLUID::App_History::add(const char *flname) {
   int   i;              // Looping var
   char  absolute[FL_PATH_MAX];
   int   max_files;
@@ -1937,9 +1936,9 @@ void update_history(const char *flname) {
 
   for (i = 0; i < max_files; i ++)
 #if defined(_WIN32) || defined(__APPLE__)
-    if (!strcasecmp(absolute, absolute_history[i])) break;
+    if (!strcasecmp(absolute, full_path[i])) break;
 #else
-    if (!strcmp(absolute, absolute_history[i])) break;
+    if (!strcmp(absolute, full_path[i])) break;
 #endif // _WIN32 || __APPLE__
 
   if (i == 0) return;
@@ -1947,21 +1946,21 @@ void update_history(const char *flname) {
   if (i >= max_files) i = max_files - 1;
 
   // Move the other flnames down in the list...
-  memmove(absolute_history + 1, absolute_history,
-          i * sizeof(absolute_history[0]));
-  memmove(relative_history + 1, relative_history,
-          i * sizeof(relative_history[0]));
+  memmove(full_path + 1, full_path,
+          i * sizeof(full_path[0]));
+  memmove(short_path + 1, short_path,
+          i * sizeof(short_path[0]));
 
   // Put the new file at the top...
-  strlcpy(absolute_history[0], absolute, sizeof(absolute_history[0]));
+  strlcpy(full_path[0], absolute, sizeof(full_path[0]));
 
-  fl_filename_relative(relative_history[0], sizeof(relative_history[0]),
-                       absolute_history[0]);
+  fl_filename_relative(short_path[0], sizeof(short_path[0]),
+                       full_path[0]);
 
   // Update the menu items as needed...
   for (i = 0; i < max_files; i ++) {
-    fluid_prefs.set( Fl_Preferences::Name("file%d", i), absolute_history[i]);
-    if (absolute_history[i][0]) {
+    fluid_prefs.set( Fl_Preferences::Name("file%d", i), full_path[i]);
+    if (full_path[i][0]) {
       if (i == 9) history_item[i].flags = FL_MENU_DIVIDER;
       else history_item[i].flags = 0;
     } else break;
@@ -1984,7 +1983,7 @@ void set_filename(const char *c) {
   filename = c ? fl_strdup(c) : NULL;
 
   if (filename && !Fluid.batch_mode)
-    update_history(filename);
+    Fluid.history.add(filename);
 
   set_modflag(modflag);
 }
@@ -2222,9 +2221,9 @@ int main(int argc,char **argv) {
     main_window->show(argc,argv);
     toggle_widgetbin_cb(0,0);
     toggle_codeview_cb(0,0);
-    if (!c && openlast_button->value() && absolute_history[0][0] && Fluid.args.autodoc_path.empty()) {
+    if (!c && openlast_button->value() && Fluid.history.full_path[0][0] && Fluid.args.autodoc_path.empty()) {
       // Open previous file when no file specified...
-      open_project_file(absolute_history[0]);
+      open_project_file(Fluid.history.full_path[0]);
     }
   }
   undo_suspend();

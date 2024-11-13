@@ -74,7 +74,7 @@ void Fl_Grid_Proxy::resize(int X, int Y, int W, int H) {
  Override draw() to make groups with no box or flat box background visible.
  */
 void Fl_Grid_Proxy::draw() {
-  if (show_ghosted_outline && (box() == FL_NO_BOX)) {
+  if (Fluid.settings.show_ghosted_outline && (box() == FL_NO_BOX)) {
     fl_rect(x(), y(), w(), h(), Fl::box_color(fl_color_average(FL_FOREGROUND_COLOR, color(), .1f)));
   }
   Fl_Grid::draw();

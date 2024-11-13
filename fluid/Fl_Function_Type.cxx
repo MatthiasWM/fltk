@@ -618,8 +618,8 @@ Fl_Type *Fl_Code_Type::make(Strategy strategy) {
  */
 void Fl_Code_Type::open() {
   // Using an external code editor? Open it..
-  if ( G_use_external_editor && G_external_editor_command[0] ) {
-    const char *cmd = G_external_editor_command;
+  if ( Fluid.settings.use_external_editor && !Fluid.settings.external_editor_command.empty() ) {
+    const char *cmd = Fluid.settings.external_editor_command.c_str();
     const char *code = name();
     if (!code) code = "";
     if ( editor_.open_editor(cmd, code) == 0 )
