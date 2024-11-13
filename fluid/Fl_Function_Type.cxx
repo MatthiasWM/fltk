@@ -18,6 +18,7 @@
 
 #include "fluid.h"
 #include "application/application.h"
+#include "project/project.h"
 #include "Fl_Window_Type.h"
 #include "Fl_Group_Type.h"
 #include "widget_browser.h"
@@ -1209,9 +1210,9 @@ void Fl_Data_Type::open() {
       if (w == data_panel_cancel) goto BREAK2;
       else if (w == data_panel_ok) break;
       else if (w == data_filebrowser) {
-        enter_project_dir();
+        Fluid.project().enter_project_dir();
         const char *fn = fl_file_chooser("Load Inline Data", 0L, data_filename->value(), 1);
-        leave_project_dir();
+        Fluid.project().leave_project_dir();
         if (fn) {
           if (strcmp(fn, data_filename->value()))
             set_modflag(1);
@@ -1306,9 +1307,9 @@ void Fl_Data_Type::write_code1(Fd_Code_Writer& f) {
   int uncompressedDataSize = 0;
   // path should be set correctly already
   if (filename_ && !f.write_codeview) {
-    enter_project_dir();
+    Fluid.project().enter_project_dir();
     FILE *f = fl_fopen(filename_, "rb");
-    leave_project_dir();
+    Fluid.project().leave_project_dir();
     if (!f) {
       message = "Can't include data from file. Can't open";
     } else {

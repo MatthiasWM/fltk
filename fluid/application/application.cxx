@@ -171,4 +171,23 @@ const Fl_String &Application::get_tmpdir() {
     create_tmpdir();
   return tmpdir_path;
 }
+/**
+ Return the path and filename of a temporary file for cut or duplicated data.
+ \param[in] which 0 gets the cut/copy/paste buffer, 1 gets the duplication buffer
+ \return a pointer to a string in a static buffer
+ */
+char* Application::cutfname(int which) {
+  static char name[2][FL_PATH_MAX];
+  static char beenhere = 0;
+
+  if (!beenhere) {
+    beenhere = 1;
+    fluid_prefs.getUserdataPath(name[0], sizeof(name[0]));
+    strlcat(name[0], "cut_buffer", sizeof(name[0]));
+    fluid_prefs.getUserdataPath(name[1], sizeof(name[1]));
+    strlcat(name[1], "dup_buffer", sizeof(name[1]));
+  }
+
+  return name[which];
+}
 

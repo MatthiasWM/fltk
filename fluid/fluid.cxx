@@ -109,19 +109,11 @@ Fl_Menu_Item *restricted_item = NULL;
 
 ////////////////////////////////////////////////////////////////
 
-/// Filename of the current .fl project file
-static const char *filename = NULL;
-
 /// Set if the current design has been modified compared to the associated .fl design file.
 int modflag = 0;
 
 /// Set if the code files are older than the current design.
 int modflag_c = 0;
-
-/// Used as a counter to set the .fl project dir as the current directory.
-/// \see enter_project_dir(), leave_project_dir()
-static char in_project_dir = 0;
-
 
 /// Offset in pixels when adding widgets from an .fl file.
 int pasteoffset = 0;
@@ -167,63 +159,6 @@ void flush_text_widgets() {
 // ----
 
 /**
- Change the current working directory to the .fl project directory.
-
- Every call to enter_project_dir() must have a corresponding leave_project_dir()
- call. Enter and leave calls can be nested.
-
- The first call to enter_project_dir() remembers the original directory, usually
- the launch directory of the application. Nested calls will increment a nesting
- counter. When the nesting counter is back to 0, leave_project_dir() will return
- to the original directory.
-
- The global variable 'filename' must be set to the current project file with
- absolute or relative path information.
-
- \see leave_project_dir(), pwd, in_project_dir
- */
-void enter_project_dir() {
-  if (in_project_dir<0) {
-    fprintf(stderr, "** Fluid internal error: enter_project_dir() calls unmatched\n");
-    return;
-  }
-  in_project_dir++;
-  // check if we are already in the project dir and do nothing if so
-  if (in_project_dir>1) return;
-  // check if there is an active project, and do nothing if there is none
-  if (!filename || !*filename) {
-    fprintf(stderr, "** Fluid internal error: enter_project_dir() no filename set\n");
-    return;
-  }
-  // set the current directory to the path of our .fl file
-  Fl_String project_path = fl_filename_path(fl_filename_absolute(filename));
-  if (fl_chdir(project_path.c_str()) == -1) {
-    fprintf(stderr, "** Fluid internal error: enter_project_dir() can't chdir to %s: %s\n",
-            project_path.c_str(), strerror(errno));
-    return;
-  }
-}
-
-/**
- Change the current working directory to the previous directory.
- \see enter_project_dir(), pwd, in_project_dir
- */
-void leave_project_dir() {
-  if (in_project_dir == 0) {
-    fprintf(stderr, "** Fluid internal error: leave_project_dir() calls unmatched\n");
-    return;
-  }
-  in_project_dir--;
-  // still nested, stay in the project directory
-  if (in_project_dir > 0) return;
-  // no longer nested, return to the original, usually the application working directory
-  if (fl_chdir(Fluid.launch_path.c_str()) < 0) {
-    fprintf(stderr, "** Fluid internal error: leave_project_dir() can't chdir back to %s : %s\n",
-            Fluid.launch_path.c_str(), strerror(errno));
-  }
-}
-
-/**
  Position the given window window based on entries in the app preferences.
  Customisable by user; feature can be switched off.
  The window is not shown or hidden by this function, but a value is returned
@@ -263,26 +198,6 @@ void save_position(Fl_Window *w, const char *prefsName) {
   pos.set("w", w->w());
   pos.set("h", w->h());
   pos.set("visible", (int)(w->shown() && w->visible()));
-}
-
-/**
- Return the path and filename of a temporary file for cut or duplicated data.
- \param[in] which 0 gets the cut/copy/paste buffer, 1 gets the duplication buffer
- \return a pointer to a string in a static buffer
- */
-static char* cutfname(int which = 0) {
-  static char name[2][FL_PATH_MAX];
-  static char beenhere = 0;
-
-  if (!beenhere) {
-    beenhere = 1;
-    fluid_prefs.getUserdataPath(name[0], sizeof(name[0]));
-    strlcat(name[0], "cut_buffer", sizeof(name[0]));
-    fluid_prefs.getUserdataPath(name[1], sizeof(name[1]));
-    strlcat(name[1], "dup_buffer", sizeof(name[1]));
-  }
-
-  return name[which];
 }
 
 /**
@@ -500,11 +415,11 @@ void revert_cb(Fl_Widget *,void *) {
                    "Cancel", "Revert", NULL)) return;
   }
   undo_suspend();
-  if (!read_file(filename, 0)) {
+  if (!read_file(Fluid.project().filename, 0)) {
     undo_resume();
     widget_browser->rebuild();
     g_project.update_settings_dialog();
-    fl_message("Can't read %s: %s", filename, strerror(errno));
+    fl_message("Can't read %s: %s", Fluid.project().filename, strerror(errno));
     return;
   }
   widget_browser->rebuild();
@@ -646,8 +561,8 @@ bool new_project_from_template() {
         return false;
       }
 
-      if ((outfile = fl_fopen(cutfname(1), "wb")) == NULL) {
-        fl_alert("Error writing buffer file \"%s\":\n%s", cutfname(1),
+      if ((outfile = fl_fopen(Fluid.cutfname(1), "wb")) == NULL) {
+        fl_alert("Error writing buffer file \"%s\":\n%s", Fluid.cutfname(1),
                  strerror(errno));
         fclose(infile);
         set_modflag(0);
@@ -669,8 +584,8 @@ bool new_project_from_template() {
       fclose(outfile);
 
       undo_suspend();
-      read_file(cutfname(1), 0);
-      fl_unlink(cutfname(1));
+      read_file(Fluid.cutfname(1), 0);
+      fl_unlink(Fluid.cutfname(1));
       undo_resume();
     } else {
       // No instance name, so read the template without replacements...
@@ -702,8 +617,8 @@ Fl_String open_project_filechooser(const Fl_String &title) {
   dialog.title(title.c_str());
   dialog.type(Fl_Native_File_Chooser::BROWSE_FILE);
   dialog.filter("FLUID Files\t*.f[ld]\n");
-  if (filename) {
-    Fl_String current_project_file = filename;
+  if (Fluid.project().filename) {
+    Fl_String current_project_file = Fluid.project().filename;
     dialog.directory(fl_filename_path(current_project_file).c_str());
     dialog.preset_file(fl_filename_name(current_project_file).c_str());
   }
@@ -736,8 +651,8 @@ bool merge_project_file(const Fl_String &filename_arg) {
   }
 
   const char *c = new_filename.c_str();
-  const char *oldfilename = filename;
-  filename    = NULL;
+  const char *oldfilename = Fluid.project().filename;
+  Fluid.project().filename    = NULL;
   set_filename(c);
   if (is_a_merge) undo_checkpoint();
   undo_suspend();
@@ -746,8 +661,8 @@ bool merge_project_file(const Fl_String &filename_arg) {
     widget_browser->rebuild();
     g_project.update_settings_dialog();
     fl_message("Can't read %s: %s", c, strerror(errno));
-    free((void *)filename);
-    filename = oldfilename;
+    free((void *)Fluid.project().filename);
+    Fluid.project().filename = oldfilename;
     if (main_window) set_modflag(modflag);
     return false;
   }
@@ -807,178 +722,6 @@ void apple_open_cb(const char *c) {
 }
 #endif // __APPLE__
 
-/**
- Get the absolute path of the project file, for example `/Users/matt/dev/`.
- \return the path ending in '/'
- */
-Fl_String fluid::Project::projectfile_path() const {
-  return end_with_slash(fl_filename_absolute(fl_filename_path(filename), Fluid.launch_path));
-}
-
-/**
- Get the project file name including extension, for example `test.fl`.
- \return the file name without path
- */
-Fl_String fluid::Project::projectfile_name() const {
-  return fl_filename_name(filename);
-}
-
-/**
- Get the absolute path of the generated C++ code file, for example `/Users/matt/dev/src/`.
- \return the path ending in '/'
- */
-Fl_String fluid::Project::codefile_path() const {
-  Fl_String path = fl_filename_path(code_file_name);
-  if (Fluid.batch_mode)
-    return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
-  else
-    return end_with_slash(fl_filename_absolute(path, projectfile_path()));
-}
-
-/**
- Get the generated C++ code file name including extension, for example `test.cxx`.
- \return the file name without path
- */
-Fl_String fluid::Project::codefile_name() const {
-  Fl_String name = fl_filename_name(code_file_name);
-  if (name.empty()) {
-    return fl_filename_setext(fl_filename_name(filename), ".cxx");
-  } else if (name[0] == '.') {
-    return fl_filename_setext(fl_filename_name(filename), code_file_name);
-  } else {
-    return name;
-  }
-}
-
-/**
- Get the absolute path of the generated C++ header file, for example `/Users/matt/dev/src/`.
- \return the path ending in '/'
- */
-Fl_String fluid::Project::headerfile_path() const {
-  Fl_String path = fl_filename_path(header_file_name);
-  if (Fluid.batch_mode)
-    return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
-  else
-    return end_with_slash(fl_filename_absolute(path, projectfile_path()));
-}
-
-/**
- Get the generated C++ header file name including extension, for example `test.cxx`.
- \return the file name without path
- */
-Fl_String fluid::Project::headerfile_name() const {
-  Fl_String name = fl_filename_name(header_file_name);
-  if (name.empty()) {
-    return fl_filename_setext(fl_filename_name(filename), ".h");
-  } else if (name[0] == '.') {
-    return fl_filename_setext(fl_filename_name(filename), header_file_name);
-  } else {
-    return name;
-  }
-}
-
-/**
- Get the absolute path of the generated i18n strings file, for example `/Users/matt/dev/`.
- Although it may be more useful to put the text file into the same directory
- with the source and header file, historically, the text is always saved with
- the project file in interactive mode, and in the FLUID launch directory in
- batch mode.
- \return the path ending in '/'
- */
-Fl_String fluid::Project::stringsfile_path() const {
-  if (Fluid.batch_mode)
-    return Fluid.launch_path;
-  else
-    return projectfile_path();
-}
-
-/**
- Get the generated i18n text file name including extension, for example `test.po`.
- \return the file name without path
- */
-Fl_String fluid::Project::stringsfile_name() const {
-  switch (i18n_type) {
-    default: return fl_filename_setext(fl_filename_name(filename), ".txt");
-    case Fd_I18n_Type::GNU: return fl_filename_setext(fl_filename_name(filename), ".po");
-    case Fd_I18n_Type::POSIX: return fl_filename_setext(fl_filename_name(filename), ".msg");
-  }
-}
-
-/**
- Get the name of the project file without the filename extension.
- \return the file name without path or extension
- */
-Fl_String fluid::Project::basename() const {
-  return fl_filename_setext(fl_filename_name(filename), "");
-}
-
-/**
- Generate the C++ source and header filenames and write those files.
-
- This function creates the source filename by setting the file
- extension to \c code_file_name and a header filename
- with the extension \c code_file_name which are both
- settable by the user.
-
- If the code filename has not been set yet, a "save file as" dialog will be
- presented to the user.
-
- In batch_mode, the function will either be silent, or, if opening or writing
- the files fails, write an error message to \c stderr and exit with exit code 1.
-
- In interactive mode, it will pop up an error message, or, if the user
- hasn't disabled that, pop up a confirmation message.
-
- \param[in] dont_show_completion_dialog don't show the completion dialog
- \return 1 if the operation failed, 0 if it succeeded
- */
-int fluid::Project::write_code_files(bool dont_show_completion_dialog)
-{
-  // -- handle user interface issues
-  flush_text_widgets();
-  if (!filename) {
-    fluid::Callbacks::save(0,0);
-    if (!filename) return 1;
-  }
-
-  // -- generate the file names with absolute paths
-  Fd_Code_Writer f { g_project };
-  Fl_String code_filename = g_project.codefile_path() + g_project.codefile_name();
-  Fl_String header_filename = g_project.headerfile_path() + g_project.headerfile_name();
-
-  // -- write the code and header files
-  if (!Fluid.batch_mode) enter_project_dir();
-  int x = f.write_code(code_filename.c_str(), header_filename.c_str());
-  Fl_String code_filename_rel = fl_filename_relative(code_filename);
-  Fl_String header_filename_rel = fl_filename_relative(header_filename);
-  if (!Fluid.batch_mode) leave_project_dir();
-
-  // -- print error message in batch mode or pop up an error or confirmation dialog box
-  if (Fluid.batch_mode) {
-    if (!x) {
-      fprintf(stderr, "%s and %s: %s\n",
-              code_filename_rel.c_str(),
-              header_filename_rel.c_str(),
-              strerror(errno));
-      exit(1);
-    }
-  } else {
-    if (!x) {
-      fl_message("Can't write %s or %s: %s",
-                 code_filename_rel.c_str(),
-                 header_filename_rel.c_str(),
-                 strerror(errno));
-    } else {
-      set_modflag(-1, 0);
-      if (dont_show_completion_dialog==false && completion_button->value()) {
-        fl_message("Wrote %s and %s",
-                   code_filename_rel.c_str(),
-                   header_filename_rel.c_str());
-      }
-    }
-  }
-  return 0;
-}
 
 /**
  Callback to write C++ code and header files.
@@ -1016,7 +759,7 @@ int mergeback_code_files()
 #endif
   if (code_filename.empty())
     code_filename = g_project.codefile_path() + g_project.codefile_name();
-  if (!Fluid.batch_mode) enter_project_dir();
+  if (!Fluid.batch_mode) Fluid.project().enter_project_dir();
   int c = merge_back(code_filename, proj_filename, FD_MERGEBACK_INTERACTIVE);
   if (!Fluid.batch_mode) leave_project_dir();
 
@@ -1038,9 +781,9 @@ void mergeback_cb(Fl_Widget *, void *) {
  */
 void write_strings_cb(Fl_Widget *, void *) {
   flush_text_widgets();
-  if (!filename) {
+  if (!Fluid.project().filename) {
     fluid::Callbacks::save(0,0);
-    if (!filename) return;
+    if (!Fluid.project().filename) return;
   }
   Fl_String filename = g_project.stringsfile_path() + g_project.stringsfile_name();
   int x = write_strings(filename);
@@ -1080,8 +823,8 @@ void copy_cb(Fl_Widget*, void*) {
   }
   flush_text_widgets();
   ipasteoffset = 10;
-  if (!write_file(cutfname(),1)) {
-    fl_message("Can't write %s: %s", cutfname(), strerror(errno));
+  if (!write_file(Fluid.cutfname(),1)) {
+    fl_message("Can't write %s: %s", Fluid.cutfname(), strerror(errno));
     return;
   }
 }
@@ -1095,8 +838,8 @@ void cut_cb(Fl_Widget *, void *) {
     return;
   }
   flush_text_widgets();
-  if (!write_file(cutfname(),1)) {
-    fl_message("Can't write %s: %s", cutfname(), strerror(errno));
+  if (!write_file(Fluid.cutfname(),1)) {
+    fl_message("Can't write %s: %s", Fluid.cutfname(), strerror(errno));
     return;
   }
   undo_checkpoint();
@@ -1148,9 +891,9 @@ void paste_cb(Fl_Widget*, void*) {
       //strategy = kAddAsFirstChild;
     }
   }
-  if (!read_file(cutfname(), 1, strategy)) {
+  if (!read_file(Fluid.cutfname(), 1, strategy)) {
     widget_browser->rebuild();
-    fl_message("Can't read %s: %s", cutfname(), strerror(errno));
+    fl_message("Can't read %s: %s", Fluid.cutfname(), strerror(errno));
   }
   undo_resume();
   widget_browser->display(Fl_Type::current);
@@ -1190,8 +933,8 @@ void duplicate_cb(Fl_Widget*, void*) {
     Fl_Type::current = new_insert;
 
   // write the selected widgets to a file:
-  if (!write_file(cutfname(1),1)) {
-    fl_message("Can't write %s: %s", cutfname(1), strerror(errno));
+  if (!write_file(Fluid.cutfname(1),1)) {
+    fl_message("Can't write %s: %s", Fluid.cutfname(1), strerror(errno));
     return;
   }
 
@@ -1199,10 +942,10 @@ void duplicate_cb(Fl_Widget*, void*) {
   pasteoffset  = 0;
   undo_checkpoint();
   undo_suspend();
-  if (!read_file(cutfname(1), 1, kAddAfterCurrent)) {
-    fl_message("Can't read %s: %s", cutfname(1), strerror(errno));
+  if (!read_file(Fluid.cutfname(1), 1, kAddAfterCurrent)) {
+    fl_message("Can't read %s: %s", Fluid.cutfname(1), strerror(errno));
   }
-  fl_unlink(cutfname(1));
+  fl_unlink(Fluid.cutfname(1));
   widget_browser->display(Fl_Type::current);
   widget_browser->rebuild();
   undo_resume();
@@ -1351,7 +1094,7 @@ void print_menu_cb(Fl_Widget *, void *) {
     fl_draw(date, w - (int)fl_width(date), fl_height());
 
     // Get the base filename...
-    Fl_String basename = fl_filename_name(Fl_String(filename));
+    Fl_String basename = fl_filename_name(Fl_String(Fluid.project().filename));
     fl_draw(basename.c_str(), 0, fl_height());
 
     // print centered and scaled to fit in the page
@@ -1655,11 +1398,11 @@ void make_main_window() {
  \param[in] c the new absolute filename and path
  */
 void set_filename(const char *c) {
-  if (filename) free((void *)filename);
-  filename = c ? fl_strdup(c) : NULL;
+  if (Fluid.project().filename) free((void *)Fluid.project().filename);
+  Fluid.project().filename = c ? fl_strdup(c) : NULL;
 
-  if (filename && !Fluid.batch_mode)
-    Fluid.history.add(filename);
+  if (Fluid.project().filename && !Fluid.batch_mode)
+    Fluid.history.add(Fluid.project().filename);
 
   set_modflag(modflag);
 }
@@ -1700,8 +1443,8 @@ void set_modflag(int mf, int mfc) {
 
   if (main_window) {
     Fl_String basename;
-    if (!filename) basename = "Untitled.fl";
-    else basename = fl_filename_name(Fl_String(filename));
+    if (!Fluid.project().filename) basename = "Untitled.fl";
+    else basename = fl_filename_name(Fl_String(Fluid.project().filename));
     code_ext = fl_filename_ext(g_project.code_file_name.c_str());
     char mod_star = modflag ? '*' : ' ';
     char mod_c_star = modflag_c ? '*' : ' ';

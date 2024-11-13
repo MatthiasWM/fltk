@@ -15,6 +15,7 @@
 //
 
 #include "project/project.h"
+#include "application/application.h"
 #include "fluid.h"
 #include "Fl_Type.h"
 #include "settings_panel.h"
@@ -63,7 +64,6 @@ void Project::update_settings_dialog() {
   }
 }
 
-
 /**
  Give the user the opportunity to save a project before clearing it.
 
@@ -92,4 +92,233 @@ bool Project::confirm_clear() {
   return true;
 }
 
+/**
+ Get the absolute path of the project file, for example `/Users/matt/dev/`.
+ \return the path ending in '/'
+ */
+Fl_String Project::projectfile_path() const {
+  return end_with_slash(fl_filename_absolute(fl_filename_path(filename), Fluid.launch_path));
+}
+
+/**
+ Get the project file name including extension, for example `test.fl`.
+ \return the file name without path
+ */
+Fl_String Project::projectfile_name() const {
+  return fl_filename_name(filename);
+}
+
+/**
+ Get the absolute path of the generated C++ code file, for example `/Users/matt/dev/src/`.
+ \return the path ending in '/'
+ */
+Fl_String Project::codefile_path() const {
+  Fl_String path = fl_filename_path(code_file_name);
+  if (Fluid.batch_mode)
+    return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
+  else
+    return end_with_slash(fl_filename_absolute(path, projectfile_path()));
+}
+
+/**
+ Get the generated C++ code file name including extension, for example `test.cxx`.
+ \return the file name without path
+ */
+Fl_String Project::codefile_name() const {
+  Fl_String name = fl_filename_name(code_file_name);
+  if (name.empty()) {
+    return fl_filename_setext(fl_filename_name(filename), ".cxx");
+  } else if (name[0] == '.') {
+    return fl_filename_setext(fl_filename_name(filename), code_file_name);
+  } else {
+    return name;
+  }
+}
+
+/**
+ Get the absolute path of the generated C++ header file, for example `/Users/matt/dev/src/`.
+ \return the path ending in '/'
+ */
+Fl_String Project::headerfile_path() const {
+  Fl_String path = fl_filename_path(header_file_name);
+  if (Fluid.batch_mode)
+    return end_with_slash(fl_filename_absolute(path, Fluid.launch_path));
+  else
+    return end_with_slash(fl_filename_absolute(path, projectfile_path()));
+}
+
+/**
+ Get the generated C++ header file name including extension, for example `test.cxx`.
+ \return the file name without path
+ */
+Fl_String Project::headerfile_name() const {
+  Fl_String name = fl_filename_name(header_file_name);
+  if (name.empty()) {
+    return fl_filename_setext(fl_filename_name(filename), ".h");
+  } else if (name[0] == '.') {
+    return fl_filename_setext(fl_filename_name(filename), header_file_name);
+  } else {
+    return name;
+  }
+}
+
+/**
+ Get the absolute path of the generated i18n strings file, for example `/Users/matt/dev/`.
+ Although it may be more useful to put the text file into the same directory
+ with the source and header file, historically, the text is always saved with
+ the project file in interactive mode, and in the FLUID launch directory in
+ batch mode.
+ \return the path ending in '/'
+ */
+Fl_String Project::stringsfile_path() const {
+  if (Fluid.batch_mode)
+    return Fluid.launch_path;
+  else
+    return projectfile_path();
+}
+
+/**
+ Get the generated i18n text file name including extension, for example `test.po`.
+ \return the file name without path
+ */
+Fl_String Project::stringsfile_name() const {
+  switch (i18n_type) {
+    default: return fl_filename_setext(fl_filename_name(filename), ".txt");
+    case Fd_I18n_Type::GNU: return fl_filename_setext(fl_filename_name(filename), ".po");
+    case Fd_I18n_Type::POSIX: return fl_filename_setext(fl_filename_name(filename), ".msg");
+  }
+}
+
+/**
+ Get the name of the project file without the filename extension.
+ \return the file name without path or extension
+ */
+Fl_String Project::basename() const {
+  return fl_filename_setext(fl_filename_name(filename), "");
+}
+
+/**
+ Generate the C++ source and header filenames and write those files.
+
+ This function creates the source filename by setting the file
+ extension to \c code_file_name and a header filename
+ with the extension \c code_file_name which are both
+ settable by the user.
+
+ If the code filename has not been set yet, a "save file as" dialog will be
+ presented to the user.
+
+ In batch_mode, the function will either be silent, or, if opening or writing
+ the files fails, write an error message to \c stderr and exit with exit code 1.
+
+ In interactive mode, it will pop up an error message, or, if the user
+ hasn't disabled that, pop up a confirmation message.
+
+ \param[in] dont_show_completion_dialog don't show the completion dialog
+ \return 1 if the operation failed, 0 if it succeeded
+ */
+int Project::write_code_files(bool dont_show_completion_dialog)
+{
+  // -- handle user interface issues
+  flush_text_widgets();
+  if (!filename) {
+    fluid::Callbacks::save(0,0);
+    if (!filename) return 1;
+  }
+
+  // -- generate the file names with absolute paths
+  Fd_Code_Writer f { *this };
+  Fl_String code_filename = codefile_path() + codefile_name();
+  Fl_String header_filename = headerfile_path() + headerfile_name();
+
+  // -- write the code and header files
+  if (!Fluid.batch_mode) enter_project_dir();
+  int x = f.write_code(code_filename.c_str(), header_filename.c_str());
+  Fl_String code_filename_rel = fl_filename_relative(code_filename);
+  Fl_String header_filename_rel = fl_filename_relative(header_filename);
+  if (!Fluid.batch_mode) leave_project_dir();
+
+  // -- print error message in batch mode or pop up an error or confirmation dialog box
+  if (Fluid.batch_mode) {
+    if (!x) {
+      fprintf(stderr, "%s and %s: %s\n",
+              code_filename_rel.c_str(),
+              header_filename_rel.c_str(),
+              strerror(errno));
+      exit(1);
+    }
+  } else {
+    if (!x) {
+      fl_message("Can't write %s or %s: %s",
+                 code_filename_rel.c_str(),
+                 header_filename_rel.c_str(),
+                 strerror(errno));
+    } else {
+      set_modflag(-1, 0);
+      if (dont_show_completion_dialog==false && completion_button->value()) {
+        fl_message("Wrote %s and %s",
+                   code_filename_rel.c_str(),
+                   header_filename_rel.c_str());
+      }
+    }
+  }
+  return 0;
+}
+
+/**
+ Change the current working directory to the .fl project directory.
+
+ Every call to enter_project_dir() must have a corresponding leave_project_dir()
+ call. Enter and leave calls can be nested.
+
+ The first call to enter_project_dir() remembers the original directory, usually
+ the launch directory of the application. Nested calls will increment a nesting
+ counter. When the nesting counter is back to 0, leave_project_dir() will return
+ to the original directory.
+
+ The global variable 'filename' must be set to the current project file with
+ absolute or relative path information.
+
+ \see leave_project_dir(), pwd, in_project_dir
+ */
+void Project::enter_project_dir() {
+  if (in_project_dir<0) {
+    fprintf(stderr, "** Fluid internal error: enter_project_dir() calls unmatched\n");
+    return;
+  }
+  in_project_dir++;
+  // check if we are already in the project dir and do nothing if so
+  if (in_project_dir>1) return;
+  // check if there is an active project, and do nothing if there is none
+  if (!filename || !*filename) {
+    fprintf(stderr, "** Fluid internal error: enter_project_dir() no filename set\n");
+    return;
+  }
+  // set the current directory to the path of our .fl file
+  Fl_String project_path = fl_filename_path(fl_filename_absolute(filename));
+  if (fl_chdir(project_path.c_str()) == -1) {
+    fprintf(stderr, "** Fluid internal error: enter_project_dir() can't chdir to %s: %s\n",
+            project_path.c_str(), strerror(errno));
+    return;
+  }
+}
+
+/**
+ Change the current working directory to the previous directory.
+ \see enter_project_dir(), pwd, in_project_dir
+ */
+void Project::leave_project_dir() {
+  if (in_project_dir == 0) {
+    fprintf(stderr, "** Fluid internal error: leave_project_dir() calls unmatched\n");
+    return;
+  }
+  in_project_dir--;
+  // still nested, stay in the project directory
+  if (in_project_dir > 0) return;
+  // no longer nested, return to the original, usually the application working directory
+  if (fl_chdir(Fluid.launch_path.c_str()) < 0) {
+    fprintf(stderr, "** Fluid internal error: leave_project_dir() can't chdir back to %s : %s\n",
+            Fluid.launch_path.c_str(), strerror(errno));
+  }
+}
 

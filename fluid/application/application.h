@@ -54,7 +54,8 @@ public:
   void delete_tmpdir();
   /// Return the path to a temporary directory for this instance of FLUID.
   const Fl_String &get_tmpdir();
-
+  /// Return the path and filename of a temporary file for cut or duplicated data.
+  static char* cutfname(int which = 0);
 };
 
 }; // namespace FLUID

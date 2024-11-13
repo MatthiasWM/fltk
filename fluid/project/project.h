@@ -40,6 +40,11 @@ public:
   /// Give the user the opportunity to save a project before clearing it.
   bool confirm_clear();
 
+  /// Change the current working directory to the .fl project directory.
+  void enter_project_dir();
+  /// Change the current working directory to the previous directory.
+  void leave_project_dir();
+
   Fl_String projectfile_path() const;
   Fl_String projectfile_name() const;
   Fl_String codefile_path() const;
@@ -91,6 +96,10 @@ public:
   Fl_String header_file_name { ".h" };
   /// Hold the default extension for source code  files, or the entire filename if set via command line.
   Fl_String code_file_name { ".cxx" };
+  /// Filename of the current .fl project file
+  const char *filename { nullptr };
+  /// Used as a counter to set the .fl project dir as the current directory.
+  char in_project_dir { 0 };
 };
 
 } // namespace fluid

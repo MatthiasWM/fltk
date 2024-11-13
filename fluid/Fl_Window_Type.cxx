@@ -1042,9 +1042,9 @@ int Fl_Window_Type::handle(int event) {
         }
         if (tgt) {
           char rel[FL_PATH_MAX+1];
-          enter_project_dir();
+          Fluid.project().enter_project_dir();
           fl_filename_relative(rel, FL_PATH_MAX, fn);
-          leave_project_dir();
+          Fluid.project().leave_project_dir();
           // printf("DND image = %s\n", fn);
           if (Fl::get_key(FL_Alt_L) || Fl::get_key(FL_Alt_R)) {
           //if (Fl::event_alt()) { // TODO: X11/Wayland does not set the e_state on DND events
