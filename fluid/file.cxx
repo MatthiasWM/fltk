@@ -854,7 +854,7 @@ int Fd_Project_Writer::write_project(const char *filename, int selected_only, bo
   if (project().avoid_early_includes)
     write_string("\navoid_early_includes");
   if (project().i18n_type!=Fd_I18n_Type::NONE) {
-    write_string("\ni18n_type %d", project().i18n_type);
+    write_string("\ni18n_type %d", static_cast<int>(project().i18n_type));
     switch (project().i18n_type) {
       case Fd_I18n_Type::NONE:
         break;
