@@ -18,6 +18,9 @@
 #define FLUID_APPLICATION_APPLICATION_H
 
 #include "fluid.h"
+#include "application/args.h"
+#include "application/history.h"
+#include "application/settings.h"
 
 #include <string>
 
@@ -26,11 +29,11 @@ namespace fluid {
 class Application {
 public:
   /// Command line arguments.
-  App_Args args;
+  application::Args args { *this };
   /// Application settings.
-  App_Settings settings;
+  application::Settings settings;
   /// Application history.
-  App_History history;
+  application::History history;
   /// Set if the application is not in interactive mode.
   bool batch_mode { false };
   /// current directory path at application launch

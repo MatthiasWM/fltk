@@ -18,6 +18,7 @@
 
 #include "codeview_panel.h"
 #include "fluid.h"
+#include "project/project.h"
 #include "file.h"
 #include "../src/flstring.h"
 #include <FL/Fl_Tabs.H>

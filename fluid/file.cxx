@@ -22,6 +22,7 @@
 #include "file.h"
 
 #include "fluid.h"
+#include "project/project.h"
 #include "factory.h"
 #include "Fl_Function_Type.h"
 #include "Fl_Widget_Type.h"

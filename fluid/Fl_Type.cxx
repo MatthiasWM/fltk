@@ -97,6 +97,7 @@
 #include "Fl_Type.h"
 
 #include "fluid.h"
+#include "project/project.h"
 #include "Fd_Snap_Action.h"
 #include "Fl_Function_Type.h"
 #include "Fl_Widget_Type.h"

@@ -24,6 +24,7 @@
 #include "ExternalCodeEditor_WIN32.h"
 #include "fluid.h"
 #include "application/application.h"
+#include "project/project.h"
 
 #include <stdio.h>      // snprintf()
 #include <stdlib.h>

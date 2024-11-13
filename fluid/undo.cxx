@@ -17,6 +17,7 @@
 #include "undo.h"
 
 #include "fluid.h"
+#include "project/project.h"
 #include "file.h"
 #include "Fl_Type.h"
 #include "Fl_Widget_Type.h"

@@ -7,6 +7,7 @@
 
 #include "fluid.h"
 #include "application/application.h"
+#include "project/project.h"
 
 #include <FL/Fl.H>      /* Fl_Timeout_Handler.. */
 #include <FL/fl_ask.H>  /* fl_alert() */

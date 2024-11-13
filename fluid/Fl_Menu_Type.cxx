@@ -21,7 +21,7 @@
 //
 
 #include "Fl_Menu_Type.h"
-
+#include "project/project.h"
 #include "fluid.h"
 #include "Fl_Window_Type.h"
 #include "file.h"

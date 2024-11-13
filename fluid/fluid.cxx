@@ -17,6 +17,7 @@
 #include "fluid.h"
 
 #include "application/application.h"
+#include "project/project.h"
 #include "Fl_Type.h"
 #include "Fl_Function_Type.h"
 #include "Fl_Group_Type.h"
@@ -136,51 +137,9 @@ int pasteoffset = 0;
 /// Paste offset incrementing at every paste command.
 static int ipasteoffset = 0;
 
-// ---- project settings
-
-/// The current project, possibly a new, empty roject
-fluid::Project g_project;
 
 /// Global reference to FLUID application
 fluid::Application Fluid;
-
-/**
- Reset all project setting to create a new empty project.
- */
-void fluid::Project::reset() {
-  ::delete_all();
-  i18n_type = Fd_I18n_Type::NONE;
-
-  i18n_gnu_include = "<libintl.h>";
-  i18n_gnu_conditional = "";
-  i18n_gnu_function = "gettext";
-  i18n_gnu_static_function = "gettext_noop";
-
-  i18n_pos_include = "<nl_types.h>";
-  i18n_pos_conditional = "";
-  i18n_pos_file = "";
-  i18n_pos_set = "1";
-
-  include_H_from_C = 1;
-  use_FL_COMMAND = 0;
-  utf8_in_src = 0;
-  avoid_early_includes = 0;
-  header_file_set = 0;
-  code_file_set = 0;
-  header_file_name = ".h";
-  code_file_name = ".cxx";
-  write_mergeback_data = 0;
-}
-
-/**
- Tell the project and i18n tab of the settings dialog to refresh themselves.
- */
-void fluid::Project::update_settings_dialog() {
-  if (settings_window) {
-    w_settings_project_tab->do_callback(w_settings_project_tab, LOAD);
-    w_settings_i18n_tab->do_callback(w_settings_i18n_tab, LOAD);
-  }
-}
 
 /**
  Make sure that a path name ends with a forward slash.
@@ -1837,109 +1796,6 @@ void make_main_window() {
   }
 }
 
-// File history info...
-char fluid::App_History::full_path[10][FL_PATH_MAX];
-char fluid::App_History::short_path[10][FL_PATH_MAX];
-
-/**
- Load project file history from preferences.
-
- This C++ function, fluid::App_History::load(), loads the last 10 used 
- .fl project files' absolute and relative paths from the application 
- preferences and updates the main menu accordingly. It ensures the 
- history list is limited to 10 files and handles empty or 
- non-existent file paths. 
- */
-void fluid::App_History::load() {
-  int   i;              // Looping var
-  int   max_files;
-
-
-  fluid_prefs.get("recent_files", max_files, 5);
-  if (max_files > 10) max_files = 10;
-
-  for (i = 0; i < max_files; i ++) {
-    fluid_prefs.get( Fl_Preferences::Name("file%d", i), full_path[i], "", sizeof(full_path[i]));
-    if (full_path[i][0]) {
-      // Make a relative version of the filename for the menu...
-      fl_filename_relative(short_path[i], sizeof(short_path[i]),
-                           full_path[i]);
-
-      if (i == 9) history_item[i].flags = FL_MENU_DIVIDER;
-      else history_item[i].flags = 0;
-    } else break;
-  }
-
-  for (; i < 10; i ++) {
-    if (i) history_item[i-1].flags |= FL_MENU_DIVIDER;
-    history_item[i].hide();
-  }
-}
-
-/**
- Add a file to the project file history.
-
- This C++ function, fluid::App_History::add, adds a new file path to the 
- application's file history, which is stored in the application's preferences.
-
- The function ensures that the history is limited to a maximum of 10 files,
- and it handles the case where the new file is already in the history to
- prevent duplicates.
-
- \param[in] flname path or filename of .fl file, will be converted into an
-    absolute file path based on the current working directory.
- */
-void fluid::App_History::add(const char *flname) {
-  int   i;              // Looping var
-  char  absolute[FL_PATH_MAX];
-  int   max_files;
-
-
-  fluid_prefs.get("recent_files", max_files, 5);
-  if (max_files > 10) max_files = 10;
-
-  fl_filename_absolute(absolute, sizeof(absolute), flname);
-
-  for (i = 0; i < max_files; i ++)
-#if defined(_WIN32) || defined(__APPLE__)
-    if (!strcasecmp(absolute, full_path[i])) break;
-#else
-    if (!strcmp(absolute, full_path[i])) break;
-#endif // _WIN32 || __APPLE__
-
-  if (i == 0) return;
-
-  if (i >= max_files) i = max_files - 1;
-
-  // Move the other flnames down in the list...
-  memmove(full_path + 1, full_path,
-          i * sizeof(full_path[0]));
-  memmove(short_path + 1, short_path,
-          i * sizeof(short_path[0]));
-
-  // Put the new file at the top...
-  strlcpy(full_path[0], absolute, sizeof(full_path[0]));
-
-  fl_filename_relative(short_path[0], sizeof(short_path[0]),
-                       full_path[0]);
-
-  // Update the menu items as needed...
-  for (i = 0; i < max_files; i ++) {
-    fluid_prefs.set( Fl_Preferences::Name("file%d", i), full_path[i]);
-    if (full_path[i][0]) {
-      if (i == 9) history_item[i].flags = FL_MENU_DIVIDER;
-      else history_item[i].flags = 0;
-    } else break;
-  }
-
-  for (; i < 10; i ++) {
-    fluid_prefs.set( Fl_Preferences::Name("file%d", i), "");
-    if (i) history_item[i-1].flags |= FL_MENU_DIVIDER;
-    history_item[i].hide();
-  }
-  fluid_prefs.flush();
-}
-
 /**
  Set the filename of the current .fl design.
  \param[in] c the new absolute filename and path
@@ -2005,107 +1861,6 @@ void set_modflag(int mf, int mfc) {
   // if the UI was modified in any way, update the Code View panel
   if (codeview_panel && codeview_panel->visible() && cv_autorefresh->value())
     codeview_defer_update();
-}
-
-/**
- Handle one command line argument.
-
- If an argument is not recognized, it is not supported and the function
- returns 0. If the argument is supported, the function returns the number
- of arguments used. The argument is then removed from the list.
-
- \param[in] argc number of arguments in the list
- \param[in] argv pointer to an array of arguments
- \param[inout] i current argument index
- \return number of arguments used; if 0, the argument is not supported
- */
-int fluid::App_Args::arg(int argc, char** argv, int& i) {
-  if (argv[i][0] != '-')
-    return 0;
-  if (argv[i][1] == 'd' && !argv[i][2]) {
-    Fluid.args.debug = true;
-    i++; return 1;
-  }
-  if (argv[i][1] == 'u' && !argv[i][2]) {
-    Fluid.args.update = true;
-    Fluid.batch_mode = true;
-    i++; return 1;
-  }
-  if (argv[i][1] == 'c' && !argv[i][2]) {
-    Fluid.args.compile = true;
-    Fluid.batch_mode = true;
-    i++; return 1;
-  }
-  if (argv[i][1] == 'c' && argv[i][2] == 's' && !argv[i][3]) {
-    Fluid.args.compile = true;
-    Fluid.args.strings = true;
-    Fluid.batch_mode = true;
-    i++; return 1;
-  }
-  if (argv[i][1] == 'o' && !argv[i][2] && i+1 < argc) {
-    Fluid.args.code_filename = argv[i+1];
-    Fluid.batch_mode = true;
-    i += 2; return 2;
-  }
-#ifndef NDEBUG
-  if ((i+1 < argc) && (strcmp(argv[i], "--autodoc") == 0)) {
-    Fluid.args.autodoc_path = argv[i+1];
-    i += 2; return 2;
-  }
-#endif
-  if (argv[i][1] == 'h' && !argv[i][2]) {
-    if ( (i+1 < argc) && (argv[i+1][0] != '-') ) {
-      Fluid.args.header_filename = argv[i+1];
-      Fluid.batch_mode = true;
-      i += 2;
-      return 2;
-    } else {
-      // a lone "-h" without a filename will output the help string
-      return 0;
-    }
-  }
-  return 0;
-}
-
-/**
- * Parses the command line arguments and sets the appropriate flags in the
- * fluid::App_Args object. If an unsupported argument is found, or if the
- * number of arguments is incorrect, prints an error message and returns false.
- * Otherwise, returns true.
- *
- * \param[in] argc Number of arguments in the list.
- * \param[in] argv Pointer to an array of arguments. 
- * \return -1 if there was an error in the command line
- *         or the index of the .fl project file
- */
-int fluid::App_Args::read(int argc, char **argv) {
-  Fl::args_to_utf8(argc, argv); // for MSYS2/MinGW
-  int i = 1;
-  if (   (Fl::args(argc, argv, i, arg) == 0)     // unsupported argument found
-      || (Fluid.batch_mode && (i != argc-1))        // .fl filename missing
-      || (!Fluid.batch_mode && (i < argc-1))        // more than one filename found
-      || (argv[i] && (argv[i][0] == '-'))) {  // unknown option
-    static const char *msg =
-      "usage: %s <switches> name.fl\n"
-      " -u : update .fl file and exit (may be combined with '-c' or '-cs')\n"
-      " -c : write .cxx and .h and exit\n"
-      " -cs : write .cxx and .h and strings and exit\n"
-      " -o <name> : .cxx output filename, or extension if <name> starts with '.'\n"
-      " -h <name> : .h output filename, or extension if <name> starts with '.'\n"
-      " -d : enable internal debugging\n";
-    const char *app_name = NULL;
-    if ( (argc > 0) && argv[0] && argv[0][0] )
-      app_name = fl_filename_name(argv[0]);
-    if ( !app_name || !app_name[0])
-      app_name = "fluid";
-#ifdef _MSC_VER
-    fl_message(msg, app_name);
-#else
-    fprintf(stderr, msg, app_name);
-#endif
-    return -1;
-  }
-  return i;
 }
 
 // ---- Main program entry point

@@ -90,7 +90,7 @@
  */
 
 #include "shell_command.h"
-
+#include "project/project.h"
 #include "fluid.h"
 #include "file.h"
 #include "settings_panel.h"

@@ -18,6 +18,7 @@
 
 #include "settings_panel.h"
 #include "application/application.h"
+#include "project/project.h"
 #include "undo.h"
 #include <FL/Fl_Preferences.H>
 #include <FL/Fl_Tooltip.H>

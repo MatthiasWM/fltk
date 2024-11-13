@@ -16,7 +16,7 @@
 
 
 #include "application/application.h"
-
+#include "project/project.h"
 #include "fluid.h"
 #include "widget_browser.h"
 

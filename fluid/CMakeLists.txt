@@ -24,6 +24,10 @@ set(TARGETS fluid)
 
 set(CPPFILES
   application/application.cxx
+  application/args.cxx
+  application/history.cxx
+  application/settings.cxx
+  project/project.cxx
   CodeEditor.cxx
   StyleParse.cxx
   Fd_Snap_Action.cxx
@@ -60,6 +64,10 @@ set(CPPFILES
 
 set(HEADERFILES
   application/application.h
+  application/args.h
+  application/history.h
+  application/settings.h
+  project/project.h
   CodeEditor.h
   Fd_Snap_Action.h
   Fl_Function_Type.h

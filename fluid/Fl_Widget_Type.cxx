@@ -17,6 +17,7 @@
 #include "Fl_Widget_Type.h"
 
 #include "fluid.h"
+#include "project/project.h"
 #include "Fl_Window_Type.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Menu_Type.h"

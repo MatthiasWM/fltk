@@ -23,6 +23,9 @@ comment {//
 decl {\#include "fluid.h"} {private local
 }
 
+decl {\#include "project/project.h"} {private local
+}
+
 decl {\#include "file.h"} {private local
 }
 
