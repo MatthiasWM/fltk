@@ -17,6 +17,7 @@
 #include "undo.h"
 
 #include "fluid.h"
+#include "application/application.h"
 #include "project/project.h"
 #include "file.h"
 #include "Fl_Type.h"
@@ -110,7 +111,7 @@ void redo_cb(Fl_Widget *, void *) {
   undo_current ++;
 
   // Update modified flag...
-  set_modflag(undo_current != undo_save);
+  Fluid.project().set_modflag(undo_current != undo_save);
   widget_browser->rebuild();
   g_project.update_settings_dialog();
 
@@ -144,7 +145,7 @@ void undo_cb(Fl_Widget *, void *) {
     // Unable to read checkpoint file, don't undo...
     widget_browser->rebuild();
     g_project.update_settings_dialog();
-    set_modflag(0, 0);
+    Fluid.project().set_modflag(0, 0);
     undo_resume();
     return;
   }
@@ -163,7 +164,7 @@ void undo_cb(Fl_Widget *, void *) {
   undo_current --;
 
   // Update modified flag...
-  set_modflag(undo_current != undo_save);
+  Fluid.project().set_modflag(undo_current != undo_save);
 
   // Update undo/redo menu items...
   // if (undo_current <= 0) Main_Menu[undo_item].deactivate();
@@ -204,8 +205,8 @@ void undo_checkpoint() {
   }
 
   // Update the saved level...
-  if (modflag && undo_current <= undo_save) undo_save = -1;
-  else if (!modflag) undo_save = undo_current;
+  if (Fluid.project().modflag && undo_current <= undo_save) undo_save = -1;
+  else if (!Fluid.project().modflag) undo_save = undo_current;
 
   // Update the current undo level...
   undo_current ++;
@@ -228,7 +229,7 @@ void undo_clear() {
 
   // Reset current, last, and save indices...
   undo_current = undo_last = undo_max = 0;
-  if (modflag) undo_save = -1;
+  if (Fluid.project().modflag) undo_save = -1;
   else undo_save = 0;
 
   // Disable the Undo and Redo menu items...

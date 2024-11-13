@@ -68,10 +68,6 @@ extern Fl_Menu_Item *guides_item;
 extern Fl_Menu_Item *restricted_item;
 extern Fl_Check_Button *guides_button;
 
-extern int modflag;
-
-extern int pasteoffset;
-
 // ---- project class declaration
 
 /**
@@ -99,8 +95,6 @@ extern fluid::Project g_project;
 extern fluid::Application Fluid;
 
 // ---- public functions
-
-extern void set_modflag(int mf, int mfc=-1);
 
 extern Fl_String end_with_slash(const Fl_String &str);
 extern void flush_text_widgets();

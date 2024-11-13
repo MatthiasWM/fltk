@@ -17,6 +17,8 @@
 #include "align_widget.h"
 
 #include "fluid.h"
+#include "application/application.h"
+#include "project/project.h"
 #include "Fl_Group_Type.h"
 #include "undo.h"
 
@@ -403,12 +405,12 @@ void align_widget_cb(Fl_Widget*, long how)
         Fl_Type::allow_layout++;
         w->resize(w->x(), (center2-w->h())/2, w->w(), w->h());
         Fl_Type::allow_layout--;
-        set_modflag(1);
+        Fluid.project().set_modflag(1);
         w->redraw();
         if (w->window()) w->window()->redraw();
       }
     break;
   }
   if (changed)
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
 }

@@ -49,6 +49,29 @@ public:
   void set_filename(const char *c);
   /// Reload the file set by \c filename, replacing the current design.
   void revert();
+  /// Set the "modified" flag and update the title of the main window.
+  void set_modflag(int mf, int mfc=-1);
+  /// Set if the current design has been modified compared to the associated .fl design file.
+  int modflag { 0 };
+  /// Set if the code files are older than the current design.
+  int modflag_c { 0 };
+  /// User chose to copy the currently selected widgets.
+  void copy();
+  /// User chose to paste the widgets from the cut buffer.
+  void paste();
+  /// Offset in pixels when adding widgets from an .fl file.
+  int pasteoffset { 0 };
+  /// Paste offset incrementing at every paste command.
+  int ipasteoffset { 0 };
+  /// User chose to delete the currently selected widgets.
+  void user_delete();
+  /// User chose to cut the currently selected widgets.
+  void cut();
+  /// Duplicate the selected widgets.
+  void duplicate();
+  /// Write the strings that are used in i18n.
+  void write_strings();
+
 
   Fl_String projectfile_path() const;
   Fl_String projectfile_name() const;

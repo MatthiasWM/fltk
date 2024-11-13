@@ -21,6 +21,7 @@
 //
 
 #include "Fl_Menu_Type.h"
+#include "application/application.h"
 #include "project/project.h"
 #include "fluid.h"
 #include "Fl_Window_Type.h"
@@ -221,7 +222,7 @@ void group_selected_menuitems() {
   }
   widget_browser->rebuild();
   undo_resume();
-  set_modflag(1);
+  Fluid.project().set_modflag(1);
 }
 
 void ungroup_selected_menuitems() {
@@ -252,7 +253,7 @@ void ungroup_selected_menuitems() {
   Fl_Type::current = q;
   widget_browser->rebuild();
   undo_resume();
-  set_modflag(1);
+  Fluid.project().set_modflag(1);
 }
 
 
@@ -916,6 +917,6 @@ void shortcut_in_cb(Fl_Shortcut_Button* i, void* v) {
         if (b->shortcut() != (int)i->value()) mod = 1;
         b->shortcut(i->value());
       }
-    if (mod) set_modflag(1);
+    if (mod) Fluid.project().set_modflag(1);
   }
 }

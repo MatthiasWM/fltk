@@ -82,7 +82,7 @@ void i18n_type_cb(Fl_Choice *c, void *v) {
   } else {
     undo_checkpoint();
     g_project.i18n_type = static_cast<Fd_I18n_Type>(c->value());
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
   }
   switch (g_project.i18n_type) {
   case Fd_I18n_Type::NONE : /* None */
@@ -146,7 +146,7 @@ public:
  */
 void Overlay_Window::close_cb(Overlay_Window *self, void*) {
   if (self->visible())
-    set_modflag(1, -2);
+    Fluid.project().set_modflag(1, -2);
   self->hide();
 }
 
@@ -315,7 +315,7 @@ void Fl_Window_Type::open_() {
 void Fl_Window_Type::open() {
   Overlay_Window *w = (Overlay_Window *)o;
   if (!w->visible()) {
-    set_modflag(1, -2);
+    Fluid.project().set_modflag(1, -2);
   }
   open_();
 }
@@ -357,7 +357,7 @@ void modal_cb(Fl_Light_Button* i, void* v) {
   } else {
     undo_checkpoint();
     ((Fl_Window_Type *)current_widget)->modal = i->value();
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
   }
 }
 
@@ -369,7 +369,7 @@ void non_modal_cb(Fl_Light_Button* i, void* v) {
   } else {
     undo_checkpoint();
     ((Fl_Window_Type *)current_widget)->non_modal = i->value();
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
   }
 }
 
@@ -381,7 +381,7 @@ void border_cb(Fl_Light_Button* i, void* v) {
   } else {
     undo_checkpoint();
     ((Fl_Window*)(current_widget->o))->border(i->value());
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
   }
 }
 
@@ -406,7 +406,7 @@ void xclass_cb(Fl_Input* i, void* v) {
         ((Fl_Window*)(wt->o))->xclass(wt->xclass);
       }
     }
-    if (mod) set_modflag(1);
+    if (mod) Fluid.project().set_modflag(1);
   }
 }
 
@@ -432,7 +432,7 @@ void Overlay_Window::resize(int X,int Y,int W,int H) {
   // windows are opened without a given x/y position, so modifying x/y
   // should not mark the project as dirty
   if (W!=w() || H!=h())
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
 
   Fl_Overlay_Window::resize(X,Y,W,H);
   resizable(t);
@@ -959,7 +959,7 @@ void Fl_Window_Type::moveallchildren(int key)
   o->redraw();
   recalc = 1;
   ((Overlay_Window *)(this->o))->redraw_overlay();
-  set_modflag(1);
+  Fluid.project().set_modflag(1);
   dx = dy = 0;
 
   update_xywh();
@@ -1340,7 +1340,7 @@ void Fl_Window_Type::read_property(Fd_Project_Reader &f, const char *c) {
     }
   } else if (!strcmp(c,"xywh")) {
     Fl_Widget_Type::read_property(f, c);
-    pasteoffset = 0; // make it not apply to contents
+    Fluid.project().pasteoffset = 0; // make it not apply to contents
   } else {
     Fl_Widget_Type::read_property(f, c);
   }

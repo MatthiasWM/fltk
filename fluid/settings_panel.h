@@ -20,6 +20,8 @@
 #define settings_panel_h
 #include <FL/Fl.H>
 #include "fluid.h"
+#include "application/application.h"
+#include "project/project.h"
 #include "widget_browser.h"
 #include "Fd_Snap_Action.h"
 #include "shell_command.h"

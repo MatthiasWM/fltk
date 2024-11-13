@@ -21,6 +21,7 @@
 #include "undo.h"
 #include "Fl_Type.h"
 #include "settings_panel.h"
+#include "codeview_panel.h"
 
 using namespace fluid;
 
@@ -462,4 +463,213 @@ void Project::revert() {
   set_modflag(0, 0);
   undo_clear();
   update_settings_dialog();
+}
+
+/**
+ Set the "modified" flag and update the title of the main window.
+
+ The first argument sets the modification state of the current design against
+ the corresponding .fl design file. Any change to the widget tree will mark
+ the design 'modified'. Saving the design will mark it clean.
+
+ The second argument is optional and set the modification state of the current
+ design against the source code and header file. Any change to the tree,
+ including saving the tree, will mark the code 'outdated'. Generating source
+ code and header files will clear this flag until the next modification.
+
+ \param[in] mf 0 to clear the modflag, 1 to mark the design "modified", -1 to
+    ignore this parameter
+ \param[in] mfc default -1 to let \c mf control \c modflag_c, 0 to mark the
+    code files current, 1 to mark it out of date. -2 to ignore changes to mf.
+ */
+void Project::set_modflag(int mf, int mfc) {
+  const char *code_ext = NULL;
+  char new_title[FL_PATH_MAX];
+
+  // Update the modflag_c to the worst possible condition. We could be a bit
+  // more graceful and compare modification times of the files, but C++ has
+  // no API for that until C++17.
+  if (mf!=-1) {
+    modflag = mf;
+    if (mfc==-1 && mf==1)
+      mfc = mf;
+  }
+  if (mfc>=0) {
+    modflag_c = mfc;
+  }
+
+  if (main_window) {
+    Fl_String basename;
+    if (!Fluid.project().filename) basename = "Untitled.fl";
+    else basename = fl_filename_name(Fl_String(Fluid.project().filename));
+    code_ext = fl_filename_ext(g_project.code_file_name.c_str());
+    char mod_star = modflag ? '*' : ' ';
+    char mod_c_star = modflag_c ? '*' : ' ';
+    snprintf(new_title, sizeof(new_title), "%s%c  %s%c",
+             basename.c_str(), mod_star, code_ext, mod_c_star);
+    const char *old_title = main_window->label();
+    // only update the title if it actually changed
+    if (!old_title || strcmp(old_title, new_title))
+      main_window->copy_label(new_title);
+  }
+  // if the UI was modified in any way, update the Code View panel
+  if (codeview_panel && codeview_panel->visible() && cv_autorefresh->value())
+    codeview_defer_update();
+}
+
+/**
+ User chose to copy the currently selected widgets.
+ */
+void Project::copy() {
+  flush_text_widgets();
+  if (!Fl_Type::current) {
+    fl_beep();
+    return;
+  }
+  flush_text_widgets();
+  ipasteoffset = 10;
+  if (!write_file(Fluid.cutfname(),1)) {
+    fl_message("Can't write %s: %s", Fluid.cutfname(), strerror(errno));
+    return;
+  }
+}
+
+/**
+ User chose to paste the widgets from the cut buffer.
+
+ This function will paste the widgets in the cut buffer after the currently
+ selected widget. If the currently selected widget is a group widget and
+ it is not folded, the new widgets will be added inside the group.
+ */
+void Project::paste() {
+  pasteoffset = ipasteoffset;
+  undo_checkpoint();
+  undo_suspend();
+  Strategy strategy = kAddAfterCurrent;
+  if (Fl_Type::current && Fl_Type::current->can_have_children()) {
+    if (Fl_Type::current->folded_ == 0) {
+      // If the current widget is a group widget and it is not folded,
+      // add the new widgets inside the group.
+      strategy = kAddAsLastChild;
+      // The following alternative also works quite nicely
+      //strategy = kAddAsFirstChild;
+    }
+  }
+  if (!read_file(Fluid.cutfname(), 1, strategy)) {
+    widget_browser->rebuild();
+    fl_message("Can't read %s: %s", Fluid.cutfname(), strerror(errno));
+  }
+  undo_resume();
+  widget_browser->display(Fl_Type::current);
+  widget_browser->rebuild();
+  pasteoffset = 0;
+  ipasteoffset += 10;
+}
+
+/**
+ User chose to delete the currently selected widgets.
+ */
+void Project::user_delete() {
+  if (!Fl_Type::current) {
+    fl_beep();
+    return;
+  }
+  undo_checkpoint();
+  Fluid.project().set_modflag(1);
+  ipasteoffset = 0;
+  Fl_Type *p = Fl_Type::current->parent;
+  while (p && p->selected) p = p->parent;
+  delete_all(1);
+  if (p) select_only(p);
+  widget_browser->rebuild();
+}
+
+/**
+ User chose to cut the currently selected widgets.
+ */
+void Project::cut() {
+  if (!Fl_Type::current) {
+    fl_beep();
+    return;
+  }
+  flush_text_widgets();
+  if (!write_file(Fluid.cutfname(),1)) {
+    fl_message("Can't write %s: %s", Fluid.cutfname(), strerror(errno));
+    return;
+  }
+  undo_checkpoint();
+  Fluid.project().set_modflag(1);
+  ipasteoffset = 0;
+  Fl_Type *p = Fl_Type::current->parent;
+  while (p && p->selected) p = p->parent;
+  delete_all(1);
+  if (p) select_only(p);
+  widget_browser->rebuild();
+}
+
+void Project::duplicate() {
+  if (!Fl_Type::current) {
+    fl_beep();
+    return;
+  }
+
+  // flush the text widgets to make sure the user's changes are saved:
+  flush_text_widgets();
+
+  // find the last selected node with the lowest level:
+  int lowest_level = 9999;
+  Fl_Type *new_insert = NULL;
+  if (Fl_Type::current->selected) {
+    for (Fl_Type *t = Fl_Type::first; t; t = t->next) {
+      if (t->selected && (t->level <= lowest_level)) {
+        lowest_level = t->level;
+        new_insert = t;
+      }
+    }
+  }
+  if (new_insert)
+    Fl_Type::current = new_insert;
+
+  // write the selected widgets to a file:
+  if (!write_file(Fluid.cutfname(1),1)) {
+    fl_message("Can't write %s: %s", Fluid.cutfname(1), strerror(errno));
+    return;
+  }
+
+  // read the file and add the widgets after the current one:
+  pasteoffset  = 0;
+  undo_checkpoint();
+  undo_suspend();
+  if (!read_file(Fluid.cutfname(1), 1, kAddAfterCurrent)) {
+    fl_message("Can't read %s: %s", Fluid.cutfname(1), strerror(errno));
+  }
+  fl_unlink(Fluid.cutfname(1));
+  widget_browser->display(Fl_Type::current);
+  widget_browser->rebuild();
+  undo_resume();
+}
+
+/**
+ Write the strings that are used in i18n.
+ */
+void Project::write_strings() {
+  flush_text_widgets();
+  if (!Fluid.project().filename) {
+    fluid::Callbacks::save(0,0);
+    if (!Fluid.project().filename) return;
+  }
+  Fl_String filename = g_project.stringsfile_path() + g_project.stringsfile_name();
+  int x = ::write_strings(filename); // in code.h
+  if (Fluid.batch_mode) {
+    if (x) {
+      fprintf(stderr, "%s : %s\n", filename.c_str(), strerror(errno));
+      exit(1);
+    }
+  } else {
+    if (x) {
+      fl_message("Can't write %s: %s", filename.c_str(), strerror(errno));
+    } else if (completion_button->value()) {
+      fl_message("Wrote %s", g_project.stringsfile_name().c_str());
+    }
+  }
 }

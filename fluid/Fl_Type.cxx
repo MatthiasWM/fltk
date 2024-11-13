@@ -97,6 +97,7 @@
 #include "Fl_Type.h"
 
 #include "fluid.h"
+#include "application/application.h"
 #include "project/project.h"
 #include "Fd_Snap_Action.h"
 #include "Fl_Function_Type.h"
@@ -336,7 +337,7 @@ void earlier_cb(Fl_Widget*,void*) {
     }
     f = nxt;
   }
-  if (mod) set_modflag(1);
+  if (mod) Fluid.project().set_modflag(1);
   widget_browser->display(Fl_Type::current);
   widget_browser->rebuild();
 }
@@ -361,7 +362,7 @@ void later_cb(Fl_Widget*,void*) {
     }
     f = prv;
   }
-  if (mod) set_modflag(1);
+  if (mod) Fluid.project().set_modflag(1);
   widget_browser->display(Fl_Type::current);
   widget_browser->rebuild();
 }
@@ -445,7 +446,7 @@ int storestring(const char *n, const char * & p, int nostrip) {
     strlcpy(q,n,length+1);
     p = q;
   }
-  set_modflag(1);
+  Fluid.project().set_modflag(1);
   return 1;
 }
 
@@ -706,7 +707,7 @@ void Fl_Type::add(Fl_Type *anchor, Strategy strategy) {
     update_visibility_flag(t);
   }
 
-  set_modflag(1);
+  Fluid.project().set_modflag(1);
   widget_browser->redraw();
 
 #if 0

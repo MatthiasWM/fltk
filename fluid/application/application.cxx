@@ -47,7 +47,7 @@ bool Application::new_project(bool user_must_confirm) {
   // clear the current project
   project().reset();
   Fluid.project().set_filename(NULL);
-  set_modflag(0, 0);
+  Fluid.project().set_modflag(0, 0);
   widget_browser->rebuild();
   project().update_settings_dialog();
 

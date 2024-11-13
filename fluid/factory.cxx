@@ -26,6 +26,7 @@
 
 #include "fluid.h"
 #include "application/application.h"
+#include "project/project.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Grid_Type.h"
 #include "Fl_Menu_Type.h"
@@ -1314,7 +1315,7 @@ Fl_Type *add_new_widget_from_user(Fl_Type *inPrototype, Strategy strategy, bool 
     }
     // make the new widget visible
     select_only(t);
-    set_modflag(1);
+    Fluid.project().set_modflag(1);
     if (and_open)
       t->open();
   } else {
