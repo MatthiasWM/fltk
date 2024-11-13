@@ -45,7 +45,6 @@
 #include <FL/Fl_Help_Dialog.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_PNG_Image.H>
-#include <FL/Fl_Native_File_Chooser.H>
 #include <FL/Fl_Printer.H>
 #include <FL/fl_string_functions.h>
 #include <locale.h>     // setlocale()..
@@ -381,29 +380,8 @@ void save_template_cb(Fl_Widget *, void *) {
 #endif // HAVE_LIBPNG && HAVE_LIBZ
 }
 
-//-> application::callbacks
-/**
- Reload the file set by \c filename, replacing the current design.
- If the design was modified, a dialog will ask for confirmation.
- */
 void revert_cb(Fl_Widget *,void *) {
-  if (modflag) {
-    if (!fl_choice("This user interface has been changed. Really revert?",
-                   "Cancel", "Revert", NULL)) return;
-  }
-  undo_suspend();
-  if (!read_file(Fluid.project().filename, 0)) {
-    undo_resume();
-    widget_browser->rebuild();
-    g_project.update_settings_dialog();
-    fl_message("Can't read %s: %s", Fluid.project().filename, strerror(errno));
-    return;
-  }
-  widget_browser->rebuild();
-  undo_resume();
-  set_modflag(0, 0);
-  undo_clear();
-  g_project.update_settings_dialog();
+  Fluid.project().revert(); 
 }
 
 //-> application::callbacks
@@ -582,62 +560,6 @@ bool new_project_from_template() {
   return true;
 }
 
-//-> project
-/**
- Open a native file chooser to allow choosing a project file for reading.
-
- Path and filename are preset with the current project filename, if there
- is one.
-
- \param title a text describing the action after selecting a file (load, merge, ...)
- \return the file path and name, or an empty string if the operation was canceled
- */
-Fl_String open_project_filechooser(const Fl_String &title) {
-  Fl_Native_File_Chooser dialog;
-  dialog.title(title.c_str());
-  dialog.type(Fl_Native_File_Chooser::BROWSE_FILE);
-  dialog.filter("FLUID Files\t*.f[ld]\n");
-  if (Fluid.project().filename) {
-    Fl_String current_project_file = Fluid.project().filename;
-    dialog.directory(fl_filename_path(current_project_file).c_str());
-    dialog.preset_file(fl_filename_name(current_project_file).c_str());
-  }
-  if (dialog.show() != 0)
-    return Fl_String();
-  return Fl_String(dialog.filename());
-}
-
-//-> callbacks and project
-/**
- Open a file chooser and load an exiting project file.
-
- If the current project was modified, FLUID will give the user the opportunity
- to save the old project first.
-
- If no filename is given, FLUID will open a file chooser dialog.
-
- \param[in] filename_arg load from this file, or show file chooser if empty
- \return false if the operation was canceled or failed otherwise
- */
-bool open_project_file(const Fl_String &filename_arg) {
-  // verify user intention
-  if (Fluid.project().confirm_clear() == false)
-    return false;
-
-  // ask for a filename if none was given
-  Fl_String new_filename = filename_arg;
-  if (new_filename.empty()) {
-    new_filename = open_project_filechooser("Open Project File");
-    if (new_filename.empty()) {
-      return false;
-    }
-  }
-
-  // clear the project and merge a file by the given name
-  Fluid.new_project(false);
-  return Fluid.project().merge_project_file(new_filename);
-}
-
 #ifdef __APPLE__
 /**
  Handle app launch with an associated filename (macOS only).
@@ -645,7 +567,7 @@ bool open_project_file(const Fl_String &filename_arg) {
  \param[in] c the filename of the new design
  */
 void apple_open_cb(const char *c) {
-  open_project_file(Fl_String(c));
+  Fluid.open_project_file(Fl_String(c));
 }
 #endif // __APPLE__
 
@@ -1064,9 +986,9 @@ extern void layout_suite_marker(Fl_Widget *, void *user_data);
 
 static void menu_file_new_cb(Fl_Widget *, void *) { Fluid.new_project(); }
 static void menu_file_new_from_template_cb(Fl_Widget *, void *) { new_project_from_template(); }
-static void menu_file_open_cb(Fl_Widget *, void *) { open_project_file(""); }
+static void menu_file_open_cb(Fl_Widget *, void *) { Fluid.open_project_file(""); }
 static void menu_file_insert_cb(Fl_Widget *, void *) { Fluid.project().merge_project_file(""); }
-static void menu_file_open_history_cb(Fl_Widget *, void *v) { open_project_file(Fl_String((const char*)v)); }
+static void menu_file_open_history_cb(Fl_Widget *, void *v) { Fluid.open_project_file(Fl_String((const char*)v)); }
 static void menu_layout_sync_resize_cb(Fl_Menu_ *m, void*) {
   if (m->mvalue()->value()) Fl_Type::allow_layout = 1; else Fl_Type::allow_layout = 0; }
 
@@ -1476,7 +1398,7 @@ int main(int argc,char **argv) {
     toggle_codeview_cb(0,0);
     if (!c && openlast_button->value() && Fluid.history.full_path[0][0] && Fluid.args.autodoc_path.empty()) {
       // Open previous file when no file specified...
-      open_project_file(Fluid.history.full_path[0]);
+      Fluid.open_project_file(Fluid.history.full_path[0]);
     }
   }
   undo_suspend();

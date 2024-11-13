@@ -47,6 +47,8 @@ public:
   void leave_project_dir();
   /// Set the filename of the .fl project file.
   void set_filename(const char *c);
+  /// Reload the file set by \c filename, replacing the current design.
+  void revert();
 
   Fl_String projectfile_path() const;
   Fl_String projectfile_name() const;

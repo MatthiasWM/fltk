@@ -23,6 +23,8 @@
 #include <FL/fl_ask.H>
 #include "../src/flstring.h"
 
+#include <FL/Fl_Native_File_Chooser.H>
+
 #include <unistd.h>
 
 using namespace fluid;
@@ -37,7 +39,7 @@ using namespace fluid;
     user before resetting the project. Default is `true`.
  \return false if the operation was canceled
  */
-bool fluid::Application::new_project(bool user_must_confirm) {
+bool Application::new_project(bool user_must_confirm) {
   // verify user intention
   if ((user_must_confirm) &&  (project().confirm_clear() == false))
     return false;
@@ -54,9 +56,64 @@ bool fluid::Application::new_project(bool user_must_confirm) {
 }
 
 /**
+ Open a native file chooser to allow choosing a project file for reading.
+
+ Path and filename are preset with the current project filename, if there
+ is one.
+
+ \param title a text describing the action after selecting a file (load, merge, ...)
+ \return the file path and name, or an empty string if the operation was canceled
+ */
+Fl_String Application::open_project_filechooser(const Fl_String &title) {
+  Fl_Native_File_Chooser dialog;
+  dialog.title(title.c_str());
+  dialog.type(Fl_Native_File_Chooser::BROWSE_FILE);
+  dialog.filter("FLUID Files\t*.f[ld]\n");
+  if (Fluid.project().filename) {
+    Fl_String current_project_file = Fluid.project().filename;
+    dialog.directory(fl_filename_path(current_project_file).c_str());
+    dialog.preset_file(fl_filename_name(current_project_file).c_str());
+  }
+  if (dialog.show() != 0)
+    return Fl_String();
+  return Fl_String(dialog.filename());
+}
+
+/**
+ Open a file chooser and load an exiting project file.
+
+ If the current project was modified, FLUID will give the user the opportunity
+ to save the old project first.
+
+ If no filename is given, FLUID will open a file chooser dialog.
+
+ \param[in] filename_arg load from this file, or show file chooser if empty
+ \return false if the operation was canceled or failed otherwise
+ */
+bool Application::open_project_file(const Fl_String &filename_arg) {
+  // verify user intention
+  if (project().confirm_clear() == false)
+    return false;
+
+  // ask for a filename if none was given
+  Fl_String new_filename = filename_arg;
+  if (new_filename.empty()) {
+    new_filename = open_project_filechooser("Open Project File");
+    if (new_filename.empty()) {
+      return false;
+    }
+  }
+
+  // clear the project and merge a file by the given name
+  new_project(/*user_must_confirm=*/false);
+  return project().merge_project_file(new_filename);
+}
+
+
+/**
  * Return a reference to the current project.
  */
-fluid::Project &fluid::Application::project() 
+Project &Application::project() 
 { 
   return g_project; 
 }

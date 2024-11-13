@@ -403,7 +403,7 @@ bool Project::merge_project_file(const Fl_String &filename_arg) {
   // ask for a filename if none was given
   Fl_String new_filename = filename_arg;
   if (new_filename.empty()) {
-    new_filename = open_project_filechooser(title);
+    new_filename = Fluid.open_project_filechooser(title);
     if (new_filename.empty()) {
       return false;
     }
@@ -438,4 +438,28 @@ bool Project::merge_project_file(const Fl_String &filename_arg) {
   }
   if (oldfilename) free((void *)oldfilename);
   return true;
+}
+
+/**
+ Reload the file set by \c filename, replacing the current design.
+ If the design was modified, a dialog will ask for confirmation.
+ */
+void Project::revert() {
+  if (modflag) {
+    if (!fl_choice("This user interface has been changed. Really revert?",
+                   "Cancel", "Revert", NULL)) return;
+  }
+  undo_suspend();
+  if (!read_file(filename, 0)) {
+    undo_resume();
+    widget_browser->rebuild();
+    update_settings_dialog();
+    fl_message("Can't read %s: %s", filename, strerror(errno));
+    return;
+  }
+  widget_browser->rebuild();
+  undo_resume();
+  set_modflag(0, 0);
+  undo_clear();
+  update_settings_dialog();
 }
