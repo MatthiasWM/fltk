@@ -2109,11 +2109,12 @@ int FLUID::App_Args::arg(int argc, char** argv, int& i) {
  *
  * \param[in] argc Number of arguments in the list.
  * \param[in] argv Pointer to an array of arguments. 
- * \return True if the arguments are valid, false otherwise.
+ * \return -1 if there was an error in the command line
+ *         or the index of the .fl project file
  */
-bool FLUID::App_Args::read(int argc, char **argv) {
+int FLUID::App_Args::read(int argc, char **argv) {
   Fl::args_to_utf8(argc, argv); // for MSYS2/MinGW
-  int i = 0;
+  int i = 1;
   if (   (Fl::args(argc, argv, i, arg) == 0)     // unsupported argument found
       || (Fluid.batch_mode && (i != argc-1))        // .fl filename missing
       || (!Fluid.batch_mode && (i < argc-1))        // more than one filename found
@@ -2136,9 +2137,9 @@ bool FLUID::App_Args::read(int argc, char **argv) {
 #else
     fprintf(stderr, msg, app_name);
 #endif
-    return false;
+    return -1;
   }
-  return true;
+  return i;
 }
 
 // ---- Main program entry point
@@ -2185,19 +2186,19 @@ static void sigint(SIGARG) {
  stderr and stdout?
  */
 int main(int argc,char **argv) {
-  int i = 1;
 
   setlocale(LC_ALL, "");      // enable multi-language errors in file chooser
   setlocale(LC_NUMERIC, "C"); // make sure numeric values are written correctly
   Fluid.launch_path = end_with_slash(fl_getcwd()); // store the current path at launch
 
-  if (Fluid.args.read(argc, argv)==false) {
+  int project_index = Fluid.args.read(argc, argv);
+  if (project_index == -1) {
     return 1;
   }
 
   const char *c = NULL;
   if (Fluid.args.autodoc_path.empty())
-    c = argv[i];
+    c = argv[project_index];
 
   fl_register_images();
 

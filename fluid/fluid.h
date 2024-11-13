@@ -157,7 +157,7 @@ public:
 class App_Args {
 public:
   /// Read command line args.
-  bool read(int argc, char **argv);
+  int read(int argc, char **argv);
   /// Read one command line argument
   static int arg(int argc, char** argv, int& i);
   /// `-o filename`: override the generate code file extension or name
