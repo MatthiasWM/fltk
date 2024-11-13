@@ -39,11 +39,14 @@ public:
   int write_code_files(bool dont_show_completion_dialog=false);
   /// Give the user the opportunity to save a project before clearing it.
   bool confirm_clear();
-
+  /// Load a project from the give file name and path.
+  bool merge_project_file(const Fl_String &filename_arg);
   /// Change the current working directory to the .fl project directory.
   void enter_project_dir();
   /// Change the current working directory to the previous directory.
   void leave_project_dir();
+  /// Set the filename of the .fl project file.
+  void set_filename(const char *c);
 
   Fl_String projectfile_path() const;
   Fl_String projectfile_name() const;

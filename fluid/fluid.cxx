@@ -70,54 +70,70 @@ extern "C"
 // Globals..
 //
 
+//-> application::ui
 /// FLUID-wide help dialog.
 static Fl_Help_Dialog *help_dialog = NULL;
 
+//-> application::ui
 /// Main app window menu bar.
 Fl_Menu_Bar *main_menubar = NULL;
 
+//-> application::ui
 /// Main app window.
 Fl_Window *main_window;
 
+//-> application
 /// Fluid application preferences, always accessible, will be flushed when app closes.
 Fl_Preferences fluid_prefs(Fl_Preferences::USER_L, "fltk.org", "fluid");
 
+//-> eliminate! Use parameters.
 /// This is set to create different labels when creating new widgets.
 /// \todo Details unclear.
 int reading_file = 0;
 
+//-> application::ui
 /// Menuitem to save a .fl design file, will be deactivated if the design is unchanged.
 Fl_Menu_Item *save_item = NULL;
 
+//-> application::ui
 /// First Menuitem that shows the .fl design file history.
 Fl_Menu_Item *history_item = NULL;
 
+//-> application::ui
 /// Menuitem to show or hide the widget bin, label will change if bin is visible.
 Fl_Menu_Item *widgetbin_item = NULL;
 
+//-> application::ui
 /// Menuitem to show or hide the code view, label will change if view is visible.
 Fl_Menu_Item *codeview_item = NULL;
 
+//-> application::ui
 /// Menuitem to show or hide the editing overlay, label will change if overlay visibility changes.
 Fl_Menu_Item *overlay_item = NULL;
 
+//-> application::ui
 /// Menuitem to show or hide the editing guides, label will change if overlay visibility changes.
 Fl_Menu_Item *guides_item = NULL;
 
+//-> application::ui
 /// Menuitem to show or hide the restricted area overlys, label will change if overlay visibility changes.
 Fl_Menu_Item *restricted_item = NULL;
 
 ////////////////////////////////////////////////////////////////
 
+//-> project
 /// Set if the current design has been modified compared to the associated .fl design file.
 int modflag = 0;
 
+//-> project
 /// Set if the code files are older than the current design.
 int modflag_c = 0;
 
+//-> project
 /// Offset in pixels when adding widgets from an .fl file.
 int pasteoffset = 0;
 
+//-> project
 /// Paste offset incrementing at every paste command.
 static int ipasteoffset = 0;
 
@@ -125,6 +141,7 @@ static int ipasteoffset = 0;
 /// Global reference to FLUID application
 fluid::Application Fluid;
 
+//-> tools/filenames
 /**
  Make sure that a path name ends with a forward slash.
  \param[in] str directory or path name
@@ -140,8 +157,10 @@ Fl_String end_with_slash(const Fl_String &str) {
 
 // ----
 
+//-> application::ui
 extern Fl_Window *the_panel;
 
+//-> application::ui
 /**
  Ensure that text widgets in the widget panel propagates apply current changes.
  By temporarily clearing the text focus, all text widgets with changed text
@@ -158,6 +177,7 @@ void flush_text_widgets() {
 
 // ----
 
+//-> tools::ui
 /**
  Position the given window window based on entries in the app preferences.
  Customisable by user; feature can be switched off.
@@ -186,6 +206,7 @@ char position_window(Fl_Window *w, const char *prefsName, int Visible, int X, in
   return Visible;
 }
 
+//-> tools::ui
 /**
  Save the position and visibility state of a window to the app preferences.
  \param[in] w save this window data
@@ -200,6 +221,7 @@ void save_position(Fl_Window *w, const char *prefsName) {
   pos.set("visible", (int)(w->shown() && w->visible()));
 }
 
+//-> external editor
 /**
  Timer to watch for external editor modifications.
 
@@ -238,6 +260,7 @@ static void external_editor_timer(void*) {
   }
 }
 
+//-> application::callbacks
 /**
  Save the current design to the file given by \c filename.
 
@@ -247,54 +270,7 @@ void fluid::Callbacks::save(Fl_Widget *, void *v) {
   Fluid.project().save(v != NULL, v != (void *)2);
 }
 
-/**
- Save the current project to the file given by \c filename.
-
- This C++ function saves the current design to a file. Setting 
- \c ask_for_filename to true, or if no filename is set yet, it 
- will open a file chooser dialog. If the file already exists, it 
- prompts the user to confirm replacement. 
- 
- After saving, it updates the filename and modification flags 
- if update_filename is true.
-
- "Save" sets ask_for_filename and update_filename to false.
- "Save As..." sets ask_for_filename and update_filename to true.
- "Save a Copy..." sets ask_for_filename to true and update_filename to false.
-
- \param[in] ask_for_filename if true, open a filechooser and warn if file exists.
- \param[in] update_filename if true, update filename and modification flags
- */
-void fluid::Project::save(bool ask_for_filename, bool update_filename) {
-  flush_text_widgets();
-  Fl_Native_File_Chooser fnfc;
-  const char *c = filename;
-  if (ask_for_filename || !c || !*c) {
-    fnfc.title("Save To:");
-    fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
-    fnfc.filter("FLUID Files\t*.f[ld]");
-    if (fnfc.show() != 0) return;
-    c = fnfc.filename();
-    if (!fl_access(c, 0)) {
-      Fl_String basename = fl_filename_name(Fl_String(c));
-      if (fl_choice("The file \"%s\" already exists.\n"
-                    "Do you want to replace it?", "Cancel",
-                    "Replace", NULL, basename.c_str()) == 0) return;
-    }
-
-    if (update_filename) set_filename(c);
-  }
-  if (!write_file(c)) {
-    fl_alert("Error writing %s: %s", c, strerror(errno));
-    return;
-  }
-
-  if (update_filename) {
-    set_modflag(0, 1);
-    undo_save = undo_current;
-  }
-}
-
+//-> application::callbacks
 /**
  Save a design template.
  \todo We should document the concept of templates.
@@ -405,6 +381,7 @@ void save_template_cb(Fl_Widget *, void *) {
 #endif // HAVE_LIBPNG && HAVE_LIBZ
 }
 
+//-> application::callbacks
 /**
  Reload the file set by \c filename, replacing the current design.
  If the design was modified, a dialog will ask for confirmation.
@@ -429,6 +406,7 @@ void revert_cb(Fl_Widget *,void *) {
   g_project.update_settings_dialog();
 }
 
+//-> application::callbacks
 /**
  Exit Fluid; we hope you had a nice experience.
  If the design was modified, a dialog will ask for confirmation.
@@ -494,6 +472,7 @@ void exit_cb(Fl_Widget *,void *) {
   exit(0);
 }
 
+//-> application::callbacks
 /**
  Open the template browser and load a new file from templates.
 
@@ -603,6 +582,7 @@ bool new_project_from_template() {
   return true;
 }
 
+//-> project
 /**
  Open a native file chooser to allow choosing a project file for reading.
 
@@ -627,60 +607,7 @@ Fl_String open_project_filechooser(const Fl_String &title) {
   return Fl_String(dialog.filename());
 }
 
-/**
- Load a project from the give file name and path.
-
- The project file is inserted at the currently selected type.
-
- If no filename is given, FLUID will open a file chooser dialog.
-
- \param[in] filename_arg path and name of the new project file
- \return false if the operation failed
- */
-bool merge_project_file(const Fl_String &filename_arg) {
-  bool is_a_merge = (Fl_Type::first != NULL);
-  Fl_String title = is_a_merge ? "Merge Project File" : "Open Project File";
-
-  // ask for a filename if none was given
-  Fl_String new_filename = filename_arg;
-  if (new_filename.empty()) {
-    new_filename = open_project_filechooser(title);
-    if (new_filename.empty()) {
-      return false;
-    }
-  }
-
-  const char *c = new_filename.c_str();
-  const char *oldfilename = Fluid.project().filename;
-  Fluid.project().filename    = NULL;
-  set_filename(c);
-  if (is_a_merge) undo_checkpoint();
-  undo_suspend();
-  if (!read_file(c, is_a_merge)) {
-    undo_resume();
-    widget_browser->rebuild();
-    g_project.update_settings_dialog();
-    fl_message("Can't read %s: %s", c, strerror(errno));
-    free((void *)Fluid.project().filename);
-    Fluid.project().filename = oldfilename;
-    if (main_window) set_modflag(modflag);
-    return false;
-  }
-  undo_resume();
-  widget_browser->rebuild();
-  if (is_a_merge) {
-    // Inserting a file; restore the original filename...
-    set_filename(oldfilename);
-    set_modflag(1);
-  } else {
-    // Loaded a file; free the old filename...
-    set_modflag(0, 0);
-    undo_clear();
-  }
-  if (oldfilename) free((void *)oldfilename);
-  return true;
-}
-
+//-> callbacks and project
 /**
  Open a file chooser and load an exiting project file.
 
@@ -708,7 +635,7 @@ bool open_project_file(const Fl_String &filename_arg) {
 
   // clear the project and merge a file by the given name
   Fluid.new_project(false);
-  return merge_project_file(new_filename);
+  return Fluid.project().merge_project_file(new_filename);
 }
 
 #ifdef __APPLE__
@@ -723,6 +650,7 @@ void apple_open_cb(const char *c) {
 #endif // __APPLE__
 
 
+//-> application::callbacks
 /**
  Callback to write C++ code and header files.
  */
@@ -776,6 +704,7 @@ void mergeback_cb(Fl_Widget *, void *) {
 }
 #endif
 
+//-> application::callbacks
 /**
  Write the strings that are used in i18n.
  */
@@ -801,6 +730,7 @@ void write_strings_cb(Fl_Widget *, void *) {
   }
 }
 
+//-> application::callbacks
 /**
  Show the editor for the \c current Fl_Type.
  */
@@ -812,6 +742,7 @@ void openwidget_cb(Fl_Widget *, void *) {
   Fl_Type::current->open();
 }
 
+//-> application::callbacks
 /**
  User chose to copy the currently selected widgets.
  */
@@ -829,6 +760,7 @@ void copy_cb(Fl_Widget*, void*) {
   }
 }
 
+//-> application::callbacks
 /**
  User chose to cut the currently selected widgets.
  */
@@ -852,6 +784,7 @@ void cut_cb(Fl_Widget *, void *) {
   widget_browser->rebuild();
 }
 
+//-> application::callbacks
 /**
  User chose to delete the currently selected widgets.
  */
@@ -870,6 +803,7 @@ void delete_cb(Fl_Widget *, void *) {
   widget_browser->rebuild();
 }
 
+//-> application::callbacks
 /**
  User chose to paste the widgets from the cut buffer.
 
@@ -902,6 +836,7 @@ void paste_cb(Fl_Widget*, void*) {
   ipasteoffset += 10;
 }
 
+//-> application::callbacks
 /**
  Duplicate the selected widgets.
 
@@ -951,6 +886,7 @@ void duplicate_cb(Fl_Widget*, void*) {
   undo_resume();
 }
 
+//-> application::callbacks
 /**
  User wants to sort selected widgets by y coordinate.
  */
@@ -961,6 +897,7 @@ static void sort_cb(Fl_Widget *,void *) {
   set_modflag(1);
 }
 
+//-> application::callbacks
 /**
  Open the "About" dialog.
  */
@@ -969,6 +906,7 @@ void about_cb(Fl_Widget *, void *) {
   about_panel->show();
 }
 
+//-> application::ui
 /**
  Open a dialog to show the HTML help page form the FLTK documentation folder.
  \param[in] name name of the HTML help file.
@@ -1037,6 +975,7 @@ void show_help(const char *name) {
   help_dialog->show();
 }
 
+//-> application::callbacks
 /**
  User wants help on Fluid.
  */
@@ -1044,6 +983,7 @@ void help_cb(Fl_Widget *, void *) {
   show_help("fluid.html");
 }
 
+//-> application::callbacks
 /**
  User wants to see the Fluid manual.
  */
@@ -1053,6 +993,7 @@ void manual_cb(Fl_Widget *, void *) {
 
 // ---- Printing
 
+//-> application::callbacks
 /**
  Open the dialog to allow the user to print the current window.
  */
@@ -1124,10 +1065,12 @@ extern void layout_suite_marker(Fl_Widget *, void *user_data);
 static void menu_file_new_cb(Fl_Widget *, void *) { Fluid.new_project(); }
 static void menu_file_new_from_template_cb(Fl_Widget *, void *) { new_project_from_template(); }
 static void menu_file_open_cb(Fl_Widget *, void *) { open_project_file(""); }
-static void menu_file_insert_cb(Fl_Widget *, void *) { merge_project_file(""); }
+static void menu_file_insert_cb(Fl_Widget *, void *) { Fluid.project().merge_project_file(""); }
 static void menu_file_open_history_cb(Fl_Widget *, void *v) { open_project_file(Fl_String((const char*)v)); }
 static void menu_layout_sync_resize_cb(Fl_Menu_ *m, void*) {
   if (m->mvalue()->value()) Fl_Type::allow_layout = 1; else Fl_Type::allow_layout = 0; }
+
+//-> application::ui
 /**
  This is the main Fluid menu.
 
@@ -1231,6 +1174,7 @@ Fl_Menu_Item Main_Menu[] = {
   {0},
 {0}};
 
+//-> application::callbacks
 /**
  Change the app's and hence preview the design's scheme.
 
@@ -1316,6 +1260,7 @@ void init_scheme() {
   free(scheme_name);
 }
 
+//-> panels::widgetbin::callbacks
 /**
  Show or hide the widget bin.
  The state is stored in the app preferences.
@@ -1335,6 +1280,7 @@ void toggle_widgetbin_cb(Fl_Widget *, void *) {
   }
 }
 
+//-> application::callbacks
 /**
  Show or hide the code preview window.
  */
@@ -1342,6 +1288,7 @@ void toggle_codeview_cb(Fl_Double_Window *, void *) {
   codeview_toggle_visibility();
 }
 
+//-> application::callbacks
 /**
  Show or hide the code preview window, button callback.
  */
@@ -1349,6 +1296,7 @@ void toggle_codeview_b_cb(Fl_Button*, void *) {
   codeview_toggle_visibility();
 }
 
+//-> application::ui
 /**
  Build the main app window and create a few other dialogs.
  */
@@ -1393,21 +1341,7 @@ void make_main_window() {
   }
 }
 
-/**
- Set the filename of the current .fl design.
- \param[in] c the new absolute filename and path
- */
-void set_filename(const char *c) {
-  if (Fluid.project().filename) free((void *)Fluid.project().filename);
-  Fluid.project().filename = c ? fl_strdup(c) : NULL;
-
-  if (Fluid.project().filename && !Fluid.batch_mode)
-    Fluid.history.add(Fluid.project().filename);
-
-  set_modflag(modflag);
-}
-
-
+//-> project
 /**
  Set the "modified" flag and update the title of the main window.
 
@@ -1522,7 +1456,7 @@ int main(int argc,char **argv) {
 
   make_main_window();
 
-  if (c) set_filename(c);
+  if (c) Fluid.project().set_filename(c);
   if (!Fluid.batch_mode) {
 #ifdef __APPLE__
     fl_open_callback(apple_open_cb);

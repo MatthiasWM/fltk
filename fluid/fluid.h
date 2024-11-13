@@ -100,11 +100,11 @@ extern fluid::Application Fluid;
 
 // ---- public functions
 
-extern void set_filename(const char *c);
 extern void set_modflag(int mf, int mfc=-1);
 
 extern Fl_String end_with_slash(const Fl_String &str);
 extern void flush_text_widgets();
+extern Fl_String open_project_filechooser(const Fl_String &title);
 
 // ---- public callback functions
 

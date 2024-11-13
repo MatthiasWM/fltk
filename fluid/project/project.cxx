@@ -17,6 +17,8 @@
 #include "project/project.h"
 #include "application/application.h"
 #include "fluid.h"
+#include "file.h"
+#include "undo.h"
 #include "Fl_Type.h"
 #include "settings_panel.h"
 
@@ -322,3 +324,118 @@ void Project::leave_project_dir() {
   }
 }
 
+/**
+ Set the filename of the current .fl design.
+ \param[in] c the new absolute filename and path
+ */
+void Project::set_filename(const char *c) {
+  if (filename) ::free((void *)filename);
+  filename = c ? fl_strdup(c) : nullptr;
+
+  if (filename && !Fluid.batch_mode)
+    Fluid.history.add(filename);
+
+  set_modflag(modflag);
+}
+
+/**
+ Save the current project to the file given by \c filename.
+
+ This C++ function saves the current design to a file. Setting 
+ \c ask_for_filename to true, or if no filename is set yet, it 
+ will open a file chooser dialog. If the file already exists, it 
+ prompts the user to confirm replacement. 
+ 
+ After saving, it updates the filename and modification flags 
+ if update_filename is true.
+
+ "Save" sets ask_for_filename and update_filename to false.
+ "Save As..." sets ask_for_filename and update_filename to true.
+ "Save a Copy..." sets ask_for_filename to true and update_filename to false.
+
+ \param[in] ask_for_filename if true, open a filechooser and warn if file exists.
+ \param[in] update_filename if true, update filename and modification flags
+ */
+void Project::save(bool ask_for_filename, bool update_filename) {
+  flush_text_widgets();
+  Fl_Native_File_Chooser fnfc;
+  const char *c = filename;
+  if (ask_for_filename || !c || !*c) {
+    fnfc.title("Save To:");
+    fnfc.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
+    fnfc.filter("FLUID Files\t*.f[ld]");
+    if (fnfc.show() != 0) return;
+    c = fnfc.filename();
+    if (!fl_access(c, 0)) {
+      Fl_String basename = fl_filename_name(Fl_String(c));
+      if (fl_choice("The file \"%s\" already exists.\n"
+                    "Do you want to replace it?", "Cancel",
+                    "Replace", NULL, basename.c_str()) == 0) return;
+    }
+
+    if (update_filename) set_filename(c);
+  }
+  if (!write_file(c)) {
+    fl_alert("Error writing %s: %s", c, strerror(errno));
+    return;
+  }
+
+  if (update_filename) {
+    set_modflag(0, 1);
+    undo_save = undo_current;
+  }
+}
+
+/**
+ Load a project from the give file name and path.
+
+ The project file is inserted at the currently selected type.
+
+ If no filename is given, FLUID will open a file chooser dialog.
+
+ \param[in] filename_arg path and name of the new project file
+ \return false if the operation failed
+ */
+bool Project::merge_project_file(const Fl_String &filename_arg) {
+  bool is_a_merge = (Fl_Type::first != NULL);
+  Fl_String title = is_a_merge ? "Merge Project File" : "Open Project File";
+
+  // ask for a filename if none was given
+  Fl_String new_filename = filename_arg;
+  if (new_filename.empty()) {
+    new_filename = open_project_filechooser(title);
+    if (new_filename.empty()) {
+      return false;
+    }
+  }
+
+  const char *c = new_filename.c_str();
+  const char *oldfilename = filename;
+  filename    = NULL;
+  set_filename(c);
+  if (is_a_merge) undo_checkpoint();
+  undo_suspend();
+  if (!read_file(c, is_a_merge)) {
+    undo_resume();
+    widget_browser->rebuild();
+    g_project.update_settings_dialog();
+    fl_message("Can't read %s: %s", c, strerror(errno));
+    ::free((void *)filename);
+    filename = oldfilename;
+    if (main_window) set_modflag(modflag);
+    return false;
+  }
+  undo_resume();
+  widget_browser->rebuild();
+  if (is_a_merge) {
+    // Inserting a file; restore the original filename...
+    set_filename(oldfilename);
+    set_modflag(1);
+  } else {
+    // Loaded a file; free the old filename...
+    set_modflag(0, 0);
+    undo_clear();
+  }
+  if (oldfilename) free((void *)oldfilename);
+  return true;
+}
