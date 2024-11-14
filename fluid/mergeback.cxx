@@ -20,7 +20,7 @@
 #include "mergeback.h"
 
 #include "fluid.h"
-#include "code.h"
+#include "streams/code_writer.h"
 #include "project/undo.h"
 #include "Fl_Function_Type.h"
 #include "Fl_Widget_Type.h"

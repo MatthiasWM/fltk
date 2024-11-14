@@ -19,6 +19,7 @@
 #include "fluid.h"
 #include "streams/project_reader.h"
 #include "streams/project_writer.h"
+#include "streams/string_writer.h"
 #include "project/undo.h"
 #include "Fl_Type.h"
 #include "settings_panel.h"
@@ -227,7 +228,7 @@ int Project::write_code_files(bool dont_show_completion_dialog)
   }
 
   // -- generate the file names with absolute paths
-  Fd_Code_Writer f { *this };
+  stream::CodeWriter f { *this };
   Fl_String code_filename = codefile_path() + codefile_name();
   Fl_String header_filename = headerfile_path() + headerfile_name();
 

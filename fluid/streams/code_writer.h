@@ -31,9 +31,12 @@ struct Fd_Text_Tree;
 struct Fd_Pointer_Tree;
 
 int is_id(char c);
-int write_strings(const Fl_String &filename);
 
-class Fd_Code_Writer
+namespace fluid {
+
+namespace stream {
+
+class CodeWriter
 {
 protected:
   /// file pointer for the C++ code file
@@ -81,8 +84,8 @@ public:
   int varused;
 
 public:
-  Fd_Code_Writer(fluid::Project &project_arg);
-  ~Fd_Code_Writer();
+  CodeWriter(fluid::Project &project_arg);
+  ~CodeWriter();
   const char* unique_id(void* o, const char*, const char*, const char*);
   /// Increment source code indentation level.
   void indent_more() { indentation++; }
@@ -112,5 +115,9 @@ public:
 
   static unsigned long block_crc(const void *data, int n=-1, unsigned long in_crc=0, bool *inout_line_start=NULL);
 };
+
+} // namespace stream
+
+} // namespace fluid
 
 #endif // FLUID_STREAMS_CODE_WRITER_H

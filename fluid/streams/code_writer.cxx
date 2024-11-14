@@ -79,9 +79,9 @@ Fd_Identifier_Tree::~Fd_Identifier_Tree() {
  \param[in] type is the first word of the ID
  \param[in] name if name is set, it is appended to the ID
  \param[in] label else if label is set, it is appended, skipping non-keyword characters
- \return buffer to a unique identifier, managed by Fd_Code_Writer, so caller must NOT free() it
+ \return buffer to a unique identifier, managed by stream::CodeWriter, so caller must NOT free() it
  */
-const char* Fd_Code_Writer::unique_id(void* o, const char* type, const char* name, const char* label) {
+const char* stream::CodeWriter::unique_id(void* o, const char* type, const char* name, const char* label) {
   char buffer[128];
   char* q = buffer;
   char* q_end = q + 128 - 8 - 1; // room for hex number and NUL
@@ -131,7 +131,7 @@ const char* Fd_Code_Writer::unique_id(void* o, const char* type, const char* nam
  \param[in] set generate this indent depth
  \return pointer to a static string
  */
-const char *Fd_Code_Writer::indent(int set) {
+const char *stream::CodeWriter::indent(int set) {
   static const char* spaces = "                                ";
   int i = set * 2;
   if (i>32) i = 32;
@@ -143,7 +143,7 @@ const char *Fd_Code_Writer::indent(int set) {
  Return a C string that indents code to the current source file depth.
  \return pointer to a static string
  */
-const char *Fd_Code_Writer::indent() {
+const char *stream::CodeWriter::indent() {
   return indent(indentation);
 }
 
@@ -153,7 +153,7 @@ const char *Fd_Code_Writer::indent() {
     change the `indentation` variable; offset can be negative
  \return pointer to a static string
  */
-const char *Fd_Code_Writer::indent_plus(int offset) {
+const char *stream::CodeWriter::indent_plus(int offset) {
   return indent(indentation+offset);
 }
 
@@ -203,7 +203,7 @@ Fd_Pointer_Tree::~Fd_Pointer_Tree() {
  \param[in] format printf-style formatting text, followed by a vararg list
  \return 1 if the text was written to the file, 0 if it was previously written.
  */
-int Fd_Code_Writer::write_h_once(const char *format, ...) {
+int stream::CodeWriter::write_h_once(const char *format, ...) {
   va_list args;
   char buf[1024];
   va_start(args, format);
@@ -227,7 +227,7 @@ int Fd_Code_Writer::write_h_once(const char *format, ...) {
  \param[in] format printf-style formatting text, followed by a vararg list
  \return 1 if the text was written to the file, 0 if it was previously written.
  */
-int Fd_Code_Writer::write_c_once(const char *format, ...) {
+int stream::CodeWriter::write_c_once(const char *format, ...) {
   va_list args;
   char buf[1024];
   va_start(args, format);
@@ -258,7 +258,7 @@ int Fd_Code_Writer::write_c_once(const char *format, ...) {
  \param[in] pp ay pointer
  \return true if found in the tree, false if added to the tree
  */
-bool Fd_Code_Writer::c_contains(void *pp) {
+bool stream::CodeWriter::c_contains(void *pp) {
   Fd_Pointer_Tree **p = &ptr_in_code;
   while (*p) {
     if ((*p)->ptr == pp) return true;
@@ -286,7 +286,7 @@ bool Fd_Code_Writer::c_contains(void *pp) {
 
  \see f.write_cstring(const char*)
  */
-void Fd_Code_Writer::write_cstring(const char *s, int length) {
+void stream::CodeWriter::write_cstring(const char *s, int length) {
   const char *next_line = "\"\n\"";
   if (varused_test) {
     varused = 1;
@@ -367,7 +367,7 @@ void Fd_Code_Writer::write_cstring(const char *s, int length) {
  \param[in] s write this string
  \see f.write_cstring(const char*, int)
  */
-void Fd_Code_Writer::write_cstring(const char *s) {
+void stream::CodeWriter::write_cstring(const char *s) {
   write_cstring(s, (int)strlen(s));
 }
 
@@ -379,7 +379,7 @@ void Fd_Code_Writer::write_cstring(const char *s) {
  \param[in] s a block of binary data, interpreted as unsigned bytes
  \param[in] length size of the block in bytes
  */
-void Fd_Code_Writer::write_cdata(const char *s, int length) {
+void stream::CodeWriter::write_cdata(const char *s, int length) {
   if (varused_test) {
     varused = 1;
     return;
@@ -417,7 +417,7 @@ void Fd_Code_Writer::write_cdata(const char *s, int length) {
  \param[in] format printf-style formatting text
  \param[in] args list of arguments
  */
-void Fd_Code_Writer::vwrite_c(const char* format, va_list args) {
+void stream::CodeWriter::vwrite_c(const char* format, va_list args) {
   if (varused_test) {
     varused = 1;
     return;
@@ -429,7 +429,7 @@ void Fd_Code_Writer::vwrite_c(const char* format, va_list args) {
  Print a formatted line to the source file.
  \param[in] format printf-style formatting text, followed by a vararg list
  */
-void Fd_Code_Writer::write_c(const char* format,...) {
+void stream::CodeWriter::write_c(const char* format,...) {
   va_list args;
   va_start(args, format);
   vwrite_c(format, args);
@@ -444,7 +444,7 @@ void Fd_Code_Writer::write_c(const char* format,...) {
  \param[in] c line of code
  \param[in] com optional commentary
  */
-void Fd_Code_Writer::write_cc(const char *indent, int n, const char *c, const char *com) {
+void stream::CodeWriter::write_cc(const char *indent, int n, const char *c, const char *com) {
   write_c("%s%.*s", indent, n, c);
   char cc = c[n-1];
   if (cc!='}' && cc!=';')
@@ -458,7 +458,7 @@ void Fd_Code_Writer::write_cc(const char *indent, int n, const char *c, const ch
  Print a formatted line to the header file.
  \param[in] format printf-style formatting text, followed by a vararg list
  */
-void Fd_Code_Writer::write_h(const char* format,...) {
+void stream::CodeWriter::write_h(const char* format,...) {
   if (varused_test) return;
   va_list args;
   va_start(args, format);
@@ -474,7 +474,7 @@ void Fd_Code_Writer::write_h(const char* format,...) {
  \param[in] c line of code
  \param[in] com optional commentary
  */
-void Fd_Code_Writer::write_hc(const char *indent, int n, const char* c, const char *com) {
+void stream::CodeWriter::write_hc(const char *indent, int n, const char* c, const char *com) {
   write_h("%s%.*s", indent, n, c);
   char cc = c[n-1];
   if (cc!='}' && cc!=';')
@@ -491,7 +491,7 @@ void Fd_Code_Writer::write_hc(const char *indent, int n, const char* c, const ch
  \param[in] inTrailWith append this character if the last line did not end with
             a newline, usually 0 or newline.
  */
-void Fd_Code_Writer::write_c_indented(const char *textlines, int inIndent, char inTrailWith) {
+void stream::CodeWriter::write_c_indented(const char *textlines, int inIndent, char inTrailWith) {
   if (textlines) {
     indentation += inIndent;
     for (;;) {
@@ -564,7 +564,7 @@ bool is_comment_before_class_member(Fl_Type *q) {
  \param[in] p write this type and all its children
  \return pointer to the next sibling
  */
-Fl_Type* Fd_Code_Writer::write_static(Fl_Type* p) {
+Fl_Type* stream::CodeWriter::write_static(Fl_Type* p) {
   if (write_codeview) p->header_static_start = (int)ftell(header_file);
   if (write_codeview) p->code_static_start = (int)ftell(code_file);
   p->write_static(*this);
@@ -586,7 +586,7 @@ Fl_Type* Fd_Code_Writer::write_static(Fl_Type* p) {
  \param[in] p write this type and all its children
  \return pointer to the next sibling
  */
-Fl_Type* Fd_Code_Writer::write_code(Fl_Type* p) {
+Fl_Type* stream::CodeWriter::write_code(Fl_Type* p) {
   // write all code that comes before the children code
   // (but don't write the last comment until the very end)
   if (!(p==Fl_Type::last && p->is_a(ID_Comment))) {
@@ -655,7 +655,7 @@ Fl_Type* Fd_Code_Writer::write_code(Fl_Type* p) {
  \param[in] t filename of the header file
  \return 0 if the operation failed, 1 if it was successful
  */
-int Fd_Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
+int stream::CodeWriter::write_code(const char *s, const char *t, bool to_codeview) {
   write_codeview = to_codeview;
   delete id_root; id_root = 0;
   indentation = 0;
@@ -817,7 +817,7 @@ int Fd_Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
  This avoids repeating these words if the mode is already set.
  \param[in] state 0 for private, 1 for public, 2 for protected
  */
-void Fd_Code_Writer::write_public(int state) {
+void stream::CodeWriter::write_public(int state) {
   if (!current_class && !current_widget_class) return;
   if (current_class && current_class->write_public_state == state) return;
   if (current_widget_class && current_widget_class->write_public_state == state) return;
@@ -833,7 +833,7 @@ void Fd_Code_Writer::write_public(int state) {
 /**
  Create and initialize a new C++ source code writer.
  */
-Fd_Code_Writer::Fd_Code_Writer(fluid::Project &project_arg)
+stream::CodeWriter::stream::CodeWriter(fluid::Project &project_arg)
 : project(project_arg),
   code_file(NULL),
   header_file(NULL),
@@ -856,7 +856,7 @@ Fd_Code_Writer::Fd_Code_Writer(fluid::Project &project_arg)
 /**
  Release all resources.
  */
-Fd_Code_Writer::~Fd_Code_Writer()
+stream::CodeWriter::~stream::CodeWriter()
 {
   delete id_root;
   delete ptr_in_code;
@@ -873,7 +873,7 @@ Fd_Code_Writer::~Fd_Code_Writer()
  \param[in] type FD_TAG_GENERIC, FD_TAG_CODE, FD_TAG_MENU_CALLBACK, or FD_TAG_WIDGET_CALLBACK
  \param[in] uid the unique id of the current type
  */
-void Fd_Code_Writer::tag(int type, unsigned short uid) {
+void stream::CodeWriter::tag(int type, unsigned short uid) {
   if (project.write_mergeback_data)
     fprintf(code_file, "//~fl~%d~%04x~%08x~~\n", type, (int)uid, (unsigned int)block_crc_);
   block_crc_ = crc32(0, NULL, 0);
@@ -890,7 +890,7 @@ void Fd_Code_Writer::tag(int type, unsigned short uid) {
             if we are the start of a line, used to find leading whitespace
  \return the new CRC
  */
-unsigned long Fd_Code_Writer::block_crc(const void *data, int n, unsigned long in_crc, bool *inout_line_start) {
+unsigned long stream::CodeWriter::block_crc(const void *data, int n, unsigned long in_crc, bool *inout_line_start) {
   if (!data) return 0;
   if (n==-1) n = (int)strlen((const char*)data);
   bool line_start = true;
@@ -917,7 +917,7 @@ unsigned long Fd_Code_Writer::block_crc(const void *data, int n, unsigned long i
  \param[in] data a pointer to the data block
  \param[in] n the size of the data in bytes, or -1 to use strlen()
  */
-void Fd_Code_Writer::crc_add(const void *data, int n) {
+void stream::CodeWriter::crc_add(const void *data, int n) {
   block_crc_ = block_crc(data, n, block_crc_, &block_line_start_);
 }
 
@@ -926,7 +926,7 @@ void Fd_Code_Writer::crc_add(const void *data, int n) {
  \param[in] format printf style formatting string
  \return see fprintf(FILE *, *const char*, ...)
  */
-int Fd_Code_Writer::crc_printf(const char *format, ...) {
+int stream::CodeWriter::crc_printf(const char *format, ...) {
   va_list args;
   va_start(args, format);
   int ret = crc_vprintf(format, args);
@@ -940,7 +940,7 @@ int Fd_Code_Writer::crc_printf(const char *format, ...) {
  \param[in] args list of arguments
  \return see fprintf(FILE *, *const char*, ...)
  */
-int Fd_Code_Writer::crc_vprintf(const char *format, va_list args) {
+int stream::CodeWriter::crc_vprintf(const char *format, va_list args) {
   if (project.write_mergeback_data) {
     int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
     if (n > block_buffer_size_) {
@@ -961,7 +961,7 @@ int Fd_Code_Writer::crc_vprintf(const char *format, va_list args) {
  \param[in] text any text, no requirements to end in a newline or such
  \return see fputs(const char*, FILE*)
  */
-int Fd_Code_Writer::crc_puts(const char *text) {
+int stream::CodeWriter::crc_puts(const char *text) {
   if (project.write_mergeback_data) {
     crc_add(text);
   }
@@ -970,11 +970,11 @@ int Fd_Code_Writer::crc_puts(const char *text) {
 
 /** Write a single ASCII character to the code file.
  If MergeBack is enabled, the CRC calculation is continued.
- \note to write UTF-8 characters, use Fd_Code_Writer::crc_puts(const char *text)
+ \note to write UTF-8 characters, use stream::CodeWriter::crc_puts(const char *text)
  \param[in] c any character between 0 and 127 inclusive
  \return see fputc(int, FILE*)
  */
-int Fd_Code_Writer::crc_putc(int c) {
+int stream::CodeWriter::crc_putc(int c) {
   if (project.write_mergeback_data) {
     uchar uc = (uchar)c;
     crc_add(&uc, 1);

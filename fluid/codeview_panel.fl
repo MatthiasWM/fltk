@@ -29,7 +29,13 @@ decl {\#include "application/application.h"} {private local
 decl {\#include "project/project.h"} {private local
 }
 
-decl {\#include "file.h"} {private local
+decl {\#include "streams/project_reader.h"} {private local
+}
+
+decl {\#include "streams/project_writer.h"} {private local
+}
+
+decl {\#include "streams/string_writer.h"} {private local
 }
 
 decl {\#include "../src/flstring.h"} {selected private local

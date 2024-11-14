@@ -26,7 +26,6 @@
 #include "settings_panel.h"
 #include "widget_browser.h"
 #include "shell_command.h"
-// #include "code.h"
 #include "project/undo.h"
 
 #include <FL/Fl.H>
