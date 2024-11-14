@@ -53,9 +53,9 @@ void Fluid_Image::deimage(Fl_Widget *o) {
  \return 0 if the file could not be opened or read */
 size_t Fluid_Image::write_static_binary(Fd_Code_Writer& f, const char* fmt) {
   size_t nData = 0;
-  Fluid.project().enter_project_dir();
+  Fluid.project.enter_project_dir();
   FILE *in = fl_fopen(name(), "rb");
-  Fluid.project().leave_project_dir();
+  Fluid.project.leave_project_dir();
   if (!in) {
     write_file_error(f, fmt);
     return 0;
@@ -79,9 +79,9 @@ size_t Fluid_Image::write_static_binary(Fd_Code_Writer& f, const char* fmt) {
  \return 0 if the file could not be opened or read */
 size_t Fluid_Image::write_static_text(Fd_Code_Writer& f, const char* fmt) {
   size_t nData = 0;
-  Fluid.project().enter_project_dir();
+  Fluid.project.enter_project_dir();
   FILE *in = fl_fopen(name(), "rb");
-  Fluid.project().leave_project_dir();
+  Fluid.project.leave_project_dir();
   if (!in) {
     write_file_error(f, fmt);
     return 0;
@@ -245,9 +245,9 @@ void Fluid_Image::write_static(Fd_Code_Writer& f, int compressed) {
 
 void Fluid_Image::write_file_error(Fd_Code_Writer& f, const char *fmt) {
   f.write_c("#warning Cannot read %s file \"%s\": %s\n", fmt, name(), strerror(errno));
-  Fluid.project().enter_project_dir();
+  Fluid.project.enter_project_dir();
   f.write_c("// Searching in path \"%s\"\n", fl_getcwd(0, FL_PATH_MAX));
-  Fluid.project().leave_project_dir();
+  Fluid.project.leave_project_dir();
 }
 
 void Fluid_Image::write_initializer(Fd_Code_Writer& f, const char *type_name, const char *format, ...) {
@@ -311,14 +311,14 @@ Fluid_Image* Fluid_Image::find(const char *iname) {
 
   // no, so now see if the file exists:
 
-  Fluid.project().enter_project_dir();
+  Fluid.project.enter_project_dir();
   FILE *f = fl_fopen(iname,"rb");
   if (!f) {
     if (Fluid.batch_mode)
       fprintf(stderr, "Can't open image file:\n%s\n%s",iname,strerror(errno));
     else
       fl_message("Can't open image file:\n%s\n%s",iname,strerror(errno));
-    Fluid.project().leave_project_dir();
+    Fluid.project.leave_project_dir();
     return 0;
   }
   fclose(f);
@@ -333,7 +333,7 @@ Fluid_Image* Fluid_Image::find(const char *iname) {
     else
       fl_message("Can't read image file:\n%s\nunrecognized image format",iname);
   }
-  Fluid.project().leave_project_dir();
+  Fluid.project.leave_project_dir();
   if (!ret) return 0;
 
   // make a new entry in the table:
@@ -397,7 +397,7 @@ Fluid_Image::~Fluid_Image() {
 
 const char *ui_find_image_name;
 Fluid_Image *ui_find_image(const char *oldname) {
-  Fluid.project().enter_project_dir();
+  Fluid.project.enter_project_dir();
   fl_file_chooser_ok_label("Use Image");
   const char *name = fl_file_chooser("Image?",
             "Image Files (*.{bm,bmp,gif,jpg,pbm,pgm,png,ppm,xbm,xpm,svg"
@@ -409,6 +409,6 @@ Fluid_Image *ui_find_image(const char *oldname) {
   fl_file_chooser_ok_label(NULL);
   ui_find_image_name = name;
   Fluid_Image *ret = (name && *name) ? Fluid_Image::find(name) : 0;
-  Fluid.project().leave_project_dir();
+  Fluid.project.leave_project_dir();
   return ret;
 }

@@ -366,11 +366,11 @@ Fl_Input *header_file_input=(Fl_Input *)0;
 
 static void cb_header_file_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().header_file_name.c_str());
+    o->value(Fluid.project.header_file_name.c_str());
   } else {
-    if (strcmp(Fluid.project().header_file_name.c_str(), o->value())) {
-      Fluid.project().header_file_name = o->value();
-      Fluid.project().set_modflag(1);
+    if (strcmp(Fluid.project.header_file_name.c_str(), o->value())) {
+      Fluid.project.header_file_name = o->value();
+      Fluid.project.set_modflag(1);
     }
   }
 }
@@ -379,11 +379,11 @@ Fl_Input *code_file_input=(Fl_Input *)0;
 
 static void cb_code_file_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().code_file_name.c_str());
+    o->value(Fluid.project.code_file_name.c_str());
   } else {
-    if (strcmp(Fluid.project().code_file_name.c_str(), o->value())) {
-      Fluid.project().code_file_name = o->value();
-      Fluid.project().set_modflag(1);
+    if (strcmp(Fluid.project.code_file_name.c_str(), o->value())) {
+      Fluid.project.code_file_name = o->value();
+      Fluid.project.set_modflag(1);
     }
   }
 }
@@ -392,11 +392,11 @@ Fl_Check_Button *include_H_from_C_button=(Fl_Check_Button *)0;
 
 static void cb_include_H_from_C_button(Fl_Check_Button* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().include_H_from_C);
+    o->value(Fluid.project.include_H_from_C);
   } else {
-    if (Fluid.project().include_H_from_C != o->value()) {
-      Fluid.project().set_modflag(1);
-      Fluid.project().include_H_from_C = o->value();
+    if (Fluid.project.include_H_from_C != o->value()) {
+      Fluid.project.set_modflag(1);
+      Fluid.project.include_H_from_C = o->value();
     }
   }
 }
@@ -405,11 +405,11 @@ Fl_Check_Button *use_FL_COMMAND_button=(Fl_Check_Button *)0;
 
 static void cb_use_FL_COMMAND_button(Fl_Check_Button* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().use_FL_COMMAND);
+    o->value(Fluid.project.use_FL_COMMAND);
   } else {
-    if (Fluid.project().use_FL_COMMAND != o->value()) {
-      Fluid.project().set_modflag(1);
-      Fluid.project().use_FL_COMMAND = o->value();
+    if (Fluid.project.use_FL_COMMAND != o->value()) {
+      Fluid.project.set_modflag(1);
+      Fluid.project.use_FL_COMMAND = o->value();
     }
   }
 }
@@ -418,11 +418,11 @@ Fl_Check_Button *utf8_in_src_button=(Fl_Check_Button *)0;
 
 static void cb_utf8_in_src_button(Fl_Check_Button* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().utf8_in_src);
+    o->value(Fluid.project.utf8_in_src);
   } else {
-    if (Fluid.project().utf8_in_src != o->value()) {
-      Fluid.project().set_modflag(1);
-      Fluid.project().utf8_in_src = o->value();
+    if (Fluid.project.utf8_in_src != o->value()) {
+      Fluid.project.set_modflag(1);
+      Fluid.project.utf8_in_src = o->value();
     }
   }
 }
@@ -431,11 +431,11 @@ Fl_Check_Button *avoid_early_includes_button=(Fl_Check_Button *)0;
 
 static void cb_avoid_early_includes_button(Fl_Check_Button* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().avoid_early_includes);
+    o->value(Fluid.project.avoid_early_includes);
   } else {
-    if (Fluid.project().avoid_early_includes != o->value()) {
-      Fluid.project().set_modflag(1);
-      Fluid.project().avoid_early_includes = o->value();
+    if (Fluid.project.avoid_early_includes != o->value()) {
+      Fluid.project.set_modflag(1);
+      Fluid.project.avoid_early_includes = o->value();
     }
   }
 }
@@ -444,11 +444,11 @@ Fl_Check_Button *w_proj_mergeback=(Fl_Check_Button *)0;
 
 static void cb_w_proj_mergeback(Fl_Check_Button* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().write_mergeback_data);
+    o->value(Fluid.project.write_mergeback_data);
   } else {
-    if (Fluid.project().write_mergeback_data != o->value()) {
-      Fluid.project().set_modflag(1);
-      Fluid.project().write_mergeback_data = o->value();
+    if (Fluid.project.write_mergeback_data != o->value()) {
+      Fluid.project.set_modflag(1);
+      Fluid.project.write_mergeback_data = o->value();
     }
   }
 }
@@ -1051,7 +1051,7 @@ static void cb_Name(Fl_Input* o, void* v) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->name = o->value();
       w_settings_shell_list->text(selected, o->value());
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1069,7 +1069,7 @@ static void cb_Menu(Fl_Input* o, void* v) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->label = o->value();
       cmd->update_shell_menu();
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1092,7 +1092,7 @@ static void cb_Shortcut(Fl_Shortcut_Button* o, void* v) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->shortcut = o->value();
       cmd->update_shell_menu();
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1110,14 +1110,14 @@ static void cb_Store(Fl_Choice* o, void* v) {
     if (selected) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       Fd_Tool_Store ts = (Fd_Tool_Store)(o->mvalue()->argument());
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
       cmd->storage = ts;
       //w_settings_shell_list->text(selected, cmd->name.c_str());
       if (cmd->storage == Fd_Tool_Store::USER)
         w_settings_shell_list->icon(selected, w_settings_shell_fd_user->image());
       else if (cmd->storage == Fd_Tool_Store::PROJECT)
         w_settings_shell_list->icon(selected, w_settings_shell_fd_project->image());
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1143,7 +1143,7 @@ static void cb_Condition(Fl_Choice* o, void* v) {
       int cond = (int)(o->mvalue()->argument());
       cmd->condition = cond;
       g_shell_config->rebuild_shell_menu();
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1180,7 +1180,7 @@ static void cb_w_settings_shell_command(Fl_Text_Editor* o, void* v) {
     if (selected) {
       Fd_Shell_Command *cmd = g_shell_config->list[selected-1];
       cmd->command = o->buffer()->text();
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1259,7 +1259,7 @@ static void cb_save(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::SAVE_PROJECT;
       }
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1281,7 +1281,7 @@ static void cb_save1(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::SAVE_SOURCECODE;
       }
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1303,7 +1303,7 @@ static void cb_save2(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::SAVE_STRINGS;
       }
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1325,7 +1325,7 @@ static void cb_show(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::DONT_SHOW_TERMINAL;
       }
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1347,7 +1347,7 @@ static void cb_clear(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::CLEAR_TERMINAL;
       }
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -1369,7 +1369,7 @@ static void cb_clear1(Fl_Check_Button* o, void* v) {
       } else {
         cmd->flags &= ~Fd_Shell_Command::CLEAR_HISTORY;
       }
-      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project().set_modflag(1);
+      if (cmd->storage == Fd_Tool_Store::PROJECT) Fluid.project.set_modflag(1);
     }
   }
 }
@@ -2126,11 +2126,11 @@ Fl_Input *i18n_gnu_include_input=(Fl_Input *)0;
 
 static void cb_i18n_gnu_include_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_gnu_include.c_str());
+    o->value(Fluid.project.i18n_gnu_include.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_gnu_include = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_gnu_include = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2138,11 +2138,11 @@ Fl_Input *i18n_gnu_conditional_input=(Fl_Input *)0;
 
 static void cb_i18n_gnu_conditional_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_gnu_conditional.c_str());
+    o->value(Fluid.project.i18n_gnu_conditional.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_gnu_conditional = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_gnu_conditional = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2150,11 +2150,11 @@ Fl_Input *i18n_gnu_function_input=(Fl_Input *)0;
 
 static void cb_i18n_gnu_function_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_gnu_function.c_str());
+    o->value(Fluid.project.i18n_gnu_function.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_gnu_function = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_gnu_function = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2162,11 +2162,11 @@ Fl_Input *i18n_gnu_static_function_input=(Fl_Input *)0;
 
 static void cb_i18n_gnu_static_function_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_gnu_static_function.c_str());
+    o->value(Fluid.project.i18n_gnu_static_function.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_gnu_static_function = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_gnu_static_function = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2180,11 +2180,11 @@ Fl_Input *i18n_pos_include_input=(Fl_Input *)0;
 
 static void cb_i18n_pos_include_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_pos_include.c_str());
+    o->value(Fluid.project.i18n_pos_include.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_pos_include = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_pos_include = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2192,11 +2192,11 @@ Fl_Input *i18n_pos_conditional_input=(Fl_Input *)0;
 
 static void cb_i18n_pos_conditional_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_pos_conditional.c_str());
+    o->value(Fluid.project.i18n_pos_conditional.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_pos_conditional = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_pos_conditional = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2204,11 +2204,11 @@ Fl_Input *i18n_pos_file_input=(Fl_Input *)0;
 
 static void cb_i18n_pos_file_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_pos_file.c_str());
+    o->value(Fluid.project.i18n_pos_file.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_pos_file = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_pos_file = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -2220,11 +2220,11 @@ Fl_Int_Input *i18n_pos_set_input=(Fl_Int_Input *)0;
 
 static void cb_i18n_pos_set_input(Fl_Int_Input* o, void* v) {
   if (v == LOAD) {
-    o->value(Fluid.project().i18n_pos_set.c_str());
+    o->value(Fluid.project.i18n_pos_set.c_str());
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_pos_set = o->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_pos_set = o->value();
+    Fluid.project.set_modflag(1);
   }
 }
 

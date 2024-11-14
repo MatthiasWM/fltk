@@ -230,7 +230,7 @@ static void external_editor_timer(void*) {
         }
       }
     }
-    if ( modified ) Fluid.project().set_modflag(1);
+    if ( modified ) Fluid.project.set_modflag(1);
   }
   // Repeat timeout if editors still open
   //    The ExternalCodeEditor class handles start/stopping timer, we just
@@ -250,7 +250,7 @@ static void external_editor_timer(void*) {
  \param[in] v v is (void *)1 for "Save As...", and (void *)2 for "Save a Copy..."
  */
 void fluid::Callbacks::save(Fl_Widget *, void *v) {
-  Fluid.project().save(v != NULL, v != (void *)2);
+  Fluid.project.save(v != NULL, v != (void *)2);
 }
 
 //-> application::callbacks
@@ -365,7 +365,7 @@ void save_template_cb(Fl_Widget *, void *) {
 }
 
 void revert_cb(Fl_Widget *,void *) {
-  Fluid.project().revert(); 
+  Fluid.project.revert(); 
 }
 
 //-> application::callbacks
@@ -387,7 +387,7 @@ void exit_cb(Fl_Widget *,void *) {
   flush_text_widgets();
 
   // verify user intention
-  if (Fluid.project().confirm_clear() == false)
+  if (Fluid.project.confirm_clear() == false)
     return;
 
   // Stop any external editor update timers
@@ -422,12 +422,12 @@ void exit_cb(Fl_Widget *,void *) {
     g_shell_config->write(fluid_prefs, Fd_Tool_Store::USER);
   g_layout_list.write(fluid_prefs, Fd_Tool_Store::USER);
 
-  Fluid.project().undo.clear();
+  Fluid.project.undo.clear();
 
   // Destroy tree
   //    Doing so causes dtors to automatically close all external editors
   //    and cleans up editor tmp files. Then remove fluid tmpdir /last/.
-  Fluid.project().reset();
+  Fluid.project.reset();
   ExternalCodeEditor::tmpdir_clear();
   Fluid.delete_tmpdir();
 
@@ -497,8 +497,8 @@ bool new_project_from_template() {
       if ((infile = fl_fopen(tname, "rb")) == NULL) {
         fl_alert("Error reading template file \"%s\":\n%s", tname,
                  strerror(errno));
-        Fluid.project().set_modflag(0);
-        Fluid.project().undo.clear();
+        Fluid.project.set_modflag(0);
+        Fluid.project.undo.clear();
         return false;
       }
 
@@ -506,8 +506,8 @@ bool new_project_from_template() {
         fl_alert("Error writing buffer file \"%s\":\n%s", Fluid.cutfname(1),
                  strerror(errno));
         fclose(infile);
-        Fluid.project().set_modflag(0);
-        Fluid.project().undo.clear();
+        Fluid.project.set_modflag(0);
+        Fluid.project.undo.clear();
         return false;
       }
 
@@ -524,22 +524,22 @@ bool new_project_from_template() {
       fclose(infile);
       fclose(outfile);
 
-      Fluid.project().undo.suspend();
+      Fluid.project.undo.suspend();
       read_file(Fluid.cutfname(1), 0);
       fl_unlink(Fluid.cutfname(1));
-      Fluid.project().undo.resume();
+      Fluid.project.undo.resume();
     } else {
       // No instance name, so read the template without replacements...
-      Fluid.project().undo.suspend();
+      Fluid.project.undo.suspend();
       read_file(tname, 0);
-      Fluid.project().undo.resume();
+      Fluid.project.undo.resume();
     }
   }
 
   widget_browser->rebuild();
-  Fluid.project().update_settings_dialog();
-  Fluid.project().set_modflag(0);
-  Fluid.project().undo.clear();
+  Fluid.project.update_settings_dialog();
+  Fluid.project.set_modflag(0);
+  Fluid.project.undo.clear();
 
   return true;
 }
@@ -561,7 +561,7 @@ void apple_open_cb(const char *c) {
  Callback to write C++ code and header files.
  */
 void write_cb(Fl_Widget *, void *) {
-    Fluid.project().write_code_files();
+    Fluid.project.write_code_files();
 }
 
 #if 0
@@ -573,14 +573,14 @@ int mergeback_code_files()
 {
   flush_text_widgets();
   if (!filename) return 1;
-  if (!Fluid.project().write_mergeback_data) {
+  if (!Fluid.project.write_mergeback_data) {
     fl_message("MergeBack is not enabled for this project.\n"
                "Please enable MergeBack in the project settings\n"
                "dialog and re-save the project file and the code.");
     return 0;
   }
 
-  Fl_String proj_filename = Fluid.project().projectfile_path() + Fluid.project().projectfile_name();
+  Fl_String proj_filename = Fluid.project.projectfile_path() + Fluid.project.projectfile_name();
   Fl_String code_filename;
 #if 1
   if (!Fluid.batch_mode) {
@@ -592,8 +592,8 @@ int mergeback_code_files()
   }
 #endif
   if (code_filename.empty())
-    code_filename = Fluid.project().codefile_path() + Fluid.project().codefile_name();
-  if (!Fluid.batch_mode) Fluid.project().enter_project_dir();
+    code_filename = Fluid.project.codefile_path() + Fluid.project.codefile_name();
+  if (!Fluid.batch_mode) Fluid.project.enter_project_dir();
   int c = merge_back(code_filename, proj_filename, FD_MERGEBACK_INTERACTIVE);
   if (!Fluid.batch_mode) leave_project_dir();
 
@@ -611,7 +611,7 @@ void mergeback_cb(Fl_Widget *, void *) {
 #endif
 
 void write_strings_cb(Fl_Widget *, void *) {
-  Fluid.project().write_strings();
+  Fluid.project.write_strings();
 }
 
 //-> application::callbacks
@@ -627,22 +627,22 @@ void openwidget_cb(Fl_Widget *, void *) {
 }
 
 void copy_cb(Fl_Widget*, void*) {
-  Fluid.project().copy();
+  Fluid.project.copy();
 }
  
 /**
  User chose to cut the currently selected widgets.
  */
 void cut_cb(Fl_Widget *, void *) {
-  Fluid.project().cut();
+  Fluid.project.cut();
 }
 
 void delete_cb(Fl_Widget *, void *) {
-  Fluid.project().user_delete();
+  Fluid.project.user_delete();
 }
 
 void paste_cb(Fl_Widget*, void*) {
-  Fluid.project().paste();
+  Fluid.project.paste();
 }
 
 /**
@@ -653,7 +653,7 @@ void paste_cb(Fl_Widget*, void*) {
  this one.
  */
 void duplicate_cb(Fl_Widget*, void*) {
-  Fluid.project().duplicate();
+  Fluid.project.duplicate();
 }
 
 //-> application::callbacks
@@ -661,10 +661,10 @@ void duplicate_cb(Fl_Widget*, void*) {
  User wants to sort selected widgets by y coordinate.
  */
 static void sort_cb(Fl_Widget *,void *) {
-  Fluid.project().undo.checkpoint();
+  Fluid.project.undo.checkpoint();
   sort((Fl_Type*)NULL);
   widget_browser->rebuild();
-  Fluid.project().set_modflag(1);
+  Fluid.project.set_modflag(1);
 }
 
 //-> application::callbacks
@@ -805,7 +805,7 @@ void print_menu_cb(Fl_Widget *, void *) {
     fl_draw(date, w - (int)fl_width(date), fl_height());
 
     // Get the base filename...
-    Fl_String basename = fl_filename_name(Fl_String(Fluid.project().filename));
+    Fl_String basename = fl_filename_name(Fl_String(Fluid.project.filename));
     fl_draw(basename.c_str(), 0, fl_height());
 
     // print centered and scaled to fit in the page
@@ -835,16 +835,16 @@ extern void layout_suite_marker(Fl_Widget *, void *user_data);
 static void menu_file_new_cb(Fl_Widget *, void *) { Fluid.new_project(); }
 static void menu_file_new_from_template_cb(Fl_Widget *, void *) { new_project_from_template(); }
 static void menu_file_open_cb(Fl_Widget *, void *) { Fluid.open_project_file(""); }
-static void menu_file_insert_cb(Fl_Widget *, void *) { Fluid.project().merge_project_file(""); }
+static void menu_file_insert_cb(Fl_Widget *, void *) { Fluid.project.merge_project_file(""); }
 static void menu_file_open_history_cb(Fl_Widget *, void *v) { Fluid.open_project_file(Fl_String((const char*)v)); }
 static void menu_layout_sync_resize_cb(Fl_Menu_ *m, void*) {
   if (m->mvalue()->value()) Fl_Type::allow_layout = 1; else Fl_Type::allow_layout = 0; }
 
 static void undo_cb(Fl_Widget *, void *) {
-  Fluid.project().undo.undo();
+  Fluid.project.undo.undo();
 }
 static void redo_cb(Fl_Widget *, void *) {
-  Fluid.project().undo.redo();
+  Fluid.project.undo.redo();
 }
 
 
@@ -1181,7 +1181,7 @@ int main(int argc,char **argv) {
 
   make_main_window();
 
-  if (c) Fluid.project().set_filename(c);
+  if (c) Fluid.project.set_filename(c);
   if (!Fluid.batch_mode) {
 #ifdef __APPLE__
     fl_open_callback(apple_open_cb);
@@ -1204,7 +1204,7 @@ int main(int argc,char **argv) {
       Fluid.open_project_file(Fluid.history.full_path[0]);
     }
   }
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.suspend();
   if (c && !read_file(c,0)) {
     if (Fluid.batch_mode) {
       fprintf(stderr,"%s : %s\n", c, strerror(errno));
@@ -1212,18 +1212,18 @@ int main(int argc,char **argv) {
     }
     fl_message("Can't read %s: %s", c, strerror(errno));
   }
-  Fluid.project().undo.resume();
+  Fluid.project.undo.resume();
 
   // command line args override code and header filenames from the project file
   // in batch mode only
   if (Fluid.batch_mode) {
     if (!Fluid.args.code_filename.empty()) {
-      Fluid.project().code_file_set = 1;
-      Fluid.project().code_file_name = Fluid.args.code_filename;
+      Fluid.project.code_file_set = 1;
+      Fluid.project.code_file_name = Fluid.args.code_filename;
     }
     if (!Fluid.args.header_filename.empty()) {
-      Fluid.project().header_file_set = 1;
-      Fluid.project().header_file_name = Fluid.args.header_filename;
+      Fluid.project.header_file_set = 1;
+      Fluid.project.header_file_name = Fluid.args.header_filename;
     }
   }
 
@@ -1250,8 +1250,8 @@ int main(int argc,char **argv) {
   Fl::set_font(FL_COURIER_ITALIC, "IConsolas");
   Fl::set_font(FL_COURIER_BOLD_ITALIC, "PConsolas");
 #endif
-  Fluid.project().set_modflag(0);
-  Fluid.project().undo.clear();
+  Fluid.project.set_modflag(0);
+  Fluid.project.undo.clear();
 #ifndef _WIN32
   signal(SIGINT,sigint);
 #endif
@@ -1274,7 +1274,7 @@ int main(int argc,char **argv) {
   if (quit_flag) exit_cb(0,0);
 #endif // _WIN32
 
-  Fluid.project().undo.clear();
+  Fluid.project.undo.clear();
   return (0);
 }
 

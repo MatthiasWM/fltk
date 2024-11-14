@@ -33,8 +33,6 @@ int write_file(const char *, int selected_only = 0, bool to_codeview = false);
 class Fd_Project_Reader
 {
 protected:
-  /// Reference to the project that will be read.
-  fluid::Project &project_;
   /// Project input file
   FILE *fin;
   /// Number of most recently read line
@@ -51,13 +49,14 @@ protected:
   int nextchar() { for (;;) { int ret = fgetc(fin); if (ret!='\r') return ret; } }
 
 public:
+  /// Reference to the project that will be read.
+  fluid::Project &project;
   /// Holds the file version number after reading the "version" tag
   double read_version;
 
 public:
   Fd_Project_Reader(fluid::Project &project);
   ~Fd_Project_Reader();
-  fluid::Project &project() const { return project_; }
   int open_read(const char *s);
   int close_read();
   const char *filename_name();
@@ -74,8 +73,6 @@ public:
 class Fd_Project_Writer
 {
 protected:
-  /// Reference to the project that will be written.
-  fluid::Project &project_;
   // Project output file, always opened in "wb" mode
   FILE *fout;
   /// If set, one space is written before text unless the format starts with a newline character
@@ -86,7 +83,8 @@ protected:
 public:
   Fd_Project_Writer(fluid::Project &project);
   ~Fd_Project_Writer();
-  fluid::Project &project() const { return project_; }
+  /// Reference to the project that will be written.
+  fluid::Project &project;
   int open_write(const char *s);
   int close_write();
   int write_project(const char *filename, int selected_only, bool codeview);

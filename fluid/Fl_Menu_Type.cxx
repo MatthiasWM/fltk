@@ -208,8 +208,8 @@ void group_selected_menuitems() {
     fl_message("Can't create a new submenu here.");
     return;
   }
-  Fluid.project().undo.checkpoint();
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.checkpoint();
+  Fluid.project.undo.suspend();
   Fl_Widget_Type *n = (Fl_Widget_Type*)(q->make(FL_SUBMENU, kAddAfterCurrent));
   for (Fl_Type *t = qq->next; t && (t->level > qq->level);) {
     if (t->level != n->level || t == n || !t->selected) {
@@ -221,8 +221,8 @@ void group_selected_menuitems() {
     t = nxt;
   }
   widget_browser->rebuild();
-  Fluid.project().undo.resume();
-  Fluid.project().set_modflag(1);
+  Fluid.project.undo.resume();
+  Fluid.project.set_modflag(1);
 }
 
 void ungroup_selected_menuitems() {
@@ -234,8 +234,8 @@ void ungroup_selected_menuitems() {
     fl_message("Only menu items inside a submenu can be ungrouped.");
     return;
   }
-  Fluid.project().undo.checkpoint();
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.checkpoint();
+  Fluid.project.undo.suspend();
   Fl_Type::current = qq;
   for (Fl_Type *t = qq->next; t && (t->level > qq->level);) {
     if (t->level != q_level || !t->selected) {
@@ -252,8 +252,8 @@ void ungroup_selected_menuitems() {
   }
   Fl_Type::current = q;
   widget_browser->rebuild();
-  Fluid.project().undo.resume();
-  Fluid.project().set_modflag(1);
+  Fluid.project.undo.resume();
+  Fluid.project.set_modflag(1);
 }
 
 
@@ -483,10 +483,10 @@ void Fl_Menu_Item_Type::write_item(Fd_Code_Writer& f) {
   write_comment_inline_c(f, " ");
   f.write_c(" {");
   if (label() && label()[0])
-    switch (f.project().i18n_type) {
+    switch (f.project.i18n_type) {
       case Fd_I18n_Type::GNU:
         // we will call i18n when the menu is instantiated for the first time
-        f.write_c("%s(", f.project().i18n_gnu_static_function.c_str());
+        f.write_c("%s(", f.project.i18n_gnu_static_function.c_str());
         f.write_cstring(label());
         f.write_c(")");
         break;
@@ -500,7 +500,7 @@ void Fl_Menu_Item_Type::write_item(Fd_Code_Writer& f) {
   if (((Fl_Button*)o)->shortcut()) {
     int s = ((Fl_Button*)o)->shortcut();
     f.write_c(", ");
-    if (f.project().use_FL_COMMAND) {
+    if (f.project.use_FL_COMMAND) {
       if (s & FL_CTRL) { f.write_c("FL_CONTROL|"); s &= ~FL_CTRL; }
       if (s & FL_META) { f.write_c("FL_COMMAND|"); s &= ~FL_META; }
     } else {
@@ -589,16 +589,16 @@ void Fl_Menu_Item_Type::write_code1(Fd_Code_Writer& f) {
       f.write_c("%sml->labela = (char*)", f.indent());
       image->write_inline(f);
       f.write_c(";\n");
-      if (f.project().i18n_type==Fd_I18n_Type::NONE) {
+      if (f.project.i18n_type==Fd_I18n_Type::NONE) {
         f.write_c("%sml->labelb = o->label();\n", f.indent());
-      } else if (f.project().i18n_type==Fd_I18n_Type::GNU) {
+      } else if (f.project.i18n_type==Fd_I18n_Type::GNU) {
         f.write_c("%sml->labelb = %s(o->label());\n",
-                f.indent(), f.project().i18n_gnu_function.c_str());
-      } else if (f.project().i18n_type==Fd_I18n_Type::POSIX) {
+                f.indent(), f.project.i18n_gnu_function.c_str());
+      } else if (f.project.i18n_type==Fd_I18n_Type::POSIX) {
         f.write_c("%sml->labelb = catgets(%s,%s,i+%d,o->label());\n",
                   f.indent(),
-                  f.project().i18n_pos_file.empty() ? "_catalog" : f.project().i18n_pos_file.c_str(),
-                  f.project().i18n_pos_set.c_str(), msgnum());
+                  f.project.i18n_pos_file.empty() ? "_catalog" : f.project.i18n_pos_file.c_str(),
+                  f.project.i18n_pos_set.c_str(), msgnum());
       }
       f.write_c("%sml->typea = FL_IMAGE_LABEL;\n", f.indent());
       f.write_c("%sml->typeb = FL_NORMAL_LABEL;\n", f.indent());
@@ -607,21 +607,21 @@ void Fl_Menu_Item_Type::write_code1(Fd_Code_Writer& f) {
       image->write_code(f, 0, "o");
     }
   }
-  if ( (f.project().i18n_type!=Fd_I18n_Type::NONE) && label() && label()[0]) {
+  if ( (f.project.i18n_type!=Fd_I18n_Type::NONE) && label() && label()[0]) {
     Fl_Labeltype t = o->labeltype();
     if (image) {
       // label was already copied a few lines up
     } else if (   t==FL_NORMAL_LABEL   || t==FL_SHADOW_LABEL
                || t==FL_ENGRAVED_LABEL || t==FL_EMBOSSED_LABEL) {
       start_menu_initialiser(f, menuItemInitialized, mname, i);
-      if (f.project().i18n_type==Fd_I18n_Type::GNU) {
+      if (f.project.i18n_type==Fd_I18n_Type::GNU) {
         f.write_c("%so->label(%s(o->label()));\n",
-                f.indent(), f.project().i18n_gnu_function.c_str());
-      } else if (f.project().i18n_type==Fd_I18n_Type::POSIX) {
+                f.indent(), f.project.i18n_gnu_function.c_str());
+      } else if (f.project.i18n_type==Fd_I18n_Type::POSIX) {
         f.write_c("%so->label(catgets(%s,%s,i+%d,o->label()));\n",
                   f.indent(),
-                  f.project().i18n_pos_file.empty() ? "_catalog" : f.project().i18n_pos_file.c_str(),
-                  f.project().i18n_pos_set.c_str(), msgnum());
+                  f.project.i18n_pos_file.empty() ? "_catalog" : f.project.i18n_pos_file.c_str(),
+                  f.project.i18n_pos_set.c_str(), msgnum());
       }
     }
   }
@@ -917,6 +917,6 @@ void shortcut_in_cb(Fl_Shortcut_Button* i, void* v) {
         if (b->shortcut() != (int)i->value()) mod = 1;
         b->shortcut(i->value());
       }
-    if (mod) Fluid.project().set_modflag(1);
+    if (mod) Fluid.project.set_modflag(1);
   }
 }

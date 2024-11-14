@@ -36,8 +36,6 @@ int write_strings(const Fl_String &filename);
 class Fd_Code_Writer
 {
 protected:
-  /// Reference to the project that will be written.
-  fluid::Project &project_;
   /// file pointer for the C++ code file
   FILE *code_file;
   /// file pointer for the C++ header file
@@ -68,6 +66,8 @@ protected:
   int crc_putc(int c);
 
 public:
+  /// Reference to the project that will be written.
+  fluid::Project &project;
   /// current level of source code indentation
   int indentation;
   /// set if we write abbreviated file for the source code previewer
@@ -81,9 +81,8 @@ public:
   int varused;
 
 public:
-  Fd_Code_Writer(fluid::Project &project);
+  Fd_Code_Writer(fluid::Project &project_arg);
   ~Fd_Code_Writer();
-  fluid::Project &project() { return project_; }
   const char* unique_id(void* o, const char*, const char*, const char*);
   /// Increment source code indentation level.
   void indent_more() { indentation++; }

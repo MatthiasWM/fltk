@@ -1211,8 +1211,8 @@ static Fl_Type *known_types[] = {
  add_new_widget_from_user(const char*, int)
  */
 Fl_Type *add_new_widget_from_user(Fl_Type *inPrototype, Strategy strategy, bool and_open) {
-  Fluid.project().undo.checkpoint();
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.checkpoint();
+  Fluid.project.undo.suspend();
   Fl_Type *t = ((Fl_Type*)inPrototype)->make(strategy);
   if (t) {
     if (t->is_widget() && !t->is_a(ID_Window)) {
@@ -1315,14 +1315,14 @@ Fl_Type *add_new_widget_from_user(Fl_Type *inPrototype, Strategy strategy, bool 
     }
     // make the new widget visible
     select_only(t);
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
     if (and_open)
       t->open();
   } else {
-    Fluid.project().undo.current --;
-    Fluid.project().undo.last --;
+    Fluid.project.undo.current --;
+    Fluid.project.undo.last --;
   }
-  Fluid.project().undo.resume();
+  Fluid.project.undo.resume();
   return t;
 }
 

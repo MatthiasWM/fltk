@@ -338,14 +338,14 @@ void Fl_Function_Type::open() {
     }
     c = f_comment_input->buffer()->text();
     if (c && *c) {
-      if (!comment() || strcmp(c, comment()))  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (!comment() || strcmp(c, comment()))  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(c);
     } else {
-      if (comment())  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (comment())  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(0);
     }
     if (c) free((void*)c);
-    if (mod) Fluid.project().set_modflag(1);
+    if (mod) Fluid.project.set_modflag(1);
     break;
   }
 BREAK2:
@@ -1000,25 +1000,25 @@ void Fl_Decl_Type::open() {
     name(c);
     if (is_in_class()) {
       if (public_!=decl_class_choice->value()) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         public_ = decl_class_choice->value();
       }
     } else {
       if (public_!=(decl_choice->value()&1)) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         public_ = (decl_choice->value()&1);
       }
       if (static_!=((decl_choice->value()>>1)&1)) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         static_ = ((decl_choice->value()>>1)&1);
       }
     }
     c = decl_comment_input->buffer()->text();
     if (c && *c) {
-      if (!comment() || strcmp(c, comment()))  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (!comment() || strcmp(c, comment()))  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(c);
     } else {
-      if (comment())  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (comment())  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(0);
     }
     if (c) free((void*)c);
@@ -1210,12 +1210,12 @@ void Fl_Data_Type::open() {
       if (w == data_panel_cancel) goto BREAK2;
       else if (w == data_panel_ok) break;
       else if (w == data_filebrowser) {
-        Fluid.project().enter_project_dir();
+        Fluid.project.enter_project_dir();
         const char *fn = fl_file_chooser("Load Inline Data", 0L, data_filename->value(), 1);
-        Fluid.project().leave_project_dir();
+        Fluid.project.leave_project_dir();
         if (fn) {
           if (strcmp(fn, data_filename->value()))
-            Fluid.project().set_modflag(1);
+            Fluid.project.set_modflag(1);
           data_filename->value(fn);
         }
       }
@@ -1247,22 +1247,22 @@ void Fl_Data_Type::open() {
       if (v==0) { free(s); continue; }    // Continue Editing
       //if (v==1) { }                     // Ignore Error and close dialog
     }
-    Fluid.project().undo.checkpoint();
+    Fluid.project.undo.checkpoint();
     name(n);
     free(s);
     // store flags
     if (is_in_class()) {
       if (public_!=data_class_choice->value()) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         public_ = data_class_choice->value();
       }
     } else {
       if (public_!=(data_choice->value()&1)) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         public_ = (data_choice->value()&1);
       }
       if (static_!=((data_choice->value()>>1)&1)) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         static_ = ((data_choice->value()>>1)&1);
       }
     }
@@ -1272,22 +1272,22 @@ void Fl_Data_Type::open() {
     // store the filename
     c = data_filename->value();
     if (filename_ && strcmp(filename_, data_filename->value()))
-      Fluid.project().set_modflag(1);
+      Fluid.project.set_modflag(1);
     else if (!filename_ && *c)
-      Fluid.project().set_modflag(1);
+      Fluid.project.set_modflag(1);
     if (filename_) { free((void*)filename_); filename_ = 0L; }
     if (c && *c) filename_ = fl_strdup(c);
     // store the comment
     c = data_comment_input->buffer()->text();
     if (c && *c) {
-      if (!comment() || strcmp(c, comment()))  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (!comment() || strcmp(c, comment()))  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(c);
     } else {
-      if (comment())  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (comment())  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(0);
     }
     if (c) free((void*)c);
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
     break;
   }
 BREAK2:
@@ -1307,9 +1307,9 @@ void Fl_Data_Type::write_code1(Fd_Code_Writer& f) {
   int uncompressedDataSize = 0;
   // path should be set correctly already
   if (filename_ && !f.write_codeview) {
-    Fluid.project().enter_project_dir();
+    Fluid.project.enter_project_dir();
     FILE *f = fl_fopen(filename_, "rb");
-    Fluid.project().leave_project_dir();
+    Fluid.project.leave_project_dir();
     if (!f) {
       message = "Can't include data from file. Can't open";
     } else {
@@ -1569,53 +1569,53 @@ void Fl_DeclBlock_Type::open() {
     if (write_map_ & STATIC_IN_HEADER) {
       if (declblock_static_header->value()==0) {
         write_map_ &= ~STATIC_IN_HEADER;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     } else {
       if (declblock_static_header->value()) {
         write_map_ |= STATIC_IN_HEADER;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     }
     if (write_map_ & STATIC_IN_SOURCE) {
       if (declblock_static_source->value()==0) {
         write_map_ &= ~STATIC_IN_SOURCE;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     } else {
       if (declblock_static_source->value()) {
         write_map_ |= STATIC_IN_SOURCE;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     }
     if (write_map_ & CODE_IN_HEADER) {
       if (declblock_code_header->value()==0) {
         write_map_ &= ~CODE_IN_HEADER;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     } else {
       if (declblock_code_header->value()) {
         write_map_ |= CODE_IN_HEADER;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     }
     if (write_map_ & CODE_IN_SOURCE) {
       if (declblock_code_source->value()==0) {
         write_map_ &= ~CODE_IN_SOURCE;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     } else {
       if (declblock_code_source->value()) {
         write_map_ |= CODE_IN_SOURCE;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
       }
     }
     c = declblock_comment_input->buffer()->text();
     if (c && *c) {
-      if (!comment() || strcmp(c, comment())) { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (!comment() || strcmp(c, comment())) { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(c);
     } else {
-      if (comment()) { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (comment()) { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(0);
     }
     if (c) free((void*)c);
@@ -1886,7 +1886,7 @@ void Fl_Comment_Type::open() {
       in_h_ = comment_in_header->value();
       mod = 1;
     }
-    if (mod) Fluid.project().set_modflag(1);
+    if (mod) Fluid.project.set_modflag(1);
     break;
   }
 BREAK2:
@@ -2093,14 +2093,14 @@ void Fl_Class_Type::open() {
     storestring(c, subclass_of);
     if (public_ != c_public_button->value()) {
       public_ = c_public_button->value();
-      Fluid.project().set_modflag(1);
+      Fluid.project.set_modflag(1);
     }
     c = c_comment_input->buffer()->text();
     if (c && *c) {
-      if (!comment() || strcmp(c, comment()))  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (!comment() || strcmp(c, comment()))  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(c);
     } else {
-      if (comment())  { Fluid.project().set_modflag(1); redraw_browser(); }
+      if (comment())  { Fluid.project.set_modflag(1); redraw_browser(); }
       comment(0);
     }
     if (c) free((void*)c);

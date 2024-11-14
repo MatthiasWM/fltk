@@ -308,7 +308,7 @@ static bool prepare_shell_command(int flags)  {
     fluid::Callbacks::save(0, 0);
   }
   if (flags & Fd_Shell_Command::SAVE_SOURCECODE) {
-    Fluid.project().write_code_files(true);
+    Fluid.project.write_code_files(true);
   }
   if (flags & Fd_Shell_Command::SAVE_STRINGS) {
     write_strings_cb(0, 0);
@@ -366,15 +366,15 @@ static void expand_macro(Fl_String &cmd, const Fl_String &macro, const Fl_String
 }
 
 static void expand_macros(Fl_String &cmd) {
-  expand_macro(cmd, "@BASENAME@",         Fluid.project().basename());
-  expand_macro(cmd, "@PROJECTFILE_PATH@", Fluid.project().projectfile_path());
-  expand_macro(cmd, "@PROJECTFILE_NAME@", Fluid.project().projectfile_name());
-  expand_macro(cmd, "@CODEFILE_PATH@",    Fluid.project().codefile_path());
-  expand_macro(cmd, "@CODEFILE_NAME@",    Fluid.project().codefile_name());
-  expand_macro(cmd, "@HEADERFILE_PATH@",  Fluid.project().headerfile_path());
-  expand_macro(cmd, "@HEADERFILE_NAME@",  Fluid.project().headerfile_name());
-  expand_macro(cmd, "@TEXTFILE_PATH@",    Fluid.project().stringsfile_path());
-  expand_macro(cmd, "@TEXTFILE_NAME@",    Fluid.project().stringsfile_name());
+  expand_macro(cmd, "@BASENAME@",         Fluid.project.basename());
+  expand_macro(cmd, "@PROJECTFILE_PATH@", Fluid.project.projectfile_path());
+  expand_macro(cmd, "@PROJECTFILE_NAME@", Fluid.project.projectfile_name());
+  expand_macro(cmd, "@CODEFILE_PATH@",    Fluid.project.codefile_path());
+  expand_macro(cmd, "@CODEFILE_NAME@",    Fluid.project.codefile_name());
+  expand_macro(cmd, "@HEADERFILE_PATH@",  Fluid.project.headerfile_path());
+  expand_macro(cmd, "@HEADERFILE_NAME@",  Fluid.project.headerfile_name());
+  expand_macro(cmd, "@TEXTFILE_PATH@",    Fluid.project.stringsfile_path());
+  expand_macro(cmd, "@TEXTFILE_NAME@",    Fluid.project.stringsfile_name());
 //  TODO: implement finding the script `fltk-config` for all platforms
 //  if (cmd.find("@FLTK_CONFIG@") != Fl_String::npos) {
 //    find_fltk_config();
@@ -944,8 +944,8 @@ void Fd_Shell_Command_List::export_selected() {
   dialog.title("Export selected shell commands:");
   dialog.type(Fl_Native_File_Chooser::BROWSE_SAVE_FILE);
   dialog.filter("FLUID Files\t*.flcmd\n");
-  dialog.directory(Fluid.project().projectfile_path().c_str());
-  dialog.preset_file((Fluid.project().basename() + ".flcmd").c_str());
+  dialog.directory(Fluid.project.projectfile_path().c_str());
+  dialog.preset_file((Fluid.project.basename() + ".flcmd").c_str());
   if (dialog.show() != 0) return;
 
   Fl_Preferences file(dialog.filename(), "flcmd.fluid.fltk.org", NULL, (Fl_Preferences::Root)(Fl_Preferences::C_LOCALE|Fl_Preferences::CLEAR));
@@ -973,8 +973,8 @@ void Fd_Shell_Command_List::import_from_file() {
   dialog.title("Import shell commands:");
   dialog.type(Fl_Native_File_Chooser::BROWSE_FILE);
   dialog.filter("FLUID Files\t*.flcmd\n");
-  dialog.directory(Fluid.project().projectfile_path().c_str());
-  dialog.preset_file((Fluid.project().basename() + ".flcmd").c_str());
+  dialog.directory(Fluid.project.projectfile_path().c_str());
+  dialog.preset_file((Fluid.project.basename() + ".flcmd").c_str());
   if (dialog.show() != 0) return;
 
   Fl_Preferences file(dialog.filename(), "flcmd.fluid.fltk.org", NULL, Fl_Preferences::C_LOCALE);

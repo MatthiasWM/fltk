@@ -102,7 +102,7 @@ extern void redraw_browser();
  \return see above
  */
 int merge_back(const Fl_String &s, const Fl_String &p, int task) {
-  if (Fluid.project().write_mergeback_data) {
+  if (Fluid.project.write_mergeback_data) {
     Fd_Mergeback mergeback;
     return mergeback.merge_back(s, p, task);
   } else {
@@ -477,7 +477,7 @@ int Fd_Mergeback::merge_back(const Fl_String &s, const Fl_String &p, int task) {
     if (task == FD_MERGEBACK_APPLY) {
       ret = apply();
       if (ret == 1) {
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         redraw_browser();
         load_panel();
       }

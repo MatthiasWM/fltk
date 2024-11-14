@@ -138,7 +138,7 @@ Fl_Type *in_this_only; // set if menu popped-up in window
  Print the current project tree to stderr.
  */
 void print_project_tree() {
-  fprintf(stderr, "---- %s --->\n", Fluid.project().projectfile_name().c_str());
+  fprintf(stderr, "---- %s --->\n", Fluid.project.projectfile_name().c_str());
   for (Fl_Type *t = Fl_Type::first; t; t = t->next) {
     for (int i = t->level; i > 0; i--)
       fprintf(stderr, ". ");
@@ -329,7 +329,7 @@ void earlier_cb(Fl_Widget*,void*) {
       Fl_Type* g;
       for (g = f->prev; g && g->level > f->level; g = g->prev) {/*empty*/}
       if (g && g->level == f->level && !g->selected) {
-        if (!mod) Fluid.project().undo.checkpoint();
+        if (!mod) Fluid.project.undo.checkpoint();
         f->move_before(g);
         if (f->parent) f->parent->layout_widget();
         mod = 1;
@@ -337,7 +337,7 @@ void earlier_cb(Fl_Widget*,void*) {
     }
     f = nxt;
   }
-  if (mod) Fluid.project().set_modflag(1);
+  if (mod) Fluid.project.set_modflag(1);
   widget_browser->display(Fl_Type::current);
   widget_browser->rebuild();
 }
@@ -354,7 +354,7 @@ void later_cb(Fl_Widget*,void*) {
       Fl_Type* g;
       for (g = f->next; g && g->level > f->level; g = g->next) {/*empty*/}
       if (g && g->level == f->level && !g->selected) {
-        if (!mod) Fluid.project().undo.checkpoint();
+        if (!mod) Fluid.project.undo.checkpoint();
         g->move_before(f);
         if (f->parent) f->parent->layout_widget();
         mod = 1;
@@ -362,7 +362,7 @@ void later_cb(Fl_Widget*,void*) {
     }
     f = prv;
   }
-  if (mod) Fluid.project().set_modflag(1);
+  if (mod) Fluid.project.set_modflag(1);
   widget_browser->display(Fl_Type::current);
   widget_browser->rebuild();
 }
@@ -427,7 +427,7 @@ void delete_all(int selected_only) {
  */
 int storestring(const char *n, const char * & p, int nostrip) {
   if (n == p) return 0;
-  Fluid.project().undo.checkpoint();
+  Fluid.project.undo.checkpoint();
   int length = 0;
   if (n) { // see if blank, strip leading & trailing blanks
     if (!nostrip) while (isspace((int)(unsigned char)*n)) n++;
@@ -446,7 +446,7 @@ int storestring(const char *n, const char * & p, int nostrip) {
     strlcpy(q,n,length+1);
     p = q;
   }
-  Fluid.project().set_modflag(1);
+  Fluid.project.set_modflag(1);
   return 1;
 }
 
@@ -664,7 +664,7 @@ void Fl_Type::add(Fl_Type *anchor, Strategy strategy) {
   while (end->next) end = end->next;
 
   // Everything is prepared, now insert ourself in front of the target node
-  Fluid.project().undo.checkpoint();
+  Fluid.project.undo.checkpoint();
 
   // Walk the tree to update parent pointers and levels
   int source_level = level;
@@ -707,7 +707,7 @@ void Fl_Type::add(Fl_Type *anchor, Strategy strategy) {
     update_visibility_flag(t);
   }
 
-  Fluid.project().set_modflag(1);
+  Fluid.project.set_modflag(1);
   widget_browser->redraw();
 
 #if 0
@@ -910,7 +910,7 @@ void Fl_Type::write(Fd_Project_Writer &f) {
 
 void Fl_Type::write_properties(Fd_Project_Writer &f) {
   // repeat this for each attribute:
-  if (f.project().write_mergeback_data && uid_) {
+  if (f.project.write_mergeback_data && uid_) {
     f.write_word("uid");
     f.write_string("%04x", uid_);
   }

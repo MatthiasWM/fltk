@@ -203,16 +203,16 @@ and load those into the Code Viewer widgets.} open return_type void
     char fn[FL_PATH_MAX+1];
     fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
     fl_strlcat(fn, "strings", FL_PATH_MAX);
-    fl_filename_setext(fn, FL_PATH_MAX, exts[Fluid.project().i18n_type]);
+    fl_filename_setext(fn, FL_PATH_MAX, exts[Fluid.project.i18n_type]);
     write_strings(fn);
     int top = cv_strings->top_line();
     cv_strings->buffer()->loadfile(fn);
     cv_strings->scroll(top, 0);
   } else if (cv_source->visible_r() || cv_header->visible_r()) {
-    Fl_String code_file_name_bak = Fluid.project().code_file_name;
-    Fluid.project().code_file_name = cv_source_filename;
-    Fl_String header_file_name_bak = Fluid.project().header_file_name;
-    Fluid.project().header_file_name = cv_header_filename;
+    Fl_String code_file_name_bak = Fluid.project.code_file_name;
+    Fluid.project.code_file_name = cv_source_filename;
+    Fl_String header_file_name_bak = Fluid.project.header_file_name;
+    Fluid.project.header_file_name = cv_header_filename;
 
     // generate the code and load the files
     Fd_Code_Writer f;
@@ -231,8 +231,8 @@ and load those into the Code Viewer widgets.} open return_type void
       update_codeview_position();
     }
 
-    Fluid.project().code_file_name = code_file_name_bak;
-    Fluid.project().header_file_name = header_file_name_bak;
+    Fluid.project.code_file_name = code_file_name_bak;
+    Fluid.project.header_file_name = header_file_name_bak;
   }} {}
 }
 

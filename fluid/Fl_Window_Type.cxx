@@ -78,13 +78,13 @@ static void update_xywh() {
 
 void i18n_type_cb(Fl_Choice *c, void *v) {
   if (v == LOAD) {
-    c->value(static_cast<int>(Fluid.project().i18n_type));
+    c->value(static_cast<int>(Fluid.project.i18n_type));
   } else {
-    Fluid.project().undo.checkpoint();
-    Fluid.project().i18n_type = static_cast<Fd_I18n_Type>(c->value());
-    Fluid.project().set_modflag(1);
+    Fluid.project.undo.checkpoint();
+    Fluid.project.i18n_type = static_cast<Fd_I18n_Type>(c->value());
+    Fluid.project.set_modflag(1);
   }
-  switch (Fluid.project().i18n_type) {
+  switch (Fluid.project.i18n_type) {
   case Fd_I18n_Type::NONE : /* None */
       i18n_gnu_group->hide();
       i18n_posix_group->hide();
@@ -146,7 +146,7 @@ public:
  */
 void Overlay_Window::close_cb(Overlay_Window *self, void*) {
   if (self->visible())
-    Fluid.project().set_modflag(1, -2);
+    Fluid.project.set_modflag(1, -2);
   self->hide();
 }
 
@@ -315,7 +315,7 @@ void Fl_Window_Type::open_() {
 void Fl_Window_Type::open() {
   Overlay_Window *w = (Overlay_Window *)o;
   if (!w->visible()) {
-    Fluid.project().set_modflag(1, -2);
+    Fluid.project.set_modflag(1, -2);
   }
   open_();
 }
@@ -355,9 +355,9 @@ void modal_cb(Fl_Light_Button* i, void* v) {
     i->show();
     i->value(((Fl_Window_Type *)current_widget)->modal);
   } else {
-    Fluid.project().undo.checkpoint();
+    Fluid.project.undo.checkpoint();
     ((Fl_Window_Type *)current_widget)->modal = i->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -367,9 +367,9 @@ void non_modal_cb(Fl_Light_Button* i, void* v) {
     i->show();
     i->value(((Fl_Window_Type *)current_widget)->non_modal);
   } else {
-    Fluid.project().undo.checkpoint();
+    Fluid.project.undo.checkpoint();
     ((Fl_Window_Type *)current_widget)->non_modal = i->value();
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -379,9 +379,9 @@ void border_cb(Fl_Light_Button* i, void* v) {
     i->show();
     i->value(((Fl_Window*)(current_widget->o))->border());
   } else {
-    Fluid.project().undo.checkpoint();
+    Fluid.project.undo.checkpoint();
     ((Fl_Window*)(current_widget->o))->border(i->value());
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
   }
 }
 
@@ -397,7 +397,7 @@ void xclass_cb(Fl_Input* i, void* v) {
     }
   } else {
     int mod = 0;
-    Fluid.project().undo.checkpoint();
+    Fluid.project.undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
         mod = 1;
@@ -406,7 +406,7 @@ void xclass_cb(Fl_Input* i, void* v) {
         ((Fl_Window*)(wt->o))->xclass(wt->xclass);
       }
     }
-    if (mod) Fluid.project().set_modflag(1);
+    if (mod) Fluid.project.set_modflag(1);
   }
 }
 
@@ -421,7 +421,7 @@ Fl_Window_Type Fl_Window_type;
 
 // Resize from window manager...
 void Overlay_Window::resize(int X,int Y,int W,int H) {
-  Fluid.project().undo.checkpoint_once(fluid::project::Undo::kUndoWindowResize);
+  Fluid.project.undo.checkpoint_once(fluid::project::Undo::kUndoWindowResize);
 
   Fl_Widget* t = resizable();
   if (Fl_Type::allow_layout == 0) {
@@ -432,7 +432,7 @@ void Overlay_Window::resize(int X,int Y,int W,int H) {
   // windows are opened without a given x/y position, so modifying x/y
   // should not mark the project as dirty
   if (W!=w() || H!=h())
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
 
   Fl_Overlay_Window::resize(X,Y,W,H);
   resizable(t);
@@ -877,7 +877,7 @@ extern Fl_Menu_Item New_Menu[];
 void Fl_Window_Type::moveallchildren(int key)
 {
   bool update_widget_panel = false;
-  Fluid.project().undo.checkpoint();
+  Fluid.project.undo.checkpoint();
   Fl_Type *i;
   for (i=next; i && i->level>level;) {
     if (i->selected && i->is_true_widget()) {
@@ -959,7 +959,7 @@ void Fl_Window_Type::moveallchildren(int key)
   o->redraw();
   recalc = 1;
   ((Overlay_Window *)(this->o))->redraw_overlay();
-  Fluid.project().set_modflag(1);
+  Fluid.project.set_modflag(1);
   dx = dy = 0;
 
   update_xywh();
@@ -1042,9 +1042,9 @@ int Fl_Window_Type::handle(int event) {
         }
         if (tgt) {
           char rel[FL_PATH_MAX+1];
-          Fluid.project().enter_project_dir();
+          Fluid.project.enter_project_dir();
           fl_filename_relative(rel, FL_PATH_MAX, fn);
-          Fluid.project().leave_project_dir();
+          Fluid.project.leave_project_dir();
           // printf("DND image = %s\n", fn);
           if (Fl::get_key(FL_Alt_L) || Fl::get_key(FL_Alt_R)) {
           //if (Fl::event_alt()) { // TODO: X11/Wayland does not set the e_state on DND events
@@ -1340,7 +1340,7 @@ void Fl_Window_Type::read_property(Fd_Project_Reader &f, const char *c) {
     }
   } else if (!strcmp(c,"xywh")) {
     Fl_Widget_Type::read_property(f, c);
-    Fluid.project().pasteoffset = 0; // make it not apply to contents
+    Fluid.project.pasteoffset = 0; // make it not apply to contents
   } else {
     Fl_Widget_Type::read_property(f, c);
   }

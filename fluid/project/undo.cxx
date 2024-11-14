@@ -91,14 +91,14 @@ void project::Undo::redo() {
     return;
   }
 
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.suspend();
   if (widget_browser) widget_browser->save_scroll_position();
   int reload_panel = (the_panel && the_panel->visible());
   if (!read_file(undo_filename(current + 1), 0)) {
     // Unable to read checkpoint file, don't redo...
     widget_browser->rebuild();
-    Fluid.project().update_settings_dialog();
-    Fluid.project().undo.resume();
+    Fluid.project.update_settings_dialog();
+    Fluid.project.undo.resume();
     return;
   }
   if (reload_panel) {
@@ -112,9 +112,9 @@ void project::Undo::redo() {
   current ++;
 
   // Update modified flag...
-  Fluid.project().set_modflag(current != last_saved);
+  Fluid.project.set_modflag(current != last_saved);
   widget_browser->rebuild();
-  Fluid.project().update_settings_dialog();
+  Fluid.project.update_settings_dialog();
 
   // Update undo/redo menu items...
   // if (current >= last) Main_Menu[redo_item].deactivate();
@@ -136,7 +136,7 @@ void project::Undo::undo() {
     write_file(undo_filename(current));
   }
 
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.suspend();
   // Undo first deletes all widgets which resets the widget_tree browser.
   // Save the current scroll position, so we don't scroll back to 0 at undo.
   // TODO: make the scroll position part of the .fl project file
@@ -145,9 +145,9 @@ void project::Undo::undo() {
   if (!read_file(undo_filename(current - 1), 0)) {
     // Unable to read checkpoint file, don't undo...
     widget_browser->rebuild();
-    Fluid.project().update_settings_dialog();
-    Fluid.project().set_modflag(0, 0);
-    Fluid.project().undo.resume();
+    Fluid.project.update_settings_dialog();
+    Fluid.project.set_modflag(0, 0);
+    Fluid.project.undo.resume();
     return;
   }
   if (reload_panel) {
@@ -165,20 +165,20 @@ void project::Undo::undo() {
   current --;
 
   // Update modified flag...
-  Fluid.project().set_modflag(current != last_saved);
+  Fluid.project.set_modflag(current != last_saved);
 
   // Update undo/redo menu items...
   // if (current <= 0) Main_Menu[undo_item].deactivate();
   // Main_Menu[redo_item].activate();
   widget_browser->rebuild();
-  Fluid.project().update_settings_dialog();
-  Fluid.project().undo.resume();
+  Fluid.project.update_settings_dialog();
+  Fluid.project.undo.resume();
 }
 
 void project::Undo::checkpoint_once(int type) {
   if (undo_paused) return;
   if (once_type != type) {
-    Fluid.project().undo.checkpoint();
+    Fluid.project.undo.checkpoint();
     once_type = type;
   } else {
     // do not add more checkpoints for the same undo typw
@@ -190,7 +190,7 @@ void project::Undo::checkpoint() {
   //  printf("undo::checkpoint(): current=%d, undo_paused=%d, modflag=%d\n",
   //         current, undo_paused, modflag);
 
-  // Don't checkpoint if Fluid.project().undo.suspend() has been called...
+  // Don't checkpoint if Fluid.project.undo.suspend() has been called...
   if (undo_paused) return;
 
   // int undo_item = main_menubar->find_index(undo_cb);
@@ -206,8 +206,8 @@ void project::Undo::checkpoint() {
   }
 
   // Update the saved level...
-  if (Fluid.project().modflag && current <= last_saved) last_saved = -1;
-  else if (!Fluid.project().modflag) last_saved = current;
+  if (Fluid.project.modflag && current <= last_saved) last_saved = -1;
+  else if (!Fluid.project.modflag) last_saved = current;
 
   // Update the current undo level...
   current ++;
@@ -230,7 +230,7 @@ void project::Undo::clear() {
 
   // Reset current, last, and save indices...
   current = last = undo_max = 0;
-  if (Fluid.project().modflag) last_saved = -1;
+  if (Fluid.project.modflag) last_saved = -1;
   else last_saved = 0;
 
   // Disable the Undo and Redo menu items...

@@ -58,7 +58,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -88,7 +88,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -115,7 +115,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -141,7 +141,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -171,7 +171,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -198,7 +198,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -233,7 +233,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -270,7 +270,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -300,7 +300,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -326,7 +326,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -354,7 +354,7 @@ void align_widget_cb(Fl_Widget*, long how)
         {
           if (!changed) {
             changed = 1;
-            Fluid.project().undo.checkpoint();
+            Fluid.project.undo.checkpoint();
           }
           Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
           Fl_Type::allow_layout++;
@@ -371,7 +371,7 @@ void align_widget_cb(Fl_Widget*, long how)
       {
         if (!changed) {
           changed = 1;
-          Fluid.project().undo.checkpoint();
+          Fluid.project.undo.checkpoint();
         }
         Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
         Fl_Widget *p = ((Fl_Widget_Type *)o->parent)->o;
@@ -393,7 +393,7 @@ void align_widget_cb(Fl_Widget*, long how)
       {
         if (!changed) {
           changed = 1;
-          Fluid.project().undo.checkpoint();
+          Fluid.project.undo.checkpoint();
         }
         Fl_Widget *w = ((Fl_Widget_Type *)o)->o;
         Fl_Widget *p = ((Fl_Widget_Type *)o->parent)->o;
@@ -405,12 +405,12 @@ void align_widget_cb(Fl_Widget*, long how)
         Fl_Type::allow_layout++;
         w->resize(w->x(), (center2-w->h())/2, w->w(), w->h());
         Fl_Type::allow_layout--;
-        Fluid.project().set_modflag(1);
+        Fluid.project.set_modflag(1);
         w->redraw();
         if (w->window()) w->window()->redraw();
       }
     break;
   }
   if (changed)
-    Fluid.project().set_modflag(1);
+    Fluid.project.set_modflag(1);
 }

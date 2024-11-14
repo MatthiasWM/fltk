@@ -402,7 +402,7 @@ void run_autodoc(const Fl_String &target_dir) {
   Fl_Type *t_grdc = add_new_widget_from_user("Fl_Button", kAddAsLastChild, false);
 
   widget_browser->rebuild();
-  Fluid.project().update_settings_dialog();
+  Fluid.project.update_settings_dialog();
 
   // TODO: FLUID overview
 

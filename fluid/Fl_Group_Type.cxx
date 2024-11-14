@@ -116,8 +116,8 @@ void group_cb(Fl_Widget *, void *) {
     fl_message("Can't create a new group here.");
     return;
   }
-  Fluid.project().undo.checkpoint();
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.checkpoint();
+  Fluid.project.undo.suspend();
   Fl_Type::current = qq;
   Fl_Group_Type *n = (Fl_Group_Type*)(Fl_Group_type.make(kAddAsLastChild));
   n->move_before(q);
@@ -135,8 +135,8 @@ void group_cb(Fl_Widget *, void *) {
   Fl_Type::current = q;
   n->layout_widget();
   widget_browser->rebuild();
-  Fluid.project().undo.resume();
-  Fluid.project().set_modflag(1);
+  Fluid.project.undo.resume();
+  Fluid.project.set_modflag(1);
 }
 
 extern void ungroup_selected_menuitems();
@@ -163,8 +163,8 @@ void ungroup_cb(Fl_Widget *, void *) {
     fl_message("Only menu widgets inside a group can be ungrouped.");
     return;
   }
-  Fluid.project().undo.checkpoint();
-  Fluid.project().undo.suspend();
+  Fluid.project.undo.checkpoint();
+  Fluid.project.undo.suspend();
   Fl_Type::current = qq;
   for (Fl_Type *t = qq->next; t && (t->level > qq->level);) {
     if (t->level != q_level || !t->selected) {
@@ -181,8 +181,8 @@ void ungroup_cb(Fl_Widget *, void *) {
   }
   Fl_Type::current = q;
   widget_browser->rebuild();
-  Fluid.project().undo.resume();
-  Fluid.project().set_modflag(1);
+  Fluid.project.undo.resume();
+  Fluid.project.set_modflag(1);
 }
 
 void Fl_Group_Type::ideal_size(int &w, int &h) {
@@ -756,7 +756,7 @@ Fl_Type* Fl_Tabs_Type::click_test(int x, int y) {
   t->handle(FL_PUSH);
   Fl::pushed(t);
   while (Fl::pushed()==t) Fl::wait();
-  if (changed) Fluid.project().set_modflag(1);
+  if (changed) Fluid.project.set_modflag(1);
   return (Fl_Type*)(t->value()->user_data());
 }
 

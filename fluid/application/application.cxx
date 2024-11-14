@@ -30,7 +30,7 @@
 using namespace fluid;
 
 Application::Application()
-: project_( *new Project() )
+: project( *new Project() )
 {
 }
 
@@ -47,15 +47,15 @@ Application::Application()
  */
 bool Application::new_project(bool user_must_confirm) {
   // verify user intention
-  if ((user_must_confirm) &&  (project().confirm_clear() == false))
+  if ((user_must_confirm) &&  (project.confirm_clear() == false))
     return false;
 
   // clear the current project
-  project().reset();
-  Fluid.project().set_filename(NULL);
-  Fluid.project().set_modflag(0, 0);
+  project.reset();
+  Fluid.project.set_filename(NULL);
+  Fluid.project.set_modflag(0, 0);
   widget_browser->rebuild();
-  project().update_settings_dialog();
+  project.update_settings_dialog();
 
   // all is clear to continue
   return true;
@@ -75,8 +75,8 @@ Fl_String Application::open_project_filechooser(const Fl_String &title) {
   dialog.title(title.c_str());
   dialog.type(Fl_Native_File_Chooser::BROWSE_FILE);
   dialog.filter("FLUID Files\t*.f[ld]\n");
-  if (Fluid.project().filename) {
-    Fl_String current_project_file = Fluid.project().filename;
+  if (Fluid.project.filename) {
+    Fl_String current_project_file = Fluid.project.filename;
     dialog.directory(fl_filename_path(current_project_file).c_str());
     dialog.preset_file(fl_filename_name(current_project_file).c_str());
   }
@@ -98,7 +98,7 @@ Fl_String Application::open_project_filechooser(const Fl_String &title) {
  */
 bool Application::open_project_file(const Fl_String &filename_arg) {
   // verify user intention
-  if (project().confirm_clear() == false)
+  if (project.confirm_clear() == false)
     return false;
 
   // ask for a filename if none was given
@@ -112,18 +112,8 @@ bool Application::open_project_file(const Fl_String &filename_arg) {
 
   // clear the project and merge a file by the given name
   new_project(/*user_must_confirm=*/false);
-  return project().merge_project_file(new_filename);
+  return project.merge_project_file(new_filename);
 }
-
-
-/**
- * Return a reference to the current project.
- */
-Project &Application::project() 
-{ 
-  return project_; 
-}
-
 
 /**
  Generate a path to a directory for temporary data storage.

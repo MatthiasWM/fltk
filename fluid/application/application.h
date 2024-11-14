@@ -50,8 +50,7 @@ public:
   /// Clear the current project and create a new, empty one.
   bool new_project(bool user_must_confirm = true);
   /// Get the current project.
-  Project &project();
-  Project &project_;
+  Project &project;
   /// Open a native file chooser to allow choosing a project file for reading.
   Fl_String open_project_filechooser(const Fl_String &title);
   /// Open a file chooser and load an exiting project file.
