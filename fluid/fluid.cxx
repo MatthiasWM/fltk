@@ -36,7 +36,7 @@
 #include "function_panel.h"
 #include "codeview_panel.h"
 #include "template_panel.h"
-#include "about_panel.h"
+#include "ui/about_panel.h"
 #include "autodoc.h"
 
 #include <FL/Fl.H>
@@ -416,8 +416,6 @@ void exit_cb(Fl_Widget *,void *) {
     save_position(shell_run_window,"shell_run_Window_pos");
   }
 
-  if (about_panel)
-    delete about_panel;
   if (help_dialog)
     delete help_dialog;
 
@@ -675,8 +673,7 @@ static void sort_cb(Fl_Widget *,void *) {
  Open the "About" dialog.
  */
 void about_cb(Fl_Widget *, void *) {
-  if (!about_panel) make_about_panel();
-  about_panel->show();
+  fluid::ui::about_panel.show();
 }
 
 //-> application::ui

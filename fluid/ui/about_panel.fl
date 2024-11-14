@@ -1,0 +1,129 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0400
+header_name {.h}
+code_name {.cxx}
+comment {//
+// About dialog for the Fast Light Tool Kit (FLTK).
+//
+// Copyright 1998-2021 by Bill Spitzak and others.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
+//
+} {in_source in_header
+}
+
+decl {\#include "ui/panel.h"} {public global
+}
+
+decl {using namespace fluid::ui;} {private global
+}
+
+decl {\#include <time.h>} {public global
+}
+
+decl {void show_help(const char *name);} {public local
+}
+
+declblock {namespace fluid \{} {open selected public map 1 after {\}}
+} {
+  decl {class Project;} {public global
+  }
+  declblock {namespace ui \{} {open public map 1 after {\}}
+  } {
+    class AboutPanel {
+      comment {\\brief Show some information about FLUID
+} open : Panel
+    } {
+      Function {make_panel()} {open private
+      } {
+        code {static char cbuf[200] = "";
+if (!cbuf[0]) {
+  time_t t = time(0);
+  struct tm *lt = localtime(&t);
+  sprintf(cbuf, "Copyright © 1998 - %d\\nby Bill Spitzak and others", lt->tm_year+1900);
+}} {}
+        Fl_Window panel_window {
+          label {About FLUID} open
+          xywh {449 217 345 180} type Double color 50 selection_color 47 hotspot
+          code0 {\#include "../src/flstring.h"} non_modal visible
+        } {
+          Fl_Box {} {
+            image {../icons/fluid.animated.gif} compress_image 1 xywh {10 10 115 120}
+            code0 {((Fl_Anim_GIF_Image*)(o->image()))->speed(0.5f);}
+          }
+          Fl_Box {} {
+            label {FLTK User
+Interface Designer
+Version x.x.x}
+            xywh {135 10 205 75} color 12 selection_color 47 labelfont 1 labelsize 18 align 21
+            code0 {char about[80]; // uses less than 60}
+            code1 {snprintf(about,sizeof(about),"FLTK User\\nInterface Designer\\nVersion %d.%d.%d",FL_MAJOR_VERSION,FL_MINOR_VERSION,FL_PATCH_VERSION);}
+            code2 {o->copy_label(about);}
+          }
+          Fl_Box {} {
+            label {(Copyright)}
+            comment {Label edited dynamically:}
+            xywh {135 90 200 45} align 148
+            code0 {o->label(cbuf);}
+          }
+          Fl_Button {} {
+            label {View License...}
+            callback {show_help("license.html");}
+            xywh {115 145 123 25} labelcolor 136
+          }
+          Fl_Return_Button {} {
+            label Close
+            callback {((Fl_Window*)(o->parent()))->hide();}
+            xywh {250 145 83 25}
+          }
+        }
+      }
+      Function {AboutPanel()} {
+        comment Constructor open
+      } {
+        code {panel_window = nullptr;} {}
+      }
+      Function {~AboutPanel() override} {
+        comment {Virtual destructor.} open
+      } {
+        code {delete panel_window;} {}
+      }
+      Function {build() override} {
+        comment {Build the panel, don't show it yet.} open return_type void
+      } {
+        code {if (panel_window == nullptr) {
+  make_panel();
+}} {}
+      }
+      Function {show() override} {
+        comment {Build if needed and show the panel.} open return_type void
+      } {
+        code {build();
+panel_window->show();} {}
+      }
+      Function {hide() override} {
+        comment {Hide the panel and retain for later.} open return_type void
+      } {
+        code {if (panel_window) {
+  panel_window->hide();
+}} {}
+      }
+    }
+    decl {extern AboutPanel about_panel;} {public global
+    }
+    decl {AboutPanel fluid::ui::about_panel;} {private global
+    }
+  }
+}
+
+data fluid_flow_chart_800_png {
+  comment {Embedded image for internal fluid.html web page.} public local filename {../documentation/src/fluid_flow_chart_800.png}
+}

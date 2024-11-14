@@ -1,0 +1,84 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0400
+header_name {.h}
+code_name {.cxx}
+comment {//
+// UI Panel Base Class for Fast Light User Interface Designer (FLUID).
+//
+// Copyright 1998-2024 by Bill Spitzak and others.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
+//
+} {in_source in_header
+}
+
+decl {\#include "project/project.h"} {private global
+}
+
+decl {using namespace fluid::ui;} {private global
+}
+
+declblock {namespace fluid \{} {open public map 5 after {\}}
+} {
+  decl {class Project;} {public global
+  }
+  declblock {namespace ui \{} {open public map 5 after {\}}
+  } {
+    class Panel {
+      comment {\\brief Define a basic panel interface for all UI panels
+} open
+    } {
+      decl {fluid::Project *project { nullptr };} {public local
+      }
+      Function {Panel()} {
+        comment Constructor open
+      } {
+        code {// empty} {}
+      }
+      Function {~Panel()} {
+        comment {Virtual destructor.} open selected return_type virtual
+      } {
+        code {// empty} {}
+      }
+      Function {build()} {
+        comment {Build the panel, don't show it yet.} open return_type {virtual void}
+      } {
+        code {// empty} {}
+      }
+      Function {show()} {
+        comment {Build if needed and show the panel.} open return_type {virtual void}
+      } {
+        code {// empty} {}
+      }
+      Function {hide()} {
+        comment {Hide the panel and retain for later.} open return_type {virtual void}
+      } {
+        code {// empty} {}
+      }
+      Function {project_changed()} {
+        comment {Call this when the project change or a different project is selected.} open return_type {virtual void}
+      } {
+        code {// empty} {}
+      }
+      Function {selection_changed()} {
+        comment {Call this if the type selection changed.} open return_type {virtual void}
+      } {
+        code {// empty} {}
+      }
+      Function {set_project(fluid::Project *p)} {
+        comment {Associate the panel with a project and refresh.} open return_type void
+      } {
+        code {project = p;
+project_changed();} {}
+      }
+    }
+  }
+}

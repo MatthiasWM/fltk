@@ -19,14 +19,39 @@
 #ifndef about_panel_h
 #define about_panel_h
 #include <FL/Fl.H>
+#include "ui/panel.h"
 #include <time.h>
 extern void show_help(const char *name);
 #include <FL/Fl_Double_Window.H>
 #include "../src/flstring.h"
-extern Fl_Double_Window *about_panel;
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Return_Button.H>
-Fl_Double_Window* make_about_panel();
+namespace fluid {
+class Project;
+namespace ui {
+
+/**
+ \brief Show some information about FLUID
+*/
+class AboutPanel : Panel {
+  Fl_Double_Window* make_panel();
+public:
+  Fl_Double_Window *panel_window;
+private:
+  inline void cb_View_i(Fl_Button*, void*);
+  static void cb_View(Fl_Button*, void*);
+  inline void cb_Close_i(Fl_Return_Button*, void*);
+  static void cb_Close(Fl_Return_Button*, void*);
+public:
+  AboutPanel();
+  ~AboutPanel() override;
+  void build() override;
+  void show() override;
+  void hide() override;
+};
+extern AboutPanel about_panel;
+}
+}
 extern unsigned char fluid_flow_chart_800_png[41559];
 #endif

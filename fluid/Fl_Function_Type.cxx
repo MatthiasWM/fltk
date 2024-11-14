@@ -1550,14 +1550,25 @@ void Fl_DeclBlock_Type::open() {
       else if (w == declblock_panel_ok) break;
       else if (!w) Fl::wait();
     }
-    // verify user input
+    // verify user input seperately
     const char* a = declblock_before_input->value();
     while (isspace(*a)) a++;
     const char* b = declblock_after_input->value();
     while (isspace(*b)) b++;
+#if 0
     message = c_check(a&&a[0]=='#' ? a+1 : a);
     if (!message)
       message = c_check(b&&b[0]=='#' ? b+1 : b);
+#else
+    // Verify user input by concatenating the code before and after.
+    // This allows namespace blocks like `namespace fluid {` followed by `}` .
+    {
+      std::string before = a;
+      std::string after = b;
+      std::string block = before + "\n" + after;
+      message = c_check(block.c_str());
+    }
+#endif
     if (message) {
       int v = fl_choice("Potential syntax error detected: %s",
                         "Continue Editing", "Ignore Error", NULL, message);

@@ -33,6 +33,8 @@ set(CPPFILES
   streams/project_reader.cxx
   streams/project_writer.cxx
   streams/string_writer.cxx
+  ui/about_panel.cxx
+  ui/panel.cxx
   widgets/bin_buttons.cxx
   widgets/code_viewers.cxx
   widgets/coord_input.cxx
@@ -47,7 +49,6 @@ set(CPPFILES
   Fl_Window_Type.cxx
   Fl_Button_Type.cxx
   Fluid_Image.cxx
-  about_panel.cxx
   align_widget.cxx
   settings_panel.cxx
   autodoc.cxx
@@ -72,6 +73,8 @@ set(HEADERFILES
   application/settings.h
   project/project.h
   project/undo.h
+  ui/about_panel.h
+  ui/panel.h
   streams/code_writer.h
   streams/project_reader.h
   streams/project_writer.h
@@ -90,7 +93,6 @@ set(HEADERFILES
   Fl_Button_Type.h
   Fluid_Image.h
   StyleParse.h
-  about_panel.h
   align_widget.h
   settings_panel.h
   autodoc.h
