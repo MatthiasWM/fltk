@@ -20,7 +20,7 @@
 #include "application/application.h"
 #include "project/project.h"
 #include "Fl_Group_Type.h"
-#include "undo.h"
+#include "project/undo.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>

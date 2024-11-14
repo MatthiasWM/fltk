@@ -43,7 +43,7 @@ decl {\#include "Fl_Type.h"} {private local
 decl {\#include "widget_browser.h"} {private local
 }
 
-decl {\#include "undo.h"} {private local
+decl {\#include "project/undo.h"} {private local
 }
 
 Function {use_tab_navigation(int, Fl_Text_Editor*)} {

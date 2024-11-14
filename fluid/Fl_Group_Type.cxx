@@ -26,7 +26,7 @@
 #include "file.h"
 #include "code.h"
 #include "widget_browser.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "Fd_Snap_Action.h"
 
 #include <FL/Fl.H>

@@ -27,7 +27,7 @@
 #include "function_panel.h"
 #include "comments.h"
 #include "mergeback.h"
-#include "undo.h"
+#include "project/undo.h"
 
 #include <FL/fl_string_functions.h>
 #include <FL/Fl_File_Chooser.H>

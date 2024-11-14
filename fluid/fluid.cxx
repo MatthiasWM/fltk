@@ -26,7 +26,7 @@
 #include "shell_command.h"
 #include "factory.h"
 #include "pixmaps.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "file.h"
 #include "code.h"
 #include "mergeback.h"

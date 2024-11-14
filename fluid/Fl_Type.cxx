@@ -107,7 +107,7 @@
 #include "widget_browser.h"
 #include "file.h"
 #include "code.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "pixmaps.h"
 #include "shell_command.h"
 

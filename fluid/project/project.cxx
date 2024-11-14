@@ -18,7 +18,7 @@
 #include "application/application.h"
 #include "fluid.h"
 #include "file.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "Fl_Type.h"
 #include "settings_panel.h"
 #include "codeview_panel.h"

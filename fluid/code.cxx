@@ -21,7 +21,7 @@
 #include "Fl_Window_Type.h"
 #include "Fl_Function_Type.h"
 #include "file.h"
-#include "undo.h"
+#include "project/undo.h"
 
 #include <FL/Fl.H>
 #include <FL/fl_string_functions.h>

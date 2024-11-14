@@ -30,7 +30,7 @@
 #include "Fl_Grid_Type.h"
 #include "fluid.h"
 #include "widget_browser.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "settings_panel.h"
 #include "file.h"
 #include "code.h"

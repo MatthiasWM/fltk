@@ -32,7 +32,7 @@
 #include "Fl_Menu_Type.h"
 #include "Fd_Snap_Action.h"
 #include "pixmaps.h"
-#include "undo.h"
+#include "project/undo.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Adjuster.H>

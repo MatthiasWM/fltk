@@ -30,7 +30,7 @@
 #include "Fluid_Image.h"
 #include "custom_widgets.h"
 #include "mergeback.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "widget_browser.h"
 
 #include <FL/Fl.H>

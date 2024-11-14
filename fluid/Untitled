@@ -52,7 +52,7 @@ comment {//
 decl {\#include "fluid.h"} {public global
 }
 
-decl {\#include "undo.h"} {private global
+decl {\#include "project/undo.h"} {private global
 }
 
 decl {\#include "widget_browser.h"} {public global

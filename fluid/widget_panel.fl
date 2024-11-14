@@ -25,7 +25,7 @@ comment {//
 } {in_source in_header
 }
 
-decl {\#include "undo.h"} {private global
+decl {\#include "project/undo.h"} {private global
 }
 
 decl {\#include "application/application.h"} {private global

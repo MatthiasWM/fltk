@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include "undo.h"
+#include "project/undo.h"
 
 #include "fluid.h"
 #include "application/application.h"

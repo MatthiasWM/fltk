@@ -23,7 +23,7 @@
 #include "factory.h"
 #include "Fl_Type.h"
 #include "widget_browser.h"
-#include "undo.h"
+#include "project/undo.h"
 
 /**
  Allow widget navigation on text fields with Tab.

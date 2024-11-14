@@ -28,6 +28,7 @@ set(CPPFILES
   application/history.cxx
   application/settings.cxx
   project/project.cxx
+  project/undo.cxx
   CodeEditor.cxx
   StyleParse.cxx
   Fd_Snap_Action.cxx
@@ -55,7 +56,6 @@ set(CPPFILES
   shell_command.cxx
   codeview_panel.cxx
   template_panel.cxx
-  undo.cxx
   widget_browser.cxx
   widget_panel.cxx
 )
@@ -68,6 +68,7 @@ set(HEADERFILES
   application/history.h
   application/settings.h
   project/project.h
+  project/undo.h
   CodeEditor.h
   Fd_Snap_Action.h
   Fl_Function_Type.h
@@ -96,7 +97,6 @@ set(HEADERFILES
   shell_command.h
   codeview_panel.h
   template_panel.h
-  undo.h
   widget_browser.h
   widget_panel.h
 )

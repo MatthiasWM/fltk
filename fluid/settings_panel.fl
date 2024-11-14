@@ -58,7 +58,7 @@ decl {\#include "application/application.h"} {public global
 decl {\#include "project/project.h"} {public global
 }
 
-decl {\#include "undo.h"} {private global
+decl {\#include "project/undo.h"} {private global
 }
 
 decl {\#include "widget_browser.h"} {public global

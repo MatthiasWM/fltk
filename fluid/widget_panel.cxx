@@ -19,7 +19,7 @@
 #include "widget_panel.h"
 #include "application/application.h"
 #include "project/project.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "Fl_Widget_Type.h"
 #include "Fl_Grid_Type.h"
 #include <FL/Fl_Grid.H>

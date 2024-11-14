@@ -28,7 +28,7 @@
 #include "Fluid_Image.h"
 #include "settings_panel.h"
 #include "widget_panel.h"
-#include "undo.h"
+#include "project/undo.h"
 #include "mergeback.h"
 
 #include <FL/Fl.H>
