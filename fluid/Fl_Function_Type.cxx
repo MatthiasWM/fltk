@@ -1550,12 +1550,13 @@ void Fl_DeclBlock_Type::open() {
       else if (w == declblock_panel_ok) break;
       else if (!w) Fl::wait();
     }
-    // verify user input seperately
+    // remove leading spaces
     const char* a = declblock_before_input->value();
     while (isspace(*a)) a++;
     const char* b = declblock_after_input->value();
     while (isspace(*b)) b++;
 #if 0
+    // verify user input individually (old version)
     message = c_check(a&&a[0]=='#' ? a+1 : a);
     if (!message)
       message = c_check(b&&b[0]=='#' ? b+1 : b);
