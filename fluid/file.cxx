@@ -435,10 +435,10 @@ Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strate
  */
 int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy strategy) {
   Fl_Type *o;
-  Fluid.project.undo.suspend();
+  project.undo.suspend();
   read_version = 0.0;
   if (!open_read(filename)) {
-    Fluid.project.undo.resume();
+    project.undo.resume();
     return 0;
   }
   if (merge)
@@ -468,7 +468,7 @@ int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy st
   g_layout_list.update_dialogs();
   project.update_settings_dialog();
   int ret = close_read();
-  Fluid.project.undo.resume();
+  project.undo.resume();
   return ret;
 }
 
@@ -839,9 +839,9 @@ int Fd_Project_Writer::close_write() {
  */
 int Fd_Project_Writer::write_project(const char *filename, int selected_only, bool sv) {
   write_codeview_ = sv;
-  Fluid.project.undo.suspend();
+  project.undo.suspend();
   if (!open_write(filename)) {
-    Fluid.project.undo.resume();
+    project.undo.resume();
     return 0;
   }
   write_string("# data file for the Fltk User Interface Designer (fluid)\n"
@@ -898,7 +898,7 @@ int Fd_Project_Writer::write_project(const char *filename, int selected_only, bo
     }
   }
   int ret = close_write();
-  Fluid.project.undo.resume();
+  project.undo.resume();
   return ret;
 }
 

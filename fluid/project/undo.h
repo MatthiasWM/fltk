@@ -26,6 +26,8 @@ class Project;
 namespace project {
 
 class Undo {
+  int paused { 0 };             // Undo checkpointing paused?
+  int max_undo { 0 }; // Maximum undo level used
 public:
 
   static constexpr int kUndoWindowResize { 1 };
