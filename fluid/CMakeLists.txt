@@ -33,6 +33,8 @@ set(CPPFILES
   streams/project_reader.cxx
   streams/project_writer.cxx
   streams/string_writer.cxx
+  widgets/bin_buttons.cxx
+  widgets/coord_input.cxx
   CodeEditor.cxx
   StyleParse.cxx
   Fd_Snap_Action.cxx
@@ -49,7 +51,6 @@ set(CPPFILES
   align_widget.cxx
   settings_panel.cxx
   autodoc.cxx
-  custom_widgets.cxx
   factory.cxx
   fluid_filename.cxx
   function_panel.cxx
@@ -75,6 +76,8 @@ set(HEADERFILES
   streams/project_reader.h
   streams/project_writer.h
   streams/string_writer.h
+  widgets/bin_buttons.h
+  widgets/coord_input.h
   CodeEditor.h
   Fd_Snap_Action.h
   Fl_Function_Type.h
@@ -92,7 +95,6 @@ set(HEADERFILES
   settings_panel.h
   autodoc.h
   comments.h
-  custom_widgets.h
   factory.h
   function_panel.h
   mergeback.h

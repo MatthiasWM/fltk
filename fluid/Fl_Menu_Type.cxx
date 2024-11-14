@@ -29,7 +29,7 @@
 #include "streams/project_writer.h"
 #include "streams/code_writer.h"
 #include "Fluid_Image.h"
-#include "custom_widgets.h"
+#include "widgets/coord_input.h"
 #include "mergeback.h"
 #include "project/undo.h"
 #include "widget_browser.h"

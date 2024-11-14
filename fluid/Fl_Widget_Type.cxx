@@ -628,92 +628,92 @@ void tooltip_cb(Fl_Input* i, void *v) {
   }
 }
 
-Fluid_Coord_Input *x_input, *y_input, *w_input, *h_input;
+fluid::widget::CoordInput *x_input, *y_input, *w_input, *h_input;
 
 static int widget_i = 0;
 
-static int vars_i_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_i_cb(const fluid::widget::CoordInput*, void *v) {
   return widget_i;
 }
 
-static int vars_x_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_x_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = (Fl_Type*)v;
   if (t->is_widget())
     return ((Fl_Widget_Type*)t)->o->x();
   return 0;
 }
 
-static int vars_y_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_y_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = (Fl_Type*)v;
   if (t->is_widget())
     return ((Fl_Widget_Type*)t)->o->y();
   return 0;
 }
 
-static int vars_w_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_w_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = (Fl_Type*)v;
   if (t->is_widget())
     return ((Fl_Widget_Type*)t)->o->w();
   return 0;
 }
 
-static int vars_h_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_h_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = (Fl_Type*)v;
   if (t->is_widget())
     return ((Fl_Widget_Type*)t)->o->h();
   return 0;
 }
 
-static int vars_px_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_px_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->parent;
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->x();
   return 0;
 }
 
-static int vars_py_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_py_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->parent;
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->y();
   return 0;
 }
 
-static int vars_pw_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_pw_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->parent;
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->w();
   return 0;
 }
 
-static int vars_ph_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_ph_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->parent;
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->h();
   return 0;
 }
 
-static int vars_sx_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_sx_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->prev_sibling();
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->x();
   return 0;
 }
 
-static int vars_sy_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_sy_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->prev_sibling();
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->y();
   return 0;
 }
 
-static int vars_sw_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_sw_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->prev_sibling();
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->w();
   return 0;
 }
 
-static int vars_sh_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_sh_cb(const fluid::widget::CoordInput*, void *v) {
   Fl_Type *t = ((Fl_Type*)v)->prev_sibling();
   if (t && t->is_widget())
     return ((Fl_Widget_Type*)t)->o->h();
@@ -744,27 +744,27 @@ static void calculate_bbox(Fl_Type *p) {
   }
 }
 
-static int vars_cx_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_cx_cb(const fluid::widget::CoordInput*, void *v) {
   calculate_bbox((Fl_Type*)v);
   return bbox_x;
 }
 
-static int vars_cy_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_cy_cb(const fluid::widget::CoordInput*, void *v) {
   calculate_bbox((Fl_Type*)v);
   return bbox_y;
 }
 
-static int vars_cw_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_cw_cb(const fluid::widget::CoordInput*, void *v) {
   calculate_bbox((Fl_Type*)v);
   return bbox_r - bbox_x;
 }
 
-static int vars_ch_cb(const Fluid_Coord_Input*, void *v) {
+static int vars_ch_cb(const fluid::widget::CoordInput*, void *v) {
   calculate_bbox((Fl_Type*)v);
   return bbox_b - bbox_y;
 }
 
-Fluid_Coord_Input_Vars widget_vars[] = {
+fluid::widget::CoordInputVars widget_vars[] = {
   { "i", vars_i_cb },   // zero based counter of selected widgets
   { "x", vars_x_cb },   // position and size of current widget
   { "y", vars_y_cb },
@@ -785,7 +785,7 @@ Fluid_Coord_Input_Vars widget_vars[] = {
   { 0 }
 };
 
-void x_cb(Fluid_Coord_Input *i, void *v) {
+void x_cb(fluid::widget::CoordInput *i, void *v) {
   if (v == LOAD) {
     x_input = i;
     if (current_widget->is_true_widget()) {
@@ -816,7 +816,7 @@ void x_cb(Fluid_Coord_Input *i, void *v) {
   }
 }
 
-void y_cb(Fluid_Coord_Input *i, void *v) {
+void y_cb(fluid::widget::CoordInput *i, void *v) {
   if (v == LOAD) {
     y_input = i;
     if (current_widget->is_true_widget()) {
@@ -846,7 +846,7 @@ void y_cb(Fluid_Coord_Input *i, void *v) {
   }
 }
 
-void w_cb(Fluid_Coord_Input *i, void *v) {
+void w_cb(fluid::widget::CoordInput *i, void *v) {
   if (v == LOAD) {
     w_input = i;
     if (current_widget->is_true_widget()) {
@@ -876,7 +876,7 @@ void w_cb(Fluid_Coord_Input *i, void *v) {
   }
 }
 
-void h_cb(Fluid_Coord_Input *i, void *v) {
+void h_cb(fluid::widget::CoordInput *i, void *v) {
   if (v == LOAD) {
     h_input = i;
     if (current_widget->is_true_widget()) {

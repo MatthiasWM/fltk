@@ -25,7 +25,7 @@
 #include "widget_browser.h"
 #include "project/undo.h"
 #include "Fd_Snap_Action.h"
-#include "custom_widgets.h"
+#include "widgets/coord_input.h"
 
 #include <FL/Fl_Grid.H>
 #include <FL/Fl_Value_Input.H>
@@ -780,11 +780,11 @@ void Fl_Grid_Type::layout_widget() {
 // TODO: ways to resize rows and columns, add and delete them in the project window, pulldown menu?
 // TODO: alignment can be FL_GRID_LEFT|FL_GRID_VERTICAL?
 
-extern Fluid_Coord_Input *widget_grid_row_input, *widget_grid_col_input,
+extern fluid::widget::CoordInput *widget_grid_row_input, *widget_grid_col_input,
 *widget_grid_rowspan_input, *widget_grid_colspan_input;
 extern Fl_Group *widget_tab_grid_child;
 
-void grid_child_cb(Fluid_Coord_Input* i, void* v, int what) {
+void grid_child_cb(fluid::widget::CoordInput* i, void* v, int what) {
   if (   !current_widget
       || !current_widget->parent
       || !current_widget->parent->is_a(ID_Grid))
@@ -853,7 +853,7 @@ void grid_child_cb(Fluid_Coord_Input* i, void* v, int what) {
     }
   }
 }
-void grid_set_row_cb(Fluid_Coord_Input* i, void* v) {
+void grid_set_row_cb(fluid::widget::CoordInput* i, void* v) {
   grid_child_cb(i, v, 8);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
@@ -869,7 +869,7 @@ void grid_inc_row_cb(Fl_Button* i, void* v) {
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_set_col_cb(Fluid_Coord_Input* i, void* v) {
+void grid_set_col_cb(fluid::widget::CoordInput* i, void* v) {
   grid_child_cb(i, v, 9);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
@@ -885,7 +885,7 @@ void grid_inc_col_cb(Fl_Button* i, void* v) {
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_set_rowspan_cb(Fluid_Coord_Input* i, void* v) {
+void grid_set_rowspan_cb(fluid::widget::CoordInput* i, void* v) {
   grid_child_cb(i, v, 10);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
@@ -901,7 +901,7 @@ void grid_inc_rowspan_cb(Fl_Button* i, void* v) {
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_set_colspan_cb(Fluid_Coord_Input* i, void* v) {
+void grid_set_colspan_cb(fluid::widget::CoordInput* i, void* v) {
   grid_child_cb(i, v, 11);
   if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
 }
@@ -917,10 +917,10 @@ void grid_inc_colspan_cb(Fl_Button* i, void* v) {
     widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
   }
 }
-void grid_set_min_wdt_cb(Fluid_Coord_Input* i, void* v) {
+void grid_set_min_wdt_cb(fluid::widget::CoordInput* i, void* v) {
   grid_child_cb(i, v, 12);
 }
-void grid_set_min_hgt_cb(Fluid_Coord_Input* i, void* v) {
+void grid_set_min_hgt_cb(fluid::widget::CoordInput* i, void* v) {
   grid_child_cb(i, v, 13);
 }
 
