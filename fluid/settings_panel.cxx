@@ -2128,7 +2128,7 @@ static void cb_i18n_gnu_include_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_gnu_include.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_gnu_include = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2140,7 +2140,7 @@ static void cb_i18n_gnu_conditional_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_gnu_conditional.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_gnu_conditional = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2152,7 +2152,7 @@ static void cb_i18n_gnu_function_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_gnu_function.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_gnu_function = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2164,7 +2164,7 @@ static void cb_i18n_gnu_static_function_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_gnu_static_function.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_gnu_static_function = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2182,7 +2182,7 @@ static void cb_i18n_pos_include_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_pos_include.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_pos_include = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2194,7 +2194,7 @@ static void cb_i18n_pos_conditional_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_pos_conditional.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_pos_conditional = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2206,7 +2206,7 @@ static void cb_i18n_pos_file_input(Fl_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_pos_file.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_pos_file = o->value();
     Fluid.project().set_modflag(1);
   }
@@ -2222,7 +2222,7 @@ static void cb_i18n_pos_set_input(Fl_Int_Input* o, void* v) {
   if (v == LOAD) {
     o->value(g_project.i18n_pos_set.c_str());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_pos_set = o->value();
     Fluid.project().set_modflag(1);
   }

@@ -1561,7 +1561,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_gnu_include.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_gnu_include = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1572,7 +1572,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_gnu_conditional.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_gnu_conditional = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1583,7 +1583,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_gnu_function.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_gnu_function = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1594,7 +1594,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_gnu_static_function.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_gnu_static_function = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1610,7 +1610,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_pos_include.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_pos_include = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1621,7 +1621,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_pos_conditional.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_pos_conditional = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1632,7 +1632,7 @@ if (v == LOAD) {
             callback {if (v == LOAD) {
   o->value(g_project.i18n_pos_file.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_pos_file = o->value();
   Fluid.project().set_modflag(1);
 }}
@@ -1647,7 +1647,7 @@ if (v == LOAD) {
               callback {if (v == LOAD) {
   o->value(g_project.i18n_pos_set.c_str());
 } else {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   g_project.i18n_pos_set = o->value();
   Fluid.project().set_modflag(1);
 }}

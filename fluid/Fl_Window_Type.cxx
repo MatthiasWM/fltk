@@ -80,7 +80,7 @@ void i18n_type_cb(Fl_Choice *c, void *v) {
   if (v == LOAD) {
     c->value(static_cast<int>(g_project.i18n_type));
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     g_project.i18n_type = static_cast<Fd_I18n_Type>(c->value());
     Fluid.project().set_modflag(1);
   }
@@ -355,7 +355,7 @@ void modal_cb(Fl_Light_Button* i, void* v) {
     i->show();
     i->value(((Fl_Window_Type *)current_widget)->modal);
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     ((Fl_Window_Type *)current_widget)->modal = i->value();
     Fluid.project().set_modflag(1);
   }
@@ -367,7 +367,7 @@ void non_modal_cb(Fl_Light_Button* i, void* v) {
     i->show();
     i->value(((Fl_Window_Type *)current_widget)->non_modal);
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     ((Fl_Window_Type *)current_widget)->non_modal = i->value();
     Fluid.project().set_modflag(1);
   }
@@ -379,7 +379,7 @@ void border_cb(Fl_Light_Button* i, void* v) {
     i->show();
     i->value(((Fl_Window*)(current_widget->o))->border());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     ((Fl_Window*)(current_widget->o))->border(i->value());
     Fluid.project().set_modflag(1);
   }
@@ -397,7 +397,7 @@ void xclass_cb(Fl_Input* i, void* v) {
     }
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
         mod = 1;
@@ -421,7 +421,7 @@ Fl_Window_Type Fl_Window_type;
 
 // Resize from window manager...
 void Overlay_Window::resize(int X,int Y,int W,int H) {
-  undo_checkpoint_once(kUndoWindowResize);
+  Fluid.project().undo.checkpoint_once(fluid::project::Undo::kUndoWindowResize);
 
   Fl_Widget* t = resizable();
   if (Fl_Type::allow_layout == 0) {
@@ -877,7 +877,7 @@ extern Fl_Menu_Item New_Menu[];
 void Fl_Window_Type::moveallchildren(int key)
 {
   bool update_widget_panel = false;
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   Fl_Type *i;
   for (i=next; i && i->level>level;) {
     if (i->selected && i->is_true_widget()) {

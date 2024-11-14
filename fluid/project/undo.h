@@ -1,5 +1,5 @@
 //
-// FLUID undo definitions for the Fast Light Tool Kit (FLTK).
+// Project Undo Class for Fast Light User Interface Designer (FLUID).
 //
 // Copyright 1998-2024 by Bill Spitzak and others.
 //
@@ -14,24 +14,41 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#ifndef undo_h
-#define undo_h
+#ifndef FLUID_PROJECT_UNDO_H
+#define FLUID_PROJECT_UNDO_H
 
 class Fl_Widget;
 
-#define kUndoWindowResize 1
+namespace fluid {
 
-extern int undo_current;                // Current undo level in buffer
-extern int undo_last;                   // Last undo level in buffer
-extern int undo_save;                   // Last undo level that was saved
-extern int undo_once_type;              // Suspend further undos of the same type
+class Project;
 
-void redo_cb(Fl_Widget *, void *);      // Redo menu callback
-void undo_cb(Fl_Widget *, void *);      // Undo menu callback
-void undo_checkpoint();                 // Save current file to undo buffer
-void undo_checkpoint_once(int type);    // Save undo buffer once until a different checkpoint type is called
-void undo_clear();                      // Clear undo buffer
-void undo_resume();                     // Resume undo checkpoints
-void undo_suspend();                    // Suspend undo checkpoints
+namespace project {
 
-#endif // !undo_h
+class Undo {
+public:
+
+  static constexpr int kUndoWindowResize { 1 };
+
+  Project &project;
+
+  int current { 0 };                // Current undo level in buffer
+  int last { 0 };                   // Last undo level in buffer
+  int last_saved { -1 };                   // Last undo level that was saved
+  int once_type;              // Suspend further undos of the same type
+
+  Undo(Project &proj);
+  void undo();
+  void redo();
+  void checkpoint();                 // Save current file to undo buffer
+  void checkpoint_once(int type);    // Save undo buffer once until a different checkpoint type is called
+  void clear();                      // Clear undo buffer
+  void suspend();                    // Suspend undo checkpoints
+  void resume();                     // Resume undo checkpoints
+};
+
+}
+
+}
+
+#endif // FLUID_PROJECT_UNDO_H

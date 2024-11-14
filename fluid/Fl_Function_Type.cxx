@@ -1247,7 +1247,7 @@ void Fl_Data_Type::open() {
       if (v==0) { free(s); continue; }    // Continue Editing
       //if (v==1) { }                     // Ignore Error and close dialog
     }
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     name(n);
     free(s);
     // store flags

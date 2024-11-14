@@ -420,15 +420,15 @@ void label_cb(Fl_Input* i, void *v) {
     first_change = 1;
   } else {
     if (i->changed()) {
-      undo_suspend();
+      Fluid.project().undo.suspend();
       int mod = 0;
       for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
         if (o->selected && o->is_widget()) {
           if (!mod) {
             if (first_change) {
-              undo_resume();
-              undo_checkpoint();
-              undo_suspend();
+              Fluid.project().undo.resume();
+              Fluid.project().undo.checkpoint();
+              Fluid.project().undo.suspend();
               first_change = 0;
             }
             mod = 1;
@@ -436,7 +436,7 @@ void label_cb(Fl_Input* i, void *v) {
           o->label(i->value());
         }
       }
-      undo_resume();
+      Fluid.project().undo.resume();
       if (mod) Fluid.project().set_modflag(1);
     }
     int r = (int)Fl::callback_reason();
@@ -792,7 +792,7 @@ void x_cb(Fluid_Coord_Input *i, void *v) {
       x_input->activate();
     } else x_input->deactivate();
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     widget_i = 0;
     int mod = 0;
     int v = 0;
@@ -823,7 +823,7 @@ void y_cb(Fluid_Coord_Input *i, void *v) {
       y_input->activate();
     } else y_input->deactivate();
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     widget_i = 0;
     int mod = 0;
     int v = 0;
@@ -853,7 +853,7 @@ void w_cb(Fluid_Coord_Input *i, void *v) {
       w_input->activate();
     } else w_input->deactivate();
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     widget_i = 0;
     int mod = 0;
     int v = 0;
@@ -883,7 +883,7 @@ void h_cb(Fluid_Coord_Input *i, void *v) {
       h_input->activate();
     } else h_input->deactivate();
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     widget_i = 0;
     int mod = 0;
     int v = 0;
@@ -915,7 +915,7 @@ void wc_relative_cb(Fl_Choice *i, void *v) {
     }
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && current_widget->is_a(ID_Widget_Class)) {
         Fl_Widget_Class_Type *t = (Fl_Widget_Class_Type *)o;
@@ -1135,7 +1135,7 @@ void compact_cb(Fl_Light_Button* i, void* v) {
         if (n != v) {
           if (!mod) {
             mod = 1;
-            undo_checkpoint();
+            Fluid.project().undo.checkpoint();
           }
           ((Fl_Button*)(q->o))->compact(n);
           q->redraw();
@@ -1271,7 +1271,7 @@ void resizable_cb(Fl_Light_Button* i,void* v) {
     i->activate();
     i->value(current_widget->resizable());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     current_widget->resizable(i->value());
     Fluid.project().set_modflag(1);
   }
@@ -1285,7 +1285,7 @@ void hotspot_cb(Fl_Light_Button* i,void* v) {
     i->activate();
     i->value(current_widget->hotspot());
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     current_widget->hotspot(i->value());
     if (current_widget->is_a(ID_Menu_Item)) {
       current_widget->redraw();
@@ -1316,7 +1316,7 @@ void visible_cb(Fl_Light_Button* i, void* v) {
       if (o->selected && o->is_widget()) {
         if (!mod) {
           mod = 1;
-          undo_checkpoint();
+          Fluid.project().undo.checkpoint();
         }
         Fl_Widget_Type* q = (Fl_Widget_Type*)o;
         n ? q->o->show() : q->o->hide();
@@ -1349,7 +1349,7 @@ void active_cb(Fl_Light_Button* i, void* v) {
       if (o->selected && o->is_widget()) {
         if (!mod) {
           mod = 1;
-          undo_checkpoint();
+          Fluid.project().undo.checkpoint();
         }
         Fl_Widget_Type* q = (Fl_Widget_Type*)o;
         n ? q->o->activate() : q->o->deactivate();
@@ -1645,7 +1645,7 @@ void align_cb(Fl_Button* i, void *v) {
     i->value(current_widget->o->align() & b);
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
         Fl_Widget_Type* q = (Fl_Widget_Type*)o;
@@ -1690,7 +1690,7 @@ void align_position_cb(Fl_Choice *i, void *v) {
     const Fl_Menu_Item *mi = i->menu() + i->value();
     Fl_Align b = Fl_Align(fl_uintptr_t(mi->user_data()));
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
         Fl_Widget_Type* q = (Fl_Widget_Type*)o;
@@ -1720,7 +1720,7 @@ void align_text_image_cb(Fl_Choice *i, void *v) {
     const Fl_Menu_Item *mi = i->menu() + i->value();
     Fl_Align b = Fl_Align(fl_uintptr_t(mi->user_data()));
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
         Fl_Widget_Type* q = (Fl_Widget_Type*)o;
@@ -2066,7 +2066,7 @@ void min_w_cb(Fl_Value_Input* i, void* v) {
     i->value(((Fl_Window_Type*)current_widget)->sr_min_w);
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int n = (int)i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
@@ -2084,7 +2084,7 @@ void min_h_cb(Fl_Value_Input* i, void* v) {
     i->value(((Fl_Window_Type*)current_widget)->sr_min_h);
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int n = (int)i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
@@ -2102,7 +2102,7 @@ void max_w_cb(Fl_Value_Input* i, void* v) {
     i->value(((Fl_Window_Type*)current_widget)->sr_max_w);
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int n = (int)i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
@@ -2120,7 +2120,7 @@ void max_h_cb(Fl_Value_Input* i, void* v) {
     i->value(((Fl_Window_Type*)current_widget)->sr_max_h);
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int n = (int)i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
@@ -2136,7 +2136,7 @@ void set_min_size_cb(Fl_Button*, void* v) {
   if (v == LOAD) {
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
         Fl_Window_Type *win = (Fl_Window_Type*)current_widget;
@@ -2154,7 +2154,7 @@ void set_max_size_cb(Fl_Button*, void* v) {
   if (v == LOAD) {
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_a(ID_Window)) {
         Fl_Window_Type *win = (Fl_Window_Type*)current_widget;
@@ -2175,7 +2175,7 @@ void slider_size_cb(Fl_Value_Input* i, void* v) {
     i->value(((Fl_Slider*)(current_widget->o))->slider_size());
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     double n = i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
@@ -2205,7 +2205,7 @@ void min_cb(Fl_Value_Input* i, void* v) {
     }
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     double n = i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
@@ -2239,7 +2239,7 @@ void max_cb(Fl_Value_Input* i, void* v) {
     }
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     double n = i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
@@ -2273,7 +2273,7 @@ void step_cb(Fl_Value_Input* i, void* v) {
     }
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     double n = i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {
@@ -2308,7 +2308,7 @@ void value_cb(Fl_Value_Input* i, void* v) {
       i->deactivate();
   } else {
     int mod = 0;
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     double n = i->value();
     for (Fl_Type *o = Fl_Type::first; o; o = o->next) {
       if (o->selected && o->is_widget()) {

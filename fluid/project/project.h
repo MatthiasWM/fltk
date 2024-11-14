@@ -19,6 +19,7 @@
 
 #include "../src/Fl_String.H"
 #include "fluid.h"
+#include "project/undo.h"
 
 namespace fluid {
 
@@ -29,6 +30,7 @@ class Application;
  */
 class Project {
 public:
+  project::Undo undo { *this };
   /// Project constructor
   Project() = default;
   /// Project destructor - not implemented

@@ -422,7 +422,7 @@ void exit_cb(Fl_Widget *,void *) {
     g_shell_config->write(fluid_prefs, Fd_Tool_Store::USER);
   g_layout_list.write(fluid_prefs, Fd_Tool_Store::USER);
 
-  undo_clear();
+  Fluid.project().undo.clear();
 
   // Destroy tree
   //    Doing so causes dtors to automatically close all external editors
@@ -498,7 +498,7 @@ bool new_project_from_template() {
         fl_alert("Error reading template file \"%s\":\n%s", tname,
                  strerror(errno));
         Fluid.project().set_modflag(0);
-        undo_clear();
+        Fluid.project().undo.clear();
         return false;
       }
 
@@ -507,7 +507,7 @@ bool new_project_from_template() {
                  strerror(errno));
         fclose(infile);
         Fluid.project().set_modflag(0);
-        undo_clear();
+        Fluid.project().undo.clear();
         return false;
       }
 
@@ -524,22 +524,22 @@ bool new_project_from_template() {
       fclose(infile);
       fclose(outfile);
 
-      undo_suspend();
+      Fluid.project().undo.suspend();
       read_file(Fluid.cutfname(1), 0);
       fl_unlink(Fluid.cutfname(1));
-      undo_resume();
+      Fluid.project().undo.resume();
     } else {
       // No instance name, so read the template without replacements...
-      undo_suspend();
+      Fluid.project().undo.suspend();
       read_file(tname, 0);
-      undo_resume();
+      Fluid.project().undo.resume();
     }
   }
 
   widget_browser->rebuild();
   g_project.update_settings_dialog();
   Fluid.project().set_modflag(0);
-  undo_clear();
+  Fluid.project().undo.clear();
 
   return true;
 }
@@ -661,7 +661,7 @@ void duplicate_cb(Fl_Widget*, void*) {
  User wants to sort selected widgets by y coordinate.
  */
 static void sort_cb(Fl_Widget *,void *) {
-  undo_checkpoint();
+  Fluid.project().undo.checkpoint();
   sort((Fl_Type*)NULL);
   widget_browser->rebuild();
   Fluid.project().set_modflag(1);
@@ -839,6 +839,14 @@ static void menu_file_insert_cb(Fl_Widget *, void *) { Fluid.project().merge_pro
 static void menu_file_open_history_cb(Fl_Widget *, void *v) { Fluid.open_project_file(Fl_String((const char*)v)); }
 static void menu_layout_sync_resize_cb(Fl_Menu_ *m, void*) {
   if (m->mvalue()->value()) Fl_Type::allow_layout = 1; else Fl_Type::allow_layout = 0; }
+
+static void undo_cb(Fl_Widget *, void *) {
+  Fluid.project().undo.undo();
+}
+static void redo_cb(Fl_Widget *, void *) {
+  Fluid.project().undo.redo();
+}
+
 
 //-> application::ui
 /**
@@ -1196,7 +1204,7 @@ int main(int argc,char **argv) {
       Fluid.open_project_file(Fluid.history.full_path[0]);
     }
   }
-  undo_suspend();
+  Fluid.project().undo.suspend();
   if (c && !read_file(c,0)) {
     if (Fluid.batch_mode) {
       fprintf(stderr,"%s : %s\n", c, strerror(errno));
@@ -1204,7 +1212,7 @@ int main(int argc,char **argv) {
     }
     fl_message("Can't read %s: %s", c, strerror(errno));
   }
-  undo_resume();
+  Fluid.project().undo.resume();
 
   // command line args override code and header filenames from the project file
   // in batch mode only
@@ -1243,7 +1251,7 @@ int main(int argc,char **argv) {
   Fl::set_font(FL_COURIER_BOLD_ITALIC, "PConsolas");
 #endif
   Fluid.project().set_modflag(0);
-  undo_clear();
+  Fluid.project().undo.clear();
 #ifndef _WIN32
   signal(SIGINT,sigint);
 #endif
@@ -1266,7 +1274,7 @@ int main(int argc,char **argv) {
   if (quit_flag) exit_cb(0,0);
 #endif // _WIN32
 
-  undo_clear();
+  Fluid.project().undo.clear();
   return (0);
 }
 

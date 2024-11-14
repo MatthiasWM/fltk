@@ -807,7 +807,7 @@ void grid_child_cb(Fluid_Coord_Input* i, void* v, int what) {
     }
     i->value(v);
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int v2 = -2, old_v = -2, v = i->value();
     if (i==widget_grid_row_input) v2 = widget_grid_col_input->value();
     if (i==widget_grid_col_input) v2 = widget_grid_row_input->value();
@@ -941,7 +941,7 @@ void grid_align_horizontal_cb(Fl_Choice* i, void* v) {
     const Fl_Menu_Item *mi = i->find_item_with_argument(a);
     if (mi) i->value(mi);
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int v = FL_GRID_FILL & mask, old_v = FL_GRID_FILL & mask;
     const Fl_Menu_Item *mi = i->mvalue();
     if (mi) v = (int)mi->argument();
@@ -976,7 +976,7 @@ void grid_align_vertical_cb(Fl_Choice* i, void* v) {
     const Fl_Menu_Item *mi = i->find_item_with_argument(a);
     if (mi) i->value(mi);
   } else {
-    undo_checkpoint();
+    Fluid.project().undo.checkpoint();
     int v = FL_GRID_FILL & mask, old_v = FL_GRID_FILL & mask;
     const Fl_Menu_Item *mi = i->mvalue();
     if (mi) v = (int)mi->argument();
