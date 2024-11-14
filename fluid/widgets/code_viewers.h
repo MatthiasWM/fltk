@@ -1,6 +1,5 @@
 //
-// Code editor widget for the Fast Light Tool Kit (FLTK).
-// Syntax highlighting rewritten by erco@seriss.com 09/15/20.
+// Code Viewer Classes for Fast Light User Interface Designer (FLUID).
 //
 // Copyright 1998-2024 by Bill Spitzak and others.
 //
@@ -15,8 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#ifndef CodeEditor_h
-#define CodeEditor_h
+// Syntax highlighting rewritten by erco@seriss.com 09/15/20.
+
+#ifndef FLUID_WIDGETS_CODE_VIEWERS_H
+#define FLUID_WIDGETS_CODE_VIEWERS_H
 
 //
 // Include necessary headers...
@@ -32,6 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+namespace fluid {
+
+namespace widget {
 
 // ---- CodeEditor declaration
 
@@ -102,4 +107,8 @@ public:
   int top_line() { return get_absolute_top_line_number(); }
 };
 
-#endif // !CodeEditor_h
+} // namespace widget
+
+} // namespace fluid
+
+#endif // FLUID_WIDGETS_CODE_VIEWERS_H

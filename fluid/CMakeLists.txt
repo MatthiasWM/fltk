@@ -34,8 +34,8 @@ set(CPPFILES
   streams/project_writer.cxx
   streams/string_writer.cxx
   widgets/bin_buttons.cxx
+  widgets/code_viewers.cxx
   widgets/coord_input.cxx
-  CodeEditor.cxx
   StyleParse.cxx
   Fd_Snap_Action.cxx
   Fl_Function_Type.cxx
@@ -77,8 +77,8 @@ set(HEADERFILES
   streams/project_writer.h
   streams/string_writer.h
   widgets/bin_buttons.h
+  widgets/code_viewers.h
   widgets/coord_input.h
-  CodeEditor.h
   Fd_Snap_Action.h
   Fl_Function_Type.h
   Fl_Grid_Type.h

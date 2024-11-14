@@ -161,9 +161,9 @@ extern Fl_Input *v_input[4];
 #include <FL/Fl_Tile.H>
 #include <FL/Fl_Text_Editor.H>
 extern Fl_Text_Editor *wComment;
-#include "CodeEditor.h"
-extern void callback_cb(CodeEditor*, void*);
-extern CodeEditor *wCallback;
+#include "widgets/code_viewers.h"
+extern void callback_cb(fluid::widget::CodeEditor*, void*);
+extern fluid::widget::CodeEditor *wCallback;
 extern Fl_Group *wp_cpp_callback;
 extern void user_data_cb(Fl_Input*, void*);
 extern Fl_Menu_Item whenmenu[];

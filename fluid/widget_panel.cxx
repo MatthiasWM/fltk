@@ -542,7 +542,7 @@ static void cb_1(Fl_Tile*, void* v) {
 
 Fl_Text_Editor *wComment=(Fl_Text_Editor *)0;
 
-CodeEditor *wCallback=(CodeEditor *)0;
+fluid::widget::CodeEditor *wCallback=(fluid::widget::CodeEditor *)0;
 
 Fl_Group *wp_cpp_callback=(Fl_Group *)0;
 
@@ -1833,7 +1833,7 @@ Fl_Double_Window* make_widget_panel() {
           } // Fl_Group* o
           { Fl_Group* o = new Fl_Group(95, 223, 310, 82);
             o->box(FL_FLAT_BOX);
-            { wCallback = new CodeEditor(95, 225, 310, 80, "Callback:");
+            { wCallback = new fluid::widget::CodeEditor(95, 225, 310, 80, "Callback:");
               wCallback->tooltip("The callback function or code for the widget. Use the variable name \'o\' to "
 "access the Widget pointer and \'v\' to access the user value.");
               wCallback->box(FL_DOWN_BOX);
@@ -1849,7 +1849,7 @@ Fl_Double_Window* make_widget_panel() {
               wCallback->align(Fl_Align(FL_ALIGN_LEFT));
               wCallback->when(FL_WHEN_RELEASE);
               Fl_Group::current()->resizable(wCallback);
-            } // CodeEditor* wCallback
+            } // fluid::widget::CodeEditor* wCallback
             o->end();
           } // Fl_Group* o
           o->end();

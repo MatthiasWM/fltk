@@ -154,7 +154,7 @@ static void cb_code_panel(Fl_Double_Window*, void*) {
   code_panel->hide(); // otherwise hide..;
 }
 
-CodeEditor *code_input=(CodeEditor *)0;
+fluid::widget::CodeEditor *code_input=(fluid::widget::CodeEditor *)0;
 
 Fl_Return_Button *code_panel_ok=(Fl_Return_Button *)0;
 
@@ -164,7 +164,7 @@ Fl_Double_Window* make_code_panel() {
   { Fl_Double_Window* o = code_panel = new Fl_Double_Window(540, 180, "Code Properties");
     code_panel->labelsize(11);
     code_panel->callback((Fl_Callback*)cb_code_panel);
-    { CodeEditor* o = code_input = new CodeEditor(10, 10, 520, 130);
+    { fluid::widget::CodeEditor* o = code_input = new fluid::widget::CodeEditor(10, 10, 520, 130);
       code_input->box(FL_DOWN_BOX);
       code_input->color(FL_BACKGROUND2_COLOR);
       code_input->selection_color(FL_SELECTION_COLOR);
@@ -178,7 +178,7 @@ Fl_Double_Window* make_code_panel() {
       code_input->when(FL_WHEN_RELEASE);
       Fl_Group::current()->resizable(code_input);
       o->when(FL_WHEN_ENTER_KEY_CHANGED|FL_WHEN_RELEASE);
-    } // CodeEditor* code_input
+    } // fluid::widget::CodeEditor* code_input
     { Fl_Group* o = new Fl_Group(10, 150, 520, 20);
       o->labelsize(11);
       { code_panel_ok = new Fl_Return_Button(400, 150, 60, 20, "OK");
@@ -387,7 +387,7 @@ Fl_Menu_Item menu_decl_class_choice[] = {
  {0,0,0,0,0,0,0,0,0}
 };
 
-CodeEditor *decl_input=(CodeEditor *)0;
+fluid::widget::CodeEditor *decl_input=(fluid::widget::CodeEditor *)0;
 
 Fl_Text_Editor *decl_comment_input=(Fl_Text_Editor *)0;
 
@@ -419,7 +419,7 @@ Fl_Double_Window* make_decl_panel() {
     { Fl_Tile* o = new Fl_Tile(10, 40, 320, 180);
       { Fl_Group* o = new Fl_Group(10, 40, 320, 100);
         o->box(FL_FLAT_BOX);
-        { decl_input = new CodeEditor(10, 40, 320, 45, "This can be any declaration, like \"int x;\", an external symbol like \"exter"
+        { decl_input = new fluid::widget::CodeEditor(10, 40, 320, 45, "This can be any declaration, like \"int x;\", an external symbol like \"exter"
 "n int foo();\", a #directive like \"#include <foo.h>\", a comment like \"//foo"
 "\" or \"/*foo*/\", or typedef like \"typedef char byte;\" or \"using std::list"
 ";\".");
@@ -433,7 +433,7 @@ Fl_Double_Window* make_decl_panel() {
           decl_input->align(Fl_Align(134));
           decl_input->when(FL_WHEN_RELEASE);
           Fl_Group::current()->resizable(decl_input);
-        } // CodeEditor* decl_input
+        } // fluid::widget::CodeEditor* decl_input
         { Fl_Box* o = new Fl_Box(20, 139, 300, 1);
           o->box(FL_BORDER_FRAME);
           o->color((Fl_Color)43);

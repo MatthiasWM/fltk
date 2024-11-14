@@ -1740,7 +1740,7 @@ void align_text_image_cb(Fl_Choice *i, void *v) {
 
 ////////////////////////////////////////////////////////////////
 
-void callback_cb(CodeEditor* i, void *v) {
+void callback_cb(fluid::widget::CodeEditor* i, void *v) {
   if (v == LOAD) {
     const char *cbtext = current_widget->callback();
     i->buffer()->text( cbtext ? cbtext : "" );
