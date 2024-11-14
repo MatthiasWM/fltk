@@ -35,6 +35,8 @@
 
 #include <zlib.h>
 
+using namespace fluid;
+
 /// \defgroup cfile C Code File Operations
 /// \{
 
@@ -833,7 +835,7 @@ void stream::CodeWriter::write_public(int state) {
 /**
  Create and initialize a new C++ source code writer.
  */
-stream::CodeWriter::stream::CodeWriter(fluid::Project &project_arg)
+stream::CodeWriter::CodeWriter(fluid::Project &project_arg)
 : project(project_arg),
   code_file(NULL),
   header_file(NULL),
@@ -856,7 +858,7 @@ stream::CodeWriter::stream::CodeWriter(fluid::Project &project_arg)
 /**
  Release all resources.
  */
-stream::CodeWriter::~stream::CodeWriter()
+stream::CodeWriter::~CodeWriter()
 {
   delete id_root;
   delete ptr_in_code;

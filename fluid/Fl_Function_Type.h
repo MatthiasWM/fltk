@@ -52,8 +52,8 @@ public:
   Fl_Function_Type();
   ~Fl_Function_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void open() FL_OVERRIDE;
   int ismain() {return name_ == 0;}
   const char *type_name() FL_OVERRIDE {return "Function";}
@@ -84,8 +84,8 @@ public:
   Fl_Code_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
   void write(Fd_Project_Writer &f) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { }
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE { }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "code";}
   int is_code_block() const FL_OVERRIDE {return 0;}
@@ -108,8 +108,8 @@ public:
   Fl_CodeBlock_Type();
   ~Fl_CodeBlock_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "codeblock";}
   int is_code_block() const FL_OVERRIDE {return 1;}
@@ -134,8 +134,8 @@ protected:
 public:
   Fl_Decl_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { }
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE { }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "decl";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
@@ -157,8 +157,8 @@ public:
   Fl_Data_Type();
   ~Fl_Data_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE {}
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE {}
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "data";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
@@ -185,10 +185,10 @@ public:
   Fl_DeclBlock_Type();
   ~Fl_DeclBlock_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_static(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_static_after(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
+  void write_static(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_static_after(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "declblock";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
@@ -210,8 +210,8 @@ class Fl_Comment_Type : public Fl_Type
 public:
   Fl_Comment_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE { }
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE { }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "comment";}
   void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
@@ -238,8 +238,8 @@ public:
   Fl_Class_Type* parent_class; // save class if nested
 //
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "class";}
   int can_have_children() const FL_OVERRIDE {return 1;}

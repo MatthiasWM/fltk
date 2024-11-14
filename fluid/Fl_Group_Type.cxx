@@ -198,11 +198,11 @@ void Fl_Group_Type::ideal_size(int &w, int &h) {
   Fd_Snap_Action::better_size(w, h);
 }
 
-void Fl_Group_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Group_Type::write_code1(fluid::stream::CodeWriter& f) {
   Fl_Widget_Type::write_code1(f);
 }
 
-void Fl_Group_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Group_Type::write_code2(fluid::stream::CodeWriter& f) {
   const char *var = name() ? name() : "o";
   write_extra_code(f);
   f.write_c("%s%s->end();\n", f.indent(), var);
@@ -424,7 +424,7 @@ void Fl_Flex_Type::postprocess_read()
   suspend_auto_layout = 0;
 }
 
-void Fl_Flex_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Flex_Type::write_code2(fluid::stream::CodeWriter& f) {
   const char *var = name() ? name() : "o";
   Fl_Flex* flex = (Fl_Flex*)o;
   int lm, tm, rm, bm;

@@ -1264,7 +1264,7 @@ int Fl_Window_Type::handle(int event) {
  Write the C++ code that comes before the children of the window are written.
  \param f the source code output stream
  */
-void Fl_Window_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Window_Type::write_code1(fluid::stream::CodeWriter& f) {
   Fl_Widget_Type::write_code1(f);
 }
 
@@ -1273,7 +1273,7 @@ void Fl_Window_Type::write_code1(Fd_Code_Writer& f) {
  Write the C++ code that comes after the children of the window are written.
  \param f the source code output stream
  */
-void Fl_Window_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Window_Type::write_code2(fluid::stream::CodeWriter& f) {
   const char *var = is_class() ? "this" : name() ? name() : "o";
   // make the window modal or non-modal
   if (modal) {
@@ -1437,9 +1437,9 @@ static const char *trimclassname(const char *n) {
 }
 
 
-void Fl_Widget_Class_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Widget_Class_Type::write_code1(fluid::stream::CodeWriter& f) {
 #if 0
-  Fl_Widget_Type::write_code1(Fd_Code_Writer& f);
+  Fl_Widget_Type::write_code1(fluid::stream::CodeWriter& f);
 #endif // 0
 
   current_widget_class = this;
@@ -1507,7 +1507,7 @@ void Fl_Widget_Class_Type::write_code1(Fd_Code_Writer& f) {
  Write the C++ code that comes after the children of the window are written.
  \param f the source code output stream
  */
-void Fl_Widget_Class_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Widget_Class_Type::write_code2(fluid::stream::CodeWriter& f) {
   // make the window modal or non-modal
   if (modal) {
     f.write_c("%sset_modal();\n", f.indent());

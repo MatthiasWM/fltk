@@ -65,8 +65,8 @@ public:
   void leave_live_mode() FL_OVERRIDE;
   void copy_properties() FL_OVERRIDE;
   void copy_properties_for_children() FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void add_child(Fl_Type*, Fl_Type*) FL_OVERRIDE;
   void move_child(Fl_Type*, Fl_Type*) FL_OVERRIDE;
   void remove_child(Fl_Type*) FL_OVERRIDE;

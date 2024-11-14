@@ -60,13 +60,13 @@ protected:
   /// disabling the output of the "hide" property by the Widget Type.
   uchar override_visible_;
 
-  void write_static(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_code1(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_widget_code(Fd_Code_Writer& f);
-  void write_extra_code(Fd_Code_Writer& f);
-  void write_block_close(Fd_Code_Writer& f);
-  void write_code2(Fd_Code_Writer& f) FL_OVERRIDE;
-  void write_color(Fd_Code_Writer& f, const char*, Fl_Color);
+  void write_static(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_widget_code(fluid::stream::CodeWriter& f);
+  void write_extra_code(fluid::stream::CodeWriter& f);
+  void write_block_close(fluid::stream::CodeWriter& f);
+  void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
+  void write_color(fluid::stream::CodeWriter& f, const char*, Fl_Color);
   Fl_Widget *live_widget;
 
 public:

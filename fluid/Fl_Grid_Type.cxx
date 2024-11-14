@@ -542,7 +542,7 @@ void Fl_Grid_Type::read_parent_property(Fd_Project_Reader &f, Fl_Type *child, co
   }
 }
 
-void Fl_Grid_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Grid_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char *var = name() ? name() : "o";
   Fl_Grid* grid = (Fl_Grid*)o;
   Fl_Widget_Type::write_code1(f);
@@ -606,7 +606,7 @@ void Fl_Grid_Type::write_code1(Fd_Code_Writer& f) {
   }
 }
 
-void Fl_Grid_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Grid_Type::write_code2(fluid::stream::CodeWriter& f) {
   const char *var = name() ? name() : "o";
   Fl_Grid* grid = (Fl_Grid*)o;
   bool first_cell = true;

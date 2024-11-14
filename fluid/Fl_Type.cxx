@@ -1060,7 +1060,7 @@ int Fl_Type::read_fdesign(const char*, const char*) {return 0;}
  Write a comment into the header file.
  \param[in] pre indent the comment by this string
 */
-void Fl_Type::write_comment_h(Fd_Code_Writer& f, const char *pre)
+void Fl_Type::write_comment_h(fluid::stream::CodeWriter& f, const char *pre)
 {
   if (comment() && *comment()) {
     f.write_h("%s/**\n", pre);
@@ -1083,7 +1083,7 @@ void Fl_Type::write_comment_h(Fd_Code_Writer& f, const char *pre)
 /**
   Write a comment into the source file.
 */
-void Fl_Type::write_comment_c(Fd_Code_Writer& f, const char *pre)
+void Fl_Type::write_comment_c(fluid::stream::CodeWriter& f, const char *pre)
 {
   if (comment() && *comment()) {
     f.write_c("%s/**\n", pre);
@@ -1106,7 +1106,7 @@ void Fl_Type::write_comment_c(Fd_Code_Writer& f, const char *pre)
 /**
   Write a comment into the source file.
 */
-void Fl_Type::write_comment_inline_c(Fd_Code_Writer& f, const char *pre)
+void Fl_Type::write_comment_inline_c(fluid::stream::CodeWriter& f, const char *pre)
 {
   if (comment() && *comment()) {
     const char *s = comment();
@@ -1183,7 +1183,7 @@ int Fl_Type::user_defined(const char* cbname) const {
   return 0;
 }
 
-const char *Fl_Type::callback_name(Fd_Code_Writer& f) {
+const char *Fl_Type::callback_name(fluid::stream::CodeWriter& f) {
   if (is_name(callback())) return callback();
   return f.unique_id(this, "cb", name(), label());
 }
@@ -1236,18 +1236,18 @@ bool Fl_Type::is_in_class() const {
   return false;
 }
 
-void Fl_Type::write_static(Fd_Code_Writer&) {
+void Fl_Type::write_static(fluid::stream::CodeWriter&) {
 }
 
-void Fl_Type::write_static_after(Fd_Code_Writer&) {
+void Fl_Type::write_static_after(fluid::stream::CodeWriter&) {
 }
 
-void Fl_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Type::write_code1(fluid::stream::CodeWriter& f) {
   f.write_h("// Header for %s\n", title());
   f.write_c("// Code for %s\n", title());
 }
 
-void Fl_Type::write_code2(Fd_Code_Writer&) {
+void Fl_Type::write_code2(fluid::stream::CodeWriter&) {
 }
 
 /** Set a uid that is unique within the project.

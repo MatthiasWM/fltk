@@ -409,9 +409,9 @@ static void clean_function_for_implementation(char *out, const char *function_na
 /**
  Write the code for the source and the header file.
  This writes the code that goes \b before all children of this class.
- \see write_code2(Fd_Code_Writer& f)
+ \see write_code2(fluid::stream::CodeWriter& f)
  */
-void Fl_Function_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Function_Type::write_code1(fluid::stream::CodeWriter& f) {
   constructor=0;
   havewidgets = 0;
   Fl_Type *child;
@@ -528,9 +528,9 @@ void Fl_Function_Type::write_code1(Fd_Code_Writer& f) {
 /**
  Write the code for the source and the header file.
  This writes the code that goes \b after all children of this class.
- \see write_code1(Fd_Code_Writer& f)
+ \see write_code1(fluid::stream::CodeWriter& f)
  */
-void Fl_Function_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Function_Type::write_code2(fluid::stream::CodeWriter& f) {
   Fl_Type *child;
   const char *var = "w";
   char havechildren = 0;
@@ -676,7 +676,7 @@ void Fl_Code_Type::write(Fd_Project_Writer &f) {
 /**
  Write the code block with the correct indentation.
  */
-void Fl_Code_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Code_Type::write_code1(fluid::stream::CodeWriter& f) {
   // External editor changes? If so, load changes into ram, update mtime/size
   if ( handle_editor_changes() == 1 ) {
     main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
@@ -849,7 +849,7 @@ BREAK2:
 /**
  Write the "before" code.
  */
-void Fl_CodeBlock_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_CodeBlock_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char* c = name();
   f.write_c("%s%s {\n", f.indent(), c ? c : "");
   f.indentation++;
@@ -858,7 +858,7 @@ void Fl_CodeBlock_Type::write_code1(Fd_Code_Writer& f) {
 /**
  Write the "after" code.
  */
-void Fl_CodeBlock_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_CodeBlock_Type::write_code2(fluid::stream::CodeWriter& f) {
   f.indentation--;
   if (after) f.write_c("%s} %s\n", f.indent(), after);
   else f.write_c("%s}\n", f.indent());
@@ -1034,7 +1034,7 @@ BREAK2:
  \todo There are a lot of side effect in this node depending on the given text
     and the parent node. They need to be understood and documented.
  */
-void Fl_Decl_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Decl_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char* c = name();
   if (!c) return;
   // handle a few keywords differently if inside a class
@@ -1298,7 +1298,7 @@ BREAK2:
 /**
  Write the content of the external file inline into the source code.
  */
-void Fl_Data_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Data_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char *message = 0;
   const char *c = name();
   if (!c) return;
@@ -1630,7 +1630,7 @@ BREAK2:
  Write the \b before static code to the source file, and to the header file if declared public.
  The before code is stored in the name() field.
  */
-void Fl_DeclBlock_Type::write_static(Fd_Code_Writer& f) {
+void Fl_DeclBlock_Type::write_static(fluid::stream::CodeWriter& f) {
   const char* c = name();
   if (c && *c) {
     if (write_map_ & STATIC_IN_HEADER)
@@ -1643,7 +1643,7 @@ void Fl_DeclBlock_Type::write_static(Fd_Code_Writer& f) {
 /**
  Write the \b after static code to the source file, and to the header file if declared public.
  */
-void Fl_DeclBlock_Type::write_static_after(Fd_Code_Writer& f) {
+void Fl_DeclBlock_Type::write_static_after(fluid::stream::CodeWriter& f) {
   const char* c = after;
   if (c && *c) {
     if (write_map_ & STATIC_IN_HEADER)
@@ -1657,7 +1657,7 @@ void Fl_DeclBlock_Type::write_static_after(Fd_Code_Writer& f) {
  Write the \b before code to the source file, and to the header file if declared public.
  The before code is stored in the name() field.
  */
-void Fl_DeclBlock_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_DeclBlock_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char* c = name();
   if (c && *c) {
     if (write_map_ & CODE_IN_HEADER)
@@ -1670,7 +1670,7 @@ void Fl_DeclBlock_Type::write_code1(Fd_Code_Writer& f) {
 /**
  Write the \b after code to the source file, and to the header file if declared public.
  */
-void Fl_DeclBlock_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_DeclBlock_Type::write_code2(fluid::stream::CodeWriter& f) {
   const char* c = after;
   if (c && *c) {
     if (write_map_ & CODE_IN_HEADER)
@@ -1897,7 +1897,7 @@ BREAK2:
 /**
  Write the comment to the files.
  */
-void Fl_Comment_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Comment_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char* c = name();
   if (!c) return;
   if (!in_c_ && !in_h_) return;
@@ -2114,7 +2114,7 @@ BREAK2:
 /**
  Write the header code that declares this class.
  */
-void Fl_Class_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Class_Type::write_code1(fluid::stream::CodeWriter& f) {
   parent_class = current_class;
   current_class = this;
   write_public_state = 0;
@@ -2131,7 +2131,7 @@ void Fl_Class_Type::write_code1(Fd_Code_Writer& f) {
 /**
  Write the header code that ends the declaration of this class.
  */
-void Fl_Class_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Class_Type::write_code2(fluid::stream::CodeWriter& f) {
   f.write_h("};\n");
   current_class = parent_class;
 }

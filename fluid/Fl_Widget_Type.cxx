@@ -2913,7 +2913,7 @@ int isdeclare(const char *c) {
   return 0;
 }
 
-void Fl_Widget_Type::write_static(Fd_Code_Writer& f) {
+void Fl_Widget_Type::write_static(fluid::stream::CodeWriter& f) {
   const char* t = subclassname(this);
   if (!subclass() || (is_class() && !strncmp(t, "Fl_", 3))) {
     f.write_h_once("#include <FL/Fl.H>");
@@ -3002,7 +3002,7 @@ void Fl_Widget_Type::write_static(Fd_Code_Writer& f) {
   }
 }
 
-void Fl_Widget_Type::write_code1(Fd_Code_Writer& f) {
+void Fl_Widget_Type::write_code1(fluid::stream::CodeWriter& f) {
   const char* t = subclassname(this);
   const char *c = array_name(this);
   if (c) {
@@ -3127,7 +3127,7 @@ void Fl_Widget_Type::write_code1(Fd_Code_Writer& f) {
   write_widget_code(f);
 }
 
-void Fl_Widget_Type::write_color(Fd_Code_Writer& f, const char* field, Fl_Color color) {
+void Fl_Widget_Type::write_color(fluid::stream::CodeWriter& f, const char* field, Fl_Color color) {
   const char* color_name = 0;
   switch (color) {
   case FL_FOREGROUND_COLOR:     color_name = "FL_FOREGROUND_COLOR";     break;
@@ -3165,8 +3165,8 @@ void Fl_Widget_Type::write_color(Fd_Code_Writer& f, const char* field, Fl_Color 
   }
 }
 
-// this is split from write_code1(Fd_Code_Writer& f) for Fl_Window_Type:
-void Fl_Widget_Type::write_widget_code(Fd_Code_Writer& f) {
+// this is split from write_code1(fluid::stream::CodeWriter& f) for Fl_Window_Type:
+void Fl_Widget_Type::write_widget_code(fluid::stream::CodeWriter& f) {
   Fl_Widget* tplate = ((Fl_Widget_Type*)factory)->o;
   const char *var = is_class() ? "this" : name() ? name() : "o";
 
@@ -3364,19 +3364,19 @@ void Fl_Widget_Type::write_widget_code(Fd_Code_Writer& f) {
   }
 }
 
-void Fl_Widget_Type::write_extra_code(Fd_Code_Writer& f) {
+void Fl_Widget_Type::write_extra_code(fluid::stream::CodeWriter& f) {
   for (int n=0; n < NUM_EXTRA_CODE; n++)
     if (extra_code(n) && !isdeclare(extra_code(n)))
       f.write_c("%s%s\n", f.indent(), extra_code(n));
 }
 
-void Fl_Widget_Type::write_block_close(Fd_Code_Writer& f) {
+void Fl_Widget_Type::write_block_close(fluid::stream::CodeWriter& f) {
   f.indentation--;
   f.write_c("%s} // %s* %s\n", f.indent(), subclassname(this),
           name() ? name() : "o");
 }
 
-void Fl_Widget_Type::write_code2(Fd_Code_Writer& f) {
+void Fl_Widget_Type::write_code2(fluid::stream::CodeWriter& f) {
   write_extra_code(f);
   write_block_close(f);
 }
