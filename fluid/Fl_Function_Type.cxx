@@ -232,7 +232,7 @@ Fl_Type *Fl_Function_Type::make(Strategy strategy) {
   - "C" is written if we want a C signature instead of C++
   - "return_type" is followed by the return type of the function
  */
-void Fl_Function_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Function_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   switch (public_) {
     case 0: f.write_string("private"); break;
@@ -249,7 +249,7 @@ void Fl_Function_Type::write_properties(Fd_Project_Writer &f) {
  Read function specific properties fron an .fl file.
  \param[in] c read from this string
  */
-void Fl_Function_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Function_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"private")) {
     public_ = 0;
   } else if (!strcmp(c,"protected")) {
@@ -665,7 +665,7 @@ BREAK2:
 /**
  Grab changes from an external editor and write this node.
  */
-void Fl_Code_Type::write(Fd_Project_Writer &f) {
+void Fl_Code_Type::write(fluid::stream::ProjectWriter &f) {
   // External editor changes? If so, load changes into ram, update mtime/size
   if ( handle_editor_changes() == 1 ) {
     main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
@@ -789,7 +789,7 @@ Fl_Type *Fl_CodeBlock_Type::make(Strategy strategy) {
   - "after" is followed by the code that comes after the children
  The "before" code is stored in the name() field.
  */
-void Fl_CodeBlock_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_CodeBlock_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   if (after) {
     f.write_string("after");
@@ -800,7 +800,7 @@ void Fl_CodeBlock_Type::write_properties(Fd_Project_Writer &f) {
 /**
  Read the node specific properties.
  */
-void Fl_CodeBlock_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_CodeBlock_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"after")) {
     storestring(f.read_word(),after);
   } else {
@@ -927,7 +927,7 @@ Fl_Type *Fl_Decl_Type::make(Strategy strategy) {
   - "private"/"public"/"protected"
   - "local"/"global" if this is static or not
  */
-void Fl_Decl_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Decl_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   switch (public_) {
     case 0: f.write_string("private"); break;
@@ -943,7 +943,7 @@ void Fl_Decl_Type::write_properties(Fd_Project_Writer &f) {
 /**
  Read the specific properties.
  */
-void Fl_Decl_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Decl_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"public")) {
     public_ = 1;
   } else if (!strcmp(c,"private")) {
@@ -1156,7 +1156,7 @@ Fl_Type *Fl_Data_Type::make(Strategy strategy) {
   - "filename" followed by the filename of the file to inline
   - "textmode" if data is written in ASCII vs. binary
  */
-void Fl_Data_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Data_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Decl_Type::write_properties(f);
   if (filename_) {
     f.write_string("filename");
@@ -1173,7 +1173,7 @@ void Fl_Data_Type::write_properties(Fd_Project_Writer &f) {
 /**
  Read specific properties.
  */
-void Fl_Data_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Data_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"filename")) {
     storestring(f.read_word(), filename_, 1);
   } else if (!strcmp(c,"textmode")) {
@@ -1497,7 +1497,7 @@ Fl_Type *Fl_DeclBlock_Type::make(Strategy strategy) {
   - "public"/"protected"
   - "after" followed by the second code block.
  */
-void Fl_DeclBlock_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_DeclBlock_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   // deprecated
   if (is_public()) f.write_string("public");
@@ -1511,7 +1511,7 @@ void Fl_DeclBlock_Type::write_properties(Fd_Project_Writer &f) {
 /**
  Read the specific properties.
  */
-void Fl_DeclBlock_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_DeclBlock_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if(!strcmp(c,"public")) {
     write_map_ |= CODE_IN_HEADER;
   } else if(!strcmp(c,"protected")) {
@@ -1730,7 +1730,7 @@ Fl_Type *Fl_Comment_Type::make(Strategy strategy) {
   - "in_source"/"not_in_source" if the comment will be written to the source code
   - "in_header"/"not_in_header" if the comment will be written to the header file
  */
-void Fl_Comment_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Comment_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   if (in_c_) f.write_string("in_source"); else f.write_string("not_in_source");
   if (in_h_) f.write_string("in_header"); else f.write_string("not_in_header");
@@ -1739,7 +1739,7 @@ void Fl_Comment_Type::write_properties(Fd_Project_Writer &f) {
 /**
  Read extra properties.
  */
-void Fl_Comment_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Comment_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"in_source")) {
     in_c_ = 1;
   } else if (!strcmp(c,"not_in_source")) {
@@ -2009,7 +2009,7 @@ Fl_Type *Fl_Class_Type::make(Strategy strategy) {
   - ":" followed by the super class
   - "private"/"protected"
  */
-void Fl_Class_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Class_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   if (subclass_of) {
     f.write_string(":");
@@ -2024,7 +2024,7 @@ void Fl_Class_Type::write_properties(Fd_Project_Writer &f) {
 /**
  Read additional properties.
  */
-void Fl_Class_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Class_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"private")) {
     public_ = 0;
   } else if (!strcmp(c,"protected")) {

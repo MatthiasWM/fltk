@@ -374,7 +374,7 @@ void Project::save(bool ask_for_filename, bool update_filename) {
 
     if (update_filename) set_filename(c);
   }
-  if (!write_file(c)) {
+  if (!stream::write_file(c)) {
     fl_alert("Error writing %s: %s", c, strerror(errno));
     return;
   }
@@ -414,7 +414,7 @@ bool Project::merge_project_file(const Fl_String &filename_arg) {
   set_filename(c);
   if (is_a_merge) Fluid.project.undo.checkpoint();
   Fluid.project.undo.suspend();
-  if (!read_file(c, is_a_merge)) {
+  if (!stream::read_file(c, is_a_merge)) {
     Fluid.project.undo.resume();
     widget_browser->rebuild();
     Fluid.project.update_settings_dialog();
@@ -449,7 +449,7 @@ void Project::revert() {
                    "Cancel", "Revert", NULL)) return;
   }
   Fluid.project.undo.suspend();
-  if (!read_file(filename, 0)) {
+  if (!stream::read_file(filename, 0)) {
     Fluid.project.undo.resume();
     widget_browser->rebuild();
     update_settings_dialog();
@@ -526,7 +526,7 @@ void Project::copy() {
   }
   flush_text_widgets();
   ipasteoffset = 10;
-  if (!write_file(Fluid.cutfname(),1)) {
+  if (!stream::write_file(Fluid.cutfname(),1)) {
     fl_message("Can't write %s: %s", Fluid.cutfname(), strerror(errno));
     return;
   }
@@ -553,7 +553,7 @@ void Project::paste() {
       //strategy = kAddAsFirstChild;
     }
   }
-  if (!read_file(Fluid.cutfname(), 1, strategy)) {
+  if (!stream::read_file(Fluid.cutfname(), 1, strategy)) {
     widget_browser->rebuild();
     fl_message("Can't read %s: %s", Fluid.cutfname(), strerror(errno));
   }
@@ -591,7 +591,7 @@ void Project::cut() {
     return;
   }
   flush_text_widgets();
-  if (!write_file(Fluid.cutfname(),1)) {
+  if (!stream::write_file(Fluid.cutfname(),1)) {
     fl_message("Can't write %s: %s", Fluid.cutfname(), strerror(errno));
     return;
   }
@@ -629,7 +629,7 @@ void Project::duplicate() {
     Fl_Type::current = new_insert;
 
   // write the selected widgets to a file:
-  if (!write_file(Fluid.cutfname(1),1)) {
+  if (!stream::write_file(Fluid.cutfname(1),1)) {
     fl_message("Can't write %s: %s", Fluid.cutfname(1), strerror(errno));
     return;
   }
@@ -638,7 +638,7 @@ void Project::duplicate() {
   pasteoffset  = 0;
   Fluid.project.undo.checkpoint();
   Fluid.project.undo.suspend();
-  if (!read_file(Fluid.cutfname(1), 1, kAddAfterCurrent)) {
+  if (!stream::read_file(Fluid.cutfname(1), 1, kAddAfterCurrent)) {
     fl_message("Can't read %s: %s", Fluid.cutfname(1), strerror(errno));
   }
   fl_unlink(Fluid.cutfname(1));
@@ -657,7 +657,7 @@ void Project::write_strings() {
     if (!Fluid.project.filename) return;
   }
   Fl_String filename = Fluid.project.stringsfile_path() + Fluid.project.stringsfile_name();
-  int x = ::write_strings(filename); // in code.h
+  int x = stream::write_strings(filename); // in code.h
   if (Fluid.batch_mode) {
     if (x) {
       fprintf(stderr, "%s : %s\n", filename.c_str(), strerror(errno));

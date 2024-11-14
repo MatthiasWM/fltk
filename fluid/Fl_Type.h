@@ -26,8 +26,10 @@ class Fl_Type;
 class Fl_Group_Type;
 class Fl_Window_Type;
 
-class Fd_Project_Reader;
-class Fd_Project_Writer;
+namespace fluid { namespace stream {
+  class ProjectReader;
+  class ProjectWriter;
+} }
 
 /**
  Declare where a new type is placed in the hierarchy.
@@ -41,9 +43,9 @@ class Fd_Project_Writer;
     Fl_Type *add_new_widget_from_file(const char *inName, Strategy strategy)
  Add a hierarchy of Types
     void Fl_Type::add(Fl_Type *p, Strategy strategy)
-    int read_file(const char *filename, int merge, Strategy strategy)
-    Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strategy, char skip_options)
-    int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy strategy)
+    int fluid::stream::read_file(const char *filename, int merge, Strategy strategy)
+    Fl_Type *fluid::stream::ProjectReader::read_children(Fl_Type *p, int merge, Strategy strategy, char skip_options)
+    int fluid::stream::ProjectReader::read_project(const char *filename, int merge, Strategy strategy)
  */
 typedef enum {
   kAddAsFirstChild = 0,
@@ -232,11 +234,11 @@ public:
   virtual void open();  // what happens when you double-click
 
   // read and write data to a saved file:
-  virtual void write(Fd_Project_Writer &f);
-  virtual void write_properties(Fd_Project_Writer &f);
-  virtual void read_property(Fd_Project_Reader &f, const char *);
-  virtual void write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool encapsulate);
-  virtual void read_parent_property(Fd_Project_Reader &f, Fl_Type *child, const char *property);
+  virtual void write(fluid::stream::ProjectWriter &f);
+  virtual void write_properties(fluid::stream::ProjectWriter &f);
+  virtual void read_property(fluid::stream::ProjectReader &f, const char *);
+  virtual void write_parent_properties(fluid::stream::ProjectWriter &f, Fl_Type *child, bool encapsulate);
+  virtual void read_parent_property(fluid::stream::ProjectReader &f, Fl_Type *child, const char *property);
   virtual int read_fdesign(const char*, const char*);
   virtual void postprocess_read() { }
 

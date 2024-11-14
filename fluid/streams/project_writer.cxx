@@ -38,6 +38,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+using namespace fluid;
+
 /** \brief Write an .fl project description file.
 
  The .fl file format is documented in `fluid/README_fl.txt`.
@@ -47,8 +49,8 @@
     is used to implement copy and paste.
  \return 0 if the operation failed, 1 if it succeeded
  */
-int write_file(const char *filename, int selected_only, bool to_codeview) {
-  Fd_Project_Writer out { Fluid.project };
+int stream::write_file(const char *filename, int selected_only, bool to_codeview) {
+  stream::ProjectWriter out { Fluid.project };
   return out.write_project(filename, selected_only, to_codeview);
 }
 
@@ -66,10 +68,10 @@ static int hexdigit(int x) {
 }
 
 
-// ---- Fd_Project_Writer ---------------------------------------------- MARK: -
+// ---- stream::ProjectWriter ---------------------------------------------- MARK: -
 
 /** \brief Construct local project writer. */
-Fd_Project_Writer::Fd_Project_Writer(fluid::Project &in_project)
+stream::ProjectWriter::ProjectWriter(fluid::Project &in_project)
 : project(in_project),
   fout(NULL),
   needspace(0),
@@ -78,7 +80,7 @@ Fd_Project_Writer::Fd_Project_Writer(fluid::Project &in_project)
 }
 
 /** \brief Release project writer resources. */
-Fd_Project_Writer::~Fd_Project_Writer()
+stream::ProjectWriter::~ProjectWriter()
 {
 }
 
@@ -88,7 +90,7 @@ Fd_Project_Writer::~Fd_Project_Writer()
  \param[in] s the filename or NULL for stdout
  \return 1 if successful. 0 if the operation failed
  */
-int Fd_Project_Writer::open_write(const char *s) {
+int stream::ProjectWriter::open_write(const char *s) {
   if (!s) {
     fout = stdout;
   } else {
@@ -104,7 +106,7 @@ int Fd_Project_Writer::open_write(const char *s) {
  Don't close, if data was sent to stdout.
  \return 1 if succeeded, 0 if fclose failed
  */
-int Fd_Project_Writer::close_write() {
+int stream::ProjectWriter::close_write() {
   if (fout != stdout) {
     int x = fclose(fout);
     fout = stdout;
@@ -120,7 +122,7 @@ int Fd_Project_Writer::close_write() {
  \param[in] sv if set, this file will be used by codeview
  \return 0 if the operation failed, 1 if it succeeded
  */
-int Fd_Project_Writer::write_project(const char *filename, int selected_only, bool sv) {
+int stream::ProjectWriter::write_project(const char *filename, int selected_only, bool sv) {
   write_codeview_ = sv;
   project.undo.suspend();
   if (!open_write(filename)) {
@@ -189,7 +191,7 @@ int Fd_Project_Writer::write_project(const char *filename, int selected_only, bo
  Write a string to the .fl file, quoting characters if necessary.
  \param[in] w NUL terminated text
  */
-void Fd_Project_Writer::write_word(const char *w) {
+void stream::ProjectWriter::write_word(const char *w) {
   if (needspace) putc(' ', fout);
   needspace = 1;
   if (!w || !*w) {fprintf(fout,"{}"); return;}
@@ -227,7 +229,7 @@ void Fd_Project_Writer::write_word(const char *w) {
  unless the format starts with a newline character \\n.
  \param[in] format printf style formatting string followed by a list of arguments
  */
-void Fd_Project_Writer::write_string(const char *format, ...) {
+void stream::ProjectWriter::write_string(const char *format, ...) {
   va_list args;
   va_start(args, format);
   if (needspace && *format != '\n') fputc(' ',fout);
@@ -240,7 +242,7 @@ void Fd_Project_Writer::write_string(const char *format, ...) {
  Start a new line in the .fl file and indent it for a given nesting level.
  \param[in] n indent level
  */
-void Fd_Project_Writer::write_indent(int n) {
+void stream::ProjectWriter::write_indent(int n) {
   fputc('\n',fout);
   while (n--) {fputc(' ',fout); fputc(' ',fout);}
   needspace = 0;
@@ -249,7 +251,7 @@ void Fd_Project_Writer::write_indent(int n) {
 /**
  Write a '{' to the .fl file at the given indenting level.
  */
-void Fd_Project_Writer::write_open() {
+void stream::ProjectWriter::write_open() {
   if (needspace) fputc(' ',fout);
   fputc('{',fout);
   needspace = 0;
@@ -259,7 +261,7 @@ void Fd_Project_Writer::write_open() {
  Write a '}' to the .fl file at the given indenting level.
  \param[in] n indent level
  */
-void Fd_Project_Writer::write_close(int n) {
+void stream::ProjectWriter::write_close(int n) {
   if (needspace) write_indent(n);
   fputc('}',fout);
   needspace = 1;

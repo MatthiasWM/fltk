@@ -19,22 +19,14 @@
 
 #include "../src/Fl_String.H"
 
-#if 0
-#include <FL/fl_attr.h>
+namespace fluid {
 
-#include <stdarg.h>
-#include <stdio.h>
-
-#include "fluid.h"
-
-class Fl_Type;
-struct Fd_Identifier_Tree;
-struct Fd_Text_Tree;
-struct Fd_Pointer_Tree;
-
-int is_id(char c);
-#endif
+namespace stream {
 
 int write_strings(const Fl_String &filename);
+
+} // namespace stream
+
+} // namespace fluid
 
 #endif // FLUID_STREAMS_STRING_WRITER_H

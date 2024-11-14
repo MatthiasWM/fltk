@@ -35,6 +35,11 @@
 #  include <unistd.h>
 #endif
 
+namespace fluid { namespace stream {
+  class ProjectReader;
+  class ProjectWriter;
+} }
+
 struct Fl_Menu_Item;
 class Fl_Widget;
 class Fl_Preferences;
@@ -105,8 +110,8 @@ public:
   void run();
   void read(Fl_Preferences &prefs);
   void write(Fl_Preferences &prefs, bool save_location = false);
-  void read(class Fd_Project_Reader*);
-  void write(class Fd_Project_Writer*);
+  void read(fluid::stream::ProjectReader*);
+  void write(fluid::stream::ProjectWriter*);
   void update_shell_menu();
   bool is_active();
 };
@@ -132,8 +137,8 @@ public:
 //  int save(const Fl_String &filename);
   void read(Fl_Preferences &prefs, Fd_Tool_Store storage);
   void write(Fl_Preferences &prefs, Fd_Tool_Store storage);
-  void read(class Fd_Project_Reader*);
-  void write(class Fd_Project_Writer*);
+  void read(fluid::stream::ProjectReader*);
+  void write(fluid::stream::ProjectWriter*);
   void rebuild_shell_menu();
   void update_settings_dialog();
 

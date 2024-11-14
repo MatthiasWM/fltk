@@ -112,8 +112,8 @@ public:
   int is_true_widget() const FL_OVERRIDE { return 1; }
   int is_public() const FL_OVERRIDE;
 
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   int read_fdesign(const char*, const char*) FL_OVERRIDE;
 
   Fl_Widget *enter_live_mode(int top=0) FL_OVERRIDE;

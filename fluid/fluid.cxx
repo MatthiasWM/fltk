@@ -63,6 +63,8 @@ extern "C"
 #endif // HAVE_LIBPNG && HAVE_LIBZ
 }
 
+using namespace fluid;
+
 /// \defgroup globals Fluid Global Variables, Functions and Callbacks
 /// \{
 
@@ -320,7 +322,7 @@ void save_template_cb(Fl_Widget *, void *) {
                   "Replace", NULL, c) == 0) return;
   }
 
-  if (!write_file(filename)) {
+  if (!stream::write_file(filename)) {
     fl_alert("Error writing %s: %s", filename, strerror(errno));
     return;
   }
@@ -526,13 +528,13 @@ bool new_project_from_template() {
       fclose(outfile);
 
       Fluid.project.undo.suspend();
-      read_file(Fluid.cutfname(1), 0);
+      fluid::stream::read_file(Fluid.cutfname(1), 0);
       fl_unlink(Fluid.cutfname(1));
       Fluid.project.undo.resume();
     } else {
       // No instance name, so read the template without replacements...
       Fluid.project.undo.suspend();
-      read_file(tname, 0);
+      fluid::stream::read_file(tname, 0);
       Fluid.project.undo.resume();
     }
   }
@@ -1206,7 +1208,7 @@ int main(int argc,char **argv) {
     }
   }
   Fluid.project.undo.suspend();
-  if (c && !read_file(c,0)) {
+  if (c && !stream::read_file(c,0)) {
     if (Fluid.batch_mode) {
       fprintf(stderr,"%s : %s\n", c, strerror(errno));
       exit(1);
@@ -1229,7 +1231,7 @@ int main(int argc,char **argv) {
   }
 
   if (Fluid.args.update) {            // fluid -u
-    write_file(c,0);
+    stream::write_file(c,0);
     if (!Fluid.args.compile)
       exit(0);
   }

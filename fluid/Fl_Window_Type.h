@@ -105,8 +105,8 @@ public:
   void fix_overlay();                   // Update the bounding box, etc
   uchar *read_image(int &ww, int &hh);  // Read an image of the window
 
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   int read_fdesign(const char*, const char*) FL_OVERRIDE;
 
   void add_child(Fl_Type*, Fl_Type*) FL_OVERRIDE;
@@ -139,8 +139,8 @@ public:
   char write_public_state; // true when public: has been printed
   char wc_relative; // if 1, reposition all children, if 2, reposition and resize
 
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
 
   void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;

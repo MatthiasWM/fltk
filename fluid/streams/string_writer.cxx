@@ -23,13 +23,15 @@
 #include "Fl_Window_Type.h"
 #include "Fl_Function_Type.h"
 
+using namespace fluid;
+
 /**
  Write a string to a file, replacing all non-ASCII characters with octal codes.
  \param[in] out output file
  \param[in] text write this NUL terminated utf-8 string
  \return EOF if any of the file access calls failed, 0 if OK
  */
-int write_escaped_strings(FILE *out, const char *text) {
+static int write_escaped_strings(FILE *out, const char *text) {
   int ret = 0;
   const unsigned char *utf8_text = (const unsigned char *)text;
   for (const unsigned char *s = utf8_text; *s; ++s) {
@@ -59,7 +61,7 @@ int write_escaped_strings(FILE *out, const char *text) {
  \param[in] filename file path and name to a file that will hold the strings
  \return 1 if the file could not be opened for writing, or the result of `fclose`.
  */
-int write_strings(const Fl_String &filename) {
+int stream::write_strings(const Fl_String &filename) {
   Fl_Type *p;
   Fl_Widget_Type *w;
   int i;

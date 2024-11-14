@@ -877,7 +877,7 @@ void Fl_Type::move_before(Fl_Type* g) {
 
 
 // write a widget and all its children:
-void Fl_Type::write(Fd_Project_Writer &f) {
+void Fl_Type::write(fluid::stream::ProjectWriter &f) {
   if (f.write_codeview()) proj1_start = (int)ftell(f.file()) + 1;
   if (f.write_codeview()) proj2_start = (int)ftell(f.file()) + 1;
   f.write_indent(level);
@@ -909,7 +909,7 @@ void Fl_Type::write(Fd_Project_Writer &f) {
   if (f.write_codeview()) proj2_end = (int)ftell(f.file());
 }
 
-void Fl_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Type::write_properties(fluid::stream::ProjectWriter &f) {
   // repeat this for each attribute:
   if (f.project.write_mergeback_data && uid_) {
     f.write_word("uid");
@@ -943,7 +943,7 @@ void Fl_Type::write_properties(Fd_Project_Writer &f) {
   if (selected) f.write_word("selected");
 }
 
-void Fl_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"uid")) {
     const char *hex = f.read_word();
     int x = 0;
@@ -1008,13 +1008,13 @@ void Fl_Type::read_property(Fd_Project_Reader &f, const char *c) {
  Lastly, this method should call the super class to give it a chance to append
  its own properties.
 
- \see Fl_Grid_Type::write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool encapsulate)
+ \see Fl_Grid_Type::write_parent_properties(fluid::stream::ProjectWriter &f, Fl_Type *child, bool encapsulate)
 
  \param[in] f the project file writer
  \param[in] child write properties for this child, make sure it has the correct type
  \param[in] encapsulate write the `parent_properties {}` block if true before writing any properties
  */
-void Fl_Type::write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool encapsulate) {
+void Fl_Type::write_parent_properties(fluid::stream::ProjectWriter &f, Fl_Type *child, bool encapsulate) {
   (void)f; (void)child; (void)encapsulate;
   // nothing to do here
   // put the following code into your implementation of write_parent_properties
@@ -1041,14 +1041,14 @@ void Fl_Type::write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool
  method reads back those properties. This function is virtual, so if a Type
  does not support a property, it will propagate to its super class.
 
- \see Fl_Type::write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool encapsulate)
- \see Fl_Grid_Type::read_parent_property(Fd_Project_Reader &f, Fl_Type *child, const char *property)
+ \see Fl_Type::write_parent_properties(fluid::stream::ProjectWriter &f, Fl_Type *child, bool encapsulate)
+ \see Fl_Grid_Type::read_parent_property(fluid::stream::ProjectReader &f, Fl_Type *child, const char *property)
 
  \param[in] f the project file writer
  \param[in] child read properties for this child
  \param[in] property the name of a property, or "}" when we reach the end of the list
  */
-void Fl_Type::read_parent_property(Fd_Project_Reader &f, Fl_Type *child, const char *property) {
+void Fl_Type::read_parent_property(fluid::stream::ProjectReader &f, Fl_Type *child, const char *property) {
   (void)child;
   f.read_error("Unknown parent property \"%s\"", property);
 }

@@ -94,7 +94,7 @@ void project::Undo::redo() {
   project.undo.suspend();
   if (widget_browser) widget_browser->save_scroll_position();
   int reload_panel = (the_panel && the_panel->visible());
-  if (!read_file(undo_filename(current + 1), 0)) {
+  if (!stream::read_file(undo_filename(current + 1), 0)) {
     // Unable to read checkpoint file, don't redo...
     widget_browser->rebuild();
     project.update_settings_dialog();
@@ -133,7 +133,7 @@ void project::Undo::undo() {
   }
 
   if (current == last) {
-    write_file(undo_filename(current));
+    stream::write_file(undo_filename(current));
   }
 
   project.undo.suspend();
@@ -142,7 +142,7 @@ void project::Undo::undo() {
   // TODO: make the scroll position part of the .fl project file
   if (widget_browser) widget_browser->save_scroll_position();
   int reload_panel = (the_panel && the_panel->visible());
-  if (!read_file(undo_filename(current - 1), 0)) {
+  if (!stream::read_file(undo_filename(current - 1), 0)) {
     // Unable to read checkpoint file, don't undo...
     widget_browser->rebuild();
     project.update_settings_dialog();
@@ -199,7 +199,7 @@ void project::Undo::checkpoint() {
 
   // Save the current UI to a checkpoint file...
   const char *filename = undo_filename(current);
-  if (!write_file(filename)) {
+  if (!stream::write_file(filename)) {
     // Don't attempt to do undo stuff if we can't write a checkpoint file...
     perror(filename);
     return;

@@ -27,9 +27,13 @@ class Fl_Type;
 
 extern int fdesign_flip;
 
+namespace fluid {
+
+namespace stream {
+
 int read_file(const char *, int merge, Strategy strategy=kAddAsLastChild);
 
-class Fd_Project_Reader
+class ProjectReader
 {
 protected:
   /// Project input file
@@ -54,8 +58,8 @@ public:
   double read_version;
 
 public:
-  Fd_Project_Reader(fluid::Project &project);
-  ~Fd_Project_Reader();
+  ProjectReader(fluid::Project &project);
+  ~ProjectReader();
   int open_read(const char *s);
   int close_read();
   const char *filename_name();
@@ -68,5 +72,9 @@ public:
   int read_fdesign_line(const char*& name, const char*& value);
   void read_fdesign();
 };
+
+} // namespace stream
+
+} // namespace fluid
 
 #endif // FLUID_STREAMS_PROJECT_READER_H

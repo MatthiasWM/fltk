@@ -57,10 +57,10 @@ public:
   Fl_Widget *widget(int X,int Y,int W,int H) FL_OVERRIDE;
   ID id() const FL_OVERRIDE { return ID_Grid; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Grid) ? true : super::is_a(inID); }
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
-  void write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool encapsulate) FL_OVERRIDE;
-  void read_parent_property(Fd_Project_Reader &f, Fl_Type *child, const char *property) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
+  void write_parent_properties(fluid::stream::ProjectWriter &f, Fl_Type *child, bool encapsulate) FL_OVERRIDE;
+  void read_parent_property(fluid::stream::ProjectReader &f, Fl_Type *child, const char *property) FL_OVERRIDE;
   Fl_Widget *enter_live_mode(int top=0) FL_OVERRIDE;
   void leave_live_mode() FL_OVERRIDE;
   void copy_properties() FL_OVERRIDE;

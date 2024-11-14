@@ -200,7 +200,7 @@ and load those into the Code Viewer widgets.} open return_type void
   }
 
   if (cv_project->visible_r()) {
-    write_file(cv_design_filename, false, true);
+    fluid::stream::write_file(cv_design_filename, false, true);
     int top = cv_project->top_line();
     cv_project->buffer()->loadfile(cv_design_filename);
     cv_project->scroll(top, 0);
@@ -210,7 +210,7 @@ and load those into the Code Viewer widgets.} open return_type void
     fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
     fl_strlcat(fn, "strings", FL_PATH_MAX);
     fl_filename_setext(fn, FL_PATH_MAX, exts[Fluid.project.i18n_type]);
-    write_strings(fn);
+    fluid::stream::write_file(fn);
     int top = cv_strings->top_line();
     cv_strings->buffer()->loadfile(fn);
     cv_strings->scroll(top, 0);

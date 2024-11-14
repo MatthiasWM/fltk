@@ -171,7 +171,7 @@ void update_codeview_cb(class Fl_Button*, void*) {
     }
 
     if (cv_project->visible_r()) {
-      write_file(cv_design_filename, false, true);
+      fluid::stream::write_file(cv_design_filename, false, true);
       int top = cv_project->top_line();
       cv_project->buffer()->loadfile(cv_design_filename);
       cv_project->scroll(top, 0);
@@ -181,7 +181,7 @@ void update_codeview_cb(class Fl_Button*, void*) {
       fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(fn, "strings", FL_PATH_MAX);
       fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<size_t>(Fluid.project.i18n_type)]);
-      write_strings(fn);
+      fluid::stream::write_file(fn);
       int top = cv_strings->top_line();
       cv_strings->buffer()->loadfile(fn);
       cv_strings->scroll(top, 0);

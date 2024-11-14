@@ -66,7 +66,7 @@ Fl_Widget *Fl_Button_Type::widget(int x, int y, int w, int h) {
   return new Fl_Button(x, y, w, h, "Button");
 }
 
-void Fl_Button_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Button_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Widget_Type::write_properties(f);
   Fl_Button *btn = (Fl_Button*)o;
   if (btn->compact()) {
@@ -75,7 +75,7 @@ void Fl_Button_Type::write_properties(Fd_Project_Writer &f) {
   }
 }
 
-void Fl_Button_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Button_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   Fl_Button *btn = (Fl_Button*)o;
   if (!strcmp(c, "compact")) {
     btn->compact((uchar)atol(f.read_word()));

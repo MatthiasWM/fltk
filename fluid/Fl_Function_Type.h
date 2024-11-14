@@ -65,8 +65,8 @@ public:
   int is_public() const FL_OVERRIDE;
   ID id() const FL_OVERRIDE { return ID_Function; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Function) ? true : super::is_a(inID); }
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   int has_signature(const char *, const char*) const;
 };
 
@@ -83,7 +83,7 @@ class Fl_Code_Type : public Fl_Type
 public:
   Fl_Code_Type();
   Fl_Type *make(Strategy strategy) FL_OVERRIDE;
-  void write(Fd_Project_Writer &f) FL_OVERRIDE;
+  void write(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
   void write_code1(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE { }
   void open() FL_OVERRIDE;
@@ -117,8 +117,8 @@ public:
   int is_public() const FL_OVERRIDE { return -1; }
   ID id() const FL_OVERRIDE { return ID_CodeBlock; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_CodeBlock) ? true : super::is_a(inID); }
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
 };
 
 // ---- Fl_Decl_Type declaration
@@ -138,8 +138,8 @@ public:
   void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE { }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "decl";}
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   int is_public() const FL_OVERRIDE;
   ID id() const FL_OVERRIDE { return ID_Decl; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Decl) ? true : super::is_a(inID); }
@@ -161,8 +161,8 @@ public:
   void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE {}
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "data";}
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   ID id() const FL_OVERRIDE { return ID_Data; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Data) ? true : super::is_a(inID); }
 };
@@ -191,8 +191,8 @@ public:
   void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE;
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "declblock";}
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   int can_have_children() const FL_OVERRIDE {return 1;}
   int is_decl_block() const FL_OVERRIDE {return 1;}
   int is_public() const FL_OVERRIDE;
@@ -214,8 +214,8 @@ public:
   void write_code2(fluid::stream::CodeWriter& f) FL_OVERRIDE { }
   void open() FL_OVERRIDE;
   const char *type_name() FL_OVERRIDE {return "comment";}
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
   int is_public() const FL_OVERRIDE { return 1; }
   ID id() const FL_OVERRIDE { return ID_Comment; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Comment) ? true : super::is_a(inID); }
@@ -248,8 +248,8 @@ public:
   int is_public() const FL_OVERRIDE;
   ID id() const FL_OVERRIDE { return ID_Class; }
   bool is_a(ID inID) const FL_OVERRIDE { return (inID==ID_Class) ? true : super::is_a(inID); }
-  void write_properties(Fd_Project_Writer &f) FL_OVERRIDE;
-  void read_property(Fd_Project_Reader &f, const char *) FL_OVERRIDE;
+  void write_properties(fluid::stream::ProjectWriter &f) FL_OVERRIDE;
+  void read_property(fluid::stream::ProjectReader &f, const char *) FL_OVERRIDE;
 
   // class prefix attribute access
   void prefix(const char* p);

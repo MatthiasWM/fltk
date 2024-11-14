@@ -3383,7 +3383,7 @@ void Fl_Widget_Type::write_code2(fluid::stream::CodeWriter& f) {
 
 ////////////////////////////////////////////////////////////////
 
-void Fl_Widget_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Widget_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Type::write_properties(f);
   f.write_indent(level+1);
   switch (public_) {
@@ -3516,7 +3516,7 @@ void Fl_Widget_Type::write_properties(Fd_Project_Writer &f) {
   }
 }
 
-void Fl_Widget_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Widget_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   int x,y,w,h; Fl_Font ft; int s; Fl_Color cc;
   if (!strcmp(c,"private")) {
     public_ = 0;

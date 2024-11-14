@@ -38,6 +38,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+using namespace fluid;
+
 /// \defgroup flfile .fl Project File Operations
 /// \{
 
@@ -56,8 +58,8 @@ int fdesign_flip = 0;
  \param[in] strategy add new nodes after current or as last child
  \return 0 if the operation failed, 1 if it succeeded
  */
-int read_file(const char *filename, int merge, Strategy strategy) {
-  Fd_Project_Reader f { Fluid.project };
+int stream::read_file(const char *filename, int merge, Strategy strategy) {
+  stream::ProjectReader f { Fluid.project };
   return f.read_project(filename, merge, strategy);
 }
 
@@ -74,14 +76,14 @@ static int hexdigit(int x) {
   return 20;
 }
 
-// ---- Fd_Project_Reader ---------------------------------------------- MARK: -
+// ---- stream::ProjectReader ---------------------------------------------- MARK: -
 
 /**
  A simple growing buffer.
  Oh how I wish sometimes we would upgrade to modern C++.
  \param[in] length minimum length in bytes
  */
-void Fd_Project_Reader::expand_buffer(int length) {
+void stream::ProjectReader::expand_buffer(int length) {
   if (length >= buflen) {
     if (!buflen) {
       buflen = length+1;
@@ -95,7 +97,7 @@ void Fd_Project_Reader::expand_buffer(int length) {
 }
 
 /** \brief Construct local project reader. */
-Fd_Project_Reader::Fd_Project_Reader(fluid::Project &in_project)
+stream::ProjectReader::ProjectReader(fluid::Project &in_project)
 : project(in_project),
   fin(NULL),
   lineno(0),
@@ -107,7 +109,7 @@ Fd_Project_Reader::Fd_Project_Reader(fluid::Project &in_project)
 }
 
 /** \brief Release project reader resources. */
-Fd_Project_Reader::~Fd_Project_Reader()
+stream::ProjectReader::~ProjectReader()
 {
   // fname is not copied, so do not free it
   if (buffer)
@@ -119,7 +121,7 @@ Fd_Project_Reader::~Fd_Project_Reader()
  \param[in] s filename, if NULL, read from stdin instead
  \return 0 if the operation failed, 1 if it succeeded
  */
-int Fd_Project_Reader::open_read(const char *s) {
+int stream::ProjectReader::open_read(const char *s) {
   lineno = 1;
   if (!s) {
     fin = stdin;
@@ -138,7 +140,7 @@ int Fd_Project_Reader::open_read(const char *s) {
  Close the .fl file.
  \return 0 if the operation failed, 1 if it succeeded
  */
-int Fd_Project_Reader::close_read() {
+int stream::ProjectReader::close_read() {
   if (fin != stdin) {
     int x = fclose(fin);
     fin = 0;
@@ -151,7 +153,7 @@ int Fd_Project_Reader::close_read() {
  Return the name part of the current filename and path.
  \return a pointer into a string that is not owned by this class
  */
-const char *Fd_Project_Reader::filename_name() {
+const char *stream::ProjectReader::filename_name() {
   return fl_filename_name(fname);
 }
 
@@ -161,7 +163,7 @@ const char *Fd_Project_Reader::filename_name() {
  values, and \\o### octal values.
  \return a character in the ASCII range
  */
-int Fd_Project_Reader::read_quoted() {      // read whatever character is after a \ .
+int stream::ProjectReader::read_quoted() {      // read whatever character is after a \ .
   int c,d,x;
   switch(c = nextchar()) {
     case '\n': lineno++; return -1;
@@ -206,7 +208,7 @@ int Fd_Project_Reader::read_quoted() {      // read whatever character is after 
  a previous call, and there is no need to waste time searching for them.
  \return the last type that was created
  */
-Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strategy, char skip_options) {
+Fl_Type *stream::ProjectReader::read_children(Fl_Type *p, int merge, Strategy strategy, char skip_options) {
   Fl_Type::current = p;
   Fl_Type *last_child_read = NULL;
   Fl_Type *t = NULL;
@@ -413,7 +415,7 @@ Fl_Type *Fd_Project_Reader::read_children(Fl_Type *p, int merge, Strategy strate
  \param[in] strategy add new nodes after current or as last child
  \return 0 if the operation failed, 1 if it succeeded
  */
-int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy strategy) {
+int stream::ProjectReader::read_project(const char *filename, int merge, Strategy strategy) {
   Fl_Type *o;
   project.undo.suspend();
   read_version = 0.0;
@@ -463,7 +465,7 @@ int Fd_Project_Reader::read_project(const char *filename, int merge, Strategy st
        operations.
  \param[in] format printf style format string, followed by an argument list
  */
-void Fd_Project_Reader::read_error(const char *format, ...) {
+void stream::ProjectReader::read_error(const char *format, ...) {
   va_list args;
   va_start(args, format);
   if (!fin) { // FIXME: this line suppresses any error messages in interactive mode
@@ -496,7 +498,7 @@ void Fd_Project_Reader::read_error(const char *format, ...) {
     overwrite this buffer. If wantbrace is not set, but we read a leading '{',
     the returned string will be stripped of its leading and trailing braces.
  */
-const char *Fd_Project_Reader::read_word(int wantbrace) {
+const char *stream::ProjectReader::read_word(int wantbrace) {
   int x;
 
   // skip all the whitespace before it:
@@ -566,7 +568,7 @@ const char *Fd_Project_Reader::read_word(int wantbrace) {
 /** Read a word and interpret it as an integer value.
  \return integer value, or 0 if the word is not an integer
  */
-int Fd_Project_Reader::read_int() {
+int stream::ProjectReader::read_int() {
   const char *word = read_word();
   if (word) {
     return atoi(word);
@@ -582,7 +584,7 @@ int Fd_Project_Reader::read_int() {
  \param[out] value string
  \return 0 if end of file, else 1
  */
-int Fd_Project_Reader::read_fdesign_line(const char*& name, const char*& value) {
+int stream::ProjectReader::read_fdesign_line(const char*& name, const char*& value) {
   int length = 0;
   int x;
   // find a colon:
@@ -708,7 +710,7 @@ static void forms_end(Fl_Group *g, int flip) {
  FLTK widgets.
  \see http://xforms-toolkit.org
  */
-void Fd_Project_Reader::read_fdesign() {
+void stream::ProjectReader::read_fdesign() {
   int fdesign_magic = atoi(read_word());
   fdesign_flip = (fdesign_magic < 13000);
   Fl_Widget_Type *window = 0;

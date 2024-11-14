@@ -614,7 +614,7 @@ void Fd_Shell_Command::write(Fl_Preferences &prefs, bool save_location) {
   if (flags != 0) prefs.set("flags", flags);
 }
 
-void Fd_Shell_Command::read(class Fd_Project_Reader *in) {
+void Fd_Shell_Command::read(class fluid::stream::ProjectReader *in) {
   const char *c = in->read_word(1);
   if (strcmp(c, "{")!=0) return; // expecting start of group
   storage = Fd_Tool_Store::PROJECT;
@@ -640,7 +640,7 @@ void Fd_Shell_Command::read(class Fd_Project_Reader *in) {
   }
 }
 
-void Fd_Shell_Command::write(class Fd_Project_Writer *out) {
+void Fd_Shell_Command::write(class fluid::stream::ProjectWriter *out) {
   out->write_string("\n  command {");
   out->write_string("\n    name "); out->write_word(name.c_str());
   out->write_string("\n    label "); out->write_word(label.c_str());
@@ -767,7 +767,7 @@ void Fd_Shell_Command_List::write(Fl_Preferences &prefs, Fd_Tool_Store storage) 
 /**
  Read shell configuration from a project file.
  */
-void Fd_Shell_Command_List::read(Fd_Project_Reader *in) {
+void Fd_Shell_Command_List::read(fluid::stream::ProjectReader *in) {
   const char *c = in->read_word(1);
   if (strcmp(c, "{")!=0) return; // expecting start of group
   clear(Fd_Tool_Store::PROJECT);
@@ -787,7 +787,7 @@ void Fd_Shell_Command_List::read(Fd_Project_Reader *in) {
 /**
  Write shell configuration to a project file.
  */
-void Fd_Shell_Command_List::write(Fd_Project_Writer *out) {
+void Fd_Shell_Command_List::write(fluid::stream::ProjectWriter *out) {
   int n_in_project_file = 0;
   for (int i=0; i<list_size; i++) {
     if (list[i]->storage == Fd_Tool_Store::PROJECT)

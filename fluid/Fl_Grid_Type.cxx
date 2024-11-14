@@ -341,7 +341,7 @@ void Fl_Grid_Type::copy_properties_for_children() {
   d->layout();
 }
 
-void Fl_Grid_Type::write_properties(Fd_Project_Writer &f)
+void Fl_Grid_Type::write_properties(fluid::stream::ProjectWriter &f)
 {
   super::write_properties(f);
   Fl_Grid* grid = (Fl_Grid*)o;
@@ -406,7 +406,7 @@ void Fl_Grid_Type::write_properties(Fd_Project_Writer &f)
   }
 }
 
-void Fl_Grid_Type::read_property(Fd_Project_Reader &f, const char *c)
+void Fl_Grid_Type::read_property(fluid::stream::ProjectReader &f, const char *c)
 {
   Fl_Grid* grid = (Fl_Grid*)o;
   if (!strcmp(c,"dimensions")) {
@@ -456,7 +456,7 @@ void Fl_Grid_Type::read_property(Fd_Project_Reader &f, const char *c)
   }
 }
 
-void Fl_Grid_Type::write_parent_properties(Fd_Project_Writer &f, Fl_Type *child, bool encapsulate) {
+void Fl_Grid_Type::write_parent_properties(fluid::stream::ProjectWriter &f, Fl_Type *child, bool encapsulate) {
   Fl_Grid *grid;
   Fl_Widget *child_widget;
   Fl_Grid::Cell *cell;
@@ -503,7 +503,7 @@ void Fl_Grid_Type::write_parent_properties(Fd_Project_Writer &f, Fl_Type *child,
 // NOTE: we have to do this in a loop just as ::read_property() in case a new
 //    property is added. In the current setup, all the remaining properties
 //    will be skipped
-void Fl_Grid_Type::read_parent_property(Fd_Project_Reader &f, Fl_Type *child, const char *property) {
+void Fl_Grid_Type::read_parent_property(fluid::stream::ProjectReader &f, Fl_Type *child, const char *property) {
   if (!child->is_true_widget()) {
     super::read_parent_property(f, child, property);
     return;

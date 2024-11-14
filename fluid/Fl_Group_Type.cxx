@@ -351,7 +351,7 @@ void Fl_Flex_Type::copy_properties_for_children() {
   d->layout();
 }
 
-void Fl_Flex_Type::write_properties(Fd_Project_Writer &f)
+void Fl_Flex_Type::write_properties(fluid::stream::ProjectWriter &f)
 {
   Fl_Group_Type::write_properties(f);
   Fl_Flex* flex = (Fl_Flex*)o;
@@ -376,7 +376,7 @@ void Fl_Flex_Type::write_properties(Fd_Project_Writer &f)
   }
 }
 
-void Fl_Flex_Type::read_property(Fd_Project_Reader &f, const char *c)
+void Fl_Flex_Type::read_property(fluid::stream::ProjectReader &f, const char *c)
 {
   Fl_Flex* flex = (Fl_Flex*)o;
   suspend_auto_layout = 1;

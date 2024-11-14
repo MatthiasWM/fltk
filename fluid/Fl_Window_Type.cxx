@@ -1308,7 +1308,7 @@ void Fl_Window_Type::write_code2(fluid::stream::CodeWriter& f) {
   write_block_close(f);
 }
 
-void Fl_Window_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Window_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Widget_Type::write_properties(f);
   if (modal) f.write_string("modal");
   else if (non_modal) f.write_string("non_modal");
@@ -1319,7 +1319,7 @@ void Fl_Window_Type::write_properties(Fd_Project_Writer &f) {
   if (o->visible() || override_visible_) f.write_string("visible");
 }
 
-void Fl_Window_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Window_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"modal")) {
     modal = 1;
   } else if (!strcmp(c,"non_modal")) {
@@ -1406,7 +1406,7 @@ Fl_Type *Fl_Widget_Class_Type::make(Strategy strategy) {
   return myo;
 }
 
-void Fl_Widget_Class_Type::write_properties(Fd_Project_Writer &f) {
+void Fl_Widget_Class_Type::write_properties(fluid::stream::ProjectWriter &f) {
   Fl_Window_Type::write_properties(f);
   if (wc_relative==1)
     f.write_string("position_relative");
@@ -1414,7 +1414,7 @@ void Fl_Widget_Class_Type::write_properties(Fd_Project_Writer &f) {
     f.write_string("position_relative_rescale");
 }
 
-void Fl_Widget_Class_Type::read_property(Fd_Project_Reader &f, const char *c) {
+void Fl_Widget_Class_Type::read_property(fluid::stream::ProjectReader &f, const char *c) {
   if (!strcmp(c,"position_relative")) {
     wc_relative = 1;
   } else if (!strcmp(c,"position_relative_rescale")) {

@@ -25,9 +25,13 @@
 
 class Fl_Type;
 
+namespace fluid {
+
+namespace stream {
+
 int write_file(const char *, int selected_only = 0, bool to_codeview = false);
 
-class Fd_Project_Writer
+class ProjectWriter
 {
 protected:
   // Project output file, always opened in "wb" mode
@@ -38,8 +42,8 @@ protected:
   bool write_codeview_;
 
 public:
-  Fd_Project_Writer(fluid::Project &project);
-  ~Fd_Project_Writer();
+  ProjectWriter(fluid::Project &project);
+  ~ProjectWriter();
   /// Reference to the project that will be written.
   fluid::Project &project;
   int open_write(const char *s);
@@ -53,5 +57,9 @@ public:
   FILE *file() const { return fout; }
   bool write_codeview() const { return write_codeview_; }
 };
+
+} // namespace stream
+
+} // namespace fluid
 
 #endif // FLUID_STREAMS_PROJECT_WRITER_H
