@@ -20,7 +20,8 @@
 #include "fluid.h"
 #include "application/application.h"
 #include "project/project.h"
-#include "file.h"
+#include "streams/project_reader.h"
+#include "streams/project_writer.h"
 #include "../src/flstring.h"
 #include <FL/Fl_Tabs.H>
 #include <FL/Fl_Button.H>

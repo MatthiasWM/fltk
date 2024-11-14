@@ -23,7 +23,8 @@
 #include "Fl_Group_Type.h"
 #include "settings_panel.h"
 #include "shell_command.h"  // get and set Fl_String preferences
-#include "file.h"
+#include "streams/project_reader.h"
+#include "streams/project_writer.h"
 
 #include <FL/fl_draw.H>
 #include <FL/Fl_Menu_Bar.H>

@@ -23,7 +23,7 @@
 
 #include <FL/Fl_Shared_Image.H>
 
-#include "code.h"
+#include "streams/code_writer.h"
 
 class Fluid_Image {
   bool is_animated_gif_;

@@ -25,7 +25,8 @@
 #include "Fl_Button_Type.h"
 
 #include "Fd_Snap_Action.h"
-#include "file.h"
+#include "streams/project_reader.h"
+#include "streams/project_writer.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Button.H>

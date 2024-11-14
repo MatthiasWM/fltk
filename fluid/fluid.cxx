@@ -27,8 +27,9 @@
 #include "factory.h"
 #include "pixmaps.h"
 #include "project/undo.h"
-#include "file.h"
-#include "code.h"
+#include "streams/project_reader.h"
+#include "streams/project_writer.h"
+#include "streams/code_writer.h"
 #include "mergeback.h"
 
 #include "settings_panel.h"

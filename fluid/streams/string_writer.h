@@ -1,5 +1,5 @@
 //
-// Code output routines for the Fast Light Tool Kit (FLTK).
+// String Writer Class for Fast Light User Interface Designer (FLUID).
 //
 // Copyright 1998-2021 by Bill Spitzak and others.
 //
@@ -14,11 +14,13 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#ifndef _FLUID_CODE_H
-#define _FLUID_CODE_H
+#ifndef FLUID_STREAMS_STRING_WRITER_H
+#define FLUID_STREAMS_STRING_WRITER_H
 
-#include <FL/fl_attr.h>
 #include "../src/Fl_String.H"
+
+#if 0
+#include <FL/fl_attr.h>
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -31,8 +33,11 @@ struct Fd_Text_Tree;
 struct Fd_Pointer_Tree;
 
 int is_id(char c);
+#endif
+
 int write_strings(const Fl_String &filename);
 
+#if 0
 class Fd_Code_Writer
 {
 protected:
@@ -113,4 +118,6 @@ public:
   static unsigned long block_crc(const void *data, int n=-1, unsigned long in_crc=0, bool *inout_line_start=NULL);
 };
 
-#endif // _FLUID_CODE_H
+#endif
+
+#endif // FLUID_STREAMS_STRING_WRITER_H

@@ -29,6 +29,10 @@ set(CPPFILES
   application/settings.cxx
   project/project.cxx
   project/undo.cxx
+  streams/code_writer.cxx
+  streams/project_reader.cxx
+  streams/project_writer.cxx
+  streams/string_writer.cxx
   CodeEditor.cxx
   StyleParse.cxx
   Fd_Snap_Action.cxx
@@ -45,10 +49,8 @@ set(CPPFILES
   align_widget.cxx
   settings_panel.cxx
   autodoc.cxx
-  code.cxx
   custom_widgets.cxx
   factory.cxx
-  file.cxx
   fluid_filename.cxx
   function_panel.cxx
   mergeback.cxx
@@ -69,6 +71,10 @@ set(HEADERFILES
   application/settings.h
   project/project.h
   project/undo.h
+  streams/code_writer.h
+  streams/project_reader.h
+  streams/project_writer.h
+  streams/string_writer.h
   CodeEditor.h
   Fd_Snap_Action.h
   Fl_Function_Type.h
@@ -85,11 +91,9 @@ set(HEADERFILES
   align_widget.h
   settings_panel.h
   autodoc.h
-  code.h
   comments.h
   custom_widgets.h
   factory.h
-  file.h
   function_panel.h
   mergeback.h
   print_panel.h

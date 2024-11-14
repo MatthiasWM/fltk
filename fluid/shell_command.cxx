@@ -93,7 +93,8 @@
 #include "application/application.h"
 #include "project/project.h"
 #include "fluid.h"
-#include "file.h"
+#include "streams/project_reader.h"
+#include "streams/project_writer.h"
 #include "settings_panel.h"
 
 #include <FL/Fl_Double_Window.H>

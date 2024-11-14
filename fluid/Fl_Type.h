@@ -20,7 +20,7 @@
 #include <FL/Fl_Widget.H>
 #include <FL/fl_draw.H>
 
-#include "code.h"
+#include "streams/code_writer.h"
 
 class Fl_Type;
 class Fl_Group_Type;

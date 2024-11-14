@@ -21,8 +21,7 @@
 #include "project/project.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Window_Type.h"
-#include "file.h"
-#include "code.h"
+#include "streams/code_writer.h"
 
 #include <FL/Fl.H>
 #include <FL/Fl_Widget.H>
