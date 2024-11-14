@@ -97,7 +97,7 @@ void project::Undo::redo() {
   if (!read_file(undo_filename(current + 1), 0)) {
     // Unable to read checkpoint file, don't redo...
     widget_browser->rebuild();
-    g_project.update_settings_dialog();
+    Fluid.project().update_settings_dialog();
     Fluid.project().undo.resume();
     return;
   }
@@ -114,7 +114,7 @@ void project::Undo::redo() {
   // Update modified flag...
   Fluid.project().set_modflag(current != last_saved);
   widget_browser->rebuild();
-  g_project.update_settings_dialog();
+  Fluid.project().update_settings_dialog();
 
   // Update undo/redo menu items...
   // if (current >= last) Main_Menu[redo_item].deactivate();
@@ -145,7 +145,7 @@ void project::Undo::undo() {
   if (!read_file(undo_filename(current - 1), 0)) {
     // Unable to read checkpoint file, don't undo...
     widget_browser->rebuild();
-    g_project.update_settings_dialog();
+    Fluid.project().update_settings_dialog();
     Fluid.project().set_modflag(0, 0);
     Fluid.project().undo.resume();
     return;
@@ -171,7 +171,7 @@ void project::Undo::undo() {
   // if (current <= 0) Main_Menu[undo_item].deactivate();
   // Main_Menu[redo_item].activate();
   widget_browser->rebuild();
-  g_project.update_settings_dialog();
+  Fluid.project().update_settings_dialog();
   Fluid.project().undo.resume();
 }
 

@@ -78,13 +78,13 @@ static void update_xywh() {
 
 void i18n_type_cb(Fl_Choice *c, void *v) {
   if (v == LOAD) {
-    c->value(static_cast<int>(g_project.i18n_type));
+    c->value(static_cast<int>(Fluid.project().i18n_type));
   } else {
     Fluid.project().undo.checkpoint();
-    g_project.i18n_type = static_cast<Fd_I18n_Type>(c->value());
+    Fluid.project().i18n_type = static_cast<Fd_I18n_Type>(c->value());
     Fluid.project().set_modflag(1);
   }
-  switch (g_project.i18n_type) {
+  switch (Fluid.project().i18n_type) {
   case Fd_I18n_Type::NONE : /* None */
       i18n_gnu_group->hide();
       i18n_posix_group->hide();

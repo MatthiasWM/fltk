@@ -91,7 +91,6 @@ public:
 
 }; // namespace FLUID
 
-extern fluid::Project g_project;
 extern fluid::Application Fluid;
 
 // ---- public functions

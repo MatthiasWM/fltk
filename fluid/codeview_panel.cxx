@@ -178,19 +178,19 @@ void update_codeview_cb(class Fl_Button*, void*) {
       char fn[FL_PATH_MAX+1];
       fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
       fl_strlcat(fn, "strings", FL_PATH_MAX);
-      fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<size_t>(g_project.i18n_type)]);
+      fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<size_t>(Fluid.project().i18n_type)]);
       write_strings(fn);
       int top = cv_strings->top_line();
       cv_strings->buffer()->loadfile(fn);
       cv_strings->scroll(top, 0);
     } else if (cv_source->visible_r() || cv_header->visible_r()) {
-      Fl_String code_file_name_bak = g_project.code_file_name;
-      g_project.code_file_name = cv_source_filename;
-      Fl_String header_file_name_bak = g_project.header_file_name;
-      g_project.header_file_name = cv_header_filename;
+      Fl_String code_file_name_bak = Fluid.project().code_file_name;
+      Fluid.project().code_file_name = cv_source_filename;
+      Fl_String header_file_name_bak = Fluid.project().header_file_name;
+      Fluid.project().header_file_name = cv_header_filename;
 
       // generate the code and load the files
-      Fd_Code_Writer f { g_project };
+      Fd_Code_Writer f { Fluid.project() };
       // generate files
       if (f.write_code(cv_source_filename, cv_header_filename, true))
       {
@@ -206,8 +206,8 @@ void update_codeview_cb(class Fl_Button*, void*) {
         update_codeview_position();
       }
 
-      g_project.code_file_name = code_file_name_bak;
-      g_project.header_file_name = header_file_name_bak;
+      Fluid.project().code_file_name = code_file_name_bak;
+      Fluid.project().header_file_name = header_file_name_bak;
     }
 }
 

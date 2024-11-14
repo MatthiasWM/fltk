@@ -63,7 +63,7 @@ int fdesign_flip = 0;
  \return 0 if the operation failed, 1 if it succeeded
  */
 int read_file(const char *filename, int merge, Strategy strategy) {
-  Fd_Project_Reader f { g_project };
+  Fd_Project_Reader f { Fluid.project() };
   return f.read_project(filename, merge, strategy);
 }
 
@@ -77,7 +77,7 @@ int read_file(const char *filename, int merge, Strategy strategy) {
  \return 0 if the operation failed, 1 if it succeeded
  */
 int write_file(const char *filename, int selected_only, bool to_codeview) {
-  Fd_Project_Writer out { g_project };
+  Fd_Project_Writer out { Fluid.project() };
   return out.write_project(filename, selected_only, to_codeview);
 }
 

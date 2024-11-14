@@ -29,6 +29,12 @@
 
 using namespace fluid;
 
+Application::Application()
+: project_( *new Project() )
+{
+}
+
+
 /**
  Clear the current project and create a new, empty one.
 
@@ -115,7 +121,7 @@ bool Application::open_project_file(const Fl_String &filename_arg) {
  */
 Project &Application::project() 
 { 
-  return g_project; 
+  return project_; 
 }
 
 

@@ -25,10 +25,6 @@
 
 using namespace fluid;
 
-
-/// The current project, possibly a new, empty roject
-fluid::Project g_project;
-
 /**
  Reset all project setting to create a new empty project.
  */
@@ -419,7 +415,7 @@ bool Project::merge_project_file(const Fl_String &filename_arg) {
   if (!read_file(c, is_a_merge)) {
     Fluid.project().undo.resume();
     widget_browser->rebuild();
-    g_project.update_settings_dialog();
+    Fluid.project().update_settings_dialog();
     fl_message("Can't read %s: %s", c, strerror(errno));
     ::free((void *)filename);
     filename = oldfilename;
@@ -502,7 +498,7 @@ void Project::set_modflag(int mf, int mfc) {
     Fl_String basename;
     if (!Fluid.project().filename) basename = "Untitled.fl";
     else basename = fl_filename_name(Fl_String(Fluid.project().filename));
-    code_ext = fl_filename_ext(g_project.code_file_name.c_str());
+    code_ext = fl_filename_ext(Fluid.project().code_file_name.c_str());
     char mod_star = modflag ? '*' : ' ';
     char mod_c_star = modflag_c ? '*' : ' ';
     snprintf(new_title, sizeof(new_title), "%s%c  %s%c",
@@ -658,7 +654,7 @@ void Project::write_strings() {
     fluid::Callbacks::save(0,0);
     if (!Fluid.project().filename) return;
   }
-  Fl_String filename = g_project.stringsfile_path() + g_project.stringsfile_name();
+  Fl_String filename = Fluid.project().stringsfile_path() + Fluid.project().stringsfile_name();
   int x = ::write_strings(filename); // in code.h
   if (Fluid.batch_mode) {
     if (x) {
@@ -669,7 +665,7 @@ void Project::write_strings() {
     if (x) {
       fl_message("Can't write %s: %s", filename.c_str(), strerror(errno));
     } else if (completion_button->value()) {
-      fl_message("Wrote %s", g_project.stringsfile_name().c_str());
+      fl_message("Wrote %s", Fluid.project().stringsfile_name().c_str());
     }
   }
 }

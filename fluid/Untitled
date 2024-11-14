@@ -349,10 +349,10 @@ or just ".ext" to set extension.}
           label {Header File:}
           user_data 1 user_data_type {void*}
           callback {if (v == LOAD) {
-  o->value(g_project.header_file_name.c_str());
+  o->value(Fluid.project().header_file_name.c_str());
 } else {
-  if (strcmp(g_project.header_file_name.c_str(), o->value())) {
-    g_project.header_file_name = o->value();
+  if (strcmp(Fluid.project().header_file_name.c_str(), o->value())) {
+    Fluid.project().header_file_name = o->value();
     Fluid.project().set_modflag(1);
   }
 }}
@@ -362,10 +362,10 @@ or just ".ext" to set extension.}
           label {Code File:}
           user_data 1 user_data_type {void*}
           callback {if (v == LOAD) {
-  o->value(g_project.code_file_name.c_str());
+  o->value(Fluid.project().code_file_name.c_str());
 } else {
-  if (strcmp(g_project.code_file_name.c_str(), o->value())) {
-    g_project.code_file_name = o->value();
+  if (strcmp(Fluid.project().code_file_name.c_str(), o->value())) {
+    Fluid.project().code_file_name = o->value();
     Fluid.project().set_modflag(1);
   }
 }}
@@ -374,11 +374,11 @@ or just ".ext" to set extension.}
         Fl_Check_Button include_H_from_C_button {
           label {Include Header from Code}
           callback {if (v == LOAD) {
-  o->value(g_project.include_H_from_C);
+  o->value(Fluid.project().include_H_from_C);
 } else {
-  if (g_project.include_H_from_C != o->value()) {
+  if (Fluid.project().include_H_from_C != o->value()) {
     Fluid.project().set_modflag(1);
-    g_project.include_H_from_C = o->value();
+    Fluid.project().include_H_from_C = o->value();
   }
 }}
           tooltip {Include the header file from the code file.} xywh {100 162 220 20} down_box DOWN_BOX labelsize 11
@@ -390,11 +390,11 @@ or just ".ext" to set extension.}
         Fl_Check_Button use_FL_COMMAND_button {
           label {Menu shortcuts use FL_COMMAND}
           callback {if (v == LOAD) {
-  o->value(g_project.use_FL_COMMAND);
+  o->value(Fluid.project().use_FL_COMMAND);
 } else {
-  if (g_project.use_FL_COMMAND != o->value()) {
+  if (Fluid.project().use_FL_COMMAND != o->value()) {
     Fluid.project().set_modflag(1);
-    g_project.use_FL_COMMAND = o->value();
+    Fluid.project().use_FL_COMMAND = o->value();
   }
 }}
           tooltip {Replace FL_CTRL and FL_META with FL_COMMAND when generating menu shortcuts} xywh {100 205 220 20} down_box DOWN_BOX labelsize 11
@@ -402,11 +402,11 @@ or just ".ext" to set extension.}
         Fl_Check_Button utf8_in_src_button {
           label {allow Unicode UTF-8 in source code}
           callback {if (v == LOAD) {
-  o->value(g_project.utf8_in_src);
+  o->value(Fluid.project().utf8_in_src);
 } else {
-  if (g_project.utf8_in_src != o->value()) {
+  if (Fluid.project().utf8_in_src != o->value()) {
     Fluid.project().set_modflag(1);
-    g_project.utf8_in_src = o->value();
+    Fluid.project().utf8_in_src = o->value();
   }
 }}
           tooltip {For older compilers, characters outside of the printable ASCII range are escaped using octal notation `\\0123`. If this option is checked, Fluid will write UTF-8 characters unchanged.} xywh {100 230 220 20} down_box DOWN_BOX labelsize 11
@@ -414,11 +414,11 @@ or just ".ext" to set extension.}
         Fl_Check_Button avoid_early_includes_button {
           label {avoid early include of Fl.H}
           callback {if (v == LOAD) {
-  o->value(g_project.avoid_early_includes);
+  o->value(Fluid.project().avoid_early_includes);
 } else {
-  if (g_project.avoid_early_includes != o->value()) {
+  if (Fluid.project().avoid_early_includes != o->value()) {
     Fluid.project().set_modflag(1);
-    g_project.avoid_early_includes = o->value();
+    Fluid.project().avoid_early_includes = o->value();
   }
 }}
           tooltip {Do not emit \#include <FL//Fl.H> until it is needed by another include file.} xywh {100 255 220 20} down_box DOWN_BOX labelsize 11
@@ -430,11 +430,11 @@ or just ".ext" to set extension.}
         Fl_Check_Button w_proj_mergeback {
           label {generate MergeBack data}
           callback {if (v == LOAD) {
-  o->value(g_project.write_mergeback_data);
+  o->value(Fluid.project().write_mergeback_data);
 } else {
-  if (g_project.write_mergeback_data != o->value()) {
+  if (Fluid.project().write_mergeback_data != o->value()) {
     Fluid.project().set_modflag(1);
-    g_project.write_mergeback_data = o->value();
+    Fluid.project().write_mergeback_data = o->value();
   }
 }}
           comment {// Matt: disabled}
@@ -1553,10 +1553,10 @@ if (v == LOAD) {
           Fl_Input i18n_gnu_include_input {
             label {\#include:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_gnu_include.c_str());
+  o->value(Fluid.project().i18n_gnu_include.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_gnu_include = o->value();
+  Fluid.project().i18n_gnu_include = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {The include file for internationalization.} xywh {100 103 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1564,10 +1564,10 @@ if (v == LOAD) {
           Fl_Input i18n_gnu_conditional_input {
             label {Conditional:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_gnu_conditional.c_str());
+  o->value(Fluid.project().i18n_gnu_conditional.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_gnu_conditional = o->value();
+  Fluid.project().i18n_gnu_conditional = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {only include the header file if this preprocessor macro is defined, for example FLTK_GETTEXT_FOUND} xywh {100 128 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1575,10 +1575,10 @@ if (v == LOAD) {
           Fl_Input i18n_gnu_function_input {
             label {Function:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_gnu_function.c_str());
+  o->value(Fluid.project().i18n_gnu_function.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_gnu_function = o->value();
+  Fluid.project().i18n_gnu_function = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {The function to call to translate labels and tooltips, usually "gettext" or "_"} xywh {100 153 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1586,10 +1586,10 @@ if (v == LOAD) {
           Fl_Input i18n_gnu_static_function_input {
             label {Static Function:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_gnu_static_function.c_str());
+  o->value(Fluid.project().i18n_gnu_static_function.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_gnu_static_function = o->value();
+  Fluid.project().i18n_gnu_static_function = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {function to call to translate static text, The function to call to internationalize labels and tooltips, usually "gettext_noop" or "N_"} xywh {100 178 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1602,10 +1602,10 @@ if (v == LOAD) {
           Fl_Input i18n_pos_include_input {
             label {\#include:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_pos_include.c_str());
+  o->value(Fluid.project().i18n_pos_include.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_pos_include = o->value();
+  Fluid.project().i18n_pos_include = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {The include file for internationalization.} xywh {100 103 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1613,10 +1613,10 @@ if (v == LOAD) {
           Fl_Input i18n_pos_conditional_input {
             label {Conditional:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_pos_conditional.c_str());
+  o->value(Fluid.project().i18n_pos_conditional.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_pos_conditional = o->value();
+  Fluid.project().i18n_pos_conditional = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {only include the header file if this preprocessor macro is defined, for example FLTK_GETTEXT_FOUND} xywh {100 128 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1624,10 +1624,10 @@ if (v == LOAD) {
           Fl_Input i18n_pos_file_input {
             label {Catalog:}
             callback {if (v == LOAD) {
-  o->value(g_project.i18n_pos_file.c_str());
+  o->value(Fluid.project().i18n_pos_file.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_pos_file = o->value();
+  Fluid.project().i18n_pos_file = o->value();
   Fluid.project().set_modflag(1);
 }}
             tooltip {The name of the message catalog.} xywh {100 153 220 20} box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11
@@ -1639,10 +1639,10 @@ if (v == LOAD) {
             Fl_Input i18n_pos_set_input {
               label {Set:}
               callback {if (v == LOAD) {
-  o->value(g_project.i18n_pos_set.c_str());
+  o->value(Fluid.project().i18n_pos_set.c_str());
 } else {
   Fluid.project().undo.checkpoint();
-  g_project.i18n_pos_set = o->value();
+  Fluid.project().i18n_pos_set = o->value();
   Fluid.project().set_modflag(1);
 }}
               tooltip {The message set number.} xywh {100 178 80 20} type Int box THIN_DOWN_BOX labelsize 11 textfont 4 textsize 11

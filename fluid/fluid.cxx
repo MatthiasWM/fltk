@@ -427,7 +427,7 @@ void exit_cb(Fl_Widget *,void *) {
   // Destroy tree
   //    Doing so causes dtors to automatically close all external editors
   //    and cleans up editor tmp files. Then remove fluid tmpdir /last/.
-  g_project.reset();
+  Fluid.project().reset();
   ExternalCodeEditor::tmpdir_clear();
   Fluid.delete_tmpdir();
 
@@ -537,7 +537,7 @@ bool new_project_from_template() {
   }
 
   widget_browser->rebuild();
-  g_project.update_settings_dialog();
+  Fluid.project().update_settings_dialog();
   Fluid.project().set_modflag(0);
   Fluid.project().undo.clear();
 
@@ -561,7 +561,7 @@ void apple_open_cb(const char *c) {
  Callback to write C++ code and header files.
  */
 void write_cb(Fl_Widget *, void *) {
-    g_project.write_code_files();
+    Fluid.project().write_code_files();
 }
 
 #if 0
@@ -573,14 +573,14 @@ int mergeback_code_files()
 {
   flush_text_widgets();
   if (!filename) return 1;
-  if (!g_project.write_mergeback_data) {
+  if (!Fluid.project().write_mergeback_data) {
     fl_message("MergeBack is not enabled for this project.\n"
                "Please enable MergeBack in the project settings\n"
                "dialog and re-save the project file and the code.");
     return 0;
   }
 
-  Fl_String proj_filename = g_project.projectfile_path() + g_project.projectfile_name();
+  Fl_String proj_filename = Fluid.project().projectfile_path() + Fluid.project().projectfile_name();
   Fl_String code_filename;
 #if 1
   if (!Fluid.batch_mode) {
@@ -592,7 +592,7 @@ int mergeback_code_files()
   }
 #endif
   if (code_filename.empty())
-    code_filename = g_project.codefile_path() + g_project.codefile_name();
+    code_filename = Fluid.project().codefile_path() + Fluid.project().codefile_name();
   if (!Fluid.batch_mode) Fluid.project().enter_project_dir();
   int c = merge_back(code_filename, proj_filename, FD_MERGEBACK_INTERACTIVE);
   if (!Fluid.batch_mode) leave_project_dir();
@@ -1218,12 +1218,12 @@ int main(int argc,char **argv) {
   // in batch mode only
   if (Fluid.batch_mode) {
     if (!Fluid.args.code_filename.empty()) {
-      g_project.code_file_set = 1;
-      g_project.code_file_name = Fluid.args.code_filename;
+      Fluid.project().code_file_set = 1;
+      Fluid.project().code_file_name = Fluid.args.code_filename;
     }
     if (!Fluid.args.header_filename.empty()) {
-      g_project.header_file_set = 1;
-      g_project.header_file_name = Fluid.args.header_filename;
+      Fluid.project().header_file_set = 1;
+      Fluid.project().header_file_name = Fluid.args.header_filename;
     }
   }
 

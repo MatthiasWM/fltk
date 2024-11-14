@@ -26,12 +26,16 @@
 
 namespace fluid {
 
+class Project;  
+
 class Application {
   /// path to store temporary files during app run
   Fl_String tmpdir_path { };
   /// true if the temporary file path was already created
   bool tmpdir_create_called { false };
 public:
+  /// Constructor.
+  Application();
   /// Command line arguments.
   application::Args args { *this };
   /// Application settings.
@@ -47,6 +51,7 @@ public:
   bool new_project(bool user_must_confirm = true);
   /// Get the current project.
   Project &project();
+  Project &project_;
   /// Open a native file chooser to allow choosing a project file for reading.
   Fl_String open_project_filechooser(const Fl_String &title);
   /// Open a file chooser and load an exiting project file.

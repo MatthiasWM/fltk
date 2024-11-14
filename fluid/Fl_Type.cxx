@@ -138,7 +138,7 @@ Fl_Type *in_this_only; // set if menu popped-up in window
  Print the current project tree to stderr.
  */
 void print_project_tree() {
-  fprintf(stderr, "---- %s --->\n", g_project.projectfile_name().c_str());
+  fprintf(stderr, "---- %s --->\n", Fluid.project().projectfile_name().c_str());
   for (Fl_Type *t = Fl_Type::first; t; t = t->next) {
     for (int i = t->level; i > 0; i--)
       fprintf(stderr, ". ");
