@@ -209,7 +209,7 @@ and load those into the Code Viewer widgets.} open return_type void
     char fn[FL_PATH_MAX+1];
     fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
     fl_strlcat(fn, "strings", FL_PATH_MAX);
-    fl_filename_setext(fn, FL_PATH_MAX, exts[Fluid.project.i18n_type]);
+    fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<size_t>(Fluid.project.i18n_type)]);
     fluid::stream::write_file(fn);
     int top = cv_strings->top_line();
     cv_strings->buffer()->loadfile(fn);
@@ -221,7 +221,7 @@ and load those into the Code Viewer widgets.} open return_type void
     Fluid.project.header_file_name = cv_header_filename;
 
     // generate the code and load the files
-    fluid::stream::CodeWriter f;
+    fluid::stream::CodeWriter f { Fluid.project };
     // generate files
     if (f.write_code(cv_source_filename, cv_header_filename, true))
     {
@@ -311,7 +311,7 @@ Function {make_codeview()} {open
           code0 {\#include "widgets/code_viewers.h"}
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
-          class fluid::widget::CodeViewer
+          class {fluid::widget::CodeViewer}
         }
       }
       Fl_Group {} {
@@ -323,7 +323,7 @@ Function {make_codeview()} {open
           code0 {\#include "widgets/code_viewers.h"}
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
-          class fluid::widget::CodeViewer
+          class {fluid::widget::CodeViewer}
         }
       }
       Fl_Group {} {
@@ -334,7 +334,7 @@ Function {make_codeview()} {open
           xywh {10 40 500 410} textfont 4 textsize 11 resizable
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
-          class fluid::widget::TextViewer
+          class {fluid::widget::TextViewer}
         }
       }
       Fl_Group {} {
@@ -345,7 +345,7 @@ Function {make_codeview()} {open
           xywh {10 40 500 410} textfont 4 textsize 11 resizable
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
-          class fluid::widget::TextViewer
+          class {fluid::widget::TextViewer}
         }
       }
     }

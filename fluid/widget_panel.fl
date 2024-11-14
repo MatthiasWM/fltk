@@ -115,7 +115,7 @@ Function {make_image_panel()} {
     if (mod) Fluid.project.set_modflag(1);
   }}
           tooltip {Scale image to this width in pixel units} xywh {75 75 55 20} labelsize 11 align 5 textsize 11
-          class fluid::widget::CoordInput
+          class {fluid::widget::CoordInput}
         }
         Fl_Input image_panel_imageh {
           label {Height:}
@@ -145,7 +145,7 @@ Function {make_image_panel()} {
     if (mod) Fluid.project.set_modflag(1);
   }}
           tooltip {Scale image to this height in pixel units} xywh {135 75 55 20} labelsize 11 align 5 textsize 11
-          class fluid::widget::CoordInput
+          class {fluid::widget::CoordInput}
         }
         Fl_Button {} {
           label Reset
@@ -237,7 +237,7 @@ Function {make_image_panel()} {
     if (mod) Fluid.project.set_modflag(1);
   }}
           tooltip {Scale image to this width in pixel units} xywh {75 215 55 20} labelsize 11 align 5 textsize 11
-          class fluid::widget::CoordInput
+          class {fluid::widget::CoordInput}
         }
         Fl_Input image_panel_deimageh {
           label {Height:}
@@ -267,7 +267,7 @@ Function {make_image_panel()} {
     if (mod) Fluid.project.set_modflag(1);
   }}
           tooltip {Scale image to this height in pixel units} xywh {135 215 55 20} labelsize 11 align 5 textsize 11
-          class fluid::widget::CoordInput
+          class {fluid::widget::CoordInput}
         }
         Fl_Button {} {
           label Reset
@@ -580,7 +580,7 @@ Use Ctrl-J for newlines.} xywh {95 40 190 20} labelfont 1 labelsize 11 when 15 t
             tooltip {The X position of the widget as a number or formula.
 Formulas can be simple math, including the variables
 x, px, sx, cx, and i} xywh {95 150 55 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Input widget_y_input {
             label {Y:}
@@ -588,7 +588,7 @@ x, px, sx, cx, and i} xywh {95 150 55 20} labelsize 11 align 5 textsize 11
             tooltip {The Y position of the widget as a number or formula.
 Formulas can be simple math, including the variables
 y, py, sy, cy, and i} xywh {155 150 55 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Input widget_w_input {
             label {Width:}
@@ -596,7 +596,7 @@ y, py, sy, cy, and i} xywh {155 150 55 20} labelsize 11 align 5 textsize 11
             tooltip {The width of the widget as a number or formula.
 Formulas can be simple math, including the variables
 w, pw, sw, cw, and i} xywh {215 150 55 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Input widget_h_input {
             label {Height:}
@@ -604,7 +604,7 @@ w, pw, sw, cw, and i} xywh {215 150 55 20} labelsize 11 align 5 textsize 11
             tooltip {The height of the widget as a number or formula.
 Formulas can be simple math, including the variables
 h, ph, sh, ch, and i} xywh {275 150 55 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Choice {} {
             label {Children:}
@@ -1080,7 +1080,7 @@ wCallback->do_callback(wCallback, v);} open
               callback callback_cb
               tooltip {The callback function or code for the widget. Use the variable name 'o' to access the Widget pointer and 'v' to access the user value.} xywh {95 225 310 80} box DOWN_BOX labelfont 1 labelsize 11 align 4 textfont 4 textsize 11 resizable
               code0 {\#include "widgets/code_viewers.h"}
-              class fluid::widget::CodeEditor
+              class {fluid::widget::CodeEditor}
             }
           }
         }
@@ -1139,7 +1139,7 @@ wCallback->do_callback(wCallback, v);} open
             label {Row:}
             callback grid_set_row_cb
             xywh {95 60 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {135 60 30 20}
@@ -1161,7 +1161,7 @@ wCallback->do_callback(wCallback, v);} open
             label {Column:}
             callback grid_set_col_cb
             xywh {175 60 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {215 60 30 20}
@@ -1274,13 +1274,13 @@ wCallback->do_callback(wCallback, v);} open
             label {Width:}
             callback grid_set_min_wdt_cb
             xywh {95 135 55 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Input {} {
             label {Height:}
             callback grid_set_min_hgt_cb
             xywh {155 135 55 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Box {} {
             xywh {395 135 1 20} hide resizable
@@ -1295,7 +1295,7 @@ wCallback->do_callback(wCallback, v);} open
             label {Row Span:}
             callback grid_set_rowspan_cb
             xywh {95 170 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {135 170 30 20}
@@ -1317,7 +1317,7 @@ wCallback->do_callback(wCallback, v);} open
             label {Col. Span:}
             callback grid_set_colspan_cb
             xywh {175 170 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {215 170 30 20}
@@ -1379,7 +1379,7 @@ if (v == LOAD) {
   }
 }}
             tooltip {Number of horizontal rows in the Grid group} xywh {95 60 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {135 60 30 20}
@@ -1429,7 +1429,7 @@ if (v == LOAD) {
   }
 }}
             tooltip {Number of vertical columns in the Grid group} xywh {175 60 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {215 60 30 20}
@@ -1621,7 +1621,7 @@ if (v == LOAD) {
   widget_grid_curr_row_attributes->do_callback(widget_grid_curr_row_attributes, LOAD);
 }}
             xywh {95 175 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {
             callback propagate_load open
@@ -1672,7 +1672,7 @@ if (v == LOAD) {
   }
 }}
               xywh {180 175 55 20} labelsize 11 align 5 textsize 11
-              class fluid::widget::CoordInput
+              class {fluid::widget::CoordInput}
             }
             Fl_Input {} {
               label {Weight:}
@@ -1692,7 +1692,7 @@ if (v == LOAD) {
   }
 }}
               xywh {240 175 55 20} labelsize 11 align 5 textsize 11
-              class fluid::widget::CoordInput
+              class {fluid::widget::CoordInput}
             }
             Fl_Input {} {
               label {Gap:}
@@ -1712,7 +1712,7 @@ if (v == LOAD) {
   }
 }}
               xywh {300 175 55 20} labelsize 11 align 5 textsize 11
-              class fluid::widget::CoordInput
+              class {fluid::widget::CoordInput}
             }
           }
           Fl_Box {} {
@@ -1738,7 +1738,7 @@ if (v == LOAD) {
   widget_grid_curr_col_attributes->do_callback(widget_grid_curr_col_attributes, LOAD);
 }}
             xywh {95 210 40 20} labelsize 11 align 5 textsize 11
-            class fluid::widget::CoordInput
+            class {fluid::widget::CoordInput}
           }
           Fl_Group {} {open
             xywh {135 210 30 20}
@@ -1788,7 +1788,7 @@ if (v == LOAD) {
   }
 }}
               xywh {180 210 55 20} labelsize 11 align 5 textsize 11
-              class fluid::widget::CoordInput
+              class {fluid::widget::CoordInput}
             }
             Fl_Input {} {
               label {Weight:}
@@ -1808,7 +1808,7 @@ if (v == LOAD) {
   }
 }}
               xywh {240 210 55 20} labelsize 11 align 5 textsize 11
-              class fluid::widget::CoordInput
+              class {fluid::widget::CoordInput}
             }
             Fl_Input {} {
               label {Gap:}
@@ -1828,7 +1828,7 @@ if (v == LOAD) {
   }
 }}
               xywh {300 210 55 20} labelsize 11 align 5 textsize 11
-              class fluid::widget::CoordInput
+              class {fluid::widget::CoordInput}
             }
           }
           Fl_Box {} {
