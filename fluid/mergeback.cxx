@@ -14,12 +14,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#if 0
-// Matt: disabled
-
 #include "mergeback.h"
 
 #include "fluid.h"
+#include "application/application.h"
+#include "project/project.h"
 #include "streams/code_writer.h"
 #include "project/undo.h"
 #include "Fl_Function_Type.h"
@@ -488,6 +487,4 @@ int Fd_Mergeback::merge_back(const Fl_String &s, const Fl_String &p, int task) {
   code = NULL;
   return ret;
 }
-
-#endif
 

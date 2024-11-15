@@ -30,7 +30,7 @@
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #include <io.h>
 #else
-#include <unistd.h>
+// #include <unistd.h>
 #endif // _WIN32 && !__CYGWIN__
 
 Fl_Double_Window *template_panel=(Fl_Double_Window *)0;

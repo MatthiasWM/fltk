@@ -565,15 +565,13 @@ void write_cb(Fl_Widget *, void *) {
     Fluid.project.write_code_files();
 }
 
-#if 0
-// Matt: disabled
 /**
  Merge the possibly modified content of code files back into the project.
  */
 int mergeback_code_files()
 {
   flush_text_widgets();
-  if (!filename) return 1;
+  if (!Fluid.project.filename) return 1;
   if (!Fluid.project.write_mergeback_data) {
     fl_message("MergeBack is not enabled for this project.\n"
                "Please enable MergeBack in the project settings\n"
@@ -596,7 +594,7 @@ int mergeback_code_files()
     code_filename = Fluid.project.codefile_path() + Fluid.project.codefile_name();
   if (!Fluid.batch_mode) Fluid.project.enter_project_dir();
   int c = merge_back(code_filename, proj_filename, FD_MERGEBACK_INTERACTIVE);
-  if (!Fluid.batch_mode) leave_project_dir();
+  if (!Fluid.batch_mode) Fluid.project.leave_project_dir();
 
   if (c==0) fl_message("Comparing\n  \"%s\"\nto\n  \"%s\"\n\n"
                        "MergeBack found no external modifications\n"
@@ -609,7 +607,6 @@ int mergeback_code_files()
 void mergeback_cb(Fl_Widget *, void *) {
   mergeback_code_files();
 }
-#endif
 
 void write_strings_cb(Fl_Widget *, void *) {
   Fluid.project.write_strings();
@@ -877,7 +874,7 @@ Fl_Menu_Item Main_Menu[] = {
   {"Save As &Template...", 0, save_template_cb, 0, FL_MENU_DIVIDER},
   {"&Print...", FL_COMMAND+'p', print_menu_cb},
   {"Write &Code", FL_COMMAND+FL_SHIFT+'c', write_cb, 0},
-// Matt: disabled {"MergeBack Code", FL_COMMAND+FL_SHIFT+'m', mergeback_cb, 0},
+  {"&MergeBack Code", FL_COMMAND+FL_SHIFT+'m', mergeback_cb, 0},
   {"&Write Strings", FL_COMMAND+FL_SHIFT+'w', write_strings_cb, 0, FL_MENU_DIVIDER},
   {Fluid.history.short_path[0], FL_COMMAND+'1', menu_file_open_history_cb, Fluid.history.full_path[0]},
   {Fluid.history.short_path[1], FL_COMMAND+'2', menu_file_open_history_cb, Fluid.history.full_path[1]},

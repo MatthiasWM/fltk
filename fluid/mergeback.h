@@ -14,9 +14,6 @@
 //     https://www.fltk.org/bugs.php
 //
 
-// Matt: disabled
-#if 0
-
 #ifndef _FLUID_MERGEBACK_H
 #define _FLUID_MERGEBACK_H
 
@@ -78,5 +75,3 @@ extern int merge_back(const Fl_String &s, const Fl_String &p, int task);
 
 
 #endif // _FLUID_MERGEBACK_H
-
-#endif

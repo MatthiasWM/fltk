@@ -351,7 +351,7 @@ void Fl_Menu_Item_Type::write_static(fluid::stream::CodeWriter& f) {
     f.write_c(", %s", ut);
     if (use_v) f.write_c(" v");
     f.write_c(") {\n");
-    // Matt: disabled f.tag(FD_TAG_GENERIC, 0);
+    f.tag(FD_TAG_GENERIC, 0);
     f.write_c_indented(callback(), 1, 0);
     if (*(d-1) != ';' && *(d-1) != '}') {
       const char *p = strrchr(callback(), '\n');
@@ -362,7 +362,7 @@ void Fl_Menu_Item_Type::write_static(fluid::stream::CodeWriter& f) {
       if (*p != '#' && *p) f.write_c(";");
     }
     f.write_c("\n");
-    // Matt: disabled f.tag(FD_TAG_MENU_CALLBACK, get_uid());
+    f.tag(FD_TAG_MENU_CALLBACK, get_uid());
     f.write_c("}\n");
 
     // If the menu item is part of a Class or Widget Class, FLUID generates

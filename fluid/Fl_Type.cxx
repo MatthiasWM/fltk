@@ -691,7 +691,6 @@ void Fl_Type::add(Fl_Type *anchor, Strategy strategy) {
     Fl_Type::first = this;
   }
 
-#if 0
   { // make sure that we have no duplicate uid's
     Fl_Type *tp = this;
     do {
@@ -699,7 +698,6 @@ void Fl_Type::add(Fl_Type *anchor, Strategy strategy) {
       tp = tp->next;
     } while (tp!=end && tp!=NULL);
   }
-#endif
 
   // Give the widgets in our tree a chance to update themselves
   for (Fl_Type *t = this; t && t!=end->next; t = t->next) {

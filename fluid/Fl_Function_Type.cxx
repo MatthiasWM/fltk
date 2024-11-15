@@ -681,9 +681,9 @@ void Fl_Code_Type::write_code1(fluid::stream::CodeWriter& f) {
   if ( handle_editor_changes() == 1 ) {
     main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
   }
-  // Matt: disabled f.tag(FD_TAG_GENERIC, 0);
+  f.tag(FD_TAG_GENERIC, 0);
   f.write_c_indented(name(), 0, '\n');
-  // Matt: disabled f.tag(FD_TAG_CODE, get_uid());
+  f.tag(FD_TAG_CODE, get_uid());
 }
 
 /**
