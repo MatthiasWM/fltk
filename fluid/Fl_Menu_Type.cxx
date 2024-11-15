@@ -50,11 +50,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// TODO: if the user_data field of a Submenu is set, we generate a menu item
+// with the FL_SUBMENU_POINTER flag set instead of the FL_SUBMENU. But this 
+// generates bad code if the user adds children to the Submenu as well. It 
+// would be better to add a new Type fo Submennu Pointers which can not have
+// children added to it and also update the User Data field to be labeled
+// Submenu Pointer or similar and hide the user data type field.
+
 Fl_Menu_Item menu_item_type_menu[] = {
   {"Normal",0,0,(void*)0},
   {"Toggle",0,0,(void*)FL_MENU_BOX},
   {"Radio",0,0,(void*)FL_MENU_RADIO},
   {0}};
+
+static Fl_Menu_Item external_menu[] = {
+  { "<external menu>" },
+  { nullptr }
+};
+
+
 
 static void delete_dependents(Fl_Menu_Item *m) {
   if (!m)
@@ -82,19 +96,14 @@ static void delete_menu(Fl_Menu_Item *m) {
   delete[] m;
 }
 
-static Fl_Menu_Item external_menu[] = {
-  { "<external menu>" },
-  { nullptr }
-};
-
 void Fl_Input_Choice_Type::build_menu() {
   Fl_Input_Choice* w = (Fl_Input_Choice*)o;
   // count how many Fl_Menu_Item structures needed:
   int n = 0;
   Fl_Type* q;
   for (q = next; q && q->level > level; q = q->next) {
-    if (q->can_have_children() && !q->user_data()) 
-      n++; // space for null at end of submenu
+    if ( q->is_a(ID_Submenu) && !q->user_data() )
+      n++; // space for null at end of submenu, but not submenu pointer
     n++;
   }
   if (!n) {
@@ -141,10 +150,10 @@ void Fl_Input_Choice_Type::build_menu() {
       m->labelfont(i->o->labelfont());
       m->labelsize(i->o->labelsize());
       m->labelcolor(i->o->labelcolor());
-      if (q->can_have_children()) {
+      if (q->is_a(ID_Submenu)) {
         if (q->user_data()) {
           // Generate a menu with FL_SUBMENU_POINTER set.
-          m->flags = m->flags | FL_SUBMENU_POINTER & ~FL_SUBMENU;
+          m->flags = (m->flags | FL_SUBMENU_POINTER) & ~FL_SUBMENU;
           m->user_data(external_menu);
         } else {
           // Start a submenu list
@@ -324,7 +333,7 @@ const char* Fl_Menu_Item_Type::menu_name(fluid::stream::CodeWriter& f, int& i) {
     // be sure to count the {0} that ends a submenu:
     if (t->level > t->next->level) {
       i += (t->level - t->next->level);
-    } else if (t->level == t->next->level && t->can_have_children() && !t->user_data()) {
+    } else if (t->level == t->next->level && t->is_a(ID_Submenu) && !t->user_data()) {
       i++;
     }
     t = t->prev;
@@ -446,7 +455,7 @@ void Fl_Menu_Item_Type::write_static(fluid::stream::CodeWriter& f) {
   for (Fl_Type* q = t->next; q && q->is_a(ID_Menu_Item); q = q->next) {
     ((Fl_Menu_Item_Type*)q)->write_item(f);
     int thislevel = q->level; 
-    if (q->can_have_children() && !q->user_data()) 
+    if ( q->is_a(ID_Submenu) && !q->user_data() )
       thislevel++;
     int nextlevel =
       (q->next && q->next->is_a(ID_Menu_Item)) ? q->next->level : t->level+1;
@@ -481,11 +490,11 @@ int Fl_Menu_Item_Type::flags() {
   if (((Fl_Button*)o)->value()) i |= FL_MENU_VALUE;
   if (!o->active()) i |= FL_MENU_INACTIVE;
   if (!o->visible()) i |= FL_MENU_INVISIBLE;
-  if (can_have_children()) {
-    if (user_data() == NULL) 
+  if (is_a(ID_Submenu)) {
+    if (user_data())
+      i = (i | FL_SUBMENU_POINTER) & ~FL_SUBMENU;
+    else
       i |= FL_SUBMENU;
-    else 
-      i |= FL_SUBMENU_POINTER;
   }
   if (hotspot()) i |= FL_MENU_DIVIDER;
   return i;
@@ -675,7 +684,7 @@ void Fl_Menu_Base_Type::build_menu() {
   int n = 0;
   Fl_Type* q;
   for (q = next; q && q->level > level; q = q->next) {
-    if (q->can_have_children() && !q->user_data()) 
+    if ( q->is_a(ID_Submenu) && !q->user_data() )
       n++; // space for null at end of submenu, but not submenu pointer
     n++;
   }
@@ -724,10 +733,10 @@ void Fl_Menu_Base_Type::build_menu() {
       m->labelsize(i->o->labelsize());
       m->labelcolor(i->o->labelcolor());
 
-      if (q->can_have_children()) {
+      if (q->is_a(ID_Submenu)) {
         if (q->user_data()) {
           // Generate a menu with FL_SUBMENU_POINTER set.
-          m->flags = m->flags | FL_SUBMENU_POINTER & ~FL_SUBMENU;
+          m->flags = (m->flags | FL_SUBMENU_POINTER) & ~FL_SUBMENU;
           m->user_data(external_menu);
         } else {
           // Start a submenu list
