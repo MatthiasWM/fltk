@@ -1,7 +1,10 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0400
+use_FL_COMMAND
+utf8_in_src
 header_name {.h}
 code_name {.cxx}
+mergeback 1
 comment {//
 // Code dialogs for the Fast Light Tool Kit (FLTK).
 //
@@ -17,55 +20,58 @@ comment {//
 //
 //     https://www.fltk.org/bugs.php
 //
-} {in_source in_header
+} {uid 0001 in_source in_header
 }
 
-decl {\#include "fluid.h"} {private local
+decl {\#include "fluid.h"} {uid acd9 private local
 }
 
-decl {\#include "application/application.h"} {private local
+decl {\#include "application/application.h"} {uid b782 private local
 }
 
-decl {\#include "project/project.h"} {private local
+decl {\#include "project/project.h"} {uid 8ed8 private local
 }
 
-decl {\#include "streams/project_reader.h"} {private local
+decl {\#include "streams/project_reader.h"} {uid 2f43 private local
 }
 
-decl {\#include "streams/project_writer.h"} {private local
+decl {\#include "streams/project_writer.h"} {uid 9898 private local
 }
 
-decl {\#include "streams/string_writer.h"} {private local
+decl {\#include "streams/string_writer.h"} {uid 128c private local
 }
 
-decl {\#include "../src/flstring.h"} {selected private local
+decl {\#include "ui/main_panel.h"} {uid d4b3 selected private local
 }
 
-decl {\#include <FL/Fl_Tabs.H>} {private local
+decl {\#include "../src/flstring.h"} {uid 3917 private local
 }
 
-decl {\#include <FL/Fl_Button.H>} {private local
+decl {\#include <FL/Fl_Tabs.H>} {uid c398 private local
 }
 
-decl {char *cv_source_filename = NULL;} {private local
+decl {\#include <FL/Fl_Button.H>} {uid 2e2f private local
 }
 
-decl {char *cv_header_filename = NULL;} {private local
+decl {char *cv_source_filename = NULL;} {uid 962d private local
 }
 
-decl {char *cv_design_filename = NULL;} {private local
+decl {char *cv_header_filename = NULL;} {uid 3258 private local
 }
 
-decl {int cv_code_choice;} {public local
+decl {char *cv_design_filename = NULL;} {uid 816b private local
 }
 
-decl {extern void select_only(Fl_Type *o);} {private global
+decl {int cv_code_choice;} {uid 7788 public local
 }
 
-decl {extern void reveal_in_browser(Fl_Type *t);} {private global
+decl {extern void select_only(Fl_Type *o);} {uid 6499 private global
 }
 
-Function {update_codeview_position()} {
+decl {extern void reveal_in_browser(Fl_Type *t);} {uid 0f48 private global
+}
+
+Function {update_codeview_position()} {uid ee62
   comment {Update the header and source code highlighting depending on the
 currently selected object
 
@@ -164,19 +170,21 @@ file.} open return_type void
         cv_project->scroll(line, 0);
       }
     }
-  }} {}
+  }} {uid 4cf3
+  }
 }
 
-Function {update_codeview_position_cb(class Fl_Tabs*, void*)} {
+Function {update_codeview_position_cb(class Fl_Tabs*, void*)} {uid 5023
   comment {Callback to update the codeview position.} open return_type void
 } {
   code {// make sure that the selected tab shows the current view
   update_codeview_cb(0,0);
   // highlight the selected widget in the selected tab
-  update_codeview_position();} {}
+  update_codeview_position();} {uid f85f
+  }
 }
 
-Function {update_codeview_cb(class Fl_Button*, void*)} {
+Function {update_codeview_cb(class Fl_Button*, void*)} {uid 22d1
   comment {Generate a header, source, strings, or design file in a temporary directory
 and load those into the Code Viewer widgets.} open return_type void
 } {
@@ -239,26 +247,29 @@ and load those into the Code Viewer widgets.} open return_type void
 
     Fluid.project.code_file_name = code_file_name_bak;
     Fluid.project.header_file_name = header_file_name_bak;
-  }} {}
+  }} {uid f5ed
+  }
 }
 
-Function {update_codeview_timer(void*)} {
+Function {update_codeview_timer(void*)} {uid 680c
   comment {This is called by the timer itself
 } open return_type void
 } {
-  code {update_codeview_cb(0,0);} {}
+  code {update_codeview_cb(0,0);} {uid 2902
+  }
 }
 
-Function {codeview_defer_update()} {open return_type void
+Function {codeview_defer_update()} {uid 8039 open return_type void
 } {
   code {// we will only update earliest 0.5 seconds after the last change, and only
     // if no other change was made, so dragging a widget will not generate any
     // CPU load
     Fl::remove_timeout(update_codeview_timer, 0);
-    Fl::add_timeout(0.5, update_codeview_timer, 0);} {}
+    Fl::add_timeout(0.5, update_codeview_timer, 0);} {uid 6484
+  }
 }
 
-Function {codeview_toggle_visibility()} {
+Function {codeview_toggle_visibility()} {uid 6514
   comment {Show or hide the source code preview.
 The state is stored in the app preferences.
 } open return_type void
@@ -283,30 +294,31 @@ The state is stored in the app preferences.
 
   if (codeview_panel->visible()) {
     codeview_panel->hide();
-    codeview_item->label("Show Code View");
+    fluid::ui::main_panel.codeview_item->label("Show Code View");
   } else {
     codeview_panel->show();
-    codeview_item->label("Hide Code View");
+    fluid::ui::main_panel.codeview_item->label("Hide Code View");
     update_codeview_cb(0,0);
-  }} {}
+  }} {uid 339c
+  }
 }
 
-Function {make_codeview()} {open
+Function {make_codeview()} {uid ee5a open
 } {
-  Fl_Window codeview_panel {
+  Fl_Window codeview_panel {uid ac2a
     label {Code View}
     callback toggle_codeview_cb open
     xywh {389 507 520 515} type Double align 80 resizable size_range {384 120 0 0} visible
   } {
-    Fl_Tabs cv_tab {
+    Fl_Tabs cv_tab {uid dae5
       callback update_codeview_position_cb open
       xywh {10 10 500 440} selection_color 4 labelcolor 7 resizable
     } {
-      Fl_Group cv_source_tab {
+      Fl_Group cv_source_tab {uid 49e9
         label Source open
         xywh {10 35 500 415} labelsize 13 resizable
       } {
-        Fl_Text_Editor cv_source {
+        Fl_Text_Editor cv_source {uid 05f1
           xywh {10 40 500 410} textfont 4 textsize 11 resizable
           code0 {\#include "widgets/code_viewers.h"}
           code1 {o->linenumber_width(60);}
@@ -314,11 +326,11 @@ Function {make_codeview()} {open
           class {fluid::widget::CodeViewer}
         }
       }
-      Fl_Group {} {
+      Fl_Group {} {uid 56c4
         label Header open
         xywh {10 35 500 415} labelsize 13 hide
       } {
-        Fl_Text_Editor cv_header {
+        Fl_Text_Editor cv_header {uid 2b8a
           xywh {10 40 500 410} textfont 4 textsize 11 resizable
           code0 {\#include "widgets/code_viewers.h"}
           code1 {o->linenumber_width(60);}
@@ -326,22 +338,22 @@ Function {make_codeview()} {open
           class {fluid::widget::CodeViewer}
         }
       }
-      Fl_Group {} {
+      Fl_Group {} {uid 6a9b
         label Strings open
         xywh {10 35 500 415} labelsize 13 hide
       } {
-        Fl_Text_Display cv_strings {
+        Fl_Text_Display cv_strings {uid c339
           xywh {10 40 500 410} textfont 4 textsize 11 resizable
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
           class {fluid::widget::TextViewer}
         }
       }
-      Fl_Group {} {
+      Fl_Group {} {uid 07f7
         label Project open
         xywh {10 35 500 415} labelsize 13 hide
       } {
-        Fl_Text_Display cv_project {
+        Fl_Text_Display cv_project {uid 4ca1
           xywh {10 40 500 410} textfont 4 textsize 11 resizable
           code1 {o->linenumber_width(60);}
           code2 {o->linenumber_size(o->Fl_Text_Display::textsize());}
@@ -349,14 +361,14 @@ Function {make_codeview()} {open
         }
       }
     }
-    Fl_Group cv_find_row {open
+    Fl_Group cv_find_row {uid ead3 open
       xywh {10 460 500 20}
     } {
-      Fl_Button cv_find_text_case {
+      Fl_Button cv_find_text_case {uid f3ed
         label aA
         xywh {244 460 25 20} type Toggle labelsize 11
       }
-      Fl_Input cv_find_text {
+      Fl_Input cv_find_text {uid b8d5
         label {Find:}
         callback {Fl_Text_Display *e = NULL;
 if (cv_source->visible_r()) {
@@ -378,7 +390,7 @@ if (e) {
 }}
         xywh {40 460 200 20} labelsize 11 when 15 textsize 11
       }
-      Fl_Button {} {
+      Fl_Button {} {uid 9ad9
         label {<<}
         callback {Fl_Text_Display *e = NULL;
 if (cv_source->visible_r()) {
@@ -404,7 +416,7 @@ if (e) {
 }}
         xywh {273 460 25 20} labelsize 11
       }
-      Fl_Button {} {
+      Fl_Button {} {uid 3c5b
         label {>>}
         callback {Fl_Text_Display *e = NULL;
 if (cv_source->visible_r()) {
@@ -430,7 +442,7 @@ if (e) {
 }}
         xywh {298 460 25 20} labelsize 11
       }
-      Fl_Button {} {
+      Fl_Button {} {uid 546c
         label Reveal
         callback {if (codeview_panel && codeview_panel->visible()) {
   Fl_Type *node = NULL;
@@ -449,62 +461,62 @@ if (e) {
 }}
         xywh {327 460 61 20} labelsize 11
       }
-      Fl_Box {} {
+      Fl_Box {} {uid 1151
         xywh {490 460 20 20} resizable
       }
     }
-    Fl_Group cv_settings_row {open
+    Fl_Group cv_settings_row {uid 9c20 open
       xywh {10 485 500 20}
     } {
-      Fl_Button {} {
+      Fl_Button {} {uid 100c
         label Refresh
         callback update_codeview_cb
         xywh {10 485 61 20} labelsize 11
       }
-      Fl_Light_Button cv_autorefresh {
+      Fl_Light_Button cv_autorefresh {uid fd06
         label {Auto-Refresh}
         xywh {77 485 91 20} labelsize 11
         code0 {o->callback((Fl_Callback*)update_codeview_cb);}
       }
-      Fl_Light_Button cv_autoposition {
+      Fl_Light_Button cv_autoposition {uid 606d
         label {Auto-Position}
         xywh {172 485 89 20} labelsize 11
       }
-      Fl_Choice cv_code_choice_w {
+      Fl_Choice cv_code_choice_w {uid 5fff
         callback {cv_code_choice = (int)o->mvalue()->argument();
 update_codeview_position();} open
         xywh {265 485 70 20} down_box BORDER_BOX labelsize 11 textsize 11
       } {
-        MenuItem {} {
+        MenuItem {} {uid 18a1
           label prolog
           user_data 0 user_data_type long
           tooltip {Include statements in header or source code} xywh {0 0 100 20} labelsize 11 hide
         }
-        MenuItem {} {
+        MenuItem {} {uid 3b19
           label static
           user_data 1 user_data_type long
           tooltip {static declarations in source code} xywh {10 10 100 20} labelsize 11
         }
-        MenuItem {} {
+        MenuItem {} {uid da36
           label code
           user_data 2 user_data_type long
           tooltip {widget code block including children} xywh {20 20 100 20} labelsize 11
         }
-        MenuItem {} {
+        MenuItem {} {uid 42e9
           label {code 1}
           user_data 3 user_data_type long
           tooltip {widget code block before children} xywh {30 30 100 20} labelsize 11
         }
-        MenuItem {} {
+        MenuItem {} {uid 9a81
           label {code 2}
           user_data 4 user_data_type long
           tooltip {widget code block after children} xywh {40 40 100 20} labelsize 11
         }
       }
-      Fl_Box {} {
+      Fl_Box {} {uid 0fc3
         xywh {375 485 80 20} resizable
       }
-      Fl_Button {} {
+      Fl_Button {} {uid 431e
         label Close
         callback toggle_codeview_b_cb
         xywh {460 485 50 20} labelsize 11
@@ -514,5 +526,5 @@ update_codeview_position();} open
 }
 
 comment {
-//} {in_source in_header
+//} {uid 9dc0 in_source in_header
 }

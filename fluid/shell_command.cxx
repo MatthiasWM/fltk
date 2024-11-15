@@ -92,6 +92,7 @@
 #include "shell_command.h"
 #include "application/application.h"
 #include "project/project.h"
+#include "ui/main_panel.h"
 #include "fluid.h"
 #include "streams/project_reader.h"
 #include "streams/project_writer.h"
@@ -866,10 +867,6 @@ void menu_shell_customize_cb(Fl_Widget*, void*) {
  Rebuild the entire shell submenu from scratch and replace the old menu.
  */
 void Fd_Shell_Command_List::rebuild_shell_menu() {
-  static Fl_Menu_Item *shell_submenu = NULL;
-  if (!shell_submenu)
-    shell_submenu = (Fl_Menu_Item*)main_menubar->find_item(menu_marker);
-
   int i, j, num_active_items = 0;
   // count the active commands
   for (i=0; i<list_size; i++) {
@@ -895,7 +892,7 @@ void Fd_Shell_Command_List::rebuild_shell_menu() {
   // replace the old menu array with the new one
   Fl_Menu_Item *mi_old = shell_menu_;
   shell_menu_ = mi;
-  shell_submenu->user_data(shell_menu_);
+  fluid::ui::main_panel.shell_submenu->user_data(shell_menu_);
   // free all resources from the old menu
   if (mi_old && (mi_old != default_menu)) {
     for (i=0; ; i++) {

@@ -20,6 +20,7 @@
 
 #include "Fd_Snap_Action.h"
 
+#include "ui/main_panel.h"
 #include "Fl_Group_Type.h"
 #include "settings_panel.h"
 #include "shell_command.h"  // get and set Fl_String preferences
@@ -132,6 +133,10 @@ void select_layout_suite_cb(Fl_Widget *, void *user_data) {
 
 void select_layout_preset_cb(Fl_Widget *, void *user_data) {
   int index = (int)(fl_intptr_t)user_data;
+  select_layout_preset(index);
+}
+
+void select_layout_preset(int index) {
   assert(index >= 0);
   assert(index < 3);
   g_layout_list.current_preset(index);
@@ -624,11 +629,6 @@ Fd_Layout_List::~Fd_Layout_List() {
  Update the Setting dialog and menus to reflect the current Layout selection state.
  */
 void Fd_Layout_List::update_dialogs() {
-  static Fl_Menu_Item *preset_menu = NULL;
-  if (!preset_menu) {
-    preset_menu = (Fl_Menu_Item*)main_menubar->find_item(select_layout_preset_cb);
-    assert(preset_menu);
-  }
   assert(this);
   assert(current_suite_ >= 0 );
   assert(current_suite_ < list_size_);
@@ -640,7 +640,7 @@ void Fd_Layout_List::update_dialogs() {
     w_settings_layout_tab->do_callback(w_settings_layout_tab, LOAD);
     layout_choice->redraw();
   }
-  preset_menu[current_preset_].setonly(preset_menu);
+  fluid::ui::main_panel.preset_menu[current_preset_].setonly(fluid::ui::main_panel.preset_menu);
   main_menu_[current_suite_].setonly(main_menu_);
 }
 
@@ -819,10 +819,6 @@ void Fd_Layout_List::current_preset(int ix) {
  Allocate enough space for n entries in the list.
  */
 void Fd_Layout_List::capacity(int n) {
-  static Fl_Menu_Item *suite_menu = NULL;
-  if (!suite_menu)
-    suite_menu = (Fl_Menu_Item*)main_menubar->find_item(layout_suite_marker);
-
   int old_n = list_size_;
   int i;
 
@@ -837,7 +833,7 @@ void Fd_Layout_List::capacity(int n) {
     new_main_menu[i] = main_menu_[i];
   if (!list_is_static_) ::free(main_menu_);
   main_menu_ = new_main_menu;
-  suite_menu->user_data(main_menu_);
+  fluid::ui::main_panel.suite_menu->user_data(main_menu_);
 
   Fl_Menu_Item *new_choice_menu = (Fl_Menu_Item*)::calloc(n+1, sizeof(Fl_Menu_Item));
   for (i = 0; i < old_n; i++)

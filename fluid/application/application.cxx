@@ -96,7 +96,7 @@ Fl_String Application::open_project_filechooser(const Fl_String &title) {
  \param[in] filename_arg load from this file, or show file chooser if empty
  \return false if the operation was canceled or failed otherwise
  */
-bool Application::open_project_file(const Fl_String &filename_arg) {
+bool Application::open_project_from_file(const Fl_String &filename_arg) {
   // verify user intention
   if (project.confirm_clear() == false)
     return false;

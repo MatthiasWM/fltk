@@ -26,6 +26,7 @@
 
 #include "application/application.h"
 #include "project/project.h"
+#include "ui/main_panel.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Grid_Type.h"
 #include "fluid.h"
@@ -104,11 +105,18 @@ void i18n_type_cb(Fl_Choice *c, void *v) {
 }
 
 void show_grid_cb(Fl_Widget *, void *) {
+  settings_show_grid();
+}
+void settings_show_grid() {
   settings_window->show();
   w_settings_tabs->value(w_settings_layout_tab);
 }
 
 void show_settings_cb(Fl_Widget *, void *) {
+  show_settings();
+}
+
+void show_settings() {
   settings_window->hotspot(settings_window);
   settings_window->show();
 }
@@ -184,6 +192,7 @@ void Overlay_Window::draw() {
 extern Fl_Window *main_window;
 
 // Read an image of the overlay window
+// TODO: is this actually called from anywhere?
 uchar *Overlay_Window::read_image(int &ww, int &hh) {
   // Create an off-screen buffer for the window...
   //main_window->make_current();
@@ -722,7 +731,7 @@ extern Fl_Menu_Item Main_Menu[];
 
 // Calculate new bounding box of selected widgets:
 void Fl_Window_Type::fix_overlay() {
-  overlay_item->label("Hide O&verlays");
+  fluid::ui::main_panel.overlay_item->label("Hide O&verlays");
   if (overlay_button) overlay_button->label("Hide &Overlays");
   overlays_invisible = 0;
   recalc = 1;
@@ -755,14 +764,14 @@ void redraw_overlays() {
     if (o->is_a(ID_Window)) ((Fl_Window_Type*)o)->fix_overlay();
 }
 
-void toggle_overlays(Fl_Widget *,void *) {
+void toggle_overlays() {
   overlays_invisible = !overlays_invisible;
 
   if (overlays_invisible) {
-    overlay_item->label("Show O&verlays");
+    fluid::ui::main_panel.overlay_item->label("Show O&verlays");
     if (overlay_button) overlay_button->label("Show &Overlays");
   } else {
-    overlay_item->label("Hide O&verlays");
+    fluid::ui::main_panel.overlay_item->label("Hide O&verlays");
     if (overlay_button) overlay_button->label("Hide &Overlays");
   }
 
@@ -773,19 +782,18 @@ void toggle_overlays(Fl_Widget *,void *) {
     }
 }
 
-/**
- \brief User changes settings to show positioning guides in layout editor overlay.
- This is called from the main menu and from the check button in the Settings
- dialog.
- */
-void toggle_guides(Fl_Widget *,void *) {
+void toggle_overlays(Fl_Widget *,void *) {
+  toggle_overlays();
+}
+
+void toggle_guides() {
   Fluid.settings.show_guides = !Fluid.settings.show_guides;
   fluid_prefs.set("show_guides", Fluid.settings.show_guides);
 
   if (Fluid.settings.show_guides)
-    guides_item->label("Hide Guides");
+    fluid::ui::main_panel.guides_item->label("Hide Guides");
   else
-    guides_item->label("Show Guides");
+    fluid::ui::main_panel.guides_item->label("Show Guides");
   if (guides_button)
     guides_button->value(Fluid.settings.show_guides);
 
@@ -796,6 +804,17 @@ void toggle_guides(Fl_Widget *,void *) {
     }
   }
 }
+
+/**
+ \brief User changes settings to show positioning guides in layout editor overlay.
+ This is called from the main menu and from the check button in the Settings
+ dialog.
+ */
+void toggle_guides(Fl_Widget *,void *) {
+  toggle_guides();
+}
+
+
 
 /**
  \brief User changes settings to show positioning guides in layout editor overlay.
@@ -810,14 +829,14 @@ void toggle_guides_cb(Fl_Check_Button *o, void *v) {
  This is called from the main menu and from the check button in the Settings
  dialog.
  */
-void toggle_restricted(Fl_Widget *,void *) {
+void toggle_restricted() {
   Fluid.settings.show_restricted = !Fluid.settings.show_restricted;
   fluid_prefs.set("show_restricted", Fluid.settings.show_restricted);
 
   if (Fluid.settings.show_restricted)
-    restricted_item->label("Hide Restricted");
+    fluid::ui::main_panel.restricted_item->label("Hide Restricted");
   else
-    restricted_item->label("Show Restricted");
+    fluid::ui::main_panel.restricted_item->label("Show Restricted");
   if (restricted_button)
     restricted_button->value(Fluid.settings.show_restricted);
 
@@ -827,6 +846,10 @@ void toggle_restricted(Fl_Widget *,void *) {
       ((Overlay_Window*)(w->o))->redraw_overlay();
     }
   }
+}
+
+void toggle_restricted(Fl_Widget *,void *) {
+  toggle_restricted();
 }
 
 /**

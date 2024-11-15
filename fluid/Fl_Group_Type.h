@@ -26,6 +26,7 @@
 
 void group_cb(Fl_Widget *, void *);
 void ungroup_cb(Fl_Widget *, void *);
+void ungroup_selected();
 
 // ---- Fl_Group_Type -------------------------------------------------- MARK: -
 

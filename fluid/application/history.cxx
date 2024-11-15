@@ -16,6 +16,7 @@
 
 #include "application/history.h"
 #include "fluid.h"
+#include "ui/main_panel.h"
 
 using namespace fluid;
 
@@ -46,15 +47,12 @@ void application::History::load() {
       // Make a relative version of the filename for the menu...
       fl_filename_relative(short_path[i], sizeof(short_path[i]),
                            full_path[i]);
-
-      if (i == 9) history_item[i].flags = FL_MENU_DIVIDER;
-      else history_item[i].flags = 0;
+      fluid::ui::main_panel.history_item[i].flags = 0;
     } else break;
   }
 
   for (; i < 10; i ++) {
-    if (i) history_item[i-1].flags |= FL_MENU_DIVIDER;
-    history_item[i].hide();
+    fluid::ui::main_panel.history_item[i].hide();
   }
 }
 
@@ -109,15 +107,13 @@ void application::History::add(const char *flname) {
   for (i = 0; i < max_files; i ++) {
     fluid_prefs.set( Fl_Preferences::Name("file%d", i), full_path[i]);
     if (full_path[i][0]) {
-      if (i == 9) history_item[i].flags = FL_MENU_DIVIDER;
-      else history_item[i].flags = 0;
+      fluid::ui::main_panel.history_item[i].flags = 0;
     } else break;
   }
 
   for (; i < 10; i ++) {
     fluid_prefs.set( Fl_Preferences::Name("file%d", i), "");
-    if (i) history_item[i-1].flags |= FL_MENU_DIVIDER;
-    history_item[i].hide();
+    fluid::ui::main_panel.history_item[i].hide();
   }
   fluid_prefs.flush();
 }

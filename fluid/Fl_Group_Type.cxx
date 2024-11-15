@@ -143,6 +143,10 @@ void group_cb(Fl_Widget *, void *) {
 extern void ungroup_selected_menuitems();
 
 void ungroup_cb(Fl_Widget *, void *) {
+  ungroup_selected();
+}
+
+void ungroup_selected() {
   if (!Fl_Type::current) {
     fl_message("No widgets selected.");
     return;

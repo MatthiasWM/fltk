@@ -33,12 +33,14 @@
 #define BREAK_ON_FIRST break
 //#define BREAK_ON_FIRST
 
-void align_widget_cb(Fl_Widget*, long how)
+void align_widget_cb(Fl_Widget*, void *how_ptr)
 {
+  Fluid.project.undo.checkpoint();
   const int max = 32768, min = -32768;
   int left, right, top, bot, wdt, hgt, n;
   Fl_Type *o;
   int changed = 0;
+  long how = reinterpret_cast<intptr_t>(how_ptr);
   switch ( how )
   {
   //---- align

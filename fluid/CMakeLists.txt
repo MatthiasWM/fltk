@@ -34,6 +34,7 @@ set(CPPFILES
   streams/project_writer.cxx
   streams/string_writer.cxx
   ui/about_panel.cxx
+  ui/main_panel.cxx
   ui/panel.cxx
   widgets/bin_buttons.cxx
   widgets/code_viewers.cxx
@@ -74,6 +75,7 @@ set(HEADERFILES
   project/project.h
   project/undo.h
   ui/about_panel.h
+  ui/main_panel.h
   ui/panel.h
   streams/code_writer.h
   streams/project_reader.h

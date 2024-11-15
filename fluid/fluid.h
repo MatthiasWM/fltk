@@ -58,15 +58,15 @@ extern Fl_Window *main_window;
 
 extern int reading_file;
 
-extern Fl_Menu_Item *save_item;
-extern Fl_Menu_Item *history_item;
-extern Fl_Menu_Item *widgetbin_item;
-extern Fl_Menu_Item *codeview_item;
-extern Fl_Menu_Item *overlay_item;
+// extern Fl_Menu_Item *history_item;
+// extern Fl_Menu_Item *widgetbin_item;
+// extern Fl_Menu_Item *codeview_item;
+// extern Fl_Menu_Item *overlay_item;
 extern Fl_Button *overlay_button;
-extern Fl_Menu_Item *guides_item;
-extern Fl_Menu_Item *restricted_item;
+// extern Fl_Menu_Item *guides_item;
+// extern Fl_Menu_Item *restricted_item;
 extern Fl_Check_Button *guides_button;
+extern Fl_Menu_Item main_layout_submenu_[];
 
 // ---- project class declaration
 
@@ -101,12 +101,26 @@ extern void flush_text_widgets();
 // ---- public callback functions
 
 extern void save_template_cb(Fl_Widget *, void *);
+void save_as_template();
 extern void revert_cb(Fl_Widget *,void *);
 extern void exit_cb(Fl_Widget *,void *);
+void quit_fluid();
 
 extern void write_strings_cb(Fl_Widget *, void *);
-extern void align_widget_cb(Fl_Widget *, long);
+extern void align_widget_cb(Fl_Widget *, void *);
 extern void toggle_widgetbin_cb(Fl_Widget *, void *);
+void toggle_widgetbin();
+int mergeback_code_files();
+void open_widget_panel();
+void print_windows();
+void toggle_guides();
+void toggle_overlays();
+bool new_project_from_template();
+void settings_show_grid();
+void show_settings();
+void toggle_restricted();
+void select_layout_preset(int index);
+void sort_selected();
 
 extern char position_window(Fl_Window *w, const char *prefsName, int Visible, int X, int Y, int W=0, int H=0);
 

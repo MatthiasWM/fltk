@@ -23,6 +23,7 @@
 #include "streams/project_reader.h"
 #include "streams/project_writer.h"
 #include "streams/string_writer.h"
+#include "ui/main_panel.h"
 #include "../src/flstring.h"
 #include <FL/Fl_Tabs.H>
 #include <FL/Fl_Button.H>
@@ -43,6 +44,7 @@ extern void reveal_in_browser(Fl_Type *t);
  file.
 */
 void update_codeview_position() {
+//~fl~0~0000~39cda62d~~
   if (!codeview_panel || !codeview_panel->visible())
       return;
     if (cv_autoposition->value()==0)
@@ -134,16 +136,19 @@ void update_codeview_position() {
         }
       }
     }
+//~fl~1~4cf3~a7b728c9~~
 }
 
 /**
  Callback to update the codeview position.
 */
 void update_codeview_position_cb(class Fl_Tabs*, void*) {
+//~fl~0~0000~05c58bc2~~
   // make sure that the selected tab shows the current view
     update_codeview_cb(0,0);
     // highlight the selected widget in the selected tab
     update_codeview_position();
+//~fl~1~f85f~c3c1d0dc~~
 }
 
 /**
@@ -151,6 +156,7 @@ void update_codeview_position_cb(class Fl_Tabs*, void*) {
  and load those into the Code Viewer widgets.
 */
 void update_codeview_cb(class Fl_Button*, void*) {
+//~fl~0~0000~d1900f52~~
   if (!codeview_panel || !codeview_panel->visible())
       return;
 
@@ -211,21 +217,26 @@ void update_codeview_cb(class Fl_Button*, void*) {
       Fluid.project.code_file_name = code_file_name_bak;
       Fluid.project.header_file_name = header_file_name_bak;
     }
+//~fl~1~f5ed~faa77331~~
 }
 
 /**
  This is called by the timer itself
 */
 void update_codeview_timer(void*) {
+//~fl~0~0000~96d1285d~~
   update_codeview_cb(0,0);
+//~fl~1~2902~b25fead9~~
 }
 
 void codeview_defer_update() {
+//~fl~0~0000~b2d8f8c6~~
   // we will only update earliest 0.5 seconds after the last change, and only
       // if no other change was made, so dragging a widget will not generate any
       // CPU load
       Fl::remove_timeout(update_codeview_timer, 0);
       Fl::add_timeout(0.5, update_codeview_timer, 0);
+//~fl~1~6484~c3566734~~
 }
 
 /**
@@ -233,6 +244,7 @@ void codeview_defer_update() {
  The state is stored in the app preferences.
 */
 void codeview_toggle_visibility() {
+//~fl~0~0000~19ddacd9~~
   if (!codeview_panel) {
       make_codeview();
       codeview_panel->callback((Fl_Callback*)toggle_codeview_cb);
@@ -253,12 +265,13 @@ void codeview_toggle_visibility() {
 
     if (codeview_panel->visible()) {
       codeview_panel->hide();
-      codeview_item->label("Show Code View");
+      fluid::ui::main_panel.codeview_item->label("Show Code View");
     } else {
       codeview_panel->show();
-      codeview_item->label("Hide Code View");
+      fluid::ui::main_panel.codeview_item->label("Hide Code View");
       update_codeview_cb(0,0);
     }
+//~fl~1~339c~1af2bb2f~~
 }
 
 Fl_Double_Window *codeview_panel=(Fl_Double_Window *)0;
@@ -282,6 +295,7 @@ Fl_Button *cv_find_text_case=(Fl_Button *)0;
 Fl_Input *cv_find_text=(Fl_Input *)0;
 
 static void cb_cv_find_text(Fl_Input* o, void*) {
+//~fl~0~0000~bffe23a8~~
   Fl_Text_Display *e = NULL;
   if (cv_source->visible_r()) {
     e = cv_source;
@@ -300,9 +314,11 @@ static void cb_cv_find_text(Fl_Input* o, void*) {
       e->show_insert_position();
     }
   }
+//~fl~3~b8d5~9257c63e~~
 }
 
 static void cb_(Fl_Button*, void*) {
+//~fl~0~0000~0d9a8ae0~~
   Fl_Text_Display *e = NULL;
   if (cv_source->visible_r()) {
     e = cv_source;
@@ -325,9 +341,11 @@ static void cb_(Fl_Button*, void*) {
       e->show_insert_position();
     }
   }
+//~fl~3~9ad9~c4ab92fc~~
 }
 
 static void cb_1(Fl_Button*, void*) {
+//~fl~0~0000~660e2049~~
   Fl_Text_Display *e = NULL;
   if (cv_source->visible_r()) {
     e = cv_source;
@@ -350,9 +368,11 @@ static void cb_1(Fl_Button*, void*) {
       e->show_insert_position();
     }
   }
+//~fl~3~3c5b~fb5ec787~~
 }
 
 static void cb_Reveal(Fl_Button*, void*) {
+//~fl~0~0000~fb3643d8~~
   if (codeview_panel && codeview_panel->visible()) {
     Fl_Type *node = NULL;
     if (cv_source->visible_r())
@@ -368,6 +388,7 @@ static void cb_Reveal(Fl_Button*, void*) {
         node->open();
     }
   }
+//~fl~3~546c~29083c5a~~
 }
 
 Fl_Group *cv_settings_row=(Fl_Group *)0;
@@ -379,8 +400,10 @@ Fl_Light_Button *cv_autoposition=(Fl_Light_Button *)0;
 Fl_Choice *cv_code_choice_w=(Fl_Choice *)0;
 
 static void cb_cv_code_choice_w(Fl_Choice* o, void*) {
+//~fl~0~0000~d4e72d54~~
   cv_code_choice = (int)o->mvalue()->argument();
   update_codeview_position();
+//~fl~3~5fff~849a65c8~~
 }
 
 Fl_Menu_Item menu_cv_code_choice_w[] = {

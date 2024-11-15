@@ -421,7 +421,7 @@ bool Project::merge_project_file(const Fl_String &filename_arg) {
     fl_message("Can't read %s: %s", c, strerror(errno));
     ::free((void *)filename);
     filename = oldfilename;
-    if (main_window) set_modflag(modflag);
+    set_modflag(modflag);
     return false;
   }
   Fluid.project.undo.resume();

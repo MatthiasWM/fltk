@@ -54,7 +54,7 @@ public:
   /// Open a native file chooser to allow choosing a project file for reading.
   Fl_String open_project_filechooser(const Fl_String &title);
   /// Open a file chooser and load an exiting project file.
-  bool open_project_file(const Fl_String &filename_arg);
+  bool open_project_from_file(const Fl_String &filename_arg);
 
   /// Generate a path to a directory for temporary data storage.
   void create_tmpdir();
