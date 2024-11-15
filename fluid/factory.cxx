@@ -27,6 +27,7 @@
 #include "fluid.h"
 #include "application/application.h"
 #include "project/project.h"
+#include "ui/main_panel.h"
 #include "Fl_Group_Type.h"
 #include "Fl_Grid_Type.h"
 #include "Fl_Menu_Type.h"
@@ -1303,9 +1304,9 @@ Fl_Type *add_new_widget_from_user(Fl_Type *inPrototype, Strategy strategy, bool 
       int x = 0, y = 0, w = 480, h = 320;
       Fl_Window_Type *wt = (Fl_Window_Type *)t;
       wt->ideal_size(w, h);
-      if (main_window) {
+      if (fluid::ui::main_panel.main_window) {
         int sx, sy, sw, sh;
-        Fl_Window *win = main_window;
+        Fl_Window *win = fluid::ui::main_panel.main_window;
         int screen = Fl::screen_num(win->x(), win->y());
         Fl::screen_work_area(sx, sy, sw, sh, screen);
         x = sx + sw/2 - w/2;

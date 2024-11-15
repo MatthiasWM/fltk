@@ -115,10 +115,6 @@ void project::Undo::redo() {
   project.set_modflag(current != last_saved);
   widget_browser->rebuild();
   project.update_settings_dialog();
-
-  // Update undo/redo menu items...
-  // if (current >= last) Main_Menu[redo_item].deactivate();
-  // Main_Menu[undo_item].activate();
 }
 
 
@@ -167,9 +163,6 @@ void project::Undo::undo() {
   // Update modified flag...
   project.set_modflag(current != last_saved);
 
-  // Update undo/redo menu items...
-  // if (current <= 0) Main_Menu[undo_item].deactivate();
-  // Main_Menu[redo_item].activate();
   widget_browser->rebuild();
   project.update_settings_dialog();
   project.undo.resume();
@@ -213,10 +206,6 @@ void project::Undo::checkpoint() {
   current ++;
   last = current;
   if (current > max_undo) max_undo = current;
-
-  // Enable the Undo and disable the Redo menu items...
-  // Main_Menu[undo_item].activate();
-  // Main_Menu[redo_item].deactivate();
 }
 
 // Clear undo buffer
@@ -232,10 +221,6 @@ void project::Undo::clear() {
   current = last = max_undo = 0;
   if (project.modflag) last_saved = -1;
   else last_saved = 0;
-
-  // Disable the Undo and Redo menu items...
-  // Main_Menu[undo_item].deactivate();
-  // Main_Menu[redo_item].deactivate();
 }
 
 // Resume undo checkpoints

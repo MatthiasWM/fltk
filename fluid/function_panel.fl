@@ -598,10 +598,7 @@ Function {make_widgetbin()} {open
 } {
   Fl_Window widgetbin_panel {
     label {Widget Bin}
-    callback {if (Fl::event()==FL_SHORTCUT && Fl::event_key()==FL_Escape)
-  exit_cb((Fl_Widget*)o, v);
-else
-  toggle_widgetbin_cb((Fl_Widget*)o, v);} open
+    callback {toggle_widgetbin();} open selected
     xywh {395 227 600 102} type Single align 80 non_modal visible
   } {
     Fl_Group {} {

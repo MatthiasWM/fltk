@@ -84,14 +84,6 @@ using namespace fluid;
 /// FLUID-wide help dialog.
 static Fl_Help_Dialog *help_dialog = NULL;
 
-//-> application::ui
-/// Main app window menu bar.
-Fl_Menu_Bar *main_menubar = NULL;
-
-//-> application::ui
-/// Main app window.
-Fl_Window *main_window;
-
 //-> application
 /// Fluid application preferences, always accessible, will be flushed when app closes.
 Fl_Preferences fluid_prefs(Fl_Preferences::USER_L, "fltk.org", "fluid");
@@ -101,32 +93,7 @@ Fl_Preferences fluid_prefs(Fl_Preferences::USER_L, "fltk.org", "fluid");
 /// \todo Details unclear.
 int reading_file = 0;
 
-//-> application::ui
-/// First Menuitem that shows the .fl design file history.
-// Fl_Menu_Item *history_item = NULL;
-
-//-> application::ui
-/// Menuitem to show or hide the widget bin, label will change if bin is visible.
-// Fl_Menu_Item *widgetbin_item = NULL;
-
-//-> application::ui
-/// Menuitem to show or hide the code view, label will change if view is visible.
-// Fl_Menu_Item *codeview_item = NULL;
-
-//-> application::ui
-/// Menuitem to show or hide the editing overlay, label will change if overlay visibility changes.
-// Fl_Menu_Item *overlay_item = NULL;
-
-//-> application::ui
-/// Menuitem to show or hide the editing guides, label will change if overlay visibility changes.
-// Fl_Menu_Item *guides_item = NULL;
-
-//-> application::ui
-/// Menuitem to show or hide the restricted area overlys, label will change if overlay visibility changes.
-// Fl_Menu_Item *restricted_item = NULL;
-
 ////////////////////////////////////////////////////////////////
-
 
 /// Global reference to FLUID application
 fluid::Application Fluid;
@@ -256,19 +223,14 @@ static void external_editor_timer(void*) {
 
  \param[in] v v is (void *)1 for "Save As...", and (void *)2 for "Save a Copy..."
  */
-void fluid::Callbacks::save(Fl_Widget *, void *v) {
-  Fluid.project.save(v != NULL, v != (void *)2);
-}
+// void fluid::Callbacks::save(Fl_Widget *, void *v) {
+//   Fluid.project.save(v != NULL, v != (void *)2);
+// }
 
-//-> application::callbacks
 /**
  Save a design template.
  \todo We should document the concept of templates.
  */
-void save_template_cb(Fl_Widget *, void *) {
-  save_as_template();
-}
-
 void save_as_template() {
   // Setup the template panel...
   if (!template_panel) make_template_panel();
@@ -375,19 +337,11 @@ void save_as_template() {
 #endif // HAVE_LIBPNG && HAVE_LIBZ
 }
 
-void revert_cb(Fl_Widget *,void *) {
-  Fluid.project.revert(); 
-}
-
 //-> application::callbacks
 /**
  Exit Fluid; we hope you had a nice experience.
  If the design was modified, a dialog will ask for confirmation.
  */
-void exit_cb(Fl_Widget *,void *) {
-  quit_fluid();
-}
-
 void quit_fluid() {
   if (shell_command_running()) {
     int choice = fl_choice("Previous shell command still running!",
@@ -408,7 +362,7 @@ void quit_fluid() {
   // Stop any external editor update timers
   ExternalCodeEditor::stop_update_timer();
 
-  save_position(main_window,"main_window_pos");
+  save_position(fluid::ui::main_panel.main_window,"main_window_pos");
 
   if (widgetbin_panel) {
     save_position(widgetbin_panel,"widgetbin_pos");
@@ -568,15 +522,6 @@ void apple_open_cb(const char *c) {
 }
 #endif // __APPLE__
 
-
-//-> application::callbacks
-/**
- Callback to write C++ code and header files.
- */
-void write_cb(Fl_Widget *, void *) {
-    Fluid.project.write_code_files();
-}
-
 /**
  Merge the possibly modified content of code files back into the project.
  */
@@ -616,22 +561,6 @@ int mergeback_code_files()
   return c;
 }
 
-void mergeback_cb(Fl_Widget *, void *) {
-  mergeback_code_files();
-}
-
-void write_strings_cb(Fl_Widget *, void *) {
-  Fluid.project.write_strings();
-}
-
-//-> application::callbacks
-/**
- Show the editor for the \c current Fl_Type.
- */
-void openwidget_cb(Fl_Widget *, void *) {
-  open_widget_panel();
-}
-
 void open_widget_panel() {
   if (!Fl_Type::current) {
     fl_message("Please select a widget");
@@ -640,57 +569,11 @@ void open_widget_panel() {
   Fl_Type::current->open();
 }
 
-void copy_cb(Fl_Widget*, void*) {
-  Fluid.project.copy();
-}
- 
-/**
- User chose to cut the currently selected widgets.
- */
-void cut_cb(Fl_Widget *, void *) {
-  Fluid.project.cut();
-}
-
-void delete_cb(Fl_Widget *, void *) {
-  Fluid.project.user_delete();
-}
-
-void paste_cb(Fl_Widget*, void*) {
-  Fluid.project.paste();
-}
-
-/**
- Duplicate the selected widgets.
-
- This code is a bit complex because it needs to find the last selected
- widget with the lowest level, so that the new widgets are inserted after
- this one.
- */
-void duplicate_cb(Fl_Widget*, void*) {
-  Fluid.project.duplicate();
-}
-
-//-> application::callbacks
-/**
- User wants to sort selected widgets by y coordinate.
- */
-static void sort_cb(Fl_Widget *,void *) {
-  sort_selected();
-}
-
 void sort_selected() {
   Fluid.project.undo.checkpoint();
   sort((Fl_Type*)NULL);
   widget_browser->rebuild();
   Fluid.project.set_modflag(1);
-}
-
-//-> application::callbacks
-/**
- Open the "About" dialog.
- */
-void about_cb(Fl_Widget *, void *) {
-  fluid::ui::about_panel.show();
 }
 
 //-> application::ui
@@ -762,31 +645,7 @@ void show_help(const char *name) {
   help_dialog->show();
 }
 
-//-> application::callbacks
-/**
- User wants help on Fluid.
- */
-void help_cb(Fl_Widget *, void *) {
-  show_help("fluid.html");
-}
-
-//-> application::callbacks
-/**
- User wants to see the Fluid manual.
- */
-void manual_cb(Fl_Widget *, void *) {
-  show_help("index.html");
-}
-
 // ---- Printing
-
-//-> application::callbacks
-/**
- Open the dialog to allow the user to print the current window.
- */
-void print_menu_cb(Fl_Widget *, void *) {
-  print_windows();
-}
 
 void print_windows() {
   int w, h, ww, hh;
@@ -850,130 +709,9 @@ void print_windows() {
 
 // ---- Main menu bar
 
-extern void select_layout_preset_cb(Fl_Widget *, void *user_data);
-extern void layout_suite_marker(Fl_Widget *, void *user_data);
-
-static void menu_file_new_cb(Fl_Widget *, void *) { Fluid.new_project(); }
-static void menu_file_new_from_template_cb(Fl_Widget *, void *) { new_project_from_template(); }
-static void menu_file_open_cb(Fl_Widget *, void *) { Fluid.open_project_from_file(""); }
-static void menu_file_insert_cb(Fl_Widget *, void *) { Fluid.project.merge_project_file(""); }
-static void menu_file_open_history_cb(Fl_Widget *, void *v) { 
-  Fluid.open_project_from_file(Fl_String((const char*)v)); 
-}
 void menu_layout_sync_resize_cb(Fl_Menu_ *m, void*) {
   if (m->mvalue()->value()) Fl_Type::allow_layout = 1; else Fl_Type::allow_layout = 0; }
 
-static void undo_cb(Fl_Widget *, void *) {
-  Fluid.project.undo.undo();
-}
-static void redo_cb(Fl_Widget *, void *) {
-  Fluid.project.undo.redo();
-}
-
-
-//-> application::ui
-/**
- This is the main Fluid menu.
-
- Design history is manipulated right inside this menu structure.
- Some menu items change or deactivate correctly, but most items just trigger
- various callbacks.
-
- \c New_Menu creates new widgets and is explained in detail in another location.
-
- \see New_Menu
- \todo This menu needs some major modernization. Menus are too long and their
-    sorting is not always obvious.
- \todo Shortcuts are all over the place (Alt, Ctrl, Command, Shift-Ctrl,
-    function keys), and there should be a help page listing all shortcuts.
- */
-Fl_Menu_Item Main_Menu[] = {
-{"&File",0,0,0,FL_SUBMENU},
-  {"&New", FL_COMMAND+'n', menu_file_new_cb},
-  {"&Open...", FL_COMMAND+'o', menu_file_open_cb},
-  {"&Insert...", FL_COMMAND+'i', menu_file_insert_cb, 0, FL_MENU_DIVIDER},
-  {"&Save", FL_COMMAND+'s', fluid::Callbacks::save, 0},
-  {"Save &As...", FL_COMMAND+FL_SHIFT+'s', fluid::Callbacks::save, (void*)1},
-  {"Sa&ve A Copy...", 0, fluid::Callbacks::save, (void*)2},
-  {"&Revert...", 0, revert_cb, 0, FL_MENU_DIVIDER},
-  {"New &From Template...", FL_COMMAND+'N', menu_file_new_from_template_cb, 0},
-  {"Save As &Template...", 0, save_template_cb, 0, FL_MENU_DIVIDER},
-  {"&Print...", FL_COMMAND+'p', print_menu_cb},
-  {"Write &Code", FL_COMMAND+FL_SHIFT+'c', write_cb, 0},
-  {"&MergeBack Code", FL_COMMAND+FL_SHIFT+'m', mergeback_cb, 0},
-  {"&Write Strings", FL_COMMAND+FL_SHIFT+'w', write_strings_cb, 0, FL_MENU_DIVIDER},
-  {Fluid.history.short_path[0], FL_COMMAND+'1', menu_file_open_history_cb, Fluid.history.full_path[0]},
-  {Fluid.history.short_path[1], FL_COMMAND+'2', menu_file_open_history_cb, Fluid.history.full_path[1]},
-  {Fluid.history.short_path[2], FL_COMMAND+'3', menu_file_open_history_cb, Fluid.history.full_path[2]},
-  {Fluid.history.short_path[3], FL_COMMAND+'4', menu_file_open_history_cb, Fluid.history.full_path[3]},
-  {Fluid.history.short_path[4], FL_COMMAND+'5', menu_file_open_history_cb, Fluid.history.full_path[4]},
-  {Fluid.history.short_path[5], FL_COMMAND+'6', menu_file_open_history_cb, Fluid.history.full_path[5]},
-  {Fluid.history.short_path[6], FL_COMMAND+'7', menu_file_open_history_cb, Fluid.history.full_path[6]},
-  {Fluid.history.short_path[7], FL_COMMAND+'8', menu_file_open_history_cb, Fluid.history.full_path[7]},
-  {Fluid.history.short_path[8], FL_COMMAND+'9', menu_file_open_history_cb, Fluid.history.full_path[8]},
-  {Fluid.history.short_path[9], 0, menu_file_open_history_cb, Fluid.history.full_path[9], FL_MENU_DIVIDER},
-  {"&Quit", FL_COMMAND+'q', exit_cb},
-  {0},
-{"&Edit",0,0,0,FL_SUBMENU},
-  {"&Undo", FL_COMMAND+'z', undo_cb},
-  {"&Redo", FL_COMMAND+FL_SHIFT+'z', redo_cb, 0, FL_MENU_DIVIDER},
-  {"C&ut", FL_COMMAND+'x', cut_cb},
-  {"&Copy", FL_COMMAND+'c', copy_cb},
-  {"&Paste", FL_COMMAND+'v', paste_cb},
-  {"Dup&licate", FL_COMMAND+'u', duplicate_cb},
-  {"&Delete", FL_Delete, delete_cb, 0, FL_MENU_DIVIDER},
-  {"Select &All", FL_COMMAND+'a', select_all_cb},
-  {"Select &None", FL_COMMAND+FL_SHIFT+'a', select_none_cb, 0, FL_MENU_DIVIDER},
-  {"Pr&operties...", FL_F+1, openwidget_cb},
-  {"&Sort",0,sort_cb},
-  {"&Earlier", FL_F+2, earlier_cb},
-  {"&Later", FL_F+3, later_cb},
-  {"&Group", FL_F+7, group_cb},
-  {"Ung&roup", FL_F+8, ungroup_cb,0, FL_MENU_DIVIDER},
-  {"Hide O&verlays",FL_COMMAND+FL_SHIFT+'o',toggle_overlays},
-  {"Hide Guides",FL_COMMAND+FL_SHIFT+'g',toggle_guides},
-  {"Hide Restricted",FL_COMMAND+FL_SHIFT+'r',toggle_restricted},
-  {"Show Widget &Bin...",FL_ALT+'b',toggle_widgetbin_cb},
-  {"Show Code View",FL_ALT+'c', (Fl_Callback*)toggle_codeview_cb, 0, FL_MENU_DIVIDER},
-  {"Settings...",FL_ALT+'p',show_settings_cb},
-  {0},
-{"&New", 0, 0, (void *)New_Menu, FL_SUBMENU_POINTER},
-{"&Layout",0,0,0,FL_SUBMENU},
-  {"&Align",0,0,0,FL_SUBMENU},
-    {"&Left",0,(Fl_Callback *)align_widget_cb,(void*)10},
-    {"&Center",0,(Fl_Callback *)align_widget_cb,(void*)11},
-    {"&Right",0,(Fl_Callback *)align_widget_cb,(void*)12},
-    {"&Top",0,(Fl_Callback *)align_widget_cb,(void*)13},
-    {"&Middle",0,(Fl_Callback *)align_widget_cb,(void*)14},
-    {"&Bottom",0,(Fl_Callback *)align_widget_cb,(void*)15},
-    {0},
-  {"&Space Evenly",0,0,0,FL_SUBMENU},
-    {"&Across",0,(Fl_Callback *)align_widget_cb,(void*)20},
-    {"&Down",0,(Fl_Callback *)align_widget_cb,(void*)21},
-    {0},
-  {"&Make Same Size",0,0,0,FL_SUBMENU},
-    {"&Width",0,(Fl_Callback *)align_widget_cb,(void*)30},
-    {"&Height",0,(Fl_Callback *)align_widget_cb,(void*)31},
-    {"&Both",0,(Fl_Callback *)align_widget_cb,(void*)32},
-    {0},
-  {"&Center In Group",0,0,0,FL_SUBMENU},
-    {"&Horizontal",0,(Fl_Callback *)align_widget_cb,(void*)40},
-    {"&Vertical",0,(Fl_Callback *)align_widget_cb,(void*)41},
-    {0},
-  {"Synchronized Resize", 0, (Fl_Callback*)menu_layout_sync_resize_cb, NULL, FL_MENU_TOGGLE|FL_MENU_DIVIDER },
-  {"&Grid and Size Settings...",FL_COMMAND+'g',show_grid_cb, NULL, FL_MENU_DIVIDER},
-  {"Presets", 0, layout_suite_marker, (void*)main_layout_submenu_, FL_SUBMENU_POINTER },
-  {"Application", 0, select_layout_preset_cb, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE },
-  {"Dialog",      0, select_layout_preset_cb, (void*)1, FL_MENU_RADIO },
-  {"Toolbox",     0, select_layout_preset_cb, (void*)2, FL_MENU_RADIO },
-  {0},
-{"&Shell", 0, Fd_Shell_Command_List::menu_marker, (void*)Fd_Shell_Command_List::default_menu, FL_SUBMENU_POINTER},
-{"&Help",0,0,0,FL_SUBMENU},
-  {"&Rapid development with FLUID...",0,help_cb},
-  {"&FLTK Programmers Manual...",0,manual_cb, 0, FL_MENU_DIVIDER},
-  {"&About FLUID...",0,about_cb},
-  {0},
-{0}};
 
 //-> application::callbacks
 /**
@@ -1080,9 +818,6 @@ void toggle_widgetbin() {
     fluid::ui::main_panel.widgetbin_item->label("Hide Widget &Bin");
   }
 }
-void toggle_widgetbin_cb(Fl_Widget *, void *) {
-  toggle_widgetbin();
-}
 
 //-> application::callbacks
 /**
@@ -1113,33 +848,13 @@ void make_main_window() {
     make_shell_window();
   }
 
-  if (!main_window) {
+  if (!fluid::ui::main_panel.main_window) {
     Fl_Widget *o;
     loadPixmaps();
-#if 0
-    main_window = new Fl_Double_Window(WINWIDTH,WINHEIGHT,"fluid");
-    main_window->box(FL_NO_BOX);
-    o = make_widget_browser(0,MENUHEIGHT,BROWSERWIDTH,BROWSERHEIGHT);
-    o->box(FL_FLAT_BOX);
-    o->tooltip("Double-click to view or change an item.");
-    main_window->resizable(o);
-    main_menubar = new Fl_Menu_Bar(0,0,BROWSERWIDTH,MENUHEIGHT);
-    main_menubar->menu(Main_Menu);
-    // quick access to all dynamic menu items
-    // history_item = (Fl_Menu_Item*)main_menubar->find_item(menu_file_open_history_cb);
-    // widgetbin_item = (Fl_Menu_Item*)main_menubar->find_item(toggle_widgetbin_cb);
-    // codeview_item = (Fl_Menu_Item*)main_menubar->find_item((Fl_Callback*)toggle_codeview_cb);
-    // overlay_item = (Fl_Menu_Item*)main_menubar->find_item((Fl_Callback*)toggle_overlays);
-    // guides_item = (Fl_Menu_Item*)main_menubar->find_item((Fl_Callback*)toggle_guides);
-    // restricted_item = (Fl_Menu_Item*)main_menubar->find_item((Fl_Callback*)toggle_restricted);
-    main_menubar->global();
-#else
     fluid::ui::main_panel.build();
-    main_window = fluid::ui::main_panel.panel_window;
     widget_browser = fluid::ui::main_panel.widget_browser;
-#endif    
     fill_in_New_Menu();
-    main_window->end();
+    fluid::ui::main_panel.main_window->end();
   }
 
   if (!Fluid.batch_mode) {
@@ -1199,14 +914,14 @@ int main(int argc,char **argv) {
   setlocale(LC_NUMERIC, "C"); // make sure numeric values are written correctly
   Fluid.launch_path = end_with_slash(fl_getcwd()); // store the current path at launch
 
-  int project_index = Fluid.args.read(argc, argv);
-  if (project_index == -1) {
+  int project_arg_index = Fluid.args.read(argc, argv);
+  if (project_arg_index == -1) {
     return 1;
   }
 
   const char *c = NULL;
   if (Fluid.args.autodoc_path.empty())
-    c = argv[project_index];
+    c = argv[project_arg_index];
 
   fl_register_images();
 
@@ -1219,17 +934,16 @@ int main(int argc,char **argv) {
 #endif // __APPLE__
     Fl::visual((Fl_Mode)(FL_DOUBLE|FL_INDEX));
     Fl_File_Icon::load_system_icons();
-    main_window->callback(exit_cb);
-    position_window(main_window,"main_window_pos", 1, 10, 30, WINWIDTH, WINHEIGHT );
+    position_window(fluid::ui::main_panel.main_window,"main_window_pos", 1, 10, 30, WINWIDTH, WINHEIGHT );
     if (g_shell_config) {
       g_shell_config->read(fluid_prefs, Fd_Tool_Store::USER);
       g_shell_config->update_settings_dialog();
       g_shell_config->rebuild_shell_menu();
     }
     g_layout_list.read(fluid_prefs, Fd_Tool_Store::USER);
-    main_window->show(argc, argv);
-    toggle_widgetbin_cb(0,0);
-    toggle_codeview_cb(0,0);
+    fluid::ui::main_panel.main_window->show(argc, argv);
+    toggle_widgetbin();
+    codeview_toggle_visibility();
     if (!c && openlast_button->value() && Fluid.history.full_path[0][0] && Fluid.args.autodoc_path.empty()) {
       // Open previous file when no file specified...
       Fluid.open_project_from_file(Fluid.history.full_path[0]);
@@ -1302,7 +1016,7 @@ int main(int argc,char **argv) {
   Fl::run();
 #else
   while (!quit_flag) Fl::wait();
-  if (quit_flag) exit_cb(0,0);
+  if (quit_flag) quit_fluid();
 #endif // _WIN32
 
   Fluid.project.undo.clear();

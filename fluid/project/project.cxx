@@ -16,6 +16,7 @@
 
 #include "project/project.h"
 #include "application/application.h"
+#include "ui/main_panel.h"
 #include "fluid.h"
 #include "streams/project_reader.h"
 #include "streams/project_writer.h"
@@ -87,7 +88,7 @@ bool Project::confirm_clear() {
     case 0 : /* Cancel */
       return false;
     case 1 : /* Save */
-      fluid::Callbacks::save(NULL, NULL);
+      save(false, true);
       if (modflag) return false;  // user canceled the "Save As" dialog
   }
   return true;
@@ -223,7 +224,7 @@ int Project::write_code_files(bool dont_show_completion_dialog)
   // -- handle user interface issues
   flush_text_widgets();
   if (!filename) {
-    fluid::Callbacks::save(0,0);
+    save(false, true);
     if (!filename) return 1;
   }
 
@@ -348,7 +349,7 @@ void Project::set_filename(const char *c) {
  After saving, it updates the filename and modification flags 
  if update_filename is true.
 
- "Save" sets ask_for_filename and update_filename to false.
+ "Save" sets ask_for_filename to false and update_filename to true.
  "Save As..." sets ask_for_filename and update_filename to true.
  "Save a Copy..." sets ask_for_filename to true and update_filename to false.
 
@@ -496,7 +497,7 @@ void Project::set_modflag(int mf, int mfc) {
     modflag_c = mfc;
   }
 
-  if (main_window) {
+  if (fluid::ui::main_panel.main_window) {
     Fl_String basename;
     if (!Fluid.project.filename) basename = "Untitled.fl";
     else basename = fl_filename_name(Fl_String(Fluid.project.filename));
@@ -505,10 +506,10 @@ void Project::set_modflag(int mf, int mfc) {
     char mod_c_star = modflag_c ? '*' : ' ';
     snprintf(new_title, sizeof(new_title), "%s%c  %s%c",
              basename.c_str(), mod_star, code_ext, mod_c_star);
-    const char *old_title = main_window->label();
+    const char *old_title = fluid::ui::main_panel.main_window->label();
     // only update the title if it actually changed
     if (!old_title || strcmp(old_title, new_title))
-      main_window->copy_label(new_title);
+      fluid::ui::main_panel.main_window->copy_label(new_title);
   }
   // if the UI was modified in any way, update the Code View panel
   if (codeview_panel && codeview_panel->visible() && cv_autorefresh->value())
@@ -605,6 +606,13 @@ void Project::cut() {
   widget_browser->rebuild();
 }
 
+/**
+ Duplicate the selected widgets.
+
+ This code is a bit complex because it needs to find the last selected
+ widget with the lowest level, so that the new widgets are inserted after
+ this one.
+ */
 void Project::duplicate() {
   if (!Fl_Type::current) {
     fl_beep();
@@ -653,7 +661,7 @@ void Project::duplicate() {
 void Project::write_strings() {
   flush_text_widgets();
   if (!Fluid.project.filename) {
-    fluid::Callbacks::save(0,0);
+    save(false, true);
     if (!Fluid.project.filename) return;
   }
   Fl_String filename = Fluid.project.stringsfile_path() + Fluid.project.stringsfile_name();

@@ -189,8 +189,6 @@ void Overlay_Window::draw() {
   }
 }
 
-extern Fl_Window *main_window;
-
 // Read an image of the overlay window
 // TODO: is this actually called from anywhere?
 uchar *Overlay_Window::read_image(int &ww, int &hh) {
@@ -219,7 +217,7 @@ uchar *Overlay_Window::read_image(int &ww, int &hh) {
 
   // Cleanup and return...
   fl_delete_offscreen(offscreen);
-  main_window->make_current();
+  fluid::ui::main_panel.main_window->make_current();
   return pixels;
 }
 
@@ -346,9 +344,9 @@ uchar *Fl_Window_Type::read_image(int &ww, int &hh) {
 
 void Fl_Window_Type::ideal_size(int &w, int &h) {
   w = 480; h = 320;
-  if (main_window) {
+  if (fluid::ui::main_panel.main_window) {
     int sx, sy, sw, sh;
-    Fl_Window *win = main_window;
+    Fl_Window *win = fluid::ui::main_panel.main_window;
     int screen = Fl::screen_num(win->x(), win->y());
     Fl::screen_work_area(sx, sy, sw, sh, screen);
     w = std::min(w, sw*3/4); h = std::min(h, sh*3/4);
@@ -727,8 +725,6 @@ void Fl_Window_Type::draw_overlay() {
   }
 }
 
-extern Fl_Menu_Item Main_Menu[];
-
 // Calculate new bounding box of selected widgets:
 void Fl_Window_Type::fix_overlay() {
   fluid::ui::main_panel.overlay_item->label("Hide O&verlays");
@@ -880,7 +876,6 @@ extern void deselect();
 extern Fl_Type* in_this_only;
 extern void fix_group_size(Fl_Type *t);
 
-extern Fl_Menu_Item Main_Menu[];
 extern Fl_Menu_Item New_Menu[];
 
 /**
@@ -1270,7 +1265,7 @@ int Fl_Window_Type::handle(int event) {
 
   case FL_SHORTCUT: {
     in_this_only = this; // modifies how some menu items work.
-    const Fl_Menu_Item* m = Main_Menu->test_shortcut();
+    const Fl_Menu_Item* m = fluid::ui::main_panel.main_menubar->test_shortcut();
     if (m && m->callback()) m->do_callback(this->o);
     in_this_only = 0;
     return (m != 0);}

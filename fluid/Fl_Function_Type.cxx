@@ -19,6 +19,7 @@
 #include "fluid.h"
 #include "application/application.h"
 #include "project/project.h"
+#include "ui/main_panel.h"
 #include "Fl_Window_Type.h"
 #include "Fl_Group_Type.h"
 #include "widget_browser.h"
@@ -668,7 +669,7 @@ BREAK2:
 void Fl_Code_Type::write(fluid::stream::ProjectWriter &f) {
   // External editor changes? If so, load changes into ram, update mtime/size
   if ( handle_editor_changes() == 1 ) {
-    main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
+    fluid::ui::main_panel.main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
   }
   Fl_Type::write(f);
 }
@@ -679,7 +680,7 @@ void Fl_Code_Type::write(fluid::stream::ProjectWriter &f) {
 void Fl_Code_Type::write_code1(fluid::stream::CodeWriter& f) {
   // External editor changes? If so, load changes into ram, update mtime/size
   if ( handle_editor_changes() == 1 ) {
-    main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
+    fluid::ui::main_panel.main_window->redraw();    // tell fluid to redraw; edits may affect tree's contents
   }
   f.tag(FD_TAG_GENERIC, 0);
   f.write_c_indented(name(), 0, '\n');

@@ -27,8 +27,17 @@
 using namespace fluid::ui;
 void show_help(const char *name);
 
+void MainPanel::cb_main_window_i(Fl_Double_Window*, void*) {
+//~fl~0~0000~b0a14477~~
+  quit_fluid();
+//~fl~3~0f48~69468f9f~~
+}
+void MainPanel::cb_main_window(Fl_Double_Window* o, void* v) {
+  ((MainPanel*)(o->user_data()))->cb_main_window_i(o,v);
+}
+
 void MainPanel::cb_New_i(Fl_Menu_*, void*) {
-//~fl~0~0000~2bff1c37~~
+//~fl~0~0000~ce60c4f9~~
   Fluid.new_project();
 //~fl~2~5023~e4c3136e~~
 }
@@ -552,11 +561,11 @@ Fl_Menu_Item* MainPanel::preset_menu = MainPanel::menu_main_menubar + 78;
 Fl_Menu_Item* MainPanel::shell_submenu = MainPanel::menu_main_menubar + 82;
 
 Fl_Double_Window* MainPanel::make_panel() {
-  { panel_window = new Fl_Double_Window(300, 525, "FLUID");
-    panel_window->color(FL_BACKGROUND2_COLOR);
-    panel_window->selection_color(FL_DARK1);
-    panel_window->user_data((void*)(this));
-    panel_window->hotspot(panel_window);
+  { main_window = new Fl_Double_Window(300, 525, "FLUID");
+    main_window->color(FL_BACKGROUND2_COLOR);
+    main_window->selection_color(FL_DARK1);
+    main_window->callback((Fl_Callback*)cb_main_window, (void*)(this));
+    main_window->hotspot(main_window);
     { main_menubar = new Fl_Menu_Bar(0, 0, 300, 25);
       { Fl_Menu_Item* o = &menu_main_menubar[4];
         o->label(Fluid.history.short_path[0]);
@@ -603,20 +612,19 @@ Fl_Double_Window* MainPanel::make_panel() {
       widget_browser->when(FL_WHEN_RELEASE_ALWAYS);
       Fl_Group::current()->resizable(widget_browser);
     } // Widget_Browser* widget_browser
-    panel_window->set_non_modal();
-    panel_window->size_range(280, 200);
-    panel_window->end();
-  } // Fl_Double_Window* panel_window
-  return panel_window;
+    main_window->size_range(280, 200);
+    main_window->end();
+  } // Fl_Double_Window* main_window
+  return main_window;
 }
 
 /**
  Constructor
 */
 MainPanel::MainPanel() {
-//~fl~0~0000~42a49a03~~
-  panel_window = nullptr;
-//~fl~1~f9d7~89162831~~
+//~fl~0~0000~2c43afec~~
+  main_window = nullptr;
+//~fl~1~f9d7~deac3c13~~
 }
 
 /**
@@ -624,8 +632,8 @@ MainPanel::MainPanel() {
 */
 MainPanel::~MainPanel() {
 //~fl~0~0000~08914570~~
-  delete panel_window;
-//~fl~1~c8a2~d7fec351~~
+  delete main_window;
+//~fl~1~c8a2~4bd6d899~~
 }
 
 /**
@@ -633,10 +641,10 @@ MainPanel::~MainPanel() {
 */
 void MainPanel::build() {
 //~fl~0~0000~e34a750b~~
-  if (panel_window == nullptr) {
+  if (main_window == nullptr) {
     make_panel();
   }
-//~fl~1~5ddf~3b33627a~~
+//~fl~1~5ddf~444c7294~~
 }
 
 /**
@@ -645,8 +653,8 @@ void MainPanel::build() {
 void MainPanel::show() {
 //~fl~0~0000~d600e79d~~
   build();
-  panel_window->show();
-//~fl~1~d9d1~94ddffa5~~
+  main_window->show();
+//~fl~1~d9d1~653b75be~~
 }
 
 /**
@@ -654,9 +662,9 @@ void MainPanel::show() {
 */
 void MainPanel::hide() {
 //~fl~0~0000~e29f0ce0~~
-  if (panel_window) {
-    panel_window->hide();
+  if (main_window) {
+    main_window->hide();
   }
-//~fl~1~08be~da452744~~
+//~fl~1~08be~7d15f02b~~
 }
 MainPanel fluid::ui::main_panel;

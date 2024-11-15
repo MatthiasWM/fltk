@@ -68,9 +68,10 @@ declblock {namespace fluid \{} {uid 962d open public map 1 after {\}}
     } {
       Function {make_panel()} {uid 6499 open private
       } {
-        Fl_Window panel_window {uid 0f48
-          label FLUID open
-          xywh {389 91 300 525} type Double color 7 selection_color 47 resizable hotspot non_modal size_range {280 200 0 0} visible
+        Fl_Window main_window {uid 0f48
+          label FLUID
+          callback {quit_fluid();} open selected
+          xywh {389 91 300 525} type Double color 7 selection_color 47 resizable hotspot size_range {280 200 0 0} visible
         } {
           Fl_Menu_Bar main_menubar {uid ee62 open
             xywh {0 0 300 25}
@@ -500,7 +501,7 @@ declblock {namespace fluid \{} {uid 962d open public map 1 after {\}}
               }
             }
           }
-          Fl_Browser widget_browser {uid 7b19 selected
+          Fl_Browser widget_browser {uid 7b19
             xywh {0 25 300 500} box FLAT_BOX resizable
             code0 {\#include "widget_browser.h"}
             class Widget_Browser
@@ -510,19 +511,19 @@ declblock {namespace fluid \{} {uid 962d open public map 1 after {\}}
       Function {MainPanel()} {uid 689a
         comment Constructor open
       } {
-        code {panel_window = nullptr;} {uid f9d7
+        code {main_window = nullptr;} {uid f9d7
         }
       }
       Function {~MainPanel() override} {uid 86cc
         comment {Virtual destructor.} open
       } {
-        code {delete panel_window;} {uid c8a2
+        code {delete main_window;} {uid c8a2
         }
       }
       Function {build() override} {uid 678c
         comment {Build the panel, don't show it yet.} open return_type void
       } {
-        code {if (panel_window == nullptr) {
+        code {if (main_window == nullptr) {
   make_panel();
 }} {uid 5ddf
         }
@@ -531,14 +532,14 @@ declblock {namespace fluid \{} {uid 962d open public map 1 after {\}}
         comment {Build if needed and show the panel.} open return_type void
       } {
         code {build();
-panel_window->show();} {uid d9d1
+main_window->show();} {uid d9d1
         }
       }
       Function {hide() override} {uid 2fd1
         comment {Hide the panel and retain for later.} open return_type void
       } {
-        code {if (panel_window) {
-  panel_window->hide();
+        code {if (main_window) {
+  main_window->hide();
 }} {uid 08be
         }
       }

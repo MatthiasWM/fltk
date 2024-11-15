@@ -41,7 +41,11 @@ namespace ui {
 class MainPanel : Panel {
   Fl_Double_Window* make_panel();
 public:
-  Fl_Double_Window *panel_window;
+  Fl_Double_Window *main_window;
+private:
+  inline void cb_main_window_i(Fl_Double_Window*, void*);
+  static void cb_main_window(Fl_Double_Window*, void*);
+public:
   Fl_Menu_Bar *main_menubar;
   static Fl_Menu_Item menu_main_menubar[];
 private:

@@ -20,6 +20,7 @@
 #include "fluid.h"
 #include "application/application.h"
 #include "project/project.h"
+#include "ui/main_panel.h"
 #include "factory.h"
 #include "widget_browser.h"
 #include "widget_panel.h"
@@ -416,9 +417,9 @@ void run_autodoc(const Fl_String &target_dir) {
   // explain menubar?
   // explain widget browser
   // explain widget browser entry
-  main_window->size(350, 320);
-  fl_snapshot((target_dir + "main_window.png").c_str(), main_window, win_margin, win_blend);
-  fl_snapshot((target_dir + "main_menubar.png").c_str(), main_menubar, row_margin, row_blend);
+  fluid::ui::main_panel.main_window->size(350, 320);
+  fl_snapshot((target_dir + "main_window.png").c_str(), fluid::ui::main_panel.main_window, win_margin, win_blend);
+  fl_snapshot((target_dir + "main_menubar.png").c_str(), fluid::ui::main_panel.main_menubar, row_margin, row_blend);
   fl_snapshot((target_dir + "main_browser.png").c_str(), widget_browser, FL_SNAP_AREA_CLEAR,
               Fl_Rect(0, 30, FL_SNAP_TO_WINDOW, 100), row_blend, 2.0);
 

@@ -52,19 +52,10 @@ enum class Fd_Tool_Store {
 // ---- global variables
 
 extern Fl_Preferences fluid_prefs;
-extern Fl_Menu_Item Main_Menu[];
-extern Fl_Menu_Bar *main_menubar;
-extern Fl_Window *main_window;
 
 extern int reading_file;
 
-// extern Fl_Menu_Item *history_item;
-// extern Fl_Menu_Item *widgetbin_item;
-// extern Fl_Menu_Item *codeview_item;
-// extern Fl_Menu_Item *overlay_item;
 extern Fl_Button *overlay_button;
-// extern Fl_Menu_Item *guides_item;
-// extern Fl_Menu_Item *restricted_item;
 extern Fl_Check_Button *guides_button;
 extern Fl_Menu_Item main_layout_submenu_[];
 
@@ -84,11 +75,6 @@ namespace fluid {
 class Application;
 class Project;
 
-class Callbacks {
-public:
-  static void save(Fl_Widget *, void *v);
-};
-
 }; // namespace FLUID
 
 extern fluid::Application Fluid;
@@ -100,15 +86,10 @@ extern void flush_text_widgets();
 
 // ---- public callback functions
 
-extern void save_template_cb(Fl_Widget *, void *);
 void save_as_template();
-extern void revert_cb(Fl_Widget *,void *);
-extern void exit_cb(Fl_Widget *,void *);
 void quit_fluid();
 
-extern void write_strings_cb(Fl_Widget *, void *);
 extern void align_widget_cb(Fl_Widget *, void *);
-extern void toggle_widgetbin_cb(Fl_Widget *, void *);
 void toggle_widgetbin();
 int mergeback_code_files();
 void open_widget_panel();

@@ -119,21 +119,12 @@ Fd_Layout_List g_layout_list;
 
 // ---- Callbacks ------------------------------------------------------ MARK: -
 
-void layout_suite_marker(Fl_Widget *, void *) {
-  // intentionally left empty
-}
-
 void select_layout_suite_cb(Fl_Widget *, void *user_data) {
   int index = (int)(fl_intptr_t)user_data;
   assert(index >= 0);
   assert(index < g_layout_list.list_size_);
   g_layout_list.current_suite(index);
   g_layout_list.update_dialogs();
-}
-
-void select_layout_preset_cb(Fl_Widget *, void *user_data) {
-  int index = (int)(fl_intptr_t)user_data;
-  select_layout_preset(index);
 }
 
 void select_layout_preset(int index) {
