@@ -82,13 +82,19 @@ static void delete_menu(Fl_Menu_Item *m) {
   delete[] m;
 }
 
+static Fl_Menu_Item external_menu[] = {
+  { "<external menu>" },
+  { nullptr }
+};
+
 void Fl_Input_Choice_Type::build_menu() {
   Fl_Input_Choice* w = (Fl_Input_Choice*)o;
   // count how many Fl_Menu_Item structures needed:
   int n = 0;
   Fl_Type* q;
   for (q = next; q && q->level > level; q = q->next) {
-    if (q->can_have_children()) n++; // space for null at end of submenu
+    if (q->can_have_children() && !q->user_data()) 
+      n++; // space for null at end of submenu
     n++;
   }
   if (!n) {
@@ -135,7 +141,17 @@ void Fl_Input_Choice_Type::build_menu() {
       m->labelfont(i->o->labelfont());
       m->labelsize(i->o->labelsize());
       m->labelcolor(i->o->labelcolor());
-      if (q->can_have_children()) {lvl++; m->flags |= FL_SUBMENU;}
+      if (q->can_have_children()) {
+        if (q->user_data()) {
+          // Generate a menu with FL_SUBMENU_POINTER set.
+          m->flags = m->flags | FL_SUBMENU_POINTER & ~FL_SUBMENU;
+          m->user_data(external_menu);
+        } else {
+          // Start a submenu list
+          lvl++; 
+          m->flags |= FL_SUBMENU;
+        }
+      }
       m++;
       int l1 =
         (q->next && q->next->is_a(ID_Menu_Item)) ? q->next->level : level;
@@ -306,9 +322,11 @@ const char* Fl_Menu_Item_Type::menu_name(fluid::stream::CodeWriter& f, int& i) {
   Fl_Type* t = prev;
   while (t && t->is_a(ID_Menu_Item)) {
     // be sure to count the {0} that ends a submenu:
-    if (t->level > t->next->level) i += (t->level - t->next->level);
-    // detect empty submenu:
-    else if (t->level == t->next->level && t->can_have_children()) i++;
+    if (t->level > t->next->level) {
+      i += (t->level - t->next->level);
+    } else if (t->level == t->next->level && t->can_have_children() && !t->user_data()) {
+      i++;
+    }
     t = t->prev;
     i++;
   }
@@ -427,7 +445,9 @@ void Fl_Menu_Item_Type::write_static(fluid::stream::CodeWriter& f) {
   Fl_Type* t = prev; while (t && t->is_a(ID_Menu_Item)) t = t->prev;
   for (Fl_Type* q = t->next; q && q->is_a(ID_Menu_Item); q = q->next) {
     ((Fl_Menu_Item_Type*)q)->write_item(f);
-    int thislevel = q->level; if (q->can_have_children()) thislevel++;
+    int thislevel = q->level; 
+    if (q->can_have_children() && !q->user_data()) 
+      thislevel++;
     int nextlevel =
       (q->next && q->next->is_a(ID_Menu_Item)) ? q->next->level : t->level+1;
     while (thislevel > nextlevel) {f.write_c(" {0,0,0,0,0,0,0,0,0},\n"); thislevel--;}
@@ -462,8 +482,10 @@ int Fl_Menu_Item_Type::flags() {
   if (!o->active()) i |= FL_MENU_INACTIVE;
   if (!o->visible()) i |= FL_MENU_INVISIBLE;
   if (can_have_children()) {
-    if (user_data() == NULL) i |= FL_SUBMENU;
-    else i |= FL_SUBMENU_POINTER;
+    if (user_data() == NULL) 
+      i |= FL_SUBMENU;
+    else 
+      i |= FL_SUBMENU_POINTER;
   }
   if (hotspot()) i |= FL_MENU_DIVIDER;
   return i;
@@ -653,7 +675,8 @@ void Fl_Menu_Base_Type::build_menu() {
   int n = 0;
   Fl_Type* q;
   for (q = next; q && q->level > level; q = q->next) {
-    if (q->can_have_children()) n++; // space for null at end of submenu
+    if (q->can_have_children() && !q->user_data()) 
+      n++; // space for null at end of submenu, but not submenu pointer
     n++;
   }
   if (!n) {
@@ -700,7 +723,18 @@ void Fl_Menu_Base_Type::build_menu() {
       m->labelfont(i->o->labelfont());
       m->labelsize(i->o->labelsize());
       m->labelcolor(i->o->labelcolor());
-      if (q->can_have_children()) {lvl++; m->flags |= FL_SUBMENU;}
+
+      if (q->can_have_children()) {
+        if (q->user_data()) {
+          // Generate a menu with FL_SUBMENU_POINTER set.
+          m->flags = m->flags | FL_SUBMENU_POINTER & ~FL_SUBMENU;
+          m->user_data(external_menu);
+        } else {
+          // Start a submenu list
+          lvl++; 
+          m->flags |= FL_SUBMENU;
+        }
+      }
       m++;
       int l1 =
         (q->next && q->next->is_a(ID_Menu_Item)) ? q->next->level : level;

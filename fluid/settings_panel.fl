@@ -142,7 +142,7 @@ if (v == LOAD) {
   o->color(d);
   widget_browser->redraw();
   widget_browser->save_prefs();
-}} {uid 6484 selected
+}} {uid 6484
   }
 }
 
@@ -208,7 +208,7 @@ Function {make_settings_window()} {uid c339 open
     } {
       Fl_Group w_settings_general_tab {uid ead3
         label General open
-        scale_image {36 24} image {icons/general_64.png} compress_image 1 xywh {10 60 320 480} labelsize 11 resizable
+        scale_image {36 24} image {icons/general_64.png} compress_image 1 xywh {10 60 320 480} labelsize 11 hide resizable
       } {
         Fl_Group {} {uid f3ed
           callback {propagate_load(o, v);} open
@@ -457,7 +457,7 @@ or just ".ext" to set extension.}
       Fl_Group w_settings_layout_tab {uid ad97
         label Layout
         callback {propagate_load(o, v);} open
-        scale_image {36 24} image {icons/layout_64.png} compress_image 1 xywh {10 60 320 480} labelsize 11 hide
+        scale_image {36 24} image {icons/layout_64.png} compress_image 1 xywh {10 60 320 480} labelsize 11
       } {
         Fl_Box {} {uid 5a34
           label {Layout:}
@@ -511,7 +511,7 @@ g_layout_list.update_dialogs();}
     w_layout_menu_delete->activate();
   }
   w_layout_menu_storage[static_cast<size_t>(suite.storage_)]->setonly();
-}} open
+}} open selected
           xywh {296 78 24 24}
         } {
           MenuItem w_layout_menu_rename {uid 0bf5
@@ -548,6 +548,11 @@ suite.storage(Fd_Tool_Store::PROJECT);
 g_layout_list.update_dialogs();}
             xywh {0 0 31 20} type Radio
           }
+          Submenu {} {uid 172b
+            label submenu
+            user_data erwin open
+            xywh {0 0 100 20}
+          } {}
           MenuItem {w_layout_menu_storage[3]} {uid c92a
             label {@fd_file  Store in External File}
             callback {Fd_Layout_Suite &suite = g_layout_list[g_layout_list.current_suite()];
