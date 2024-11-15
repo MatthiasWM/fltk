@@ -14,6 +14,13 @@
 //     https://www.fltk.org/bugs.php
 //
 
+// TODO: the fluid folder contains the print_panel design that is used in the 
+// main library under Posix. However, there were a bunch of changes in 
+// src/print_panel that were not made in fluid/print_panel.fl, which makes
+// the .fl file somewhat useless. We should move the .fl file to src/ and update
+// it so that it generates the .cxx and .h files, and remove the files in 
+// fluid/.
+
 #include "fluid.h"
 
 #include "application/application.h"

@@ -100,7 +100,6 @@ set(HEADERFILES
   factory.h
   function_panel.h
   mergeback.h
-  print_panel.h
   pixmaps.h
   shell_command.h
   codeview_panel.h
