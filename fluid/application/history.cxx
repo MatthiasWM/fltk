@@ -17,6 +17,7 @@
 #include "application/history.h"
 #include "fluid.h"
 #include "ui/main_panel.h"
+#include <FL/fl_string_functions.h>
 
 using namespace fluid;
 
@@ -98,7 +99,7 @@ void application::History::add(const char *flname) {
           i * sizeof(short_path[0]));
 
   // Put the new file at the top...
-  strlcpy(full_path[0], absolute, sizeof(full_path[0]));
+  fl_strlcpy(full_path[0], absolute, sizeof(full_path[0]));
 
   fl_filename_relative(short_path[0], sizeof(short_path[0]),
                        full_path[0]);
