@@ -24,6 +24,7 @@
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
+#include <cstdint>
 
 /**
  the first behavior always uses the first selected widget as a reference
