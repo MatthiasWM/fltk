@@ -17,6 +17,7 @@
 #include "application/history.h"
 #include "fluid.h"
 #include "ui/main_panel.h"
+#include "../src/flstring.h"
 #include <FL/fl_string_functions.h>
 
 using namespace fluid;
@@ -83,7 +84,7 @@ void application::History::add(const char *flname) {
 
   for (i = 0; i < max_files; i ++)
 #if defined(_WIN32) || defined(__APPLE__)
-    if (!strcasecmp(absolute, full_path[i])) break;
+    if (!fl_ascii_strcasecmp(absolute, full_path[i])) break;
 #else
     if (!strcmp(absolute, full_path[i])) break;
 #endif // _WIN32 || __APPLE__

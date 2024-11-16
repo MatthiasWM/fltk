@@ -17,6 +17,8 @@
 #include "application/args.h"
 #include "application/application.h"
 
+#include <FL/fl_ask.H>
+
 using namespace fluid;
 
 application::Args::Args(Application &theApp)

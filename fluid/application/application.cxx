@@ -26,7 +26,13 @@
 
 #include <FL/Fl_Native_File_Chooser.H>
 
-#include <unistd.h>
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#  include <io.h>
+#  include <windows.h>
+#  define getpid (int)GetCurrentProcessId
+#else
+#  include <unistd.h>
+#endif // _WIN32 && !__CYGWIN__
 
 using namespace fluid;
 
@@ -185,6 +191,12 @@ void Application::create_tmpdir() {
 
 /**
  Delete the temporary directory that was created in set_tmpdir.
+ 
+ This method is called on exit by the destructor of the Application object.
+ It first deletes all files that may still be left in the temp directory, and
+ then deletes the directory itself.
+ 
+ This method does nothing if no temporary directory was created.
  */
 void Application::delete_tmpdir() {
   // was a temporary directory created
@@ -197,18 +209,23 @@ void Application::delete_tmpdir() {
   struct dirent **de;
   int n_de = fl_filename_list(tmpdir_path.c_str(), &de);
   if (n_de >= 0) {
+    // iterate over all files in the temp directory
     for (int i=0; i<n_de; i++) {
       Fl_String path = tmpdir_path + de[i]->d_name;
+      // delete each file
       fl_unlink(path.c_str());
     }
+    // free the list of directory entries
     fl_filename_free_list(&de, n_de);
   }
 
   // then delete the directory itself
   if (fl_rmdir(tmpdir_path.c_str()) < 0) {
     if (Fluid.batch_mode) {
+      // if in batch mode, print a warning message to stderr
       fprintf(stderr, "WARNING: Can't delete tmpdir '%s': %s", tmpdir_path.c_str(), strerror(errno));
     } else {
+      // if not in batch mode, show a warning dialog
       fl_alert("WARNING: Can't delete tmpdir '%s': %s", tmpdir_path.c_str(), strerror(errno));
     }
   }
@@ -225,8 +242,16 @@ const Fl_String &Application::get_tmpdir() {
     create_tmpdir();
   return tmpdir_path;
 }
+
 /**
  Return the path and filename of a temporary file for cut or duplicated data.
+
+ FLUID stores the cut, copy and paste data in a file in the user's data
+ directory. This function returns a pointer to a string containing the
+ path and filename of the file.
+
+ The caller must not call `free` on the returned string.
+
  \param[in] which 0 gets the cut/copy/paste buffer, 1 gets the duplication buffer
  \return a pointer to a string in a static buffer
  */
