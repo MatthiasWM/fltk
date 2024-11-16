@@ -26,527 +26,527 @@ comment {//
 } {uid 0001 in_source in_header
 }
 
-decl {\#include "ui/panel.h"} {uid acd9 public global
+decl {\#include "ui/panel.h"} {uid 495c public global
 }
 
-decl {\#include "ui/about_panel.h"} {uid b782 private global
+decl {\#include "ui/about_panel.h"} {uid d92f private global
 }
 
-decl {\#include "application/application.h"} {uid 8ed8 private global
+decl {\#include "application/application.h"} {uid 436d private global
 }
 
-decl {\#include "project/project.h"} {uid 2f43 private global
+decl {\#include "project/project.h"} {uid eb3c private global
 }
 
-decl {\#include "codeview_panel.h"} {uid 9898 private global
+decl {\#include "codeview_panel.h"} {uid 4733 private global
 }
 
-decl {\#include "Fl_Group_Type.h"} {uid 128c private global
+decl {\#include "Fl_Group_Type.h"} {uid 8db0 private global
 }
 
-decl {\#include "factory.h"} {uid d4b3 private global
+decl {\#include "factory.h"} {uid 1540 private global
 }
 
-decl {\#include "shell_command.h"} {uid 3917 private global
+decl {\#include "shell_command.h"} {uid dfaf private global
 }
 
-decl {using namespace fluid::ui;} {uid c398 private global
+decl {using namespace fluid::ui;} {uid 124e private global
 }
 
-decl {void show_help(const char *name);} {uid 2e2f public local
+decl {void show_help(const char *name);} {uid 81f9 public local
 }
 
-declblock {namespace fluid \{} {uid 962d open public map 1 after {\}}
+declblock {namespace fluid \{} {uid f985 open public map 1 after {\}}
 } {
-  decl {class Project;} {uid 3258 public global
+  decl {class Project;} {uid dffa public global
   }
-  declblock {namespace ui \{} {uid 816b open public map 1 after {\}}
+  declblock {namespace ui \{} {uid d378 open public map 1 after {\}}
   } {
-    class MainPanel {uid 7788
+    class MainPanel {uid 6752
       comment {\\brief FLUID Main Application Panel
-} open : Panel
+} open : {public Panel}
     } {
-      Function {make_panel()} {uid 6499 open private
+      Function {make_panel()} {uid 356f open private
       } {
-        Fl_Window main_window {uid 0f48
+        Fl_Window main_window {uid cb28
           label FLUID
-          callback {quit_fluid();} open selected
+          callback {quit_fluid();} open
           xywh {389 91 300 525} type Double color 7 selection_color 47 resizable hotspot size_range {280 200 0 0} visible
         } {
-          Fl_Menu_Bar main_menubar {uid ee62 open
+          Fl_Menu_Bar main_menubar {uid 4e7c open
             xywh {0 0 300 25}
             code0 {main_menubar->global();}
           } {
-            Submenu {} {uid 4cf3
+            Submenu {} {uid 8f8b
               label {&File} open
               xywh {0 0 100 20}
             } {
-              MenuItem {} {uid 5023
+              MenuItem {} {uid 37d4
                 label {&New}
                 callback {Fluid.new_project();}
                 xywh {0 0 100 20} shortcut 0x40006e
               }
-              MenuItem {} {uid f85f
+              MenuItem {} {uid df4a
                 label {&Open...}
                 callback {Fluid.open_project_from_file("");}
                 xywh {0 0 100 20} shortcut 0x40006f
               }
-              Submenu {} {uid 22d1
+              Submenu {} {uid ca60
                 label {Open Recent} open
                 xywh {0 0 100 20}
               } {
-                MenuItem history_item {uid f5ed
+                MenuItem history_item {uid 9780
                   user_data {Fluid.history.full_path[0]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400031
                   code0 {o->label(Fluid.history.short_path[0]);}
                 }
-                MenuItem {} {uid 680c
+                MenuItem {} {uid aedf
                   user_data {Fluid.history.full_path[1]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400032
                   code0 {o->label(Fluid.history.short_path[1]);}
                 }
-                MenuItem {} {uid 2902
+                MenuItem {} {uid 8f1f
                   user_data {Fluid.history.full_path[2]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400033
                   code0 {o->label(Fluid.history.short_path[2]);}
                 }
-                MenuItem {} {uid 8039
+                MenuItem {} {uid 0b58
                   user_data {Fluid.history.full_path[3]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400034
                   code0 {o->label(Fluid.history.short_path[3]);}
                 }
-                MenuItem {} {uid 6484
+                MenuItem {} {uid 9ab1
                   user_data {Fluid.history.full_path[4]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400035
                   code0 {o->label(Fluid.history.short_path[4]);}
                 }
-                MenuItem {} {uid 6514
+                MenuItem {} {uid 07c5
                   user_data {Fluid.history.full_path[5]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400036
                   code0 {o->label(Fluid.history.short_path[5]);}
                 }
-                MenuItem {} {uid 339c
+                MenuItem {} {uid 339d
                   user_data {Fluid.history.full_path[6]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400037
                   code0 {o->label(Fluid.history.short_path[6]);}
                 }
-                MenuItem {} {uid ee5a
+                MenuItem {} {uid 66c4
                   user_data {Fluid.history.full_path[7]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400038
                   code0 {o->label(Fluid.history.short_path[7]);}
                 }
-                MenuItem {} {uid ac2a
+                MenuItem {} {uid f22f
                   user_data {Fluid.history.full_path[8]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} shortcut 0x400039
                   code0 {o->label(Fluid.history.short_path[8]);}
                 }
-                MenuItem {} {uid dae5
+                MenuItem {} {uid 4117
                   user_data {Fluid.history.full_path[9]}
                   callback {Fluid.open_project_from_file(Fl_String((const char*)v));}
                   xywh {0 0 100 20} divider
                   code0 {o->label(Fluid.history.short_path[9]);}
                 }
-                MenuItem {} {uid 49e9
+                MenuItem {} {uid 9df7
                   label {Clear Menu}
                   xywh {0 0 100 20} labelsize 11 deactivate
                 }
               }
-              MenuItem {} {uid 05f1
+              MenuItem {} {uid f333
                 label {&Insert...}
                 callback {Fluid.project.merge_project_file("");}
                 xywh {0 0 100 20} shortcut 0x400069 divider
               }
-              MenuItem {} {uid 56c4
+              MenuItem {} {uid edd2
                 label {&Save}
                 user_data 0 user_data_type long
                 callback {Fluid.project.save(false, true);}
                 xywh {0 0 100 20} shortcut 0x400073
               }
-              MenuItem {} {uid 2b8a
+              MenuItem {} {uid 020c
                 label {Save &As...}
                 user_data 1 user_data_type long
                 callback {Fluid.project.save(true, false);}
                 xywh {0 0 100 20} shortcut 0x410073
               }
-              MenuItem {} {uid 6a9b
+              MenuItem {} {uid 31c5
                 label {Sa&ve Copy...}
                 user_data 2 user_data_type long
                 callback {Fluid.project.save(true, true);}
                 xywh {0 0 100 20}
               }
-              MenuItem {} {uid c339
+              MenuItem {} {uid dba5
                 label {&Revert to Saved}
                 callback {Fluid.project.revert();}
                 xywh {0 0 100 20} divider
               }
-              MenuItem {} {uid 07f7
+              MenuItem {} {uid 27f2
                 label {New &From Template...}
-                callback {new_project_from_template();}
+                callback {Fluid.new_project_from_template();} selected
                 xywh {0 0 100 20} shortcut 0x41006e
               }
-              MenuItem {} {uid 4ca1
+              MenuItem {} {uid 853a
                 label {Save As &Template...}
-                callback {save_as_template();}
+                callback {Fluid.project.save_as_template();}
                 xywh {0 0 100 20} divider
               }
-              MenuItem {} {uid ead3
+              MenuItem {} {uid a8c0
                 label {&Merge Back from Code}
                 callback {mergeback_code_files();}
                 xywh {0 0 100 20} shortcut 0x41006d
               }
-              MenuItem {} {uid f3ed
+              MenuItem {} {uid bbe2
                 label {Write &Code}
                 callback {Fluid.project.write_code_files();}
                 xywh {0 0 100 20} shortcut 0x410063
               }
-              MenuItem {} {uid b8d5
+              MenuItem {} {uid f761
                 label {&Write Strings}
                 callback {Fluid.project.write_strings();}
                 xywh {0 0 100 20} shortcut 0x410077 divider
               }
-              MenuItem {} {uid 9ad9
+              MenuItem {} {uid a6f2
                 label {&Print...}
                 callback {print_windows();}
                 xywh {0 0 100 20} shortcut 0x400070 divider
               }
-              MenuItem {} {uid 3c5b
+              MenuItem {} {uid 9050
                 label {&Quit}
                 callback {quit_fluid();}
                 xywh {0 0 100 20} shortcut 0x400071
               }
             }
-            Submenu {} {uid 546c
+            Submenu {} {uid 4d0b
               label {&Edit} open
               xywh {0 0 100 20}
             } {
-              MenuItem {} {uid 1151
+              MenuItem {} {uid 907e
                 label {&Undo}
                 callback {Fluid.project.undo.undo();}
                 xywh {0 0 100 20} shortcut 0x40007a
               }
-              MenuItem {} {uid 9c20
+              MenuItem {} {uid d963
                 label {&Redo}
                 callback {Fluid.project.undo.redo();}
                 xywh {0 0 100 20} shortcut 0x41007a divider
               }
-              MenuItem {} {uid 100c
+              MenuItem {} {uid 8250
                 label {C&ut}
                 callback {Fluid.project.cut();}
                 xywh {0 0 100 20} shortcut 0x400078
               }
-              MenuItem {} {uid fd06
+              MenuItem {} {uid 7cba
                 label {&Copy}
                 callback {Fluid.project.copy();}
                 xywh {0 0 100 20} shortcut 0x400063
               }
-              MenuItem {} {uid 606d
+              MenuItem {} {uid 17c9
                 label {&Paste}
                 callback {Fluid.project.paste();}
                 xywh {0 0 100 20} shortcut 0x400076
               }
-              MenuItem {} {uid 5fff
+              MenuItem {} {uid ac53
                 label {Dupl&icate}
                 callback {Fluid.project.duplicate();}
                 xywh {0 0 100 20} shortcut 0x400075
               }
-              MenuItem {} {uid 18a1
+              MenuItem {} {uid 5a18
                 label {&Delete}
                 callback {Fluid.project.user_delete();}
                 xywh {0 0 100 20} shortcut 0xffff divider
               }
-              MenuItem {} {uid 3b19
+              MenuItem {} {uid 063b
                 label {Select &All}
                 callback select_all_cb
                 xywh {0 0 100 20} shortcut 0x400061
               }
-              MenuItem {} {uid da36
+              MenuItem {} {uid 4694
                 label {Select &None}
                 callback select_none_cb
                 xywh {0 0 100 20} shortcut 0x410061 divider
               }
-              MenuItem {} {uid 42e9
+              MenuItem {} {uid e631
                 label {Pr&operties...}
                 callback {open_widget_panel();}
                 xywh {0 0 100 20} shortcut 0xffbe
               }
-              MenuItem {} {uid 9a81
+              MenuItem {} {uid ad58
                 label {&Sort}
                 callback {sort_selected();}
                 xywh {0 0 100 20}
               }
-              MenuItem {} {uid 0fc3
+              MenuItem {} {uid 8f4f
                 label {&Earlier}
                 callback earlier_cb
                 xywh {0 0 100 20} shortcut 0xffbf
               }
-              MenuItem {} {uid 431e
+              MenuItem {} {uid 1329
                 label {&Later}
                 callback later_cb
                 xywh {0 0 100 20} shortcut 0xffc0
               }
-              MenuItem {} {uid 9dc0
+              MenuItem {} {uid b480
                 label {&Group}
                 callback group_cb
                 xywh {0 0 100 20} shortcut 0xffc4
               }
-              MenuItem {} {uid 9244
+              MenuItem {} {uid 1c90
                 label {Ung&roup}
                 callback {ungroup_selected();}
                 xywh {0 0 100 20} shortcut 0xffc5 divider
               }
-              MenuItem overlay_item {uid 4a7a
+              MenuItem overlay_item {uid 70c0
                 label {Hide O&verlays}
                 callback {toggle_overlays();}
                 xywh {0 0 100 20} shortcut 0x41006f
               }
-              MenuItem guides_item {uid aeab
+              MenuItem guides_item {uid adfa
                 label {Hide Guides}
                 callback {toggle_guides();}
                 xywh {0 0 100 20} shortcut 0x410067
               }
-              MenuItem restricted_item {uid 04c9
+              MenuItem restricted_item {uid d44f
                 label {Hide Restricted}
                 callback {toggle_restricted();}
                 xywh {0 0 100 20} shortcut 0x410072
               }
-              MenuItem widgetbin_item {uid 98de
+              MenuItem widgetbin_item {uid db1e
                 label {Show Widget &Bin}
                 callback {toggle_widgetbin();}
                 xywh {0 0 100 20} shortcut 0x80062
               }
-              MenuItem codeview_item {uid e8f6
+              MenuItem codeview_item {uid 057c
                 label {Show Code View}
                 callback {codeview_toggle_visibility();}
                 xywh {0 0 100 20} shortcut 0x800e7 divider
               }
-              MenuItem {} {uid 2de2
+              MenuItem {} {uid d807
                 label {Settings...}
                 callback {show_settings();}
                 xywh {0 0 100 20} shortcut 0x80070
               }
             }
-            Submenu {} {uid 604f
+            Submenu {} {uid b287
               label {&New}
               user_data New_Menu open
               xywh {0 0 100 20}
             } {}
-            Submenu {} {uid 839f
+            Submenu {} {uid 655b
               label {&Layout} open
               xywh {0 0 100 20}
             } {
-              Submenu {} {uid ee67
+              Submenu {} {uid 0295
                 label {&Align} open
                 xywh {0 0 100 20}
               } {
-                MenuItem {} {uid adce
+                MenuItem {} {uid 6e86
                   label {&Left}
                   user_data 10 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid cbf2
+                MenuItem {} {uid 25f3
                   label {&Center}
                   user_data 11 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid f100
+                MenuItem {} {uid 2726
                   label {&Right}
                   user_data 12 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid 2678
+                MenuItem {} {uid 0c4a
                   label {item&Top}
                   user_data 13 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid ad97
+                MenuItem {} {uid d297
                   label {&Middle}
                   user_data 14 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid 5a34
+                MenuItem {} {uid a7fe
                   label {&Bottom}
                   user_data 15 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
               }
-              Submenu {} {uid c707
+              Submenu {} {uid d60e
                 label {&Space Evenly} open
                 xywh {0 0 100 20}
               } {
-                MenuItem {} {uid 2c5e
+                MenuItem {} {uid 1320
                   label {&Across}
                   user_data 20 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid 1aa1
+                MenuItem {} {uid d45b
                   label {&Down}
                   user_data 21 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
               }
-              Submenu {} {uid b429
+              Submenu {} {uid 6285
                 label {&Make Same Size} open
                 xywh {0 0 100 20}
               } {
-                MenuItem {} {uid 475b
+                MenuItem {} {uid a647
                   label {&Width}
                   user_data 30 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid 0bf5
+                MenuItem {} {uid 06ae
                   label {&Height}
                   user_data 31 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid cc46
+                MenuItem {} {uid 3529
                   label {&Both}
                   user_data 32 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
               }
-              Submenu {} {uid 779c
+              Submenu {} {uid fb7c
                 label {&Center In Group} open
                 xywh {0 0 100 20}
               } {
-                MenuItem {} {uid 3f2e
+                MenuItem {} {uid cb7d
                   label {&Horizontal}
                   user_data 40 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
-                MenuItem {} {uid c92a
+                MenuItem {} {uid 274f
                   label {&Vertical}
                   user_data 41 user_data_type long
                   callback align_widget_cb
                   xywh {0 0 100 20}
                 }
               }
-              MenuItem {} {uid 5873
+              MenuItem {} {uid e7d9
                 label {Synchronized Resize}
                 callback menu_layout_sync_resize_cb
                 xywh {0 0 100 20} type Toggle divider
               }
-              MenuItem {} {uid 9c64
+              MenuItem {} {uid 4ee6
                 label {&Grid and Size Settings...}
                 callback {settings_show_grid();}
                 xywh {0 0 100 20} shortcut 0x400067 divider
               }
-              Submenu suite_menu {uid 2f06
+              Submenu suite_menu {uid 61e8
                 label Presets
                 user_data main_layout_submenu_ open
                 xywh {0 0 100 20}
               } {}
-              MenuItem preset_menu {uid 5cef
+              MenuItem preset_menu {uid 282e
                 label Application
                 user_data 0 user_data_type long
                 callback {select_layout_preset(0);}
                 xywh {0 0 100 20} type Radio
               }
-              MenuItem {} {uid 3509
+              MenuItem {} {uid 0083
                 label Dialog
                 user_data 1 user_data_type long
                 callback {select_layout_preset(1);}
                 xywh {0 0 100 20} type Radio
               }
-              MenuItem {} {uid 7f08
+              MenuItem {} {uid 3b48
                 label itemToolbox
                 user_data 2 user_data_type long
                 callback {select_layout_preset(2);}
                 xywh {0 0 100 20} type Radio
               }
             }
-            Submenu shell_submenu {uid 234f
+            Submenu shell_submenu {uid 2ede
               label {&Shell}
               user_data {Fd_Shell_Command_List::default_menu}
               xywh {0 0 100 20}
             } {}
-            Submenu {} {uid e1f8
+            Submenu {} {uid ec0a
               label {&Help} open
               xywh {0 0 100 20}
             } {
-              MenuItem {} {uid 1d8f
+              MenuItem {} {uid 3977
                 label {&Rapid development with FLUID...}
                 callback {show_help("fluid.html");}
                 xywh {0 0 100 20}
               }
-              MenuItem {} {uid 52f0
+              MenuItem {} {uid dfea
                 label {&FLTK Programmers Manual...}
                 callback {show_help("index.html");}
                 xywh {0 0 100 20} divider
               }
-              MenuItem {} {uid b3b7
+              MenuItem {} {uid 205e
                 label {&About FLUID...}
                 callback {fluid::ui::about_panel.show();}
                 xywh {0 0 100 20}
               }
             }
           }
-          Fl_Browser widget_browser {uid 7b19
+          Fl_Browser widget_browser {uid 65bb
             xywh {0 25 300 500} box FLAT_BOX resizable
             code0 {\#include "widget_browser.h"}
             class Widget_Browser
           }
         }
       }
-      Function {MainPanel()} {uid 689a
+      Function {MainPanel()} {uid 61e6
         comment Constructor open
       } {
-        code {main_window = nullptr;} {uid f9d7
+        code {main_window = nullptr;} {uid ca21
         }
       }
-      Function {~MainPanel() override} {uid 86cc
+      Function {~MainPanel() override} {uid 6e64
         comment {Virtual destructor.} open
       } {
-        code {delete main_window;} {uid c8a2
+        code {delete main_window;} {uid 306b
         }
       }
-      Function {build() override} {uid 678c
+      Function {build() override} {uid 4c8f
         comment {Build the panel, don't show it yet.} open return_type void
       } {
         code {if (main_window == nullptr) {
   make_panel();
-}} {uid 5ddf
+}} {uid 857a
         }
       }
-      Function {show() override} {uid 52ad
+      Function {show() override} {uid 7677
         comment {Build if needed and show the panel.} open return_type void
       } {
         code {build();
-main_window->show();} {uid d9d1
+main_window->show();} {uid a09e
         }
       }
-      Function {hide() override} {uid 2fd1
+      Function {hide() override} {uid 5881
         comment {Hide the panel and retain for later.} open return_type void
       } {
         code {if (main_window) {
   main_window->hide();
-}} {uid 08be
+}} {uid 3a6c
         }
       }
     }
-    decl {extern MainPanel main_panel;} {uid 00f0 public global
+    decl {extern MainPanel main_panel;} {uid 6893 public global
     }
-    decl {MainPanel fluid::ui::main_panel;} {uid 8be9 private global
+    decl {MainPanel fluid::ui::main_panel;} {uid a876 private global
     }
   }
 }

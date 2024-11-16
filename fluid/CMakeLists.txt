@@ -36,6 +36,7 @@ set(CPPFILES
   ui/about_panel.cxx
   ui/main_panel.cxx
   ui/panel.cxx
+  ui/template_panel.cxx
   widgets/bin_buttons.cxx
   widgets/code_viewers.cxx
   widgets/coord_input.cxx
@@ -60,7 +61,6 @@ set(CPPFILES
   pixmaps.cxx
   shell_command.cxx
   codeview_panel.cxx
-  template_panel.cxx
   widget_browser.cxx
   widget_panel.cxx
 )
@@ -77,6 +77,7 @@ set(HEADERFILES
   ui/about_panel.h
   ui/main_panel.h
   ui/panel.h
+  ui/template_panel.h
   streams/code_writer.h
   streams/project_reader.h
   streams/project_writer.h
@@ -105,7 +106,6 @@ set(HEADERFILES
   pixmaps.h
   shell_command.h
   codeview_panel.h
-  template_panel.h
   widget_browser.h
   widget_panel.h
 )

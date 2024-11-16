@@ -130,6 +130,8 @@ public:
   const char *filename { nullptr };
   /// Used as a counter to set the .fl project dir as the current directory.
   char in_project_dir { 0 };
+  /// open a dialog box to save this project as a template
+  void save_as_template();
 };
 
 } // namespace fluid

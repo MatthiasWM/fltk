@@ -26,6 +26,7 @@
 #include "application/application.h"
 #include "project/project.h"
 #include "ui/main_panel.h"
+#include "ui/template_panel.h"
 #include "Fl_Type.h"
 #include "Fl_Function_Type.h"
 #include "Fl_Group_Type.h"
@@ -43,7 +44,7 @@
 #include "settings_panel.h"
 #include "function_panel.h"
 #include "codeview_panel.h"
-#include "template_panel.h"
+#include "ui/template_panel.h"
 #include "ui/about_panel.h"
 #include "autodoc.h"
 
@@ -227,6 +228,8 @@ static void external_editor_timer(void*) {
 //   Fluid.project.save(v != NULL, v != (void *)2);
 // }
 
+#if 0
+
 /**
  Save a design template.
  \todo We should document the concept of templates.
@@ -297,7 +300,6 @@ void save_as_template() {
     return;
   }
 
-#if defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
   // Get the screenshot, if any...
   Fl_Type *t;
 
@@ -325,17 +327,9 @@ void save_as_template() {
     return;
   }
 
-#  if 0 // The original PPM output code...
-  strcpy(ext, ".ppm");
-  fp = fl_fopen(filename, "wb");
-  fprintf(fp, "P6\n%d %d 255\n", w, h);
-  fwrite(pixels, w * h, 3, fp);
-  fclose(fp);
-#  endif // 0
-
   delete[] pixels;
-#endif // HAVE_LIBPNG && HAVE_LIBZ
 }
+#endif
 
 //-> application::callbacks
 /**
@@ -401,6 +395,7 @@ void quit_fluid() {
   exit(0);
 }
 
+#if 0
 //-> application::callbacks
 /**
  Open the template browser and load a new file from templates.
@@ -510,6 +505,7 @@ bool new_project_from_template() {
 
   return true;
 }
+#endif
 
 #ifdef __APPLE__
 /**

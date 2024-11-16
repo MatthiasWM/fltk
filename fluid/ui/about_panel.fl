@@ -32,7 +32,7 @@ decl {\#include <time.h>} {public global
 decl {void show_help(const char *name);} {public local
 }
 
-declblock {namespace fluid \{} {open selected public map 1 after {\}}
+declblock {namespace fluid \{} {open public map 1 after {\}}
 } {
   decl {class Project;} {public global
   }
@@ -40,7 +40,7 @@ declblock {namespace fluid \{} {open selected public map 1 after {\}}
   } {
     class AboutPanel {
       comment {\\brief Show some information about FLUID
-} open : Panel
+} open selected : {public Panel}
     } {
       Function {make_panel()} {open private
       } {

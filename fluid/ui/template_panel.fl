@@ -1,0 +1,520 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0400
+use_FL_COMMAND
+utf8_in_src
+header_name {.h}
+code_name {.cxx}
+mergeback 1
+comment {//
+// FLUID template support for the Fast Light Tool Kit (FLTK).
+//
+// Copyright 1998-2020 by Bill Spitzak and others.
+//
+// This library is free software. Distribution and use rights are outlined in
+// the file "COPYING" which should have been included with this file.  If this
+// file is missing or damaged, see the license at:
+//
+//     https://www.fltk.org/COPYING.php
+//
+// Please see the following page on how to report bugs and issues:
+//
+//     https://www.fltk.org/bugs.php
+//
+} {uid cb36 in_source in_header
+}
+
+decl {\#include "ui/panel.h"} {uid 4c2b public global
+}
+
+decl {using namespace fluid::ui;} {uid d5e8 private global
+}
+
+decl {\#include "fluid.h"} {uid 5e58 private local
+}
+
+decl {\#include "widget_browser.h"} {uid fc8f selected private local
+}
+
+decl {\#include "application/application.h"} {uid 0001 private local
+}
+
+decl {\#include "project/project.h"} {uid dcdf private local
+}
+
+decl {\#include "streams/project_reader.h"} {uid 0271 private local
+}
+
+decl {\#include "streams/project_writer.h"} {uid 6a42 private local
+}
+
+decl {\#include <FL/Fl_Shared_Image.H>} {uid 1840 private local
+}
+
+decl {\#include <FL/Fl_PNG_Image.H>} {uid 4c40 private local
+}
+
+decl {\#include "Fl_Window_Type.h"} {uid e2ca private local
+}
+
+decl {\#include <FL/fl_ask.H>} {uid 1c66 private local
+}
+
+decl {\#include <FL/fl_string_functions.h>} {uid 7704 private local
+}
+
+decl {\#include "fluid_filename.h"} {uid ab66 private local
+}
+
+decl {\#include "../src/flstring.h"} {uid bf56 private local
+}
+
+decl {\#include <stdio.h>} {uid c5d5 private local
+}
+
+decl {\#include <stdlib.h>} {uid 3bef private local
+}
+
+decl {\#include <errno.h>} {uid 01ed private local
+}
+
+decl {\#include <zlib.h>} {uid 8a73 private local
+}
+
+declblock {\#if defined(_WIN32) && !defined(__CYGWIN__)} {uid 9f15 after {\#endif // _WIN32 && !__CYGWIN__}
+} {
+  decl {\#include <io.h>} {uid 4675 private local
+  }
+  decl {\#else} {uid bf91 private local
+  }
+  decl {\#include <unistd.h>} {uid cc89 private local
+  }
+}
+
+decl {using namespace fluid::ui;} {uid 6bd6 private global
+}
+
+data tmpl_FLTK_License_fl {uid 644a private local filename {../templates/FLTK_License.fl} compressed
+}
+
+data tmpl_1of7GUIs_fl {uid 68c8 private local filename {../templates/1of7GUIs.fl} compressed
+}
+
+decl {void show_help(const char *name);} {uid 1c15 public local
+}
+
+declblock {namespace fluid \{} {uid e1dd open public map 1 after {\}}
+} {
+  decl {class Project;} {uid a6b9 public global
+  }
+  declblock {namespace ui \{} {uid c6e5 open public map 1 after {\}}
+  } {
+    class TemplatePanel {uid 09f8 open : {public Panel}
+    } {
+      Function {make_panel()} {uid 7ad7 open private
+      } {
+        Fl_Window panel_window {uid edfd
+          label {New/Save Template}
+          callback {Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
+if (img) img->release();
+template_preview->image(0);
+ template_browser->deselect();
+template_name->value("");
+template_instance->value("");
+hide();} open
+          xywh {437 284 460 355} type Double resizable modal visible
+        } {
+          Fl_Browser template_browser {uid 9f53
+            label {Available Templates:}
+            callback {if (Fl::event_clicks()) {
+  hide();
+  return;
+}
+Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
+if (img) img->release();
+template_preview->image(0);
+template_preview->redraw();
+ int item = template_browser->value();
+ if (item <= 1) template_instance->deactivate();
+else template_instance->activate();
+ if (item < 1) {
+  template_submit->deactivate();
+  template_delete->deactivate();
+  return;
+}
+ template_submit->activate();
+ const char *flfile = (const char *)template_browser->data(item);
+if (!flfile) {
+  template_delete->deactivate();
+  return;
+}
+ template_name->value(template_browser->text(item));
+ template_delete->activate();
+ char pngfile[1024], *ext;
+ strlcpy(pngfile, flfile, sizeof(pngfile));
+if ((ext = strrchr(pngfile, '.')) == NULL) return;
+strcpy(ext, ".png");
+ img = Fl_Shared_Image::get(pngfile);
+ if (img) {
+  template_preview->image(img);
+  template_preview->redraw();
+}}
+            xywh {10 28 180 250} type Hold labelfont 1 align 5 when 3
+          }
+          Fl_Box template_preview {uid 3ab6
+            xywh {200 28 250 250} box THIN_DOWN_BOX align 80 resizable
+          }
+          Fl_Input template_name {uid 94ec
+            label {Template Name:}
+            callback {if (strlen(template_name->value())) {
+  template_submit->activate();
+  if (Fl::event_key() == FL_Enter) hide();
+} else template_submit->deactivate();}
+            xywh {198 288 252 25} labelfont 1 when 3 textfont 4
+          }
+          Fl_Input template_instance {uid 4b09
+            label {Instance Name:}
+            xywh {198 288 252 25} labelfont 1 textfont 4 hide
+          }
+          Fl_Group {} {uid 6266 open
+            xywh {10 323 440 25}
+          } {
+            Fl_Button template_delete {uid 3016
+              label {Delete Template}
+              callback {int item = template_browser->value();
+if (item < 1) return;
+
+const char *name = template_browser->text(item);
+const char *flfile = (const char *)template_browser->data(item);
+if (!flfile) return;
+
+if (!fl_choice("Are you sure you want to delete the template \\"%s\\"?",
+               "Cancel", "Delete", 0, name)) return;
+
+if (fl_unlink(flfile)) {
+  fl_alert("Unable to delete template \\"%s\\":\\n%s", name, strerror(errno));
+  return;
+}
+
+char pngfile[1024], *ext;
+strlcpy(pngfile, flfile, sizeof(pngfile));
+if ((ext = strrchr(pngfile, '.')) != NULL) {
+  strcpy(ext, ".png");
+  fl_unlink(pngfile);
+}
+
+template_browser->remove(item);
+template_browser->do_callback();}
+              xywh {10 323 143 25}
+            }
+            Fl_Box {} {uid 29a7
+              xywh {153 323 126 25} resizable
+            }
+            Fl_Button {} {uid b573
+              label Cancel
+              callback {Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
+if (img) img->release();
+template_preview->image(0);
+ template_browser->deselect();
+template_name->value("");
+template_instance->value("");
+hide();}
+              xywh {289 323 72 25}
+            }
+            Fl_Return_Button template_submit {uid ceb9
+              label Save
+              callback {Fl_Shared_Image *img = (Fl_Shared_Image *)template_preview->image();
+if (img) img->release();
+template_preview->image(0);
+ hide();}
+              xywh {371 323 79 25}
+            }
+          }
+        }
+      }
+      Function {TemplatePanel()} {uid ef42
+        comment Constructor open
+      } {
+        code {panel_window = nullptr;} {uid fc1f
+        }
+      }
+      Function {~TemplatePanel() override} {uid 8867
+        comment {Virtual destructor.} open
+      } {
+        code {delete panel_window;} {uid 5c04
+        }
+      }
+      Function {build() override} {uid 20ce
+        comment {Build the panel, don't show it yet.} open return_type void
+      } {
+        code {if (panel_window == nullptr) {
+  make_panel();
+}} {uid c0d3
+        }
+      }
+      Function {show() override} {uid 8d6e
+        comment {Build if needed and show the panel.} open return_type void
+      } {
+        code {build();
+panel_window->show();} {uid 5ff4
+        }
+      }
+      Function {hide() override} {uid c5e4
+        comment {Hide the panel and retain for later.} open return_type void
+      } {
+        code {if (panel_window) {
+  panel_window->hide();
+}} {uid 0084
+        }
+      }
+      Function {template_clear()} {uid 08ba return_type void
+      } {
+        code {int i;
+void *filename;
+
+for (i = 1; i <= template_browser->size(); i ++) {
+  if ((filename = template_browser->data(i)) != NULL) free(filename);
+}
+
+template_browser->deselect();
+template_browser->clear();} {uid 250c
+        }
+      }
+      Function {template_install(const char *path, const char *name, const uchar *inSrc, int inSrcLen, int inDstLen)} {uid 9548 return_type void
+      } {
+        code {char filename[FL_PATH_MAX];
+  strcpy(filename, path);
+  strcat(filename, name);
+  FILE *f = fopen(filename, "wb");
+  if (!f) return;
+  uLong dstLen = inDstLen;
+  Bytef *dst = (Bytef*)::malloc(inDstLen);
+  if (uncompress(dst, &dstLen, (Bytef*)inSrc, (uLong)inSrcLen) != Z_OK) { /* error */ }
+  if (fwrite(dst, dstLen, 1, f) <= 0) { /* error */ }
+  fclose(f);} {uid c555
+        }
+      }
+      Function {template_load()} {uid 55c7 return_type void
+      } {
+        code {int i;
+char name[1024], filename[1400], path[1024], *ptr;
+struct dirent **files;
+int num_files;
+
+fluid_prefs.getUserdataPath(path, sizeof(path));
+strlcat(path, "templates", sizeof(path));
+fl_make_path(path);
+
+int sample_templates_generated = 0;
+fluid_prefs.get("sample_templates_generated", sample_templates_generated, 0);
+
+if (sample_templates_generated < 2) {
+  strcpy(filename, path);
+  strcat(filename, "/FLTK_License.fl");
+  FILE *f = fopen(filename, "wb");
+  if (f) {
+    fputs(
+"\# data file for the Fltk User Interface Designer (fluid)\\nversion 1.0400\\nheader_name {.h}\\n"
+"code_name {.cxx}\\ncomment {//\\n// @INSTANCE@ for the Fast Light Tool Kit (FLT"
+"K).\\n//\\n// Copyright 1998-2023 by Bill Spitzak and others.\\n//\\n// This library is free sof"
+"tware. Distribution and use rights are outlined in\\n// the file \\"COPYING\\" which should have "
+"been included with this file.  If this\\n// file is missing or damaged, see the license at:\\n"
+"//\\n//     https://www.fltk.org/COPYING.php\\n//\\n// Please see the following page on how to report "
+"bugs and issues:\\n//\\n//     https://www.fltk.org/bugs.php\\n//\\n} {selected in_source in_head"
+"er\\n}\\n", f);
+    fclose(f);
+  }
+
+  template_install(path, "/FLTK_License.fl", tmpl_FLTK_License_fl, sizeof(tmpl_FLTK_License_fl), tmpl_FLTK_License_fl_size);
+  template_install(path, "/1of7GUIs.fl", tmpl_1of7GUIs_fl, sizeof(tmpl_1of7GUIs_fl), tmpl_1of7GUIs_fl_size);
+  sample_templates_generated = 2;
+  fluid_prefs.set("sample_templates_generated", sample_templates_generated);
+  fluid_prefs.flush();
+}
+
+num_files = fl_filename_list(path, &files);
+
+for (i = 0; i < num_files; i ++) {
+  if (fl_filename_match(files[i]->d_name, "*.fl")) {
+    // Format the name as the filename with "_" replaced with " "
+    // and without the trailing ".fl"...
+    strlcpy(name, files[i]->d_name, sizeof(name));
+    *strstr(name, ".fl") = '\\0';
+
+    for (ptr = name; *ptr; ptr ++) {
+      if (*ptr == '_') *ptr = ' ';
+    }
+
+    // Add the template to the browser...
+    snprintf(filename, sizeof(filename), "%s/%s", path, files[i]->d_name);
+    template_browser->add(name, fl_strdup(filename));
+  }
+
+  free(files[i]);
+}
+
+if (num_files > 0) free(files);} {uid a81c
+        }
+      }
+      Function {add(fluid::Project *project)} {uid 4986
+        comment {Open the dialog box and offer the user to
+save the given project as a new template} open return_type void
+      } {
+        code {build();
+template_clear();
+template_browser->add("New Template");
+template_load();
+ template_name->show();
+template_name->value("");
+ template_instance->hide();
+ template_delete->show();
+template_delete->deactivate();
+ template_submit->label("Save");
+template_submit->deactivate();
+ panel_window->label("Add Template");
+ // Show the panel and wait for the user to do something...
+show();
+while (panel_window->shown()) Fl::wait();
+ // Get the template name, return if it is empty...
+const char *c = template_name->value();
+if (!c || !*c) return;
+ // Convert template name to filename_with_underscores
+char savename[FL_PATH_MAX], *saveptr;
+strlcpy(savename, c, sizeof(savename));
+for (saveptr = savename; *saveptr; saveptr ++) {
+  if (isspace(*saveptr)) *saveptr = '_';
+}
+ // Find the templates directory...
+char filename[FL_PATH_MAX];
+fluid_prefs.getUserdataPath(filename, sizeof(filename));
+ strlcat(filename, "templates", sizeof(filename));
+if (fl_access(filename, 0)) fl_make_path(filename);
+ strlcat(filename, "/", sizeof(filename));
+strlcat(filename, savename, sizeof(filename));
+ char *ext = filename + strlen(filename);
+if (ext >= (filename + sizeof(filename) - 5)) {
+  fl_alert("The template name \\"%s\\" is too long!", c);
+  return;
+}
+ // Save the .fl file...
+strcpy(ext, ".fl");
+ if (!fl_access(filename, 0)) {
+  if (fl_choice("The template \\"%s\\" already exists.\\n"
+                "Do you want to replace it?", "Cancel",
+                "Replace", NULL, c) == 0) return;
+}
+ if (!stream::write_file(filename)) {
+  fl_alert("Error writing %s: %s", filename, strerror(errno));
+  return;
+}
+ // Get the screenshot, if any...
+Fl_Type *t;
+ for (t = Fl_Type::first; t; t = t->next) {
+  // Find the first window...
+  if (t->is_a(ID_Window)) break;
+}
+ if (!t) return;
+ // Grab a screenshot...
+Fl_Window_Type *wt = (Fl_Window_Type *)t;
+uchar *pixels;
+int w, h;
+ if ((pixels = wt->read_image(w, h)) == NULL) return;
+ // Save to a PNG file...
+strcpy(ext, ".png");
+ errno = 0;
+if (fl_write_png(filename, pixels, w, h, 3) != 0) {
+  delete[] pixels;
+  fl_alert("Error writing %s: %s", filename, strerror(errno));
+  return;
+}
+ delete[] pixels;} {uid 1620
+        }
+      }
+      Function {load_template()} {uid d2ad
+        comment {Open the panel and let the user choose a
+template that is then loaded into the 
+current project.} open return_type bool
+      } {
+        code {// Setup the template panel...
+build();
+
+template_clear();
+template_browser->add("Blank");
+template_load();
+ template_name->hide();
+template_name->value("");
+ template_instance->show();
+template_instance->deactivate();
+template_instance->value("");
+ template_delete->show();
+ template_submit->label("Load");
+template_submit->deactivate();
+ panel_window->label("Load Template");
+ //if ( template_browser->size() == 1 ) { // only one item?
+template_browser->value(1);          // select it
+template_browser->do_callback();
+//}
+ // Show the panel and wait for the user to do something...
+show();
+while (panel_window->shown()) Fl::wait();
+ // See if the user chose anything...
+int item = template_browser->value();
+if (item < 1) return false;
+ // Load the template, if any...
+const char *tname = (const char *)template_browser->data(item);
+ if (tname) {
+  // Grab the instance name...
+  const char *iname = template_instance->value();
+   if (iname && *iname) {
+    // Copy the template to a temp file, then read it in...
+    char line[1024], *ptr, *next;
+    FILE *infile, *outfile;
+     if ((infile = fl_fopen(tname, "rb")) == NULL) {
+      fl_alert("Error reading template file \\"%s\\":\\n%s", tname,
+               strerror(errno));
+      Fluid.project.set_modflag(0);
+      Fluid.project.undo.clear();
+      return false;
+    }
+     if ((outfile = fl_fopen(Fluid.cutfname(1), "wb")) == NULL) {
+      fl_alert("Error writing buffer file \\"%s\\":\\n%s", Fluid.cutfname(1),
+               strerror(errno));
+      fclose(infile);
+      Fluid.project.set_modflag(0);
+      Fluid.project.undo.clear();
+      return false;
+    }
+     while (fgets(line, sizeof(line), infile)) {
+      // Replace @INSTANCE@ with the instance name...
+      for (ptr = line; (next = strstr(ptr, "@INSTANCE@")) != NULL; ptr = next + 10) {
+        fwrite(ptr, next - ptr, 1, outfile);
+        fputs(iname, outfile);
+      }
+       fputs(ptr, outfile);
+    }
+     fclose(infile);
+    fclose(outfile);
+     Fluid.project.undo.suspend();
+    fluid::stream::read_file(Fluid.cutfname(1), 0);
+    fl_unlink(Fluid.cutfname(1));
+    Fluid.project.undo.resume();
+  } else {
+    // No instance name, so read the template without replacements...
+    Fluid.project.undo.suspend();
+    fluid::stream::read_file(tname, 0);
+    Fluid.project.undo.resume();
+  }
+}
+widget_browser->rebuild();
+Fluid.project.update_settings_dialog();
+Fluid.project.set_modflag(0);
+Fluid.project.undo.clear();
+return true;} {uid 9799
+        }
+      }
+    }
+    decl {extern TemplatePanel template_panel;} {uid eb33 public global
+    }
+    decl {TemplatePanel fluid::ui::template_panel;} {uid 96a5 private global
+    }
+  }
+}

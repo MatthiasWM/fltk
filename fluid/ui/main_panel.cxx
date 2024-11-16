@@ -30,7 +30,7 @@ void show_help(const char *name);
 void MainPanel::cb_main_window_i(Fl_Double_Window*, void*) {
 //~fl~0~0000~b0a14477~~
   quit_fluid();
-//~fl~3~0f48~69468f9f~~
+//~fl~3~cb28~69468f9f~~
 }
 void MainPanel::cb_main_window(Fl_Double_Window* o, void* v) {
   ((MainPanel*)(o->user_data()))->cb_main_window_i(o,v);
@@ -39,7 +39,7 @@ void MainPanel::cb_main_window(Fl_Double_Window* o, void* v) {
 void MainPanel::cb_New_i(Fl_Menu_*, void*) {
 //~fl~0~0000~ce60c4f9~~
   Fluid.new_project();
-//~fl~2~5023~e4c3136e~~
+//~fl~2~37d4~e4c3136e~~
 }
 void MainPanel::cb_New(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_New_i(o,v);
@@ -48,7 +48,7 @@ void MainPanel::cb_New(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Open_i(Fl_Menu_*, void*) {
 //~fl~0~0000~491c39d3~~
   Fluid.open_project_from_file("");
-//~fl~2~f85f~632adcf7~~
+//~fl~2~df4a~632adcf7~~
 }
 void MainPanel::cb_Open(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Open_i(o,v);
@@ -57,7 +57,7 @@ void MainPanel::cb_Open(Fl_Menu_* o, void* v) {
 void MainPanel::cb_history_item_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~6f4eacc4~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~f5ed~ded83595~~
+//~fl~2~9780~ded83595~~
 }
 void MainPanel::cb_history_item(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_history_item_i(o,v);
@@ -66,7 +66,7 @@ void MainPanel::cb_history_item(Fl_Menu_* o, void* v) {
 void MainPanel::cb__i(Fl_Menu_*, void* v) {
 //~fl~0~0000~ed45dc13~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~680c~ded83595~~
+//~fl~2~aedf~ded83595~~
 }
 void MainPanel::cb_(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb__i(o,v);
@@ -75,7 +75,7 @@ void MainPanel::cb_(Fl_Menu_* o, void* v) {
 void MainPanel::cb_1_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~27beb8c2~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~2902~ded83595~~
+//~fl~2~8f1f~ded83595~~
 }
 void MainPanel::cb_1(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_1_i(o,v);
@@ -84,7 +84,7 @@ void MainPanel::cb_1(Fl_Menu_* o, void* v) {
 void MainPanel::cb_2_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~5574efc6~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~8039~ded83595~~
+//~fl~2~0b58~ded83595~~
 }
 void MainPanel::cb_2(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_2_i(o,v);
@@ -93,7 +93,7 @@ void MainPanel::cb_2(Fl_Menu_* o, void* v) {
 void MainPanel::cb_3_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~cf9620a8~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~6484~ded83595~~
+//~fl~2~9ab1~ded83595~~
 }
 void MainPanel::cb_3(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_3_i(o,v);
@@ -102,7 +102,7 @@ void MainPanel::cb_3(Fl_Menu_* o, void* v) {
 void MainPanel::cb_4_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~3c007cd9~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~6514~ded83595~~
+//~fl~2~07c5~ded83595~~
 }
 void MainPanel::cb_4(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_4_i(o,v);
@@ -111,7 +111,7 @@ void MainPanel::cb_4(Fl_Menu_* o, void* v) {
 void MainPanel::cb_5_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~0bb62eeb~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~339c~ded83595~~
+//~fl~2~339d~ded83595~~
 }
 void MainPanel::cb_5(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_5_i(o,v);
@@ -120,7 +120,7 @@ void MainPanel::cb_5(Fl_Menu_* o, void* v) {
 void MainPanel::cb_6_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~d2b4e444~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~ee5a~ded83595~~
+//~fl~2~66c4~ded83595~~
 }
 void MainPanel::cb_6(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_6_i(o,v);
@@ -129,7 +129,7 @@ void MainPanel::cb_6(Fl_Menu_* o, void* v) {
 void MainPanel::cb_7_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~48562b2a~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~ac2a~ded83595~~
+//~fl~2~f22f~ded83595~~
 }
 void MainPanel::cb_7(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_7_i(o,v);
@@ -138,7 +138,7 @@ void MainPanel::cb_7(Fl_Menu_* o, void* v) {
 void MainPanel::cb_8_i(Fl_Menu_*, void* v) {
 //~fl~0~0000~eee95ae7~~
   Fluid.open_project_from_file(Fl_String((const char*)v));
-//~fl~2~dae5~ded83595~~
+//~fl~2~4117~ded83595~~
 }
 void MainPanel::cb_8(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_8_i(o,v);
@@ -147,7 +147,7 @@ void MainPanel::cb_8(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Insert_i(Fl_Menu_*, void*) {
 //~fl~0~0000~bc1da369~~
   Fluid.project.merge_project_file("");
-//~fl~2~05f1~573c1d2b~~
+//~fl~2~f333~573c1d2b~~
 }
 void MainPanel::cb_Insert(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Insert_i(o,v);
@@ -156,7 +156,7 @@ void MainPanel::cb_Insert(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Save_i(Fl_Menu_*, long) {
 //~fl~0~0000~46f4b6d9~~
   Fluid.project.save(false, true);
-//~fl~2~56c4~acb8b95c~~
+//~fl~2~edd2~acb8b95c~~
 }
 void MainPanel::cb_Save(Fl_Menu_* o, long v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Save_i(o,v);
@@ -165,7 +165,7 @@ void MainPanel::cb_Save(Fl_Menu_* o, long v) {
 void MainPanel::cb_Save1_i(Fl_Menu_*, long) {
 //~fl~0~0000~726347b3~~
   Fluid.project.save(true, false);
-//~fl~2~2b8a~1d48635a~~
+//~fl~2~020c~1d48635a~~
 }
 void MainPanel::cb_Save1(Fl_Menu_* o, long v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Save1_i(o,v);
@@ -174,7 +174,7 @@ void MainPanel::cb_Save1(Fl_Menu_* o, long v) {
 void MainPanel::cb_Sa_i(Fl_Menu_*, long) {
 //~fl~0~0000~e89ef45a~~
   Fluid.project.save(true, true);
-//~fl~2~6a9b~cd324a13~~
+//~fl~2~31c5~cd324a13~~
 }
 void MainPanel::cb_Sa(Fl_Menu_* o, long v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Sa_i(o,v);
@@ -183,7 +183,7 @@ void MainPanel::cb_Sa(Fl_Menu_* o, long v) {
 void MainPanel::cb_Revert_i(Fl_Menu_*, void*) {
 //~fl~0~0000~ee29b042~~
   Fluid.project.revert();
-//~fl~2~c339~a8f32d26~~
+//~fl~2~dba5~a8f32d26~~
 }
 void MainPanel::cb_Revert(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Revert_i(o,v);
@@ -191,8 +191,8 @@ void MainPanel::cb_Revert(Fl_Menu_* o, void* v) {
 
 void MainPanel::cb_New1_i(Fl_Menu_*, void*) {
 //~fl~0~0000~f180d6bc~~
-  new_project_from_template();
-//~fl~2~07f7~15f05eaf~~
+  Fluid.new_project_from_template();
+//~fl~2~27f2~3ce910fb~~
 }
 void MainPanel::cb_New1(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_New1_i(o,v);
@@ -200,8 +200,8 @@ void MainPanel::cb_New1(Fl_Menu_* o, void* v) {
 
 void MainPanel::cb_Save2_i(Fl_Menu_*, void*) {
 //~fl~0~0000~55c4d258~~
-  save_as_template();
-//~fl~2~4ca1~a1e134e8~~
+  Fluid.project.save_as_template();
+//~fl~2~853a~f0923265~~
 }
 void MainPanel::cb_Save2(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Save2_i(o,v);
@@ -210,7 +210,7 @@ void MainPanel::cb_Save2(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Merge_i(Fl_Menu_*, void*) {
 //~fl~0~0000~e73b38ff~~
   mergeback_code_files();
-//~fl~2~ead3~c78c4c03~~
+//~fl~2~a8c0~c78c4c03~~
 }
 void MainPanel::cb_Merge(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Merge_i(o,v);
@@ -219,7 +219,7 @@ void MainPanel::cb_Merge(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Write_i(Fl_Menu_*, void*) {
 //~fl~0~0000~43310500~~
   Fluid.project.write_code_files();
-//~fl~2~f3ed~b22d0143~~
+//~fl~2~bbe2~b22d0143~~
 }
 void MainPanel::cb_Write(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Write_i(o,v);
@@ -228,7 +228,7 @@ void MainPanel::cb_Write(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Write1_i(Fl_Menu_*, void*) {
 //~fl~0~0000~72011616~~
   Fluid.project.write_strings();
-//~fl~2~b8d5~6cdf81cd~~
+//~fl~2~f761~6cdf81cd~~
 }
 void MainPanel::cb_Write1(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Write1_i(o,v);
@@ -237,7 +237,7 @@ void MainPanel::cb_Write1(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Print_i(Fl_Menu_*, void*) {
 //~fl~0~0000~06825cff~~
   print_windows();
-//~fl~2~9ad9~d30809b1~~
+//~fl~2~a6f2~d30809b1~~
 }
 void MainPanel::cb_Print(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Print_i(o,v);
@@ -246,7 +246,7 @@ void MainPanel::cb_Print(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Quit_i(Fl_Menu_*, void*) {
 //~fl~0~0000~dc315de7~~
   quit_fluid();
-//~fl~2~3c5b~69468f9f~~
+//~fl~2~9050~69468f9f~~
 }
 void MainPanel::cb_Quit(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Quit_i(o,v);
@@ -255,7 +255,7 @@ void MainPanel::cb_Quit(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Undo_i(Fl_Menu_*, void*) {
 //~fl~0~0000~af55f1fd~~
   Fluid.project.undo.undo();
-//~fl~2~1151~cac4cbce~~
+//~fl~2~907e~cac4cbce~~
 }
 void MainPanel::cb_Undo(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Undo_i(o,v);
@@ -264,7 +264,7 @@ void MainPanel::cb_Undo(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Redo_i(Fl_Menu_*, void*) {
 //~fl~0~0000~bb505c2e~~
   Fluid.project.undo.redo();
-//~fl~2~9c20~c206962d~~
+//~fl~2~d963~c206962d~~
 }
 void MainPanel::cb_Redo(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Redo_i(o,v);
@@ -273,7 +273,7 @@ void MainPanel::cb_Redo(Fl_Menu_* o, void* v) {
 void MainPanel::cb_C_i(Fl_Menu_*, void*) {
 //~fl~0~0000~2692f0c3~~
   Fluid.project.cut();
-//~fl~2~100c~0ef37003~~
+//~fl~2~8250~0ef37003~~
 }
 void MainPanel::cb_C(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_C_i(o,v);
@@ -282,7 +282,7 @@ void MainPanel::cb_C(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Copy_i(Fl_Menu_*, void*) {
 //~fl~0~0000~7fb19826~~
   Fluid.project.copy();
-//~fl~2~fd06~97dfd47d~~
+//~fl~2~7cba~97dfd47d~~
 }
 void MainPanel::cb_Copy(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Copy_i(o,v);
@@ -291,7 +291,7 @@ void MainPanel::cb_Copy(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Paste_i(Fl_Menu_*, void*) {
 //~fl~0~0000~15667d46~~
   Fluid.project.paste();
-//~fl~2~606d~d0653a32~~
+//~fl~2~17c9~d0653a32~~
 }
 void MainPanel::cb_Paste(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Paste_i(o,v);
@@ -300,7 +300,7 @@ void MainPanel::cb_Paste(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Dupl_i(Fl_Menu_*, void*) {
 //~fl~0~0000~d56c2965~~
   Fluid.project.duplicate();
-//~fl~2~5fff~94cecd98~~
+//~fl~2~ac53~94cecd98~~
 }
 void MainPanel::cb_Dupl(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Dupl_i(o,v);
@@ -309,7 +309,7 @@ void MainPanel::cb_Dupl(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Delete_i(Fl_Menu_*, void*) {
 //~fl~0~0000~4783b5db~~
   Fluid.project.user_delete();
-//~fl~2~18a1~c6f0868a~~
+//~fl~2~5a18~c6f0868a~~
 }
 void MainPanel::cb_Delete(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Delete_i(o,v);
@@ -318,7 +318,7 @@ void MainPanel::cb_Delete(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Pr_i(Fl_Menu_*, void*) {
 //~fl~0~0000~f004ef31~~
   open_widget_panel();
-//~fl~2~42e9~7d55f5ba~~
+//~fl~2~e631~7d55f5ba~~
 }
 void MainPanel::cb_Pr(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Pr_i(o,v);
@@ -327,7 +327,7 @@ void MainPanel::cb_Pr(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Sort_i(Fl_Menu_*, void*) {
 //~fl~0~0000~cdd6b9ad~~
   sort_selected();
-//~fl~2~9a81~69449227~~
+//~fl~2~ad58~69449227~~
 }
 void MainPanel::cb_Sort(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Sort_i(o,v);
@@ -336,7 +336,7 @@ void MainPanel::cb_Sort(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Ung_i(Fl_Menu_*, void*) {
 //~fl~0~0000~247e91a1~~
   ungroup_selected();
-//~fl~2~9244~b72976ec~~
+//~fl~2~1c90~b72976ec~~
 }
 void MainPanel::cb_Ung(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Ung_i(o,v);
@@ -345,7 +345,7 @@ void MainPanel::cb_Ung(Fl_Menu_* o, void* v) {
 void MainPanel::cb_overlay_item_i(Fl_Menu_*, void*) {
 //~fl~0~0000~bae04675~~
   toggle_overlays();
-//~fl~2~4a7a~fff73fb6~~
+//~fl~2~70c0~fff73fb6~~
 }
 void MainPanel::cb_overlay_item(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_overlay_item_i(o,v);
@@ -354,7 +354,7 @@ void MainPanel::cb_overlay_item(Fl_Menu_* o, void* v) {
 void MainPanel::cb_guides_item_i(Fl_Menu_*, void*) {
 //~fl~0~0000~b0419082~~
   toggle_guides();
-//~fl~2~aeab~c74d7e68~~
+//~fl~2~adfa~c74d7e68~~
 }
 void MainPanel::cb_guides_item(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_guides_item_i(o,v);
@@ -363,7 +363,7 @@ void MainPanel::cb_guides_item(Fl_Menu_* o, void* v) {
 void MainPanel::cb_restricted_item_i(Fl_Menu_*, void*) {
 //~fl~0~0000~32785a4c~~
   toggle_restricted();
-//~fl~2~04c9~8b334efd~~
+//~fl~2~d44f~8b334efd~~
 }
 void MainPanel::cb_restricted_item(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_restricted_item_i(o,v);
@@ -372,7 +372,7 @@ void MainPanel::cb_restricted_item(Fl_Menu_* o, void* v) {
 void MainPanel::cb_widgetbin_item_i(Fl_Menu_*, void*) {
 //~fl~0~0000~2e1b6c51~~
   toggle_widgetbin();
-//~fl~2~98de~6937afbe~~
+//~fl~2~db1e~6937afbe~~
 }
 void MainPanel::cb_widgetbin_item(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_widgetbin_item_i(o,v);
@@ -381,7 +381,7 @@ void MainPanel::cb_widgetbin_item(Fl_Menu_* o, void* v) {
 void MainPanel::cb_codeview_item_i(Fl_Menu_*, void*) {
 //~fl~0~0000~b0bd55c9~~
   codeview_toggle_visibility();
-//~fl~2~e8f6~2a173cad~~
+//~fl~2~057c~2a173cad~~
 }
 void MainPanel::cb_codeview_item(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_codeview_item_i(o,v);
@@ -390,7 +390,7 @@ void MainPanel::cb_codeview_item(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Settings_i(Fl_Menu_*, void*) {
 //~fl~0~0000~d48c28f5~~
   show_settings();
-//~fl~2~2de2~12140035~~
+//~fl~2~d807~12140035~~
 }
 void MainPanel::cb_Settings(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Settings_i(o,v);
@@ -399,7 +399,7 @@ void MainPanel::cb_Settings(Fl_Menu_* o, void* v) {
 void MainPanel::cb_Grid_i(Fl_Menu_*, void*) {
 //~fl~0~0000~0acf8804~~
   settings_show_grid();
-//~fl~2~9c64~3424b216~~
+//~fl~2~4ee6~3424b216~~
 }
 void MainPanel::cb_Grid(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Grid_i(o,v);
@@ -408,7 +408,7 @@ void MainPanel::cb_Grid(Fl_Menu_* o, void* v) {
 void MainPanel::cb_preset_menu_i(Fl_Menu_*, long) {
 //~fl~0~0000~3890aaa6~~
   select_layout_preset(0);
-//~fl~2~5cef~ef1d9921~~
+//~fl~2~282e~ef1d9921~~
 }
 void MainPanel::cb_preset_menu(Fl_Menu_* o, long v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_preset_menu_i(o,v);
@@ -417,7 +417,7 @@ void MainPanel::cb_preset_menu(Fl_Menu_* o, long v) {
 void MainPanel::cb_Dialog_i(Fl_Menu_*, long) {
 //~fl~0~0000~86cb12ff~~
   select_layout_preset(1);
-//~fl~2~3509~57a1fe44~~
+//~fl~2~0083~57a1fe44~~
 }
 void MainPanel::cb_Dialog(Fl_Menu_* o, long v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Dialog_i(o,v);
@@ -426,7 +426,7 @@ void MainPanel::cb_Dialog(Fl_Menu_* o, long v) {
 void MainPanel::cb_itemToolbox_i(Fl_Menu_*, long) {
 //~fl~0~0000~72c1e1ed~~
   select_layout_preset(2);
-//~fl~2~7f08~451451aa~~
+//~fl~2~3b48~451451aa~~
 }
 void MainPanel::cb_itemToolbox(Fl_Menu_* o, long v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_itemToolbox_i(o,v);
@@ -435,7 +435,7 @@ void MainPanel::cb_itemToolbox(Fl_Menu_* o, long v) {
 void MainPanel::cb_Rapid_i(Fl_Menu_*, void*) {
 //~fl~0~0000~95ffbc11~~
   show_help("fluid.html");
-//~fl~2~1d8f~42995d97~~
+//~fl~2~3977~42995d97~~
 }
 void MainPanel::cb_Rapid(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_Rapid_i(o,v);
@@ -444,7 +444,7 @@ void MainPanel::cb_Rapid(Fl_Menu_* o, void* v) {
 void MainPanel::cb_FLTK_i(Fl_Menu_*, void*) {
 //~fl~0~0000~73bc7557~~
   show_help("index.html");
-//~fl~2~52f0~d4640e18~~
+//~fl~2~dfea~d4640e18~~
 }
 void MainPanel::cb_FLTK(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_FLTK_i(o,v);
@@ -453,7 +453,7 @@ void MainPanel::cb_FLTK(Fl_Menu_* o, void* v) {
 void MainPanel::cb_About_i(Fl_Menu_*, void*) {
 //~fl~0~0000~65c5d175~~
   fluid::ui::about_panel.show();
-//~fl~2~b3b7~ff6c50d1~~
+//~fl~2~205e~ff6c50d1~~
 }
 void MainPanel::cb_About(Fl_Menu_* o, void* v) {
   ((MainPanel*)(o->parent()->user_data()))->cb_About_i(o,v);
@@ -624,7 +624,7 @@ Fl_Double_Window* MainPanel::make_panel() {
 MainPanel::MainPanel() {
 //~fl~0~0000~2c43afec~~
   main_window = nullptr;
-//~fl~1~f9d7~deac3c13~~
+//~fl~1~ca21~deac3c13~~
 }
 
 /**
@@ -633,7 +633,7 @@ MainPanel::MainPanel() {
 MainPanel::~MainPanel() {
 //~fl~0~0000~08914570~~
   delete main_window;
-//~fl~1~c8a2~4bd6d899~~
+//~fl~1~306b~4bd6d899~~
 }
 
 /**
@@ -644,7 +644,7 @@ void MainPanel::build() {
   if (main_window == nullptr) {
     make_panel();
   }
-//~fl~1~5ddf~444c7294~~
+//~fl~1~857a~444c7294~~
 }
 
 /**
@@ -654,7 +654,7 @@ void MainPanel::show() {
 //~fl~0~0000~d600e79d~~
   build();
   main_window->show();
-//~fl~1~d9d1~653b75be~~
+//~fl~1~a09e~653b75be~~
 }
 
 /**
@@ -665,6 +665,6 @@ void MainPanel::hide() {
   if (main_window) {
     main_window->hide();
   }
-//~fl~1~08be~7d15f02b~~
+//~fl~1~3a6c~7d15f02b~~
 }
 MainPanel fluid::ui::main_panel;

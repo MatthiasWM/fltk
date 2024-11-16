@@ -19,6 +19,7 @@
 #include "project/project.h"
 #include "fluid.h"
 #include "widget_browser.h"
+#include "ui/template_panel.h"
 
 #include <FL/fl_ask.H>
 #include "../src/flstring.h"
@@ -244,3 +245,19 @@ char* Application::cutfname(int which) {
   return name[which];
 }
 
+/**
+ Open the template browser and load a new file from templates.
+
+ If the current project was modified, FLUID will give the user the opportunity
+ to save the old project first.
+
+ \return false if the operation was canceled or failed otherwise
+ */
+bool Application::new_project_from_template() {
+  // clear the current project first
+  if (new_project() == false)
+    return false;
+
+  // Now let the panel do the work.
+  return fluid::ui::template_panel.load_template();
+}

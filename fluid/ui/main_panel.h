@@ -38,7 +38,7 @@ namespace ui {
 /**
  \brief FLUID Main Application Panel
 */
-class MainPanel : Panel {
+class MainPanel : public Panel {
   Fl_Double_Window* make_panel();
 public:
   Fl_Double_Window *main_window;

@@ -17,6 +17,7 @@
 #include "project/project.h"
 #include "application/application.h"
 #include "ui/main_panel.h"
+#include "ui/template_panel.h"
 #include "fluid.h"
 #include "streams/project_reader.h"
 #include "streams/project_writer.h"
@@ -678,4 +679,12 @@ void Project::write_strings() {
       fl_message("Wrote %s", Fluid.project.stringsfile_name().c_str());
     }
   }
+}
+
+/**
+ Save a design template.
+ \todo We should document the concept of templates.
+ */
+void Project::save_as_template() {
+  fluid::ui::template_panel.add(this);
 }

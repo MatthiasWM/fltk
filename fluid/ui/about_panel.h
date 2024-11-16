@@ -34,7 +34,7 @@ namespace ui {
 /**
  \brief Show some information about FLUID
 */
-class AboutPanel : Panel {
+class AboutPanel : public Panel {
   Fl_Double_Window* make_panel();
 public:
   Fl_Double_Window *panel_window;

@@ -64,6 +64,8 @@ public:
   const Fl_String &get_tmpdir();
   /// Return the path and filename of a temporary file for cut or duplicated data.
   static char* cutfname(int which = 0);
+  /// Pop up the template dialog and create a new project from a template.
+  bool new_project_from_template();
 };
 
 }; // namespace FLUID
