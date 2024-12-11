@@ -29,395 +29,196 @@ for how developers should manage GitHub issues.
 It is wise for all developers to monitor these NNTP based newsgroups for bug 
 and commit activity:
 
- * fltk.commit - ([nntp](news://fltk.org:1024/fltk.commit)/[web](https://www.fltk.org/newsgroups.php?gfltk.commit+T)): 
-   All fltk developer commits on GitHub commit. Includes old pre-Oct 2018 SVN commits.
- * fltk.issues - (nntp/web) All new/current fltk bugs as GitHub Issues. See "Managing GitHub Issues"
+* fltk.commit - ([nntp](news://fltk.org:1024/fltk.commit)/[web](https://www.fltk.org/newsgroups.php?gfltk.commit+T)): 
+  All fltk developer commits on GitHub commit. Includes old pre-Oct 2018 SVN commits.
+* fltk.issues - ([nntp](news://fltk.org:1024/fltk.commit)/[web](https://www.fltk.org/newsgroups.php?gfltk.issues+T)): 
+  All new/current fltk bugs as GitHub Issues. See "Managing GitHub Issues".
+* fltk.bugs - ([nntp](news://fltk.org:1024/fltk.bugs)/[web](https://www.fltk.org/newsgroups.php?gfltk.bugs+T)) 
+  The "Old STR Bug Management System" activity (replaced by GitHub Issues). 
+  See "Managing Old STR's"
 
-&#x25cf; fltk.bugs   &mdash; (
-nntp
-/
-web
-) The "
-Old STR Bug Management System
-" activity 
-(replaced by GitHub Issues)
-
-See "
-Managing Old STR's
-"
-
-
-
-To monitor these groups, see the 
-[newsgroup](https://www.fltk.org/newsgroups.php)
-
+To monitor these groups, see the [newsgroup](https://www.fltk.org/newsgroups.php)
 page, and use either the web interface, or NNTP instructions.
 
+## - - -   HISTORICAL INFORMATION   - - -
+
+### STR to GitHub Issues
+
+In July 2020 we disabled the old STR bug system from accepting new bugs, 
+replaced by the new "GitHub Issues" system. Old bugs can still be managed and 
+closed with the old STR system, see the 
+[old CMP STR Bug Management documentation](cmp-old-str-management.php).
+
+### SVN to GIT
+
+In October 2018 we moved the FLTK code repository from Subversion (SVN) to Git, 
+with the master [FLTK Git Repository on GitHub](https://github.com/fltk/fltk).
+
+# Specific Goals
+
+The specific goals of the FLTK are as follows:
+
+* Develop a C++ GUI toolkit based upon sound object-oriented design principles 
+  and experience. 
+* Minimize CPU usage (fast). (*)
+* Minimize memory usage (light). (*)
+* Support multiple operating systems and windowing environments, including 
+  UNIX/Linux, macOS, Microsoft Windows, and X11, using the "native" graphics
+  interfaces. (*)
+* Support OpenGL rendering in environments that provide it. (*)
+* Provide a graphical development environment for designing GUI interfaces, 
+  classes, and simple programs. (*)
+* Support UTF-8 text.
+* Support printer rendering in environments that provide it.
+* Support "schemes", "styles", "themes", "skinning", etc. to alter the 
+  appearance of widgets in the toolkit easily and efficiently. The purpose is 
+  to allow applications to tailor their appearance to the underlying OS or 
+  based upon personal/user preferences.
+* Support newer C++ language features, such as
+  templating via the Standard Template Library ("STL"),
+  and certain Standard C++ library interfaces, such as
+  streams. However, FLTK will not depend upon such
+  features and interfaces to minimize portability issues.
+* Support intelligent layout of widgets.
+
+Many of these goals are satisfied by FLTK 1.1.x (*), and many
+complex applications have been written using FLTK on a wide
+range of platforms and devices.>
+
+# Software Development Practices
+
+## Documentation
+
+All widgets are documented using the [Doxygen](http://www.doxygen.nl/)
+software; Doxygen comments are placed in the header file for the
+class comments and any inline methods, while non-inline methods
+should have their comments placed in the corresponding source
+file. The purpose of this separation is to place the comments
+near the implementation to reduce the possibility of the
+documentation getting out of sync with the code.
+
+All widgets must have a corresponding test program which
+exercises all widget functionality and can be used to generate
+image(s) for the documentation. Complex widgets must have a
+written tutorial, either as full text or an outline for later
+publication
+
+Starting with FLTK 1.3 Doxygen is used for HTML and PDF documentation.
+
+The final manuals of FLTK 1.0 and 1.1 can be formatted,
+i.e. converted to PDF, using the [HTMLDOC](https://www.msweet.org/htmldoc/)
+software.
+
+## Build System
+
+The FLTK build system uses [CMake](https://cmake.org/) and/or 
+[GNU autoconf](https://www.gnu.org/software/autoconf/) to tailor the library 
+to the local operating system. Since FLTK 1.4 the primary and recommended 
+build system is CMake but autoconf is still
+supported. Current and future development is focused on CMake and new
+build features and options may be implemented only in CMake although
+all essential build features must also be implemented using autoconf.
+
+To improve portability, makefiles must not make use of the unique features
+offered by [GNU make](https://www.gnu.org/software/make/).
+See the [Makefile Standards](#MAKEFILES)
+section for a description of the allowed make features and makefile guidelines.
+
+Additional GNU build programs such as 
+[GNU automake](http://www.gnu.org/software/automake)
+and
+[GNU libtool](http://www.gnu.org/software/libtool)
+must not be used. GNU automake produces non-portable makefiles
+which depend on GNU-specific extensions, and GNU libtool is not
+portable or reliable enough for FLTK.
+
+> [!NOTE]
+> Starting with FLTK 1.4.0 we do no longer bundle IDE
+> files for Microsoft Windows (Visual Studio) and macOS (Xcode).
+> IDE environments (project files) can be generated with CMake.
+> See README.CMake.txt for more information about using CMake.
+
+
+## Packaging
+
+Source packages are created using the `makesrcdist` script in the Git 
+repository. The script accepts one or two arguments:
 
+```
+./makesrcdist _version_
+./makesrcdist _version_ tag
+./makesrcdist snapshot
+```
 
+Version should be of the form "1.1.10" or "1.1.10rc2". "rc2" in
+this case describes the second release candidate.
 
+The optional argument 'tag' (verbatim) can be used to
+create a Git "tag" to mark the release in the Git repository.
 
+The special version name "snapshot" creates a snapshot of the
+Git repository without creating a release tag in the repository.
 
-### - - -   HISTORICAL INFORMATION   - - -
+This needs more info. TBD soon.
 
+Binary packages are not currently distributed by the FLTK
+team, however the `fltk.spec` and `fltk.list` files may be used to create 
+binary packages on Linux, macOS, and UNIX. The `fltk.spec` file produces a 
+binary package using the *rpm* software:
 
+```
+rpmbuild -ta fltk-_version_-source.tar.gz
+```
 
-STR to GitHub Issues
+The `fltk.list` file is generated by the `configure` script and produces 
+binary packages for many platforms using the 
+[EPM software](https://jimjag.github.io/epm/).
+The `portable-dist` and `native-dist` targets of the top-level makefile create 
+portable and native packages, respectively:
 
+```
+make portable-dist
+make native-dist
+```
 
+Future releases of FLTK may include files for use with Microsoft Visual 
+Installer to produce .msi files for
+installation on Microsoft Windows &reg;.
 
-In July 2020 we disabled the old STR bug system from accepting new bugs, replaced by the new
-"GitHub Issues" system. 
-Old bugs
-can still be managed and closed with the old STR system,
-see the 
-[old CMP STR Bug Management documentation](cmp-old-str-management.php)
-.
+## FLTK Release Process
 
+FLTK releases are created on a Linux system with the following
+software installed:
 
+* _Infozip_ 2.3 or higher to create .zip archives
+* _GNU tar_ 1.12 or higher to create .tar archives
+* _GNU zip_ 1.2.4 or higher to create .tar.gz archives
+* _Bzip2_ 1.0.2 or higher to create .tar.bz2 archives
+* _Git 2.x_ or higher to create the release tag
 
-SVN to GIT
+To test the release files, three systems will be required (or a single
+Intel Mac running macOS, Windows, and Linux):
 
+* A PC running a recent Linux distribution with GCC, RPM, and EPM installed
+* A Mac running macOS 10.4 or higher with CMake, Xcode and EPM installed
+* A PC running Microsoft Windows 2000 or higher with CMake and a recent version 
+  of Microsoft Visual C++ installed
 
+### Creating the Release Archives
 
-In October 2018 we moved the FLTK code repository from Subversion (SVN) to Git, with the master
+Each software release provides three archives:
+* `fltk-_version_-source.tar.gz`  (3.8MB as of 1.3.0)
+* `fltk-_version_-docs-pdf.tar.gz`  (3.3MB as of 1.3.0)
+* `fltk-_version_-docs-html.tar.gz`  (3.4MB as of 1.3.0)
 
-[FLTK Git Repository on GitHub](https://github.com/fltk/fltk)
-.
+The archives contain the source and build files, the documentation
+in a single PDF file, and the same documentation in many HTML files. The
+following steps are performed to create the release archives:
 
-
-
-
-
-
-                                # 
-                                    [Specific Goals](null)
-                                
-
-                                The specific goals of the FLTK are as follows:
-
-                                
-
-                                    * Develop a C++ GUI toolkit based upon sound
-                                            object-oriented design principles and experience. (*)
-
-                                    * Minimize CPU usage (fast). (*)
-
-                                    * Minimize memory usage (light). (*)
-
-                                    * Support multiple operating systems and windowing
-                                            environments, including UNIX/Linux, macOS, Microsoft
-                                            Windows, and X11, using the "native" graphics
-                                            interfaces. (*)
-
-                                    * Support OpenGL rendering in environments that
-                                            provide it. (*)
-
-                                    * Provide a graphical development environment for
-                                            designing GUI interfaces, classes, and simple
-                                            programs. (*)
-
-                                    * Support UTF-8 text.
-
-                                    * Support printer rendering in environments that
-                                            provide it.
-
-                                    * Support "schemes", "styles", "themes", "skinning",
-                                            etc. to alter the appearance of widgets in the toolkit
-                                            easily and efficiently. The purpose is to allow
-                                            applications to tailor their appearance to the
-                                            underlying OS or based upon personal/user
-                                            preferences.
-
-                                    * Support newer C++ language features, such as
-                                            templating via the Standard Template Library ("STL"),
-                                            and certain Standard C++ library interfaces, such as
-                                            streams. However, FLTK will not depend upon such
-                                            features and interfaces to minimize portability
-                                            issues.
-
-                                    * Support intelligent layout of widgets.
-
-                                
-
-                                
-                                    Many of these goals are satisfied by FLTK 1.1.x (*), and many
-                                    complex applications have been written using FLTK on a wide
-                                    range of platforms and devices. <!-- Development of the remaining
-                                    features is proceeding for FLTK 2.0 with a new, namespace-based
-                                    API. While 2.0 offers some limited 1.x source compatibility, the
-                                    changes to the underlying widget classes are significant enough
-                                    to prevent full compatibility. REMOVED TO PREVENT CONFUSION 10/04/18 -erco -->
-                                
-
-                                Note: FLTK 2.0 is no longer in development. -->
-
-                                # 
-                                    [Software Development Practices](null)
-                                
-
-                                ## 
-                                    [Documentation](null)
-                                
-
-                                
-                                    All widgets are documented using the
-                                        
-                                    [Doxygen](http://www.doxygen.nl/)
-
-                                        software; Doxygen comments are placed in the header file for the
-                                        class comments and any inline methods, while non-inline methods
-                                        should have their comments placed in the corresponding source
-                                        file. The purpose of this separation is to place the comments
-                                        near the implementation to reduce the possibility of the
-                                        documentation getting out of sync with the code.
-                                
-
-                                All widgets must have a corresponding test program which
-                                    exercises all widget functionality and can be used to generate
-                                    image(s) for the documentation. Complex widgets must have a
-                                    written tutorial, either as full text or an outline for later
-                                    publication
-
-                                Starting with FLTK 1.3 Doxygen is used for HTML and PDF documentation.
-
-                                
-                                    The final manuals of FLTK 1.0 and 1.1 can be formatted,
-                                         i.e. converted to PDF, using the
-                                        
-                                    [HTMLDOC](https://www.msweet.org/htmldoc/)
-                                     software.
-                                
-                                ## 
-                                    [Build System](null)
-                                
-
-                                
-                                    The FLTK build system uses 
-                                    [CMake](https://cmake.org/)
-
-                                    and/or 
-                                    [GNU autoconf](https://www.gnu.org/software/autoconf/)
-
-                                    to tailor the library to the local operating system. Since FLTK 1.4
-                                    the primary and recommended build system is CMake but autoconf is still
-                                    supported. Current and future development is focused on CMake and new
-                                    build features and options may be implemented only in CMake although
-                                    all essential build features must also be implemented using autoconf.
-                                
-
-                                
-                                    To improve portability, makefiles must not make use of the unique features
-                                    offered by 
-                                    [GNU make](https://www.gnu.org/software/make/)
-                                    .
-                                    See the 
-                                    [Makefile Standards](#MAKEFILES)
-                                     section for a
-                                    description of the allowed make features and makefile guidelines.
-                                
-
-                                
-                                    Additional GNU build programs such as 
-                                    [GNU automake](http://www.gnu.org/software/automake)
-                                     and
-                                    [GNU libtool](http://www.gnu.org/software/libtool)
-
-                                    must not be used. GNU automake produces non-portable makefiles
-                                    which depend on GNU-specific extensions, and GNU libtool is not
-                                    portable or reliable enough for FLTK.
-                                
-
-                                
-                                    Note:
-                                     Starting with FLTK 1.4.0 we do no longer bundle IDE
-                                        files for Microsoft Windows (Visual Studio) and macOS (Xcode).
-                                        IDE environments (project files) can be generated with CMake.
-                                        See README.CMake.txt for more information about using CMake.
-                                
-
-                                ## 
-                                    [Packaging](null)
-                                
-
-                                
-                                    Source packages are created using the 
-                                    makesrcdist
-
-                                    script in the Git repository. The script accepts one or
-                                    two arguments:
-                                
-
-                                
-
-                                      ./makesrcdist 
-                                    _version_
-
-                                      ./makesrcdist 
-                                    _version_
-                                     tag
-                                      ./makesrcdist snapshot
-                                
-
-                                Version should be of the form "1.1.10" or "1.1.10rc2". "rc2" in
-                                this case describes the second release candidate.
-
-                                The optional argument 'tag' (verbatim) can be used to
-                                create a Git "tag" to mark the release in the Git repository.
-
-                                The special version name "snapshot" creates a snapshot of the
-                                Git repository without creating a release tag in the repository.
-
-                                This needs more info. TBD soon.
-
-                                
-                                    Binary packages are not currently distributed by the FLTK
-                                    team, however the 
-                                    fltk.spec
-                                     and 
-                                    fltk.list
-
-                                    files may be used to create binary packages on Linux, macOS,
-                                    and UNIX. The 
-                                    fltk.spec
-                                     file produces a binary package
-                                    using the 
-                                    rpm
-                                     software:
-                                
-
-                                
-
-                                        rpmbuild -ta fltk-
-                                    _version_
-                                    -source.tar.gz
-                                
-
-                                
-                                    The 
-                                    fltk.list
-                                     file is generated by the
-                                    configure
-                                     script and produces binary packages for many
-                                    platforms using the 
-                                    [EPM software](https://jimjag.github.io/epm/)
-                                    .
-                                    The 
-                                    portable-dist
-                                     and 
-                                    native-dist
-
-                                    targets of the top-level makefile create portable and native
-                                    packages, respectively:
-                                
-
-                                
-                                    make portable-dist
-                                    make native-dist
-                                
-
-                                
-                                    Future releases of FLTK may include files for use with
-                                    Microsoft Visual Installer to produce 
-                                    .msi
-                                     files for
-                                    installation on Microsoft Windows
-                                    &reg;
-                                    .
-                                
-
-                                ## 
-                                    [FLTK Release Process](null)
-                                
-
-                                FLTK releases are created on a Linux system with the following
-                                software installed:
-
-                                
-
-                                    * Infozip 2.3 or higher to create .zip archives
-
-                                    * GNU tar 1.12 or higher to create .tar archives
-
-                                    * GNU zip 1.2.4 or higher to create .tar.gz archives
-
-                                    * Bzip2 1.0.2 or higher to create .tar.bz2 archives
-
-                                    * Git 2.x or higher to create the release tag
-
-                                
-
-                                To test the release files, three systems will be required (or a single
-                                Intel Mac running macOS, Windows, and Linux):
-
-                                
-
-                                    * A PC running a recent Linux distribution with GCC,
-                                            RPM, and EPM installed
-
-                                    * A Mac running macOS 10.4 or higher with CMake, Xcode and
-                                            EPM installed
-
-                                    * A PC running Microsoft Windows 2000 or higher with CMake
-                                            and a recent version of Microsoft Visual C++ installed
-
-                                
-
-                                ### 
-                                    [Creating the Release Archives](null)
-                                
-
-                                Each software release provides three archives:
-
-                                
-
-                                    * 
-                                        fltk-
-                                        _version_
-                                        -source.tar.gz  (3.8MB as of 1.3.0)
-                                    
-
-                                    * 
-                                        fltk-
-                                        _version_
-                                        -docs-pdf.tar.gz  (3.3MB as of 1.3.0)
-                                    
-
-                                    * 
-                                        fltk-
-                                        _version_
-                                        -docs-html.tar.gz  (3.4MB as of 1.3.0)
-                                    
-
-                                
-
-                                The archives contain the source and build files, the documentation
-                                in a single PDF file, and the same documentation in many HTML files. The
-                                following steps are performed to create the release archives:
-
-                                
-
-                                    1. 
-                                        Change directories to a current working copy for the
-                                                FLTK development branch you are releasing, e.g. "
-                                        <kbd>cd
-                                                fltk-1.3</kbd>
-                                        ".
-                                    
-
-                                    1. 
-                                        Run 
-                                        <kbd>autoconf</kbd>
-                                         to generate the 
-                                        <kbd>configure</kbd>
-
-                                                script.
-                                    
-
-                                    1. 
-                                        Run 
-                                        <kbd>./configure</kbd>
-                                         to generate makefiles.
+-# Change directories to a current working copy for the FLTK development branch 
+  you are releasing, e.g. `cd fltk-1.3`.
+-# Run `autoconf` to generate the `configure` script.
+-# Run `./configure` to generate makefiles.
                                     
 
                                     1. 
