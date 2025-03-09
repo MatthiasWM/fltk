@@ -172,7 +172,7 @@ int Application::run(int argc,char **argv) {
     }
   }
   proj.undo.suspend();
-  if (c && !fld::io::read_file(c,0)) {
+  if (c && !fld::io::read_file(proj, c,0)) {
     if (batch_mode) {
       fprintf(stderr,"%s : %s\n", c, strerror(errno));
       exit(1);
@@ -195,7 +195,7 @@ int Application::run(int argc,char **argv) {
   }
 
   if (args.update_file) {            // fluid -u
-    fld::io::write_file(c,0);
+    fld::io::write_file(proj, c, 0);
     if (!args.compile_file)
       exit(0);
   }
@@ -532,7 +532,7 @@ bool Application::merge_project_file(const std::string &filename_arg) {
   proj.set_filename(c);
   if (is_a_merge) proj.undo.checkpoint();
   proj.undo.suspend();
-  if (!fld::io::read_file(c, is_a_merge)) {
+  if (!fld::io::read_file(proj, c, is_a_merge)) {
     proj.undo.resume();
     widget_browser->rebuild();
     proj.update_settings_dialog();
@@ -583,7 +583,7 @@ void Application::save_project_file(void *v) {
 
     if (v != (void *)2) proj.set_filename(c);
   }
-  if (!fld::io::write_file(c)) {
+  if (!fld::io::write_file(proj, c)) {
     fl_alert("Error writing %s: %s", c, strerror(errno));
     return;
   }
@@ -605,7 +605,7 @@ void Application::revert_project() {
                    "Cancel", "Revert", NULL)) return;
   }
   proj.undo.suspend();
-  if (!fld::io::read_file(proj.proj_filename, 0)) {
+  if (!fld::io::read_file(proj, proj.proj_filename, 0)) {
     proj.undo.resume();
     widget_browser->rebuild();
     proj.update_settings_dialog();
@@ -710,13 +710,13 @@ bool Application::new_project_from_template() {
       fclose(outfile);
 
       proj.undo.suspend();
-      fld::io::read_file(cutfname(1), 0);
+      fld::io::read_file(proj, cutfname(1), 0);
       fl_unlink(cutfname(1));
       proj.undo.resume();
     } else {
       // No instance name, so read the template without replacements...
       proj.undo.suspend();
-      fld::io::read_file(tname, 0);
+      fld::io::read_file(proj, tname, 0);
       proj.undo.resume();
     }
   }
@@ -824,7 +824,7 @@ int Application::write_code_files(bool dont_show_completion_dialog)
   }
 
   // -- generate the file names with absolute paths
-  fld::io::Code_Writer f;
+  fld::io::Code_Writer f(proj);
   std::string code_filename = proj.codefile_path() + proj.codefile_name();
   std::string header_filename = proj.headerfile_path() + proj.headerfile_name();
 
@@ -872,7 +872,7 @@ void Application::cut_selected() {
     return;
   }
   flush_text_widgets();
-  if (!fld::io::write_file(cutfname(),1)) {
+  if (!fld::io::write_file(proj, cutfname(),1)) {
     fl_message("Can't write %s: %s", cutfname(), strerror(errno));
     return;
   }
@@ -898,7 +898,7 @@ void Application::copy_selected() {
   }
   flush_text_widgets();
   ipasteoffset = 10;
-  if (!fld::io::write_file(cutfname(),1)) {
+  if (!fld::io::write_file(proj, cutfname(),1)) {
     fl_message("Can't write %s: %s", cutfname(), strerror(errno));
     return;
   }
@@ -926,7 +926,7 @@ void Application::paste_from_clipboard() {
       //strategy = Strategy::FROM_FILE_AS_FIRST_CHILD;
     }
   }
-  if (!fld::io::read_file(cutfname(), 1, strategy)) {
+  if (!fld::io::read_file(proj, cutfname(), 1, strategy)) {
     widget_browser->rebuild();
     fl_message("Can't read %s: %s", cutfname(), strerror(errno));
   }
@@ -969,7 +969,7 @@ void Application::duplicate_selected() {
     Fl_Type::current = new_insert;
 
   // write the selected widgets to a file:
-  if (!fld::io::write_file(cutfname(1),1)) {
+  if (!fld::io::write_file(proj, cutfname(1),1)) {
     fl_message("Can't write %s: %s", cutfname(1), strerror(errno));
     return;
   }
@@ -978,7 +978,7 @@ void Application::duplicate_selected() {
   pasteoffset  = 0;
   proj.undo.checkpoint();
   proj.undo.suspend();
-  if (!fld::io::read_file(cutfname(1), 1, Strategy::FROM_FILE_AFTER_CURRENT)) {
+  if (!fld::io::read_file(proj, cutfname(1), 1, Strategy::FROM_FILE_AFTER_CURRENT)) {
     fl_message("Can't read %s: %s", cutfname(1), strerror(errno));
   }
   fl_unlink(cutfname(1));
