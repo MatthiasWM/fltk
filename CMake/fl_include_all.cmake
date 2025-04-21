@@ -42,15 +42,22 @@ macro(fl_include_all CORE_ADDONS INCLUDE_PATH)
 
   if(DEFINED ${CORE_ADDONS})
     foreach(ADDON_PATH ${${CORE_ADDONS}})
-      get_filename_component(FL_ADDON_BASE ${ADDON_PATH} ABSOLUTE)
-      # CMake add_path is 3.20, we only require 3.15:
-      string(CONCAT FL_ADDON_INCLUDE ${FL_ADDON_BASE} "/" ${INCLUDE_PATH} )
-      #message(STATUS "      Checking for '${FL_ADDON_INCLUDE}'")
-      if(EXISTS "${FL_ADDON_INCLUDE}")
-        #message(STATUS "      Found! Including, base set at '${FL_ADDON_BASE}'")
-        include("${FL_ADDON_INCLUDE}")
+      get_filename_component(FL_ADDON_BASE
+        ${ADDON_PATH} ABSOLUTE
+        BASE_DIR ${PROJECT_SOURCE_DIR}
+      )
+      if (EXISTS "${FL_ADDON_BASE}")
+        # CMake add_path is 3.20, we only require 3.15:
+        string(CONCAT FL_ADDON_INCLUDE ${FL_ADDON_BASE} "/" ${INCLUDE_PATH} )
+        #message(STATUS "      Checking for '${FL_ADDON_INCLUDE}'")
+        if(EXISTS "${FL_ADDON_INCLUDE}")
+          #message(STATUS "      Found! Including, base set at '${FL_ADDON_BASE}'")
+          include("${FL_ADDON_INCLUDE}")
+        else()
+          #message(STATUS "      Not Found.")
+        endif()
       else()
-        #message(STATUS "      Not Found.")
+        message(WARNING "      Path not found: '${FL_ADDON_BASE}', derived from in FLTK_CORE_ADDONS.")
       endif()
     endforeach()
   else()
