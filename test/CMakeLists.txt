@@ -17,6 +17,7 @@
 
 include(../CMake/FLTK-Functions.cmake)
 include(../CMake/fl_create_example.cmake)
+include(../CMake/fl_include_all.cmake)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/../bin/test)
 set(TESTFILE_PATH ${CMAKE_CURRENT_BINARY_DIR}/../data)
@@ -352,3 +353,6 @@ file(COPY
 # The main test program 'demo' needs additional hints and configurations.
 # Note: CMake defines "CMAKE_INTDIR" which is the build type folder (e.g. "Debug")
 # for multi config builds (MSVC, Xcode)
+
+# Add all core add-ons that have a fl_addon_test.cmake script.
+fl_include_all(FLTK_CORE_ADDONS "CMake/fl_addon_test.cmake")
