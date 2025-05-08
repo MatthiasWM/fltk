@@ -21,6 +21,8 @@
 #
 # Set variable ${WARN} to FALSE before calling this macro
 
+include(../CMake/fl_include_all.cmake)
+
 macro(fl_check_required_file WARN FILENAME)
   if(NOT EXISTS ${FILENAME})
     message("*** Required file not found: ${FILENAME} ***")
@@ -613,6 +615,9 @@ else()
   set(MMFILES)
 endif()
 
+#######################################################################
+# Add all core add-ons that have a fl_addon_src.cmake script.
+fl_include_all(FLTK_CORE_ADDONS "CMake/fl_addon_src.cmake")
 
 #######################################################################
 
