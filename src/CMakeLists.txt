@@ -412,15 +412,6 @@ else()
 
 endif(FLTK_USE_X11 AND NOT FLTK_BACKEND_WAYLAND)
 
-source_group("Header Files" FILES ${HEADER_FILES})
-source_group("Driver Source Files" FILES ${DRIVER_FILES})
-source_group("Driver Header Files" FILES ${DRIVER_HEADER_FILES})
-
-set(CPPFILES
-  ${CPPFILES}
-  ${DRIVER_FILES}
-)
-
 if(FLTK_BUILD_FORMS)
   set(FORMS_FILES
     forms_compatibility.cxx
@@ -618,6 +609,16 @@ endif()
 #######################################################################
 # Add all core add-ons that have a fl_addon_src.cmake script.
 fl_include_all(FLTK_CORE_ADDONS "CMake/fl_addon_src.cmake")
+
+source_group("Header Files" FILES ${HEADER_FILES})
+source_group("Driver Source Files" FILES ${DRIVER_FILES})
+source_group("Driver Header Files" FILES ${DRIVER_HEADER_FILES})
+
+set(CPPFILES
+  ${CPPFILES}
+  ${DRIVER_FILES}
+)
+
 
 #######################################################################
 
@@ -989,6 +990,10 @@ if(FLTK_BUILD_SHARED_LIBS AND MSVC)
   endif(OPENGL_FOUND)
 
 endif(FLTK_BUILD_SHARED_LIBS AND MSVC)
+
+#######################################################################
+# Add all core add-ons that have a fl_addon_link.cmake script.
+fl_include_all(FLTK_CORE_ADDONS "CMake/fl_addon_link.cmake")
 
 #######################################################################
 

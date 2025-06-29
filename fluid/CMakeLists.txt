@@ -206,6 +206,10 @@ endforeach()
 
 # Install fluid GUI and commandline tool
 
+#######################################################################
+# Add all core add-ons that have a fl_addon_install.cmake script.
+fl_include_all(FLTK_CORE_ADDONS "CMake/fl_addon_install.cmake")
+
 if(APPLE AND NOT FLTK_BACKEND_X11)
 
   # On macOS, fluid will be installed twice:
