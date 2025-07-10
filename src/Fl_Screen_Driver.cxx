@@ -616,6 +616,9 @@ void Fl_Screen_Driver::open_display()
       int mx, my;
       int ns = Fl::screen_driver()->get_mouse(mx, my);
       Fl_Graphics_Driver::default_driver().scale(scale(ns));
+    } else {
+      // Make sure we have a default driver
+      Fl_Graphics_Driver::default_driver();
     }
   }
 }
