@@ -23,20 +23,12 @@
 #define Fl_Widget_H
 
 #include "Fl.H"
+#include "Fl_Callback.H"
 
 class Fl_Widget;
 class Fl_Window;
 class Fl_Group;
 class Fl_Image;
-
-/** Default callback type definition for all fltk widgets (by far the most used) */
-typedef void (Fl_Callback )(Fl_Widget*, void*);
-/** Default callback type pointer definition for all fltk widgets */
-typedef Fl_Callback* Fl_Callback_p; // needed for BORLAND
-/** One parameter callback type definition passing only the widget */
-typedef void (Fl_Callback0)(Fl_Widget*);
-/** Callback type definition passing the widget and a long data value */
-typedef void (Fl_Callback1)(Fl_Widget*, long);
 
 /** This struct stores all information for a text or mixed graphics label.
 
@@ -76,27 +68,6 @@ struct FL_EXPORT Fl_Label {
 };
 
 
-/** A class prototype that allows for additional data in callbacks.
-
- Users can derive this class and pass objects of such derived classes to widget callbacks.
- Widgets can take ownership of the callback data, deleting the data when the widget
- itself is deleted.
-
- The destructor of this class is virtual, allowing for additional code to
- deallocate resources when the user data is deleted.
-
- \see FL_FUNCTION_CALLBACK_3, FL_METHOD_CALLBACK_1, FL_INLINE_CALLBACK_2
- \see Fl_Widget::callback(Fl_Callback*, Fl_Callback_User_Data*, bool)
- \see Fl_Widget::user_data(Fl_Callback_User_Data*, bool)
- */
-class FL_EXPORT Fl_Callback_User_Data {
-protected:
-  Fl_Callback_User_Data() {} ///< Protected constructor
-public:
-  virtual ~Fl_Callback_User_Data() { } ///< Destructor
-};
-
-
 /** Fl_Widget is the base class for all widgets in FLTK.
 
     You can't create one of these because the constructor is not public.
@@ -111,26 +82,33 @@ public:
  */
 class FL_EXPORT Fl_Widget {
   friend class Fl_Group;
+  friend class Fl_Callback_Base;
 
+  // keep pointer and labels together so they get packed at 8 byte alignment
   Fl_Group* parent_;
-  Fl_Callback* callback_;
-  void* user_data_;
-  int x_,y_,w_,h_;
   Fl_Label label_;
-  unsigned int flags_;
+  const char *tooltip_;
+  Fl_Callback_Core callback_core_;
+
+  // keep 4 byte values together, so they align and pack
+  int x_,y_,w_,h_;
   Fl_Color color_;
   Fl_Color selection_color_;
+
+  // group all kinds of flags., so C++ can optimize them to align to the bit
+  unsigned int flags_;
+  Fl_Callback_Core::CallbackType callback_type_:3;  // required by Fl_Callback_Core
+
+  // all byte sized values are now also packed as close as possible
   uchar type_;
   uchar damage_;
   uchar box_;
   uchar when_;
 
-  const char *tooltip_;
-
-  /** unimplemented copy ctor */
-  Fl_Widget(const Fl_Widget &);
-  /** unimplemented assignment operator */
-  Fl_Widget& operator=(const Fl_Widget &);
+  /** Rule of three: unimplemented copy constructor. */
+  Fl_Widget(const Fl_Widget &) = delete;
+  /** Rule of three: unimplemented assignment operator. */
+  Fl_Widget& operator=(const Fl_Widget &) = delete;
 
 protected:
 
@@ -737,16 +715,17 @@ public:
       Each widget has a single callback.
       \return current callback
    */
-  Fl_Callback_p callback() const {return callback_;}
+  Fl_Callback_p callback() const {
+    return Fl_Callback_Base::get_callback(&callback_core_, this);
+  }
 
   /** Sets the current callback function and data for the widget.
       Each widget has a single callback.
       \param[in] cb new callback
       \param[in] p user data
    */
-  void callback(Fl_Callback* cb, void* p) {
-    callback_ = cb;
-    user_data(p);
+  void callback(Fl_Callback* cb, void* p=nullptr) {
+    Fl_Callback_Base::set_callback(&callback_core_, this, cb, p);
   }
 
   /** Sets the current callback function and managed user data for the widget.
@@ -757,23 +736,24 @@ public:
    \param[in] auto_free if set, the widget will free user data when destroyed
    */
   void callback(Fl_Callback* cb, Fl_Callback_User_Data* p, bool auto_free) {
-    callback_ = cb;
-    user_data(p, auto_free);
+    Fl_Callback_Base::set_callback(&callback_core_, this, cb, p, auto_free);
   }
+
+//  /** Sets the current callback function for the widget.
+//      Each widget has a single callback.
+//      \param[in] cb new callback
+//   */
+//  void callback(Fl_Callback* cb) {
+//    Fl_Callback_Base::set_callback(&callback_core_, this, cb, nullptr);
+//  }
 
   /** Sets the current callback function for the widget.
       Each widget has a single callback.
       \param[in] cb new callback
    */
-  void callback(Fl_Callback* cb) {callback_ = cb;}
-
-  /** Sets the current callback function for the widget.
-      Each widget has a single callback.
-      \param[in] cb new callback
-   */
-  void callback(Fl_Callback0* cb) {
-    callback_ = (Fl_Callback*)(fl_intptr_t)(cb);
-  }
+//  void callback(Fl_Callback0* cb) {
+//    callback_ = (Fl_Callback*)(fl_intptr_t)(cb);
+//  }
 
   /** Sets the current callback function for the widget.
       Each widget has a single callback.
@@ -781,15 +761,20 @@ public:
       \param[in] p user data
    */
   void callback(Fl_Callback1* cb, long p = 0) {
-    callback_ = (Fl_Callback*)(fl_intptr_t)(cb);
-    user_data((void*)(fl_intptr_t)p);
+    Fl_Callback_Base::set_callback(&callback_core_, this, cb, p);
+  }
+
+  void callback(Fl_CallbackStdFn cb) {
+    Fl_Callback_Base::set_callback(&callback_core_, this, cb);
   }
 
   /** Gets the user data for this widget.
       Gets the current user data (void *) argument that is passed to the callback function.
       \return user data as a pointer
    */
-  void* user_data() const {return user_data_;}
+  void* user_data() const {
+    return Fl_Callback_Base::get_user_data(&callback_core_, this);
+  }
 
   /** \brief Sets the user data for this widget. */
   void user_data(void* v);
@@ -808,13 +793,17 @@ public:
 
     \see user_data()
   */
-  long argument() const {return (long)(fl_intptr_t)user_data_;}
+  long argument() const {
+    return Fl_Callback_Base::get_argument(&callback_core_, this);
+  }
 
   /** Sets the current user data (long) argument that is passed to the callback function.
 
     \see argument()
    */
-  void argument(long v) {user_data((void*)(fl_intptr_t)v);}
+  void argument(long v) {
+    Fl_Callback_Base::set_argument(&callback_core_, this, v);
+  }
 
   /** Returns the conditions under which the callback is called.
 
@@ -1086,7 +1075,15 @@ public:
     \see callback()
     \see do_callback(Fl_Widget *widget, void *data, Fl_Callback_Reason reason), Fl_Callback_Reason
   */
-  void do_callback(Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {do_callback(this, user_data_, reason);}
+  void do_callback(Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {
+    Fl::callback_reason_ = reason;
+    Fl_Widget_Tracker wp(this);
+    if (!Fl_Callback_Base::do_callback(&callback_core_, this, this, 0, nullptr, 0))
+      return;
+    if (wp.deleted()) return;
+    if (callback_core_.get_callback(&callback_core_, this) != default_callback)
+      clear_changed();
+  }
 
   /** Calls the widget callback function with arbitrary arguments.
     \param[in] widget call the callback with \p widget as the first argument
@@ -1096,10 +1093,51 @@ public:
     \see do_callback(Fl_Widget *widget, void *data), Fl_Callback_Reason
   */
   void do_callback(Fl_Widget *widget, long arg, Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {
-    do_callback(widget, (void*)(fl_intptr_t)arg, reason);
+    Fl::callback_reason_ = reason;
+    Fl_Widget_Tracker wp(this);
+    if (!Fl_Callback_Base::do_callback(&callback_core_, this, widget, 2, nullptr, arg))
+      return;
+    if (wp.deleted()) return;
+    if (callback_core_.get_callback(&callback_core_, this) != default_callback)
+      clear_changed();
   }
 
-  void do_callback(Fl_Widget *widget, void *arg = 0, Fl_Callback_Reason reason=FL_REASON_UNKNOWN);
+  /** Calls the widget callback function with arbitrary arguments.
+
+   All overloads of do_callback() call this method.
+   It does nothing if the widget's callback() is NULL.
+   It clears the widget's \e changed flag \b after the callback was
+   called unless the callback is the default callback. Hence it is not
+   necessary to call clear_changed() after calling do_callback()
+   in your own widget's handle() method.
+
+   A \p reason must be set for widgets if different actions can trigger
+   the same callback.
+
+   \note It is legal to delete the widget in the callback (i.e. in user code),
+   but you must not access the widget in the handle() method after
+   calling do_callback() if the widget was deleted in the callback.
+   We recommend to use Fl_Widget_Tracker to check whether the widget
+   was deleted in the callback.
+
+   \param[in] widget call the callback with \p widget as the first argument
+   \param[in] arg use \p arg as the user data (second) argument
+   \param[in] reason give a reason to why this callback was called, defaults to \ref FL_REASON_UNKNOWN
+
+   \see default_callback()
+   \see callback()
+   \see class Fl_Widget_Tracker
+   \see Fl::callback_reason()
+   */
+  void do_callback(Fl_Widget *widget, void *arg = 0, Fl_Callback_Reason reason=FL_REASON_UNKNOWN) {
+    Fl::callback_reason_ = reason;
+    Fl_Widget_Tracker wp(this);
+    if (!Fl_Callback_Base::do_callback(&callback_core_, this, widget, 1, arg, 0))
+      return;
+    if (wp.deleted()) return;
+    if (callback_core_.get_callback(&callback_core_, this) != default_callback)
+      clear_changed();
+  }
 
   /* Internal use only. */
   int test_shortcut();

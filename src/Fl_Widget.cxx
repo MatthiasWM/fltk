@@ -106,7 +106,9 @@ int Fl_Widget::handle(int) {
 /** Default font size for widgets */
 Fl_Fontsize FL_NORMAL_SIZE = 14;
 
-Fl_Widget::Fl_Widget(int X, int Y, int W, int H, const char* L) {
+Fl_Widget::Fl_Widget(int X, int Y, int W, int H, const char* L)
+  : callback_type_( Fl_Callback_Base::CallbackType::VOID_PTR )
+{
 
   x_ = X; y_ = Y; w_ = W; h_ = H;
 
@@ -121,8 +123,6 @@ Fl_Widget::Fl_Widget(int X, int Y, int W, int H, const char* L) {
   label_.h_margin_ = label_.v_margin_ = 0;
   label_.spacing   = 0;
   tooltip_         = 0;
-  callback_        = default_callback;
-  user_data_       = 0;
   type_            = 0;
   flags_           = VISIBLE_FOCUS;
   damage_          = 0;
@@ -130,8 +130,9 @@ Fl_Widget::Fl_Widget(int X, int Y, int W, int H, const char* L) {
   color_           = FL_GRAY;
   selection_color_ = FL_GRAY;
   when_            = FL_WHEN_RELEASE;
+  parent_          = nullptr;
+  callback(default_callback, nullptr);
 
-  parent_ = nullptr;
   if (Fl_Group::current()) Fl_Group::current()->add(this);
 }
 
@@ -179,9 +180,8 @@ Fl_Widget::~Fl_Widget() {
   parent_ = 0; // Don't throw focus to a parent widget.
   fl_throw_focus(this);
   // remove stale entries from default callback queue (Fl::readqueue())
-  if (callback_ == default_callback) cleanup_readqueue(this);
-  if ( (flags_ & AUTO_DELETE_USER_DATA) && user_data_)
-    delete (Fl_Callback_User_Data*)user_data_;
+  if (callback() == default_callback) cleanup_readqueue(this);
+  callback((Fl_Callback*)nullptr, nullptr); // delete managed callback data
 }
 
 /**
@@ -349,42 +349,6 @@ void Fl_Widget::bind_deimage(Fl_Image* img) {
   bind_deimage( (img != NULL) );
 }
 
-/** Calls the widget callback function with arbitrary arguments.
-
- All overloads of do_callback() call this method.
- It does nothing if the widget's callback() is NULL.
- It clears the widget's \e changed flag \b after the callback was
- called unless the callback is the default callback. Hence it is not
- necessary to call clear_changed() after calling do_callback()
- in your own widget's handle() method.
-
- A \p reason must be set for widgets if different actions can trigger
- the same callback.
-
- \note It is legal to delete the widget in the callback (i.e. in user code),
- but you must not access the widget in the handle() method after
- calling do_callback() if the widget was deleted in the callback.
- We recommend to use Fl_Widget_Tracker to check whether the widget
- was deleted in the callback.
-
- \param[in] widget call the callback with \p widget as the first argument
- \param[in] arg use \p arg as the user data (second) argument
- \param[in] reason give a reason to why this callback was called, defaults to \ref FL_REASON_UNKNOWN
-
- \see default_callback()
- \see callback()
- \see class Fl_Widget_Tracker
- \see Fl::callback_reason()
- */
-void Fl_Widget::do_callback(Fl_Widget *widget, void *arg, Fl_Callback_Reason reason) {
-  Fl::callback_reason_ = reason;
-  if (!callback_) return;
-  Fl_Widget_Tracker wp(this);
-  callback_(widget, arg);
-  if (wp.deleted()) return;
-  if (callback_ != default_callback)
-    clear_changed();
-}
 
 /*
  \brief Sets the user data for this widget.
@@ -392,10 +356,7 @@ void Fl_Widget::do_callback(Fl_Widget *widget, void *arg, Fl_Callback_Reason rea
  \param[in] v new user data
  */
 void Fl_Widget::user_data(void* v) {
-  if ((flags_ & AUTO_DELETE_USER_DATA) && user_data_)
-    delete (Fl_Callback_User_Data*)user_data_;
-  clear_flag(AUTO_DELETE_USER_DATA);
-  user_data_ = v;
+  Fl_Callback_Base::set_user_data(&callback_core_, this, v, false);
 }
 
 /*
@@ -405,8 +366,6 @@ void Fl_Widget::user_data(void* v) {
  \param[in] auto_free if set, the widget will free user data when destroyed; defaults to false
  */
 void Fl_Widget::user_data(Fl_Callback_User_Data* v, bool auto_free) {
-  user_data((void*)v);
-  if (auto_free)
-    set_flag(AUTO_DELETE_USER_DATA);
+  Fl_Callback_Base::set_user_data(&callback_core_, this, v, auto_free);
 }
 
