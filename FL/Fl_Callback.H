@@ -21,6 +21,7 @@
 #ifndef Fl_Callback_H
 #define Fl_Callback_H
 
+#include <cstdint>
 #include <functional>
 
 
@@ -70,7 +71,7 @@ typedef std::function<void(Fl_Widget*)> Fl_CallbackStdFn;
 class Fl_Callback_Base {
 public:
   enum class CallbackType : unsigned {
-    VOID_PTR, LONG, VOID, DATA_PTR, MANAGED_PTR, STD_FN
+    VOID_PTR, LONG, DATA_PTR, MANAGED_PTR, STD_FN
   };
 
   template<class A, class B>
@@ -97,8 +98,6 @@ public:
         a->callback_ = nullptr; a->user_data_ = nullptr; break;
       case CallbackType::LONG:
         a->callback1_ = nullptr; a->user_data1_ = 0; break;
-      case CallbackType::VOID:
-        a->callback0_ = nullptr; break;
       case CallbackType::DATA_PTR:
       case CallbackType::MANAGED_PTR:
         a->callback_ud_ = nullptr; a->callback_user_data_ = nullptr; break;
@@ -150,8 +149,7 @@ public:
     switch (b->callback_type_) {
       case CallbackType::VOID_PTR: return a->user_data_;
       case CallbackType::LONG: return reinterpret_cast<void*>(a->user_data1_);
-      case CallbackType::STD_FN:
-      case CallbackType::VOID: return nullptr;
+      case CallbackType::STD_FN: return nullptr;
       case CallbackType::DATA_PTR:
       case CallbackType::MANAGED_PTR: return static_cast<void*>(a->callback_user_data_);
     }
@@ -169,8 +167,7 @@ public:
         clear_user_data(a, b);
         if (!managed) b->callback_type_ = CallbackType::DATA_PTR;
         a->callback_user_data_ = reinterpret_cast<Fl_Callback_User_Data*>(v); break;
-      case CallbackType::STD_FN:
-      case CallbackType::VOID: break;
+      case CallbackType::STD_FN: break;
     }
   }
 
@@ -179,8 +176,7 @@ public:
     switch (b->callback_type_) {
       case CallbackType::VOID_PTR: return reinterpret_cast<long>(a->user_data_);
       case CallbackType::LONG: return a->user_data1_;
-      case CallbackType::STD_FN:
-      case CallbackType::VOID: return 0;
+      case CallbackType::STD_FN: return 0;
       case CallbackType::DATA_PTR:
       case CallbackType::MANAGED_PTR: return reinterpret_cast<long>(a->callback_user_data_);
     }
@@ -197,8 +193,7 @@ public:
         /* fallthrough */
       case CallbackType::DATA_PTR:
         a->callback_user_data_ = reinterpret_cast<Fl_Callback_User_Data*>(v); break;
-      case CallbackType::STD_FN:
-      case CallbackType::VOID: break;
+      case CallbackType::STD_FN: break;
     }
   }
 
@@ -221,10 +216,6 @@ public:
         else ud = lg;
         a->callback1_(w, ud);
       } break;
-      case CallbackType::VOID:
-        if (!a->callback0_) return false;
-        a->callback0_(w);
-        break;
       case CallbackType::DATA_PTR:
       case CallbackType::MANAGED_PTR: {
         if (!a->callback_ud_) return false;
