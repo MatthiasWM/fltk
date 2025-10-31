@@ -14,6 +14,8 @@
 //     https://www.fltk.org/bugs.php
 //
 
+#define NEW_STYLE_MENU
+
 #include <FL/Fl.H>
 #if defined(__APPLE__)  && !(defined(FLTK_USE_X11) || defined(FLTK_USE_WAYLAND))
 #  define HAS_MAC_APP_MENU 1
@@ -23,6 +25,8 @@
 #endif
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Menu_Window.H>
+#include <FL/Fl_Button.H>
 #include <FL/Fl_Sys_Menu_Bar.H>
 #include <FL/Fl_Toggle_Button.H>
 #include <FL/Fl_Menu_Button.H>
@@ -288,7 +292,16 @@ int main(int argc, char **argv) {
   Fl_Menu_Bar menubar(0,0,WIDTH,30); menubar.menu(menutable);
   menubar.callback(test_cb);
   menus[0] = &menubar;
-  Fl_Menu_Button mb1(100,100,120,25,"&menubutton"); mb1.menu(pulldown);
+  Fl_Menu_Button mb1(100,100,120,25,"&menubutton");
+#ifdef NEW_STYLE_MENU
+  Fl_Menu_Window pd_menu_window { };
+  auto item0 = new Fl_Button(0, 0, 10, 10, "Red"); item0->shortcut(FL_CTRL|'a');
+  auto item1 = new Fl_Button(0, 0, 10, 10, "Green"); item1->shortcut(FL_CTRL|'b');
+  pd_menu_window.end();
+  mb1.menu_window(&pd_menu_window);
+#else
+  mb1.menu(pulldown);
+#endif
   mb1.tooltip("this is a menu button");
   mb1.callback(test_cb);
   menus[1] = &mb1;

@@ -1358,6 +1358,16 @@ Fl_Event_Dispatch Fl::event_dispatch()
  */
 int Fl::handle(int e, Fl_Window* window)
 {
+  if (e==FL_PUSH) {
+    fprintf(stderr, "Fl::PUSH\n");
+  } else if (e==FL_RELEASE) {
+    fprintf(stderr, "Fl::RELEASE\n");
+  } else if (e==FL_FOCUS) {
+    fprintf(stderr, "Fl::FOCUS\n");
+  } else if (e==FL_UNFOCUS) {
+    fprintf(stderr, "Fl::UNFOCUS\n");
+  }
+
   if (e_dispatch) {
     return e_dispatch(e, window);
   } else {

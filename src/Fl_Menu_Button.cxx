@@ -15,6 +15,7 @@
 //
 
 #include <FL/Fl.H>
+#include <FL/Fl_Menu_Window.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Rect.H>
 #include <FL/fl_draw.H>
@@ -60,27 +61,50 @@ void Fl_Menu_Button::draw() {
   \see Fl_Menu_::menu_end()
 */
 const Fl_Menu_Item* Fl_Menu_Button::popup() {
-  handle(FL_BEFORE_MENU);
-  menu_end();
-  const Fl_Menu_Item* m;
-  pressed_menu_button_ = this;
-  redraw();
-  Fl_Widget_Tracker mb(this);
-  if (!box() || type()) {
-    m = menu()->popup(Fl::event_x(), Fl::event_y(), label(), mvalue(), this);
+  if (menu_window()) {
+    handle(FL_BEFORE_MENU);
+// TODO: MATT: FL_MENU_WINDOW
+//    menu_end();
+//    const Fl_Menu_Item* m;
+//    pressed_menu_button_ = this;
+    redraw();
+    Fl_Widget_Tracker mb(this);
+//    if (!box() || type()) {
+//      m = menu()->popup(Fl::event_x(), Fl::event_y(), label(), mvalue(), this);
+//    } else {
+      Fl_Window_Driver::current_menu_button = this;
+      menu_window()->pulldown(x(), y(), w(), h(), 0, this);
+      Fl_Window_Driver::current_menu_button = NULL;
+//    }
+//    picked(m);
+//    pressed_menu_button_ = 0;
+    if (mb.exists()) redraw();
+//    return m;
+    return nullptr;
   } else {
-    Fl_Window_Driver::current_menu_button = this;
-    m = menu()->pulldown(x(), y(), w(), h(), 0, this);
-    Fl_Window_Driver::current_menu_button = NULL;
+    handle(FL_BEFORE_MENU);
+    menu_end();
+    const Fl_Menu_Item* m;
+    pressed_menu_button_ = this;
+    redraw();
+    Fl_Widget_Tracker mb(this);
+    if (!box() || type()) {
+      m = menu()->popup(Fl::event_x(), Fl::event_y(), label(), mvalue(), this);
+    } else {
+      Fl_Window_Driver::current_menu_button = this;
+      m = menu()->pulldown(x(), y(), w(), h(), 0, this);
+      Fl_Window_Driver::current_menu_button = NULL;
+    }
+    picked(m);
+    pressed_menu_button_ = 0;
+    if (mb.exists()) redraw();
+    return m;
   }
-  picked(m);
-  pressed_menu_button_ = 0;
-  if (mb.exists()) redraw();
-  return m;
 }
 
 int Fl_Menu_Button::handle(int e) {
-  if (!menu() || !menu()->text) return 0;
+  if ( (!menu() || !menu()->text) && (menu_window() == nullptr) )
+    return 0;
   switch (e) {
   case FL_ENTER: /* FALLTHROUGH */
   case FL_LEAVE:

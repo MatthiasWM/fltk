@@ -25,6 +25,8 @@
 #endif
 #include "Fl_Menu_Item.H"
 
+class Fl_Menu_Window;
+
 /**
   Base class of all widgets that have a menu in FLTK.
 
@@ -52,9 +54,13 @@
 */
 class FL_EXPORT Fl_Menu_ : public Fl_Widget {
 
+  // Array style menus.
   Fl_Menu_Item *menu_;
   const Fl_Menu_Item *value_;
   const Fl_Menu_Item *prev_value_;
+
+  // Widget based manus.
+  Fl_Menu_Window *menu_window_ { nullptr };
 
 protected:
 
@@ -249,6 +255,9 @@ public:
   /** For back compatibility, same as selection_color() */
   void down_color(unsigned c) {selection_color(c);}
   void setonly(Fl_Menu_Item* item);
+
+  Fl_Menu_Window *menu_window() const {return menu_window_;}
+  void menu_window(Fl_Menu_Window *mw) { menu_window_ = mw; }
 };
 
 #endif
