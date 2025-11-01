@@ -46,8 +46,8 @@ static const uchar inactive_ramp[24] = {
   51, 51, 52, 52};
 static int draw_it_active = 1;
 
-int Fl::box_border_radius_max_ = 15;
-int Fl::box_shadow_width_ = 3;
+int Fl::Private::box_border_radius_max_ = 15;
+int Fl::Private::box_shadow_width_ = 3;
 
 /**
   Determines if the currently drawn box is active or inactive.

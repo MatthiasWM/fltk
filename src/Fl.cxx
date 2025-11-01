@@ -15,7 +15,7 @@
 //
 
 /** \file src/Fl.cxx
-  Implementation of the member functions of class Fl.
+  Implementation of the functions in namespace Fl.
 */
 
 #include <FL/Fl.H>
@@ -71,10 +71,10 @@ void            *Fl::e_clipboard_data = NULL;
 Fl_Event_Dispatch Fl::e_dispatch = 0;
 Fl_Callback_Reason Fl::callback_reason_ = FL_REASON_UNKNOWN;
 
-unsigned char   Fl::options_[] = { 0, 0 };
-unsigned char   Fl::options_read_ = 0;
+unsigned char   Fl::Private::options_[] = { 0, 0 };
+unsigned char   Fl::Private::options_read_ = 0;
 
-int             Fl::selection_to_clipboard_ = 0;
+int             Fl::Private::selection_to_clipboard_ = 0;
 
 Fl_Window       *fl_xfocus = NULL; // which window X thinks has focus
 Fl_Window       *fl_xmousewin;     // which window X thinks has FL_ENTER
@@ -500,7 +500,7 @@ int Fl::has_check(Fl_Timeout_Handler cb, void *argp) {
   return 0;
 }
 
-void Fl::run_checks()
+void Fl::Private::run_checks()
 {
   // checks are a bit messy so that add/remove and wait may be called
   // from inside them without causing an infinite loop:
@@ -580,7 +580,7 @@ void fl_trigger_clipboard_notify(int source) {
 ////////////////////////////////////////////////////////////////
 // idle/wait/run/check/ready:
 
-void (*Fl::idle_)(); // see Fl::add_idle.cxx for the add/remove functions
+void (*Fl::Private::idle_)(); // see Fl::add_idle.cxx for the add/remove functions
 
 /*
   Private, undocumented method to run idle callbacks.
@@ -609,11 +609,11 @@ void (*Fl::idle_)(); // see Fl::add_idle.cxx for the add/remove functions
   if an event (timeout or button click etc.) handler calls Fl::add_idle()
   or even in Fl::flush() if a draw() method calls Fl::add_idle().
 */
-void Fl::run_idle() {
+void Fl::Private::run_idle() {
   static char in_idle;
-  if (Fl::idle_ && !in_idle) {
+  if (idle_ && !in_idle) {
     in_idle = 1;
-    Fl::idle_(); // call the idle callback stored in Fl::idle_ == Fl::idle()
+    idle_(); // call the idle callback stored in Fl::idle_ == Fl::idle()
     in_idle = 0;
   }
 }
@@ -733,7 +733,7 @@ void Fl::hide_all_windows() {
   }
 }
 
-int Fl::program_should_quit_ = 0;
+int Fl::Private::program_should_quit_ = 0;
 
 ////////////////////////////////////////////////////////////////
 // Window list management:
@@ -2046,74 +2046,74 @@ void Fl::clear_widget_pointer(Fl_Widget const *w)
  */
 bool Fl::option(Fl_Option opt)
 {
-  if (!options_read_) {
+  if (!Private::options_read_) {
     int tmp;
     { // first, read the system wide preferences
       Fl_Preferences prefs(Fl_Preferences::CORE_SYSTEM, "fltk.org", "fltk");
       Fl_Preferences opt_prefs(prefs, "options");
       opt_prefs.get("ArrowFocus", tmp, 0);                      // default: off
-      options_[OPTION_ARROW_FOCUS] = tmp;
+      Private::options_[OPTION_ARROW_FOCUS] = tmp;
       //opt_prefs.get("NativeFilechooser", tmp, 1);             // default: on
       //options_[OPTION_NATIVE_FILECHOOSER] = tmp;
       //opt_prefs.get("FilechooserPreview", tmp, 1);            // default: on
       //options_[OPTION_FILECHOOSER_PREVIEW] = tmp;
       opt_prefs.get("VisibleFocus", tmp, 1);                    // default: on
-      options_[OPTION_VISIBLE_FOCUS] = tmp;
+      Private::options_[OPTION_VISIBLE_FOCUS] = tmp;
       opt_prefs.get("DNDText", tmp, 1);                         // default: on
-      options_[OPTION_DND_TEXT] = tmp;
+      Private::options_[OPTION_DND_TEXT] = tmp;
       opt_prefs.get("ShowTooltips", tmp, 1);                    // default: on
-      options_[OPTION_SHOW_TOOLTIPS] = tmp;
+      Private::options_[OPTION_SHOW_TOOLTIPS] = tmp;
       opt_prefs.get("FNFCUsesGTK", tmp, 1);                     // default: on
-      options_[OPTION_FNFC_USES_GTK] = tmp;
+      Private::options_[OPTION_FNFC_USES_GTK] = tmp;
       opt_prefs.get("PrintUsesGTK", tmp, 1);                     // default: on
-      options_[OPTION_PRINTER_USES_GTK] = tmp;
+      Private::options_[OPTION_PRINTER_USES_GTK] = tmp;
 
       opt_prefs.get("ShowZoomFactor", tmp, 1);                  // default: on
-      options_[OPTION_SHOW_SCALING] = tmp;
+      Private::options_[OPTION_SHOW_SCALING] = tmp;
       opt_prefs.get("UseZenity", tmp, 0);                       // default: off
-      options_[OPTION_FNFC_USES_ZENITY] = tmp;
+      Private::options_[OPTION_FNFC_USES_ZENITY] = tmp;
       opt_prefs.get("UseKdialog", tmp, 0);                      // default: off
-      options_[OPTION_FNFC_USES_KDIALOG] = tmp;
+      Private::options_[OPTION_FNFC_USES_KDIALOG] = tmp;
       opt_prefs.get("SimpleZoomShortcut", tmp, 0);              // default: off
-      options_[OPTION_SIMPLE_ZOOM_SHORTCUT] = tmp;
+      Private::options_[OPTION_SIMPLE_ZOOM_SHORTCUT] = tmp;
     }
     { // next, check the user preferences
       // override system options only, if the option is set ( >= 0 )
       Fl_Preferences prefs(Fl_Preferences::CORE_USER, "fltk.org", "fltk");
       Fl_Preferences opt_prefs(prefs, "options");
       opt_prefs.get("ArrowFocus", tmp, -1);
-      if (tmp >= 0) options_[OPTION_ARROW_FOCUS] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_ARROW_FOCUS] = tmp;
       //opt_prefs.get("NativeFilechooser", tmp, -1);
-      //if (tmp >= 0) options_[OPTION_NATIVE_FILECHOOSER] = tmp;
+      //if (tmp >= 0) Private::options_[OPTION_NATIVE_FILECHOOSER] = tmp;
       //opt_prefs.get("FilechooserPreview", tmp, -1);
-      //if (tmp >= 0) options_[OPTION_FILECHOOSER_PREVIEW] = tmp;
+      //if (tmp >= 0) Private::options_[OPTION_FILECHOOSER_PREVIEW] = tmp;
       opt_prefs.get("VisibleFocus", tmp, -1);
-      if (tmp >= 0) options_[OPTION_VISIBLE_FOCUS] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_VISIBLE_FOCUS] = tmp;
       opt_prefs.get("DNDText", tmp, -1);
-      if (tmp >= 0) options_[OPTION_DND_TEXT] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_DND_TEXT] = tmp;
       opt_prefs.get("ShowTooltips", tmp, -1);
-      if (tmp >= 0) options_[OPTION_SHOW_TOOLTIPS] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_SHOW_TOOLTIPS] = tmp;
       opt_prefs.get("FNFCUsesGTK", tmp, -1);
-      if (tmp >= 0) options_[OPTION_FNFC_USES_GTK] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_FNFC_USES_GTK] = tmp;
       opt_prefs.get("PrintUsesGTK", tmp, -1);
-      if (tmp >= 0) options_[OPTION_PRINTER_USES_GTK] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_PRINTER_USES_GTK] = tmp;
 
       opt_prefs.get("ShowZoomFactor", tmp, -1);
-      if (tmp >= 0) options_[OPTION_SHOW_SCALING] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_SHOW_SCALING] = tmp;
       opt_prefs.get("UseZenity", tmp, -1);
-      if (tmp >= 0) options_[OPTION_FNFC_USES_ZENITY] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_FNFC_USES_ZENITY] = tmp;
       opt_prefs.get("UseKdialog", tmp, -1);
-      if (tmp >= 0) options_[OPTION_FNFC_USES_KDIALOG] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_FNFC_USES_KDIALOG] = tmp;
       opt_prefs.get("SimpleZoomShortcut", tmp, -1);
-      if (tmp >= 0) options_[OPTION_SIMPLE_ZOOM_SHORTCUT] = tmp;
+      if (tmp >= 0) Private::options_[OPTION_SIMPLE_ZOOM_SHORTCUT] = tmp;
     }
     { // now, if the developer has registered this app, we could ask for per-application preferences
     }
-    options_read_ = 1;
+    Private::options_read_ = 1;
   }
   if (opt<0 || opt>=OPTION_LAST)
     return false;
-  return (bool)(options_[opt]!=0);
+  return (bool)(Private::options_[opt]!=0);
 }
 
 /**
@@ -2142,11 +2142,11 @@ void Fl::option(Fl_Option opt, bool val)
 {
   if (opt<0 || opt>=OPTION_LAST)
     return;
-  if (!options_read_) {
+  if (!Private::options_read_) {
     // make sure that the options_ array is filled in
     option(opt);
   }
-  options_[opt] = val;
+  Private::options_[opt] = val;
 }
 
 
@@ -2169,9 +2169,9 @@ Fl_Widget_Tracker::~Fl_Widget_Tracker()
   Fl::release_widget_pointer(wp_); // remove pointer from watch list
 }
 
-int Fl::use_high_res_GL_ = 0;
+int Fl::Private::use_high_res_GL_ = 0;
 
-int Fl::draw_GL_text_with_textures_ = 1;
+int Fl::Private::draw_GL_text_with_textures_ = 1;
 
 int Fl::dnd()
 {

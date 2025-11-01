@@ -139,47 +139,82 @@ typedef void (*Fl_Clipboard_Notify_Handler)(int source, void *data);
 
 /** @} */ /* group callback_functions */
 
+/**
+  Fl::Private is the FLTK global namespace containing
+  core functions and information that may change API at any point.
+*/
+namespace Fl {
+namespace Private {
+
+extern int use_high_res_GL_;
+extern int draw_GL_text_with_textures_;
+extern int box_shadow_width_;
+extern int box_border_radius_max_;
+extern int selection_to_clipboard_;
+
+extern int program_should_quit_; // non-zero means the program was asked to cleanly terminate
 
 /**
-  The Fl is the FLTK global (static) class containing
+ The currently executing idle callback function: DO NOT USE THIS DIRECTLY!
+
+ This is now used as part of a higher level system allowing multiple
+ idle callback functions to be called.
+ \see add_idle(), remove_idle()
+ */
+extern void (*idle_)();
+
+void run_idle();
+void run_checks();
+
+/**
+ Sets an idle callback (internal use only).
+
+ This method is now private and is used to store the idle callback.
+ The old, public set_idle() method was deprecated since 1.3.x and
+ is no longer available in FLTK 1.5.
+
+ See documentation: use Fl::add_idle() instead.
+ */
+void inline set_idle_(Fl_Old_Idle_Handler cb) {idle_ = cb;}
+
+#ifdef FLTK_HAVE_CAIRO
+cairo_t *cairo_make_current(void *gc);
+cairo_t *cairo_make_current(void *gc, int W, int H);
+extern Fl_Cairo_State cairo_state_;
+#endif // FLTK_HAVE_CAIRO
+
+} // namespace Private
+} // namespace Fl
+
+
+/**
+  Fl is the FLTK global namespace containing
   state information and global methods for the current application.
 */
-class FL_EXPORT Fl {
-  friend class Fl_System_Driver;
-  Fl() {} // no constructor!
+namespace Fl {
 
-private:
-
-  static int use_high_res_GL_;
-  static int draw_GL_text_with_textures_;
-  static int box_shadow_width_;
-  static int box_border_radius_max_;
-  static int selection_to_clipboard_;
-
-public:
-
-  static Fl_Screen_Driver *screen_driver();
-  static Fl_System_Driver *system_driver();
+  FL_EXPORT Fl_Screen_Driver *screen_driver();
+  FL_EXPORT Fl_System_Driver *system_driver();
 #ifdef __APPLE__ // deprecated in 1.4 - only for compatibility with 1.3
-  static void reset_marked_text();
-  static void insertion_point_location(int x, int y, int height);
+  FL_EXPORT void reset_marked_text();
+  FL_EXPORT void insertion_point_location(int x, int y, int height);
 #endif
 
 
   /** Get the box shadow width of all "shadow" boxtypes in pixels.
     \since 1.4.0
   */
-  static int box_shadow_width() { return box_shadow_width_; }
+  FL_EXPORT inline int box_shadow_width() { return Fl::Private::box_shadow_width_; }
   /** Set the box shadow width of all "shadow" boxtypes in pixels.
     Must be at least 1, default = 3. There is no upper limit.
     \since 1.4.0
   */
-  static void box_shadow_width(int W) { box_shadow_width_ = W < 1 ? 1 : W; }
+  FL_EXPORT inline void box_shadow_width(int W) { Fl::Private::box_shadow_width_ = W < 1 ? 1 : W; }
 
   /** Get the maximum border radius of all "rounded" boxtypes in pixels.
       \since 1.4.0
   */
-  static int box_border_radius_max() { return box_border_radius_max_; }
+  FL_EXPORT inline int box_border_radius_max() { return Fl::Private::box_border_radius_max_; }
   /** Set the maximum border radius of all "rounded" boxtypes in pixels.
     Must be at least 5, default = 15.
 
@@ -192,46 +227,45 @@ public:
     method for all "rounded" boxtypes.
     \since 1.4.0
   */
-  static void box_border_radius_max(int R) { box_border_radius_max_ = R < 5 ? 5 : R; }
+  FL_EXPORT inline void box_border_radius_max(int R) { Fl::Private::box_border_radius_max_ = R < 5 ? 5 : R; }
 
-public: // should be private!
+  // event variables should be private!
 
 #ifndef FL_DOXYGEN
-  static int e_number;
-  static int e_x;
-  static int e_y;
-  static int e_x_root;
-  static int e_y_root;
-  static int e_dx;
-  static int e_dy;
-  static int e_state;
-  static int e_clicks;
-  static int e_is_click;
-  static int e_keysym;
-  static char* e_text;
-  static int e_length;
-  static void *e_clipboard_data;
-  static const char *e_clipboard_type;
-  static Fl_Event_Dispatch e_dispatch;
-  static Fl_Callback_Reason callback_reason_;
-  static Fl_Widget* belowmouse_;
-  static Fl_Widget* pushed_;
-  static Fl_Widget* focus_;
-  static int damage_;
-  static Fl_Widget* selection_owner_;
-  static Fl_Window* modal_;
-  static Fl_Window* grab_;
-  static int compose_state; // used for dead keys (Windows) or marked text (MacOS)
-  static void call_screen_init(); // recompute screen number and dimensions
+extern FL_EXPORT int e_number;
+extern FL_EXPORT int e_x;
+extern FL_EXPORT int e_y;
+extern FL_EXPORT int e_x_root;
+extern FL_EXPORT int e_y_root;
+extern FL_EXPORT int e_dx;
+extern FL_EXPORT int e_dy;
+extern FL_EXPORT int e_state;
+extern FL_EXPORT int e_clicks;
+extern FL_EXPORT int e_is_click;
+extern FL_EXPORT int e_keysym;
+extern FL_EXPORT char* e_text;
+extern FL_EXPORT int e_length;
+extern FL_EXPORT void *e_clipboard_data;
+extern FL_EXPORT const char *e_clipboard_type;
+extern FL_EXPORT Fl_Event_Dispatch e_dispatch;
+extern FL_EXPORT Fl_Callback_Reason callback_reason_;
+extern FL_EXPORT Fl_Widget* belowmouse_;
+extern FL_EXPORT Fl_Widget* pushed_;
+extern FL_EXPORT Fl_Widget* focus_;
+extern FL_EXPORT int damage_;
+extern FL_EXPORT Fl_Widget* selection_owner_;
+extern FL_EXPORT Fl_Window* modal_;
+extern FL_EXPORT Fl_Window* grab_;
+extern FL_EXPORT int compose_state; // used for dead keys (Windows) or marked text (MacOS)
+  FL_EXPORT void call_screen_init(); // recompute screen number and dimensions
 #endif // FL_DOXYGEN
 
 
   /**
     If true then flush() will do something.
   */
-  static void damage(int d) {damage_ = d;}
+  FL_EXPORT inline void damage(int d) {damage_ = d;}
 
-public:
   /** Enumerator for global FLTK options.
       These options can be set system wide, per user, or for the running
       application only.
@@ -302,35 +336,24 @@ public:
     OPTION_LAST
   } Fl_Option;
 
-private:
-  static unsigned char options_[OPTION_LAST];
-  static unsigned char options_read_;
-  static int program_should_quit_; // non-zero means the program was asked to cleanly terminate
+namespace Private {
 
-public:
+extern unsigned char options_[OPTION_LAST];
+extern unsigned char options_read_;
+
+} // namespace Private
+
   /*
    Return a global setting for all FLTK applications, possibly overridden
    by a setting specifically for this application.
    */
-  static bool option(Fl_Option opt);
+  FL_EXPORT bool option(Fl_Option opt);
 
   /*
    Override an option while the application is running.
    */
-  static void option(Fl_Option opt, bool val);
+  FL_EXPORT void option(Fl_Option opt, bool val);
 
-private:
-
-  /**
-    The currently executing idle callback function: DO NOT USE THIS DIRECTLY!
-
-    This is now used as part of a higher level system allowing multiple
-    idle callback functions to be called.
-    \see add_idle(), remove_idle()
-  */
-  static void (*idle_)();
-
-public:
   /**
     Returns whether at least one idle callback is currently set.
 
@@ -343,26 +366,23 @@ public:
     \retval true  At least one idle callback is currently set.
     \retval false No idle callback is currently set.
    */
-  static bool idle() { return (idle_ != nullptr); }
+  FL_EXPORT inline bool idle() { return (Fl::Private::idle_ != nullptr); }
 
 #ifndef FL_DOXYGEN
-public:
-  static const char* scheme_;
-  static Fl_Image* scheme_bg_;
+extern FL_EXPORT const char* scheme_;
+extern FL_EXPORT Fl_Image* scheme_bg_;
 
-  static int e_original_keysym; // late addition
-  static int scrollbar_size_;
-  static int menu_linespacing_; // STR #2927
+extern FL_EXPORT int e_original_keysym; // late addition
+extern FL_EXPORT int scrollbar_size_;
+extern FL_EXPORT int menu_linespacing_; // STR #2927
 #endif
 
-public:
-
   // API version number
-  static double version();
-  static int api_version();
+  FL_EXPORT double version();
+  FL_EXPORT int api_version();
 
   // ABI version number
-  static int abi_version();
+  FL_EXPORT int abi_version();
 
   /**
     Returns whether the runtime library ABI version is correct.
@@ -386,23 +406,23 @@ public:
 
     \see Fl::abi_version()
   */
-  static inline int abi_check(const int val = FL_ABI_VERSION) {
+  FL_EXPORT inline int abi_check(const int val = FL_ABI_VERSION) {
     return val == abi_version();
   }
 
   // argument parsers:
-  static int arg(int argc, char **argv, int& i);
-  static int args(int argc, char **argv, int& i, Fl_Args_Handler cb = 0);
-  static void args(int argc, char **argv);
+  FL_EXPORT int arg(int argc, char **argv, int& i);
+  FL_EXPORT int args(int argc, char **argv, int& i, Fl_Args_Handler cb = 0);
+  FL_EXPORT void args(int argc, char **argv);
   /**
     Usage string displayed if Fl::args() detects an invalid argument.
     This may be changed to point to customized text at run-time.
   */
-  static const char* const help;
+  FL_EXPORT extern const char* const help;
 
   // things called by initialization:
-  static void display(const char*);
-  static int visual(int);
+  FL_EXPORT void display(const char*);
+  FL_EXPORT int visual(int);
   /**
     This does the same thing as Fl::visual(int) but also requires OpenGL
     drawing to work. This <I>must</I> be done if you want to draw in
@@ -412,17 +432,17 @@ public:
 
     See Fl_Gl_Window for a list of additional values for the argument.
   */
-  static int gl_visual(int, int *alist=0); // platform dependent
-  static void own_colormap();
-  static void get_system_colors();
-  static void foreground(uchar, uchar, uchar);
-  static void background(uchar, uchar, uchar);
-  static void background2(uchar, uchar, uchar);
+  FL_EXPORT int gl_visual(int, int *alist=0); // platform dependent
+  FL_EXPORT void own_colormap();
+  FL_EXPORT void get_system_colors();
+  FL_EXPORT void foreground(uchar, uchar, uchar);
+  FL_EXPORT void background(uchar, uchar, uchar);
+  FL_EXPORT void background2(uchar, uchar, uchar);
 
   // schemes:
-  static int scheme(const char *name);
+  FL_EXPORT int scheme(const char *name);
   /** See void scheme(const char *name) */
-  static const char* scheme() {return scheme_;}
+  FL_EXPORT inline const char* scheme() {return scheme_;}
 
   /** Returns whether the current scheme is the given name.
 
@@ -451,79 +471,75 @@ public:
 
     \see Fl::scheme(const char *name)
   */
-  static int is_scheme(const char *name) {
+  FL_EXPORT inline int is_scheme(const char *name) {
     return (scheme_ && name && !strcmp(name,scheme_));
   }
 
-  static int reload_scheme(); // defined in 'src/Fl_get_system_colors.cxx'
+  FL_EXPORT int reload_scheme(); // defined in 'src/Fl_get_system_colors.cxx'
 
-  static int scrollbar_size();
-  static void scrollbar_size(int W);
-  static int menu_linespacing();
-  static void menu_linespacing(int H);
+  FL_EXPORT int scrollbar_size();
+  FL_EXPORT void scrollbar_size(int W);
+  FL_EXPORT int menu_linespacing();
+  FL_EXPORT void menu_linespacing(int H);
 
   // execution:
-  static int wait();
-  static double wait(double time);
-  static int check();
-  static int ready();
-  static int run();
+  FL_EXPORT int wait();
+  FL_EXPORT double wait(double time);
+  FL_EXPORT int check();
+  FL_EXPORT int ready();
+  FL_EXPORT int run();
   /** Returns non-zero when a request for program termination was received and accepted.
    On the MacOS platform, the "Quit xxx" item of the application menu is such a request,
    that is considered accepted when all windows are closed. On other platforms, this function
    returns 0 until \p Fl::program_should_quit(1) is called.
    \version 1.4.0
    */
-  static int program_should_quit() {return program_should_quit_;}
+  FL_EXPORT inline int program_should_quit() {return Fl::Private::program_should_quit_;}
   /** Indicate to the FLTK library whether a program termination request was received and accepted.
   A program may set this to 1, for example, while performing a platform-independent command asking the program to cleanly
   terminate, similarly to the "Quit xxx" item of the application menu under MacOS.
    \version 1.4.0
    */
-  static void program_should_quit(int should_i) { program_should_quit_ = should_i; }
-  static void hide_all_windows();
+  FL_EXPORT inline void program_should_quit(int should_i) { Fl::Private::program_should_quit_ = should_i; }
+  FL_EXPORT void hide_all_windows();
 
-  static Fl_Widget* readqueue();
+  FL_EXPORT Fl_Widget* readqueue();
 
   //
   // cross-platform timer support
   //
 
-  static void add_timeout(double t, Fl_Timeout_Handler cb, void *data = 0);
-  static void repeat_timeout(double t, Fl_Timeout_Handler cb, void *data = 0);
-  static int  has_timeout(Fl_Timeout_Handler cb, void *data = 0);
-  static void remove_timeout(Fl_Timeout_Handler cb, void *data = 0);
-  static int remove_next_timeout(Fl_Timeout_Handler cb, void *data = 0, void **data_return = 0);
+  FL_EXPORT void add_timeout(double t, Fl_Timeout_Handler cb, void *data = 0);
+  FL_EXPORT void repeat_timeout(double t, Fl_Timeout_Handler cb, void *data = 0);
+  FL_EXPORT int  has_timeout(Fl_Timeout_Handler cb, void *data = 0);
+  FL_EXPORT void remove_timeout(Fl_Timeout_Handler cb, void *data = 0);
+  FL_EXPORT int remove_next_timeout(Fl_Timeout_Handler cb, void *data = 0, void **data_return = 0);
 
-  static void add_check(Fl_Timeout_Handler, void* = 0);
-  static int  has_check(Fl_Timeout_Handler, void* = 0);
-  static void remove_check(Fl_Timeout_Handler, void* = 0);
+  FL_EXPORT void add_check(Fl_Timeout_Handler, void* = 0);
+  FL_EXPORT int  has_check(Fl_Timeout_Handler, void* = 0);
+  FL_EXPORT void remove_check(Fl_Timeout_Handler, void* = 0);
 
-  static Fl_Timestamp now(double offset = 0);
-  static double seconds_since(Fl_Timestamp& then);
-  static double seconds_between(Fl_Timestamp& back, Fl_Timestamp& further_back);
-  static long ticks_since(Fl_Timestamp& then);
-  static long ticks_between(Fl_Timestamp& back, Fl_Timestamp& further_back);
+  FL_EXPORT Fl_Timestamp now(double offset = 0);
+  FL_EXPORT double seconds_since(Fl_Timestamp& then);
+  FL_EXPORT double seconds_between(Fl_Timestamp& back, Fl_Timestamp& further_back);
+  FL_EXPORT long ticks_since(Fl_Timestamp& then);
+  FL_EXPORT long ticks_between(Fl_Timestamp& back, Fl_Timestamp& further_back);
 
-private:
-  static void run_idle();
-  static void run_checks();
-public:
-  static void add_fd(int fd, int when, Fl_FD_Handler cb, void* = 0); // platform dependent
-  static void add_fd(int fd, Fl_FD_Handler cb, void* = 0); // platform dependent
+  FL_EXPORT void add_fd(int fd, int when, Fl_FD_Handler cb, void* = 0); // platform dependent
+  FL_EXPORT void add_fd(int fd, Fl_FD_Handler cb, void* = 0); // platform dependent
   /** Removes a file descriptor handler. */
-  static void remove_fd(int, int when); // platform dependent
+  FL_EXPORT void remove_fd(int, int when); // platform dependent
   /** Removes a file descriptor handler. */
-  static void remove_fd(int); // platform dependent
+  FL_EXPORT void remove_fd(int); // platform dependent
 
-  static void add_idle(Fl_Idle_Handler cb, void* data = 0);
-  static int  has_idle(Fl_Idle_Handler cb, void* data = 0);
-  static void remove_idle(Fl_Idle_Handler cb, void* data = 0);
-  static void add_idle(Fl_Old_Idle_Handler cb);
+  FL_EXPORT void add_idle(Fl_Idle_Handler cb, void* data = 0);
+  FL_EXPORT int  has_idle(Fl_Idle_Handler cb, void* data = 0);
+  FL_EXPORT void remove_idle(Fl_Idle_Handler cb, void* data = 0);
+  FL_EXPORT void add_idle(Fl_Old_Idle_Handler cb);
   /** If true then flush() will do something. */
-  static int damage() {return damage_;}
-  static void redraw();
-  static void flush();
+  FL_EXPORT inline int damage() {return damage_;}
+  FL_EXPORT void redraw();
+  FL_EXPORT void flush();
   /** \addtogroup group_comdlg
     @{ */
   /**
@@ -544,7 +560,7 @@ public:
   displaying the message.
    \note \#include <FL/Fl.H>
   */
-  static void (*warning)(const char*, ...);
+  extern FL_EXPORT void (*warning)(const char*, ...);
   /**
   FLTK calls Fl::error() to output a normal error message.
 
@@ -559,7 +575,7 @@ public:
   an image file. The default implementation returns after displaying the message.
    \note \#include <FL/Fl.H>
   */
-  static void (*error)(const char*, ...);
+extern FL_EXPORT void (*error)(const char*, ...);
   /**
   FLTK calls Fl::fatal() to output a fatal error message.
 
@@ -576,15 +592,15 @@ public:
   after displaying the message.
    \note \#include <FL/Fl.H>
   */
-  static void (*fatal)(const char*, ...);
+extern FL_EXPORT void (*fatal)(const char*, ...);
   /** @} */
 
   /** \defgroup  fl_windows Windows handling functions
       \brief Windows and standard dialogs handling declared in <FL/Fl.H>
     @{ */
-  static Fl_Window* first_window();
-  static void first_window(Fl_Window*);
-  static Fl_Window* next_window(const Fl_Window*);
+  FL_EXPORT Fl_Window* first_window();
+  FL_EXPORT void first_window(Fl_Window*);
+  FL_EXPORT Fl_Window* next_window(const Fl_Window*);
 
   /**
     Returns the top-most modal() window currently shown.
@@ -595,13 +611,13 @@ public:
     for all events, and no other windows will have handle()
     called (grab() overrides this).
   */
-  static Fl_Window* modal() {return modal_;}
+  FL_EXPORT inline Fl_Window* modal() {return modal_;}
   /** Returns the window that currently receives all events.
 
    \return The window that currently receives all events,
    or NULL if event grabbing is currently OFF.
   */
-  static Fl_Window* grab() {return grab_;}
+  FL_EXPORT inline Fl_Window* grab() {return grab_;}
   /** Selects the window to grab.
    This is used when pop-up menu systems are active.
 
@@ -626,7 +642,7 @@ public:
    limit mouse pointer grabbing to the time during which a mouse button
    is held down. Some OS's may not support grabbing at all.
    */
-  static void grab(Fl_Window*); // platform dependent
+  FL_EXPORT void grab(Fl_Window*); // platform dependent
   /** @} */
 
   /** \defgroup fl_events Events handling functions
@@ -639,41 +655,41 @@ public:
     to determine if a callback is being done in response to a
     keypress, mouse click, etc.
   */
-  static int event()            {return e_number;}
+  FL_EXPORT inline int event()            {return e_number;}
   /**
     Returns the mouse position of the event relative to the Fl_Window
     it was passed to.
   */
-  static int event_x()  {return e_x;}
+  FL_EXPORT inline int event_x()  {return e_x;}
   /**
     Returns the mouse position of the event relative to the Fl_Window
     it was passed to.
   */
-  static int event_y()  {return e_y;}
+  FL_EXPORT inline int event_y()  {return e_y;}
   /**
     Returns the mouse position on the screen of the event.  To find the
     absolute position of an Fl_Window on the screen, use the
     difference between event_x_root(),event_y_root() and
     event_x(),event_y().
   */
-  static int event_x_root()     {return e_x_root;}
+  FL_EXPORT inline int event_x_root()     {return e_x_root;}
   /**
     Returns the mouse position on the screen of the event.  To find the
     absolute position of an Fl_Window on the screen, use the
     difference between event_x_root(),event_y_root() and
     event_x(),event_y().
   */
-  static int event_y_root()     {return e_y_root;}
+  FL_EXPORT inline int event_y_root()     {return e_y_root;}
   /**
     Returns the current horizontal mouse scrolling associated with the
     FL_MOUSEWHEEL event. Right is positive.
   */
-  static int event_dx() {return e_dx;}
+  FL_EXPORT inline int event_dx() {return e_dx;}
   /**
     Returns the current vertical mouse scrolling associated with the
     FL_MOUSEWHEEL event. Down is positive.
   */
-  static int event_dy() {return e_dy;}
+  FL_EXPORT inline int event_dy() {return e_dy;}
   /**
     Return where the mouse is on the screen by doing a round-trip query to
     the server.  You should use Fl::event_x_root() and
@@ -682,7 +698,7 @@ public:
     position your first window).  If the display is not open, this will
     open it.
   */
-  static void get_mouse(int &,int &);
+  FL_EXPORT void get_mouse(int &,int &);
   /**
     Returns non zero if we had a double click event.
     \retval Non-zero if the most recent FL_PUSH or FL_KEYBOARD was a "double click".
@@ -691,7 +707,7 @@ public:
     again while event_is_click() is true.
 
    */
-  static int event_clicks()     {return e_clicks;}
+  FL_EXPORT inline int event_clicks()     {return e_clicks;}
   /**
     Manually sets the number returned by Fl::event_clicks().
     This can be used to set it to zero so that
@@ -699,7 +715,7 @@ public:
     \param[in] i corresponds to no double-click if 0, i+1 mouse clicks otherwise
     \see int event_clicks()
   */
-  static void event_clicks(int i) {e_clicks = i;}
+  FL_EXPORT inline void event_clicks(int i) {e_clicks = i;}
   /**
   Returns non-zero if the mouse has not moved far enough
   and not enough time has passed since the last FL_PUSH or
@@ -707,14 +723,14 @@ public:
   "click".  You can test this on FL_DRAG, FL_RELEASE,
   and FL_MOVE events.
   */
-  static int event_is_click()   {return e_is_click;}
+  FL_EXPORT inline int event_is_click()   {return e_is_click;}
   /**
    Clears the value returned by Fl::event_is_click().
    Useful to prevent the <I>next</I>
    click from being counted as a double-click or to make a popup menu
    pick an item with a single click.  Don't pass non-zero to this.
   */
-  static void event_is_click(int i) {e_is_click = i;}
+  FL_EXPORT inline void event_is_click(int i) {e_is_click = i;}
   /**
     Gets which particular mouse button caused the current event.
 
@@ -726,7 +742,7 @@ public:
     \retval FL_FORWARD_MOUSE
     \see Fl::event_buttons(), Fl::event_state()
   */
-  static int event_button() { return e_keysym - FL_Button; }
+  FL_EXPORT inline int event_button() { return e_keysym - FL_Button; }
   /**
     Returns the keyboard and mouse button states of the last event.
 
@@ -767,14 +783,14 @@ public:
     | Mouse    | FL_BUTTON4     | side button 1 (back)    | 1.3.10 |
     | Mouse    | FL_BUTTON5     | side button 2 (forward) | 1.3.10 |
   */
-  static int event_state()      {return e_state;}
+  FL_EXPORT inline int event_state()      {return e_state;}
 
   /** Returns non-zero if any of the passed event state bits are turned on.
 
     Use \p mask to pass the event states you're interested in.
     The legal event state bits are defined in Fl::event_state().
   */
-  static int event_state(int mask) {return e_state&mask;}
+  FL_EXPORT inline int event_state(int mask) {return e_state&mask;}
   /**
     Gets which key on the keyboard was last pushed.
 
@@ -786,7 +802,7 @@ public:
     \returns an integer 'key code', or 0 if the last event was not a key press or release.
     \see int event_key(int), event_text(), compose(int&).
   */
-  static int event_key()        {return e_keysym;}
+  FL_EXPORT inline int event_key()        {return e_keysym;}
   /**
     Returns the keycode of the last key event, regardless of the NumLock state.
 
@@ -795,7 +811,7 @@ public:
     event_key() returns the translated key code, whereas
     event_original_key() returns the keycode before NumLock translation.
   */
-  static int event_original_key(){return e_original_keysym;}
+  FL_EXPORT inline int event_original_key(){return e_original_keysym;}
   /**
     Returns true if the given \p key was held
     down (or pressed) <I>during</I> the last event.  This is constant until
@@ -835,13 +851,13 @@ public:
 
     On Windows Fl::get_key(FL_KP_Enter) and Fl::event_key(FL_KP_Enter) do not work.
   */
-  static int event_key(int key);
+  FL_EXPORT int event_key(int key);
   /**
     Returns true if the given \p key is held down <I>now</I>.
     Under X this requires a round-trip to the server and is <I>much</I>
     slower than Fl::event_key(int). \see event_key(int)
   */
-  static int get_key(int key); // platform dependent
+  FL_EXPORT int get_key(int key); // platform dependent
   /**
     Returns the text associated with the current event, including FL_PASTE or FL_DND_RELEASE events.
     This can be used in response to FL_KEYUP, FL_KEYDOWN, FL_PASTE, and FL_DND_RELEASE.
@@ -856,62 +872,70 @@ public:
 
     \returns A NULL terminated text string equivalent of the last keystroke.
    */
-  static const char* event_text() {return e_text;}
+  FL_EXPORT inline const char* event_text() {return e_text;}
   /**
     Returns the length of the text in Fl::event_text(). There
     will always be a nul at this position in the text. However there may
     be a nul before that if the keystroke translates to a nul character or
     you paste a nul character.
   */
-  static int event_length() {return e_length;}
+  FL_EXPORT inline int event_length() {return e_length;}
 
   /** During an FL_PASTE event of non-textual data, returns a pointer to the pasted data.
    The returned data is an Fl_RGB_Image * when the result of Fl::event_clipboard_type() is Fl::clipboard_image.
    */
-  static void *event_clipboard() { return e_clipboard_data; }
+  FL_EXPORT inline void *event_clipboard() { return e_clipboard_data; }
   /** Returns the type of the pasted data during an FL_PASTE event.
    This type can be Fl::clipboard_plain_text or Fl::clipboard_image.
    */
-  static const char *event_clipboard_type() {return e_clipboard_type; }
+  FL_EXPORT inline const char *event_clipboard_type() {return e_clipboard_type; }
 
 
-  static int compose(int &del);
-  static void compose_reset();
-  static int event_inside(int,int,int,int);
-  static int event_inside(const Fl_Widget*);
-  static int test_shortcut(Fl_Shortcut);
+  FL_EXPORT int compose(int &del);
+  FL_EXPORT void compose_reset();
+  FL_EXPORT int event_inside(int,int,int,int);
+  FL_EXPORT int event_inside(const Fl_Widget*);
+  FL_EXPORT int test_shortcut(Fl_Shortcut);
 
-  static void enable_im();
-  static void disable_im();
+  FL_EXPORT void enable_im();
+  FL_EXPORT void disable_im();
 
   // event destinations:
-  static int handle(int, Fl_Window*);
-  static int handle_(int, Fl_Window*);
+  FL_EXPORT int handle(int, Fl_Window*);
+  FL_EXPORT int handle_(int, Fl_Window*);
   /**  Gets the widget that is below the mouse.
        \see  belowmouse(Fl_Widget*) */
-  static Fl_Widget* belowmouse() {return belowmouse_;}
-  static void belowmouse(Fl_Widget*);
+  FL_EXPORT inline Fl_Widget* belowmouse() {return belowmouse_;}
+  FL_EXPORT void belowmouse(Fl_Widget*);
   /** Gets the widget that is being pushed.
       \see void pushed(Fl_Widget*) */
-  static Fl_Widget* pushed()    {return pushed_;}
-  static void pushed(Fl_Widget*);
+  FL_EXPORT inline Fl_Widget* pushed()    {return pushed_;}
+  FL_EXPORT void pushed(Fl_Widget*);
   /** Gets the current Fl::focus() widget. \sa Fl::focus(Fl_Widget*) */
-  static Fl_Widget* focus()     {return focus_;}
-  static void focus(Fl_Widget*);
-  static void add_handler(Fl_Event_Handler ha);
-  static void add_handler(Fl_Event_Handler ha, Fl_Event_Handler before);
-  static Fl_Event_Handler last_handler();
-  static void remove_handler(Fl_Event_Handler h);
-  static void add_system_handler(Fl_System_Handler h, void *data);
-  static void remove_system_handler(Fl_System_Handler h);
-  static void event_dispatch(Fl_Event_Dispatch d);
-  static Fl_Event_Dispatch event_dispatch();
-  static Fl_Callback_Reason callback_reason();
+  FL_EXPORT inline Fl_Widget* focus()     {return focus_;}
+  FL_EXPORT void focus(Fl_Widget*);
+  FL_EXPORT void add_handler(Fl_Event_Handler ha);
+  FL_EXPORT void add_handler(Fl_Event_Handler ha, Fl_Event_Handler before);
+  FL_EXPORT Fl_Event_Handler last_handler();
+  FL_EXPORT void remove_handler(Fl_Event_Handler h);
+  FL_EXPORT void add_system_handler(Fl_System_Handler h, void *data);
+  FL_EXPORT void remove_system_handler(Fl_System_Handler h);
+  FL_EXPORT void event_dispatch(Fl_Event_Dispatch d);
+  FL_EXPORT Fl_Event_Dispatch event_dispatch();
+  FL_EXPORT Fl_Callback_Reason callback_reason();
   /** @} */
 
   /** \defgroup  fl_clipboard  Selection & Clipboard functions
         FLTK global copy/cut/paste functions declared in <FL/Fl.H>
    @{ */
+
+FL_EXPORT int clipboard_contains(const char *type);
+/**  Denotes plain textual data
+ */
+FL_EXPORT extern char const * const clipboard_plain_text;
+/**  Denotes image data
+ */
+FL_EXPORT extern char const * const clipboard_image;
 
   /**
     Copies data to the selection buffer, the clipboard, or both.
@@ -952,7 +976,7 @@ public:
       Fl::screen_driver()->copy(stuff, len, clipboard, type);
     \endcode
   */
-  static void copy(const char *stuff, int len, int destination = 0,
+  FL_EXPORT void copy(const char *stuff, int len, int destination = 0,
                    const char *type = Fl::clipboard_plain_text);
 
   /**
@@ -982,8 +1006,8 @@ public:
 
     \see copy(const char *, int, int, const char *)
   */
-  static void selection_to_clipboard(int mode) {
-    selection_to_clipboard_ = mode ? 1 : 0;
+  FL_EXPORT inline void selection_to_clipboard(int mode) {
+    Fl::Private::selection_to_clipboard_ = mode ? 1 : 0;
   }
 
   /**
@@ -991,7 +1015,7 @@ public:
 
     \see void selection_to_clipboard(int)
   */
-  static int selection_to_clipboard() { return selection_to_clipboard_; }
+  FL_EXPORT inline int selection_to_clipboard() { return Fl::Private::selection_to_clipboard_; }
 
   /**
    Pastes the data from the selection buffer (\p source is 0) or the clipboard
@@ -1035,7 +1059,7 @@ public:
    \li Mac OS X platform: Both bitmap (TIFF) and vectorial (PDF) data from clipboard
    can be pasted as image data.
    */
-  static void paste(Fl_Widget &receiver, int source, const char *type = Fl::clipboard_plain_text);
+  FL_EXPORT void paste(Fl_Widget &receiver, int source, const char *type = Fl::clipboard_plain_text);
 
   /**
   FLTK will call the registered callback whenever there is a change to the
@@ -1058,12 +1082,12 @@ public:
   \note Some systems require polling to monitor the clipboard and may
   therefore have some delay in detecting changes.
   */
-  static void add_clipboard_notify(Fl_Clipboard_Notify_Handler h, void *data = 0);
+  FL_EXPORT void add_clipboard_notify(Fl_Clipboard_Notify_Handler h, void *data = 0);
   /**
   Stop calling the specified callback when there are changes to the selection
   buffer or the clipboard.
   */
-  static void remove_clipboard_notify(Fl_Clipboard_Notify_Handler h);
+  FL_EXPORT void remove_clipboard_notify(Fl_Clipboard_Notify_Handler h);
   /** Returns non 0 if the clipboard contains data matching \p type.
    The clipboard can contain both text and image data;  in that situation this function
    returns non 0 to both requests.
@@ -1072,13 +1096,6 @@ public:
    allows to copy/paste non-textual data only from/to the clipboard.
    \param type can be Fl::clipboard_plain_text or Fl::clipboard_image.
    */
-  static int clipboard_contains(const char *type);
-  /**  Denotes plain textual data
-   */
-  static char const * const clipboard_plain_text;
-  /**  Denotes image data
-   */
-  static char const * const clipboard_image;
 
   /**
     Initiate a Drag And Drop operation. The selection buffer should be
@@ -1089,15 +1106,15 @@ public:
     Create a selection first using:
     Fl::copy(const char *stuff, int len, 0)
   */
-  static int dnd(); // platform dependent
+  FL_EXPORT int dnd(); // platform dependent
 
   // These are for back-compatibility only:
   /**  back-compatibility only: Gets the widget owning the current selection
        \see Fl_Widget* selection_owner(Fl_Widget*) */
-  static Fl_Widget* selection_owner() {return selection_owner_;}
-  static void selection_owner(Fl_Widget*);
-  static void selection(Fl_Widget &owner, const char*, int len);
-  static void paste(Fl_Widget &receiver);
+  FL_EXPORT inline Fl_Widget* selection_owner() {return selection_owner_;}
+  FL_EXPORT void selection_owner(Fl_Widget*);
+  FL_EXPORT void selection(Fl_Widget &owner, const char*, int len);
+  FL_EXPORT void paste(Fl_Widget &receiver);
 /** @} */
 
 
@@ -1114,27 +1131,27 @@ public:
  by typing \c Ctrl/+/-/0/ (\c Cmd/+/-/0/ under macOS).
  See \ref events_fl_shortcut for more details about these shortcuts.
      @{ */
-  static int x(); // via screen driver
-  static int y(); // via screen driver
-  static int w(); // via screen driver
-  static int h(); // via screen driver
+  FL_EXPORT int x(); // via screen driver
+  FL_EXPORT int y(); // via screen driver
+  FL_EXPORT int w(); // via screen driver
+  FL_EXPORT int h(); // via screen driver
 
   // multi-head support:
-  static int screen_count(); // via screen driver
-  static void screen_xywh(int &X, int &Y, int &W, int &H); // via screen driver
-  static void screen_xywh(int &X, int &Y, int &W, int &H, int mx, int my); // via screen driver
-  static void screen_xywh(int &X, int &Y, int &W, int &H, int n); // via screen driver
-  static void screen_xywh(int &X, int &Y, int &W, int &H, int mx, int my, int mw, int mh); // via screen driver
-  static int screen_num(int x, int y); // via screen driver
-  static int screen_num(int x, int y, int w, int h); // via screen driver
-  static void screen_dpi(float &h, float &v, int n=0); // via screen driver
-  static void screen_work_area(int &X, int &Y, int &W, int &H, int mx, int my); // via screen driver
-  static void screen_work_area(int &X, int &Y, int &W, int &H, int n); // via screen driver
-  static void screen_work_area(int &X, int &Y, int &W, int &H); // via screen driver
-  static float screen_scale(int n); // via screen driver
-  static void screen_scale(int n, float factor); // via screen driver
-  static int screen_scaling_supported();
-  static void keyboard_screen_scaling(int value);
+  FL_EXPORT int screen_count(); // via screen driver
+  FL_EXPORT void screen_xywh(int &X, int &Y, int &W, int &H); // via screen driver
+  FL_EXPORT void screen_xywh(int &X, int &Y, int &W, int &H, int mx, int my); // via screen driver
+  FL_EXPORT void screen_xywh(int &X, int &Y, int &W, int &H, int n); // via screen driver
+  FL_EXPORT void screen_xywh(int &X, int &Y, int &W, int &H, int mx, int my, int mw, int mh); // via screen driver
+  FL_EXPORT int screen_num(int x, int y); // via screen driver
+  FL_EXPORT int screen_num(int x, int y, int w, int h); // via screen driver
+  FL_EXPORT void screen_dpi(float &h, float &v, int n=0); // via screen driver
+  FL_EXPORT void screen_work_area(int &X, int &Y, int &W, int &H, int mx, int my); // via screen driver
+  FL_EXPORT void screen_work_area(int &X, int &Y, int &W, int &H, int n); // via screen driver
+  FL_EXPORT void screen_work_area(int &X, int &Y, int &W, int &H); // via screen driver
+  FL_EXPORT float screen_scale(int n); // via screen driver
+  FL_EXPORT void screen_scale(int n, float factor); // via screen driver
+  FL_EXPORT int screen_scaling_supported();
+  FL_EXPORT void keyboard_screen_scaling(int value);
 
 /**   @} */
 
@@ -1145,25 +1162,25 @@ public:
      @{ */
 
   // color map:
-  static void   set_color(Fl_Color, uchar, uchar, uchar);
-  static void   set_color(Fl_Color, uchar, uchar, uchar, uchar);
+  FL_EXPORT void   set_color(Fl_Color, uchar, uchar, uchar);
+  FL_EXPORT void   set_color(Fl_Color, uchar, uchar, uchar, uchar);
   /**
     Sets an entry in the fl_color index table. You can set it to any
     8-bit RGB color. The color is not allocated until fl_color(i) is used.
   */
-  static void   set_color(Fl_Color i, unsigned c); // platform dependent
-  static unsigned get_color(Fl_Color i);
-  static void   get_color(Fl_Color i, uchar &red, uchar &green, uchar &blue);
-  static void   get_color(Fl_Color i, uchar &red, uchar &green, uchar &blue, uchar &alpha);
+  FL_EXPORT void   set_color(Fl_Color i, unsigned c); // platform dependent
+  FL_EXPORT unsigned get_color(Fl_Color i);
+  FL_EXPORT void   get_color(Fl_Color i, uchar &red, uchar &green, uchar &blue);
+  FL_EXPORT void   get_color(Fl_Color i, uchar &red, uchar &green, uchar &blue, uchar &alpha);
   /**
     Frees the specified color from the colormap, if applicable.
     If overlay is non-zero then the color is freed from the
     overlay colormap.
   */
-  static void   free_color(Fl_Color i, int overlay = 0); // platform dependent
+  FL_EXPORT void   free_color(Fl_Color i, int overlay = 0); // platform dependent
 
   // fonts:
-  static const char* get_font(Fl_Font);
+  FL_EXPORT const char* get_font(Fl_Font);
   /**
     Get a human-readable string describing the family of this face.  This
     is useful if you are presenting a choice to the user.  There is no
@@ -1176,7 +1193,7 @@ public:
     forward and back for a set with non-zero attributes, these faces along
     with the face with a zero attribute before them constitute a family.
   */
-  static const char* get_font_name(Fl_Font, int* attributes = 0);
+  FL_EXPORT const char* get_font_name(Fl_Font, int* attributes = 0);
   /**
     Return an array of sizes in \p sizep.  The return value is the
     length of this array.  The sizes are sorted from smallest to largest
@@ -1188,9 +1205,9 @@ public:
     points at a static buffer that is overwritten each call.  Under X this
     will open the display.
   */
-  static int get_font_sizes(Fl_Font, int*& sizep);
-  static void set_font(Fl_Font, const char*);
-  static void set_font(Fl_Font, Fl_Font);
+  FL_EXPORT int get_font_sizes(Fl_Font, int*& sizep);
+  FL_EXPORT void set_font(Fl_Font, const char*);
+  FL_EXPORT void set_font(Fl_Font, Fl_Font);
   /**
     FLTK will open the display, and add every fonts on the server to the
     face table.  It will attempt to put "families" of faces together, so
@@ -1218,7 +1235,7 @@ public:
 
     The return value is how many faces are in the table after this is done.
   */
-  static Fl_Font set_fonts(const char* = 0); // platform dependent
+  FL_EXPORT Fl_Font set_fonts(const char* = 0); // platform dependent
 
   /**   @} */
  /** \defgroup  fl_drawings  Drawing functions
@@ -1230,48 +1247,48 @@ public:
  /** @} */
 
   // labeltypes:
-  static void set_labeltype(Fl_Labeltype,Fl_Label_Draw_F*,Fl_Label_Measure_F*);
+  FL_EXPORT void set_labeltype(Fl_Labeltype,Fl_Label_Draw_F*,Fl_Label_Measure_F*);
   /** Sets the functions to call to draw and measure a specific labeltype. */
-  static void set_labeltype(Fl_Labeltype, Fl_Labeltype from); // is it defined ?
+  FL_EXPORT void set_labeltype(Fl_Labeltype, Fl_Labeltype from); // is it defined ?
 
   // boxtypes:
-  static Fl_Box_Draw_F *get_boxtype(Fl_Boxtype);
-  static void set_boxtype(Fl_Boxtype, Fl_Box_Draw_F*,
+  FL_EXPORT Fl_Box_Draw_F *get_boxtype(Fl_Boxtype);
+  FL_EXPORT void set_boxtype(Fl_Boxtype, Fl_Box_Draw_F*,
                           uchar, uchar, uchar, uchar,
                           Fl_Box_Draw_Focus_F* =NULL);
-  static void set_boxtype(Fl_Boxtype, Fl_Boxtype from);
-  static int box_dx(Fl_Boxtype);
-  static int box_dy(Fl_Boxtype);
-  static int box_dw(Fl_Boxtype);
-  static int box_dh(Fl_Boxtype);
+  FL_EXPORT void set_boxtype(Fl_Boxtype, Fl_Boxtype from);
+  FL_EXPORT int box_dx(Fl_Boxtype);
+  FL_EXPORT int box_dy(Fl_Boxtype);
+  FL_EXPORT int box_dw(Fl_Boxtype);
+  FL_EXPORT int box_dh(Fl_Boxtype);
 
-  static int draw_box_active();
-  static Fl_Color box_color(Fl_Color);
-  static void set_box_color(Fl_Color);
+  FL_EXPORT int draw_box_active();
+  FL_EXPORT Fl_Color box_color(Fl_Color);
+  FL_EXPORT void set_box_color(Fl_Color);
 
   // back compatibility:
   /** \addtogroup fl_windows
     @{ */
   /** For back compatibility, sets the void Fl::fatal handler callback */
-  static void set_abort(Fl_Abort_Handler f) {fatal = f;}
-  static void (*atclose)(Fl_Window*,void*);
-  static void default_atclose(Fl_Window*,void*);
+  FL_EXPORT inline void set_abort(Fl_Abort_Handler f) {fatal = f;}
+  extern FL_EXPORT void (*atclose)(Fl_Window*,void*);
+  FL_EXPORT void default_atclose(Fl_Window*,void*);
   /** For back compatibility, sets the Fl::atclose handler callback. You
       can now simply change the callback for the window instead.
       \see Fl_Window::callback(Fl_Callback*) */
-  static void set_atclose(Fl_Atclose_Handler f) {atclose = f;}
+inline FL_EXPORT void set_atclose(Fl_Atclose_Handler f) {atclose = f;}
   /**   @} */
 
   /** \addtogroup fl_events
     @{ */
   /** Returns non-zero if the Shift key is pressed. */
-  static int event_shift() {return e_state&FL_SHIFT;}
+inline FL_EXPORT int event_shift() {return e_state&FL_SHIFT;}
   /** Returns non-zero if the Control key is pressed. */
-  static int event_ctrl() {return e_state&FL_CTRL;}
+inline FL_EXPORT int event_ctrl() {return e_state&FL_CTRL;}
   /** Returns non-zero if the FL_COMMAND key is pressed, either FL_CTRL or on OSX FL_META. */
-  static int event_command() {return e_state&FL_COMMAND;}
+inline FL_EXPORT int event_command() {return e_state&FL_COMMAND;}
   /** Returns non-zero if the Alt key is pressed. */
-  static int event_alt() {return e_state&FL_ALT;}
+inline FL_EXPORT int event_alt() {return e_state&FL_ALT;}
   /**
     Returns the mouse buttons state bits; if non-zero, then at least one
     button is pressed now.  This function returns the button state at the
@@ -1280,48 +1297,36 @@ public:
     caused an FL_RELEASE event, you can use Fl::event_button() instead.
     \return a bit mask value like { [FL_BUTTON1] | [FL_BUTTON2] | ... | [FL_BUTTON5] }
   */
-  static int event_buttons() {return e_state & FL_BUTTONS;}
+inline FL_EXPORT int event_buttons() {return e_state & FL_BUTTONS;}
   /**
     Returns non-zero if mouse button 1 is currently held down.
     For more details, see Fl::event_buttons().
   */
-  static int event_button1() {return e_state & FL_BUTTON1;}
+inline FL_EXPORT int event_button1() {return e_state & FL_BUTTON1;}
   /**
     Returns non-zero if mouse button 2 is currently held down.
     For more details, see Fl::event_buttons().
   */
-  static int event_button2() {return e_state & FL_BUTTON2;}
+inline FL_EXPORT int event_button2() {return e_state & FL_BUTTON2;}
   /**
     Returns non-zero if mouse button 3 is currently held down.
     For more details, see Fl::event_buttons().
   */
-  static int event_button3() {return e_state & FL_BUTTON3;}
+inline FL_EXPORT int event_button3() {return e_state & FL_BUTTON3;}
   /**
     Returns non-zero if mouse button 4 is currently held down.
     For more details, see Fl::event_buttons().
   */
-  static int event_button4() {return e_state & FL_BUTTON4;}
+inline FL_EXPORT int event_button4() {return e_state & FL_BUTTON4;}
   /**
     Returns non-zero if mouse button 5 is currently held down.
     For more details, see Fl::event_buttons().
   */
-  static int event_button5() {return e_state & FL_BUTTON5;}
+inline FL_EXPORT int event_button5() {return e_state & FL_BUTTON5;}
   /**   @} */
 
-private:
-  /**
-    Sets an idle callback (internal use only).
-
-    This method is now private and is used to store the idle callback.
-    The old, public set_idle() method was deprecated since 1.3.x and
-    is no longer available in FLTK 1.5.
-
-    See documentation: use Fl::add_idle() instead.
-  */
-  static void set_idle_(Fl_Old_Idle_Handler cb) {idle_ = cb;}
-public:
   /** See grab(Fl_Window*) */
-  static void grab(Fl_Window& win) {grab(&win);}
+inline FL_EXPORT void grab(Fl_Window& win) {grab(&win);}
 
   // Visible focus methods...
   /**
@@ -1329,13 +1334,13 @@ public:
     non-text widgets. The default mode is to enable keyboard focus
     for all widgets.
   */
-  static void visible_focus(int v) { option(OPTION_VISIBLE_FOCUS, (v!=0)); }
+inline FL_EXPORT void visible_focus(int v) { option(OPTION_VISIBLE_FOCUS, (v!=0)); }
   /**
     Gets or sets the visible keyboard focus on buttons and other
     non-text widgets. The default mode is to enable keyboard focus
     for all widgets.
   */
-  static int  visible_focus() { return option(OPTION_VISIBLE_FOCUS); }
+inline FL_EXPORT int  visible_focus() { return option(OPTION_VISIBLE_FOCUS); }
 
   // Drag-n-drop text operation methods...
   /**
@@ -1344,30 +1349,30 @@ public:
     be dragged from text fields or dragged within a text field as a
     cut/paste shortcut.
   */
-  static void dnd_text_ops(int v) { option(OPTION_DND_TEXT, (v!=0)); }
+inline FL_EXPORT void dnd_text_ops(int v) { option(OPTION_DND_TEXT, (v!=0)); }
   /**
     Gets whether drag and drop text operations are
     supported. This returns whether selected text can
     be dragged from text fields or dragged within a text field as a
     cut/paste shortcut.
   */
-  static int  dnd_text_ops() { return option(OPTION_DND_TEXT); }
+inline FL_EXPORT int  dnd_text_ops() { return option(OPTION_DND_TEXT); }
 
   // --- FLTK Multithreading support functions ---
   /** \defgroup fl_multithread Multithreading support functions
         fl multithreading support functions declared in <FL/Fl.H>
    @{ */
   // Thread locking:
-  static int lock();
-  static void unlock();
+  FL_EXPORT int lock();
+  FL_EXPORT void unlock();
   // Thread wakup and defered calls:
-  static void awake();
+  FL_EXPORT void awake();
   FL_DEPRECATED("since 1.5.0 - use Fl::awake() or Fl::awake(handler, user_data) instead",
-  static void awake(void* message));
-  static int awake(Fl_Awake_Handler handler, void* user_data=nullptr);
-  static int awake_once(Fl_Awake_Handler handler, void* user_data=nullptr);
+  FL_EXPORT void awake(void* message));
+  FL_EXPORT int awake(Fl_Awake_Handler handler, void* user_data=nullptr);
+  FL_EXPORT int awake_once(Fl_Awake_Handler handler, void* user_data=nullptr);
   FL_DEPRECATED("since 1.5.0 - use Fl::awake() or Fl::awake(handler, user_data) instead",
-  static void* thread_message()); // platform dependent
+  FL_EXPORT void* thread_message()); // platform dependent
   /** @} */
 
   /** \defgroup fl_del_widget Safe widget deletion support functions
@@ -1400,24 +1405,24 @@ public:
 
    @{ */
   // Widget deletion:
-  static void delete_widget(Fl_Widget *w);
-  static void do_widget_deletion();
-  static void watch_widget_pointer(Fl_Widget *&w);
-  static void release_widget_pointer(Fl_Widget *&w);
-  static void clear_widget_pointer(Fl_Widget const *w);
+  FL_EXPORT void delete_widget(Fl_Widget *w);
+  FL_EXPORT void do_widget_deletion();
+  FL_EXPORT void watch_widget_pointer(Fl_Widget *&w);
+  FL_EXPORT void release_widget_pointer(Fl_Widget *&w);
+  FL_EXPORT void clear_widget_pointer(Fl_Widget const *w);
   /** @} */
 
   /**  sets whether GL windows should be drawn at high resolution on Apple
    computers with retina displays
    \version 1.3.4
    */
-  static void use_high_res_GL(int val) { use_high_res_GL_ = val; }
+inline FL_EXPORT void use_high_res_GL(int val) { Fl::Private::use_high_res_GL_ = val; }
   /**  returns whether GL windows should be drawn at high resolution on Apple
    computers with retina displays.
    Default is no.
    \version 1.3.4
    */
-  static int use_high_res_GL() { return use_high_res_GL_; }
+inline FL_EXPORT int use_high_res_GL() { return Fl::Private::use_high_res_GL_; }
 
   /**  sets whether OpenGL uses textures to draw all text.
    By default, FLTK draws OpenGL text using textures, if the necessary
@@ -1430,28 +1435,27 @@ public:
    \see gl_texture_pile_height(int max)
    \version 1.4.0
    */
-  static void draw_GL_text_with_textures(int val) { draw_GL_text_with_textures_ = val; }
+inline FL_EXPORT void draw_GL_text_with_textures(int val) { Fl::Private::draw_GL_text_with_textures_ = val; }
 
   /**  returns whether whether OpenGL uses textures to draw all text.
    Default is yes.
    \see draw_GL_text_with_textures(int val)
    \version 1.4.0
    */
-  static int draw_GL_text_with_textures() { return draw_GL_text_with_textures_; }
+inline FL_EXPORT int draw_GL_text_with_textures() { return Fl::Private::draw_GL_text_with_textures_; }
 
-  static int system(const char *command);
+  FL_EXPORT int system(const char *command);
 
   // Convert Windows commandline arguments to UTF-8 (documented in src/Fl.cxx)
-  static int args_to_utf8(int argc, char ** &argv);
+  FL_EXPORT int args_to_utf8(int argc, char ** &argv);
 
 #ifdef FLTK_HAVE_CAIRO
   /** \defgroup group_cairo Cairo Support Functions and Classes
       @{
   */
-public:
   // Cairo support API
 
-  static cairo_t *cairo_make_current(Fl_Window *w);
+  FL_EXPORT cairo_t *cairo_make_current(Fl_Window *w);
 
   /** When FLTK_HAVE_CAIRO is defined and cairo_autolink_context() is true,
     any current window dc is linked to a current Cairo context.
@@ -1468,7 +1472,7 @@ public:
 
     \note Only available if built with CMake option FLTK_OPTION_CAIRO_WINDOW=ON.
   */
-  static void cairo_autolink_context(bool alink) {
+inline FL_EXPORT void cairo_autolink_context(bool alink) {
     cairo_state_.autolink(alink);
   }
 
@@ -1480,12 +1484,12 @@ public:
 
     \note Only available if built with CMake option FLTK_OPTION_CAIRO_EXT=ON.
     */
-  static bool cairo_autolink_context() {
+inline FL_EXPORT bool cairo_autolink_context() {
     return cairo_state_.autolink();
   }
 
   /** Gets the current Cairo context linked with a fltk window. */
-  static cairo_t *cairo_cc() {
+inline FL_EXPORT cairo_t *cairo_cc() {
     return cairo_state_.cc();
   }
 
@@ -1494,7 +1498,7 @@ public:
 
     \note Only available if built with CMake option FLTK_OPTION_CAIRO_WINDOW=ON.
   */
-  static void cairo_cc(cairo_t *c, bool own=false) {
+inline FL_EXPORT void cairo_cc(cairo_t *c, bool own=false) {
     cairo_state_.cc(c, own);
   }
 
@@ -1531,23 +1535,22 @@ public:
     \see Fl::cairo_autolink_context(bool)
     \see Fl::cairo_make_current(Fl_Window*);
   */
-  static void cairo_flush(cairo_t *c) {
+inline FL_EXPORT void cairo_flush(cairo_t *c) {
     // flush Cairo drawings: necessary at least for Windows
     cairo_surface_t *s = cairo_get_target(c);
     cairo_surface_flush(s);
   }
 
-private:
-  static cairo_t *cairo_make_current(void *gc);
-  static cairo_t *cairo_make_current(void *gc, int W, int H);
-  static Fl_Cairo_State cairo_state_;
-
-public:
   /** @} */
 
 #endif // FLTK_HAVE_CAIRO
 
 };
+
+
+
+
+
 
 /**
   This class should be used to control safe widget deletion.

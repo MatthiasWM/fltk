@@ -38,7 +38,7 @@ public:
 
   // Static methods.
 
-  // Some of these methods will replace the scheme related methods of class Fl,
+  // Some of these methods will replace the scheme related methods of namespace Fl,
   // for instance Fl::scheme() and Fl::is_scheme().
   // Backwards compatibility must be kept though.
 

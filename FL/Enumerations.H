@@ -109,7 +109,7 @@
     Event numbers can be converted to their actual names using the
     \ref fl_eventnames[] array defined in \#include &lt;FL/names.h&gt;
 
-    \see Fl::event_text(), Fl::event_key(), class Fl::
+    \see Fl::event_text(), Fl::event_key(), namespace Fl
  */
 // DEV NOTE: Keep this list in sync with FL/names.h
 enum Fl_Event { // events
