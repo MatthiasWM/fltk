@@ -28,6 +28,13 @@
 #define FL_VERTICAL             0 ///< The valuator can work vertically
 #define FL_HORIZONTAL           1 ///< The valuator can work horizontally
 
+/** \name Scale Types for Fl_Valuator
+    @{
+*/
+#define FL_LINEAR_SCALE         0 ///< Linear scale (default)
+#define FL_LOG_SCALE            1 ///< Logarithmic scale
+/** @} */
+
 /**
   The Fl_Valuator class controls a single floating-point value
   and provides a consistent interface to set the value, range, and step,
@@ -50,6 +57,7 @@ class FL_EXPORT Fl_Valuator : public Fl_Widget {
   double previous_value_;
   double min, max; // truncates to this range *after* rounding
   double A; int B; // rounds to multiples of A/B, or no rounding if A is zero
+  uchar scale_type_; // FL_LINEAR_SCALE or FL_LOG_SCALE
 
 protected:
   /** Tells if the valuator is an FL_HORIZONTAL one */
@@ -66,6 +74,23 @@ protected:
   virtual void value_damage(); // cause damage() due to value() changing
   /** Sets the current floating point value. */
   void set_value(double v) {value_ = v;}
+
+  /**
+    Converts a value to a normalized position (0.0 to 1.0) based on the current scale type.
+    For linear scale, this is a simple linear interpolation.
+    For logarithmic scale, this uses logarithmic interpolation.
+    \param[in] val The value to convert.
+    \return A normalized position between 0.0 and 1.0.
+  */
+  double value_to_position(double val) const;
+  /**
+    Converts a normalized position (0.0 to 1.0) to a value based on the current scale type.
+    For linear scale, this is a simple linear interpolation.
+    For logarithmic scale, this uses exponential interpolation.
+    \param[in] pos The normalized position to convert.
+    \return The corresponding value.
+  */
+  double position_to_value(double pos) const;
 
 public:
 
@@ -102,6 +127,24 @@ public:
     the widget after changing the range.
   */
   void range(double a, double b) {min = a; max = b;}
+  /**
+    Gets the scale type for the valuator.
+    \return The current scale type: FL_LINEAR_SCALE (default) or FL_LOG_SCALE.
+    \see scale_type(uchar)
+  */
+  uchar scale_type() const {return scale_type_;}
+  /**
+    Sets the scale type for the valuator.
+    When set to FL_LOG_SCALE, the valuator maps positions logarithmically
+    to values. This is useful for controls that need to span a large
+    range of values, such as audio volume controls or frequency selectors.
+
+    \note For logarithmic scale, minimum() must be greater than 0.
+
+    \param[in] s The scale type: FL_LINEAR_SCALE (default) or FL_LOG_SCALE.
+    \see scale_type()
+  */
+  void scale_type(uchar s) {scale_type_ = s;}
   /**    See double Fl_Valuator::step() const   */
   void step(int a) {A = a; B = 1;}
   /**    See double Fl_Valuator::step() const   */

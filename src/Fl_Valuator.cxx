@@ -37,6 +37,7 @@ Fl_Valuator::Fl_Valuator(int X, int Y, int W, int H, const char* L)
   max = 1;
   A = 0.0;
   B = 1;
+  scale_type_ = FL_LINEAR_SCALE;
 }
 
 const double epsilon = 4.66e-10;
@@ -189,4 +190,64 @@ int Fl_Valuator::format(char* buffer) {
 
   // MRS: THIS IS A HACK - RECOMMEND ADDING BUFFER SIZE ARGUMENT
   return snprintf(buffer, 128, "%.*f", c, v);
+}
+
+/**
+  Converts a value to a normalized position (0.0 to 1.0) based on the current scale type.
+  For linear scale, this is a simple linear interpolation.
+  For logarithmic scale, this uses logarithmic interpolation.
+  \param[in] val The value to convert.
+  \return A normalized position between 0.0 and 1.0.
+*/
+double Fl_Valuator::value_to_position(double val) const {
+  if (min == max) return 0.5;
+
+  if (scale_type_ == FL_LOG_SCALE) {
+    // For logarithmic scale, both min and max must be positive
+    if (min <= 0 || max <= 0 || val <= 0) {
+      // Fall back to linear if values are not suitable for log scale
+      double pos = (val - min) / (max - min);
+      if (pos > 1.0) pos = 1.0;
+      else if (pos < 0.0) pos = 0.0;
+      return pos;
+    }
+    double log_min = log(min);
+    double log_max = log(max);
+    double log_val = log(val);
+    double pos = (log_val - log_min) / (log_max - log_min);
+    if (pos > 1.0) pos = 1.0;
+    else if (pos < 0.0) pos = 0.0;
+    return pos;
+  } else {
+    // Linear scale
+    double pos = (val - min) / (max - min);
+    if (pos > 1.0) pos = 1.0;
+    else if (pos < 0.0) pos = 0.0;
+    return pos;
+  }
+}
+
+/**
+  Converts a normalized position (0.0 to 1.0) to a value based on the current scale type.
+  For linear scale, this is a simple linear interpolation.
+  For logarithmic scale, this uses exponential interpolation.
+  \param[in] pos The normalized position to convert.
+  \return The corresponding value.
+*/
+double Fl_Valuator::position_to_value(double pos) const {
+  if (min == max) return min;
+
+  if (scale_type_ == FL_LOG_SCALE) {
+    // For logarithmic scale, both min and max must be positive
+    if (min <= 0 || max <= 0) {
+      // Fall back to linear if values are not suitable for log scale
+      return pos * (max - min) + min;
+    }
+    double log_min = log(min);
+    double log_max = log(max);
+    return exp(pos * (log_max - log_min) + log_min);
+  } else {
+    // Linear scale
+    return pos * (max - min) + min;
+  }
 }

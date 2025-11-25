@@ -115,9 +115,7 @@ void Fl_Slider::draw(int X, int Y, int W, int H) {
   if (minimum() == maximum())
     val = 0.5;
   else {
-    val = (value()-minimum())/(maximum()-minimum());
-    if (val > 1.0) val = 1.0;
-    else if (val < 0.0) val = 0.0;
+    val = value_to_position(value());
   }
 
   int ww = (horizontal() ? W : H);
@@ -231,9 +229,7 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
     if (minimum() == maximum())
       val = 0.5;
     else {
-      val = (value()-minimum())/(maximum()-minimum());
-      if (val > 1.0) val = 1.0;
-      else if (val < 0.0) val = 0.0;
+      val = value_to_position(value());
     }
 
     int ww = (horizontal() ? W : H);
@@ -279,7 +275,9 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
         xx = ww-S;
         offcenter = mx-xx; if (offcenter > S) offcenter = S;
       }
-      v = round(xx*(maximum()-minimum())/(ww-S) + minimum());
+      // Convert position back to value using the appropriate scale
+      double pos = double(xx) / double(ww-S);
+      v = round(position_to_value(pos));
       // make sure a click outside the sliderbar moves it:
       if (event == FL_PUSH && v == value()) {
         offcenter = S/2;
