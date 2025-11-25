@@ -276,7 +276,7 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
         offcenter = mx-xx; if (offcenter > S) offcenter = S;
       }
       // Convert position back to value using the appropriate scale
-      double pos = double(xx) / double(ww-S);
+      double pos = (ww-S) > 0 ? double(xx) / double(ww-S) : 0.0;
       v = round(position_to_value(pos));
       // make sure a click outside the sliderbar moves it:
       if (event == FL_PUSH && v == value()) {
