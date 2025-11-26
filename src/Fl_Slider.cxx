@@ -108,7 +108,7 @@ double Fl_Slider::position_value(double p, double p1, double p2) const {
     double log_max = ::log(maxv);
     if (p2 == p1) return minv;
     double log_val = log_min + (p - p1) / (p2 - p1) * (log_max - log_min);
-    return exp(log_val);
+    return ::exp(log_val);
   } else {
     // linear mapping
     if (p2 == p1) return minv;
