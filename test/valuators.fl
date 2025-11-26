@@ -6,7 +6,7 @@ Function {} {open
 } {
   Fl_Window {} {
     label {Valuator classes, showing values for type()} open
-    xywh {409 271 580 640} type Double color 43 selection_color 43
+    xywh {409 271 580 730} type Double color 43 selection_color 43
     code0 {\#include <stdio.h>} visible
   } {
     Fl_Group {} {
@@ -228,8 +228,34 @@ Function {} {open
       label {Some widgets have color(FL_GREEN) and color2(FL_RED) to show the areas these effect.}
       xywh {460 385 110 115} box BORDER_FRAME color 0 selection_color 0 labelsize 11 align 128
     }
+    Fl_Group {} {
+      label {Log Scale Sliders}
+      xywh {10 510 560 90} box ENGRAVED_BOX labelfont 1 align 17
+    } {
+      Fl_Value_Slider {} {
+        label {FL_LOG_SCALE (1-1000)}
+        user_data {"Fl_Value_Slider FL_LOG_SCALE"}
+        callback callback
+        tooltip {Logarithmic Slider (1-1000)} xywh {20 535 250 20} type Horizontal selection_color 1 labelsize 8 minimum 1 maximum 1000
+        code0 {o->scale_type(FL_LOG_SCALE); o->value(31.62);}
+      }
+      Fl_Value_Slider {} {
+        label {FL_LOG_SCALE (0.01-100)}
+        user_data {"Fl_Value_Slider FL_LOG_SCALE"}
+        callback callback
+        tooltip {Logarithmic Slider (0.01-100)} xywh {300 535 250 20} type Horizontal selection_color 1 labelsize 8 minimum 0.01 maximum 100 step 0.01
+        code0 {o->scale_type(FL_LOG_SCALE); o->value(1.0);}
+      }
+      Fl_Slider {} {
+        label {Log Vert}
+        user_data {"Fl_Slider FL_LOG_SCALE Vertical"}
+        callback callback
+        tooltip {Vertical Log Slider} xywh {30 555 20 40} selection_color 1 labelsize 8 minimum 1 maximum 1000
+        code0 {o->scale_type(FL_LOG_SCALE); o->value(100);}
+      }
+    }
     Fl_Terminal tty {selected
-      xywh {10 513 560 117}
+      xywh {10 610 560 117}
       code0 {o->ansi(true);}
     }
   }
