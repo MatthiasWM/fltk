@@ -29,6 +29,8 @@
 void Fl_Slider::_Fl_Slider() {
   slider_size_ = 0;
   slider_ = 0; // FL_UP_BOX;
+  tick_size_ = 0;
+  log_ = 0;
 }
 
 /**
@@ -59,6 +61,79 @@ void Fl_Slider::slider_size(double v) {
   if (slider_size_ != float(v)) {
     slider_size_ = float(v);
     damage(FL_DAMAGE_EXPOSE);
+  }
+}
+
+/**
+  Sets the tick mark size in pixels.
+  Set to 0 to disable tick marks (the default).
+  Tick marks are drawn on Nice_Slider types when tick_size is > 0.
+  \param[in] n tick mark size in pixels (0 to disable)
+*/
+void Fl_Slider::tick_size(int n) {
+  if (n < 0) n = 0;
+  if (tick_size_ != n) {
+    tick_size_ = n;
+    damage(FL_DAMAGE_EXPOSE);
+  }
+}
+
+/**
+  Enables or disables logarithmic scaling.
+  When enabled, the slider uses a logarithmic mapping between
+  position and value.
+  \param[in] v true to enable logarithmic scaling, false for linear
+*/
+void Fl_Slider::log(bool v) {
+  uchar nv = v ? 1 : 0;
+  if (log_ != nv) {
+    log_ = nv;
+    damage(FL_DAMAGE_EXPOSE);
+  }
+}
+
+/**
+  Convert a linear position (0..1) to a value, applying log scale if enabled.
+  \param[in] p position in range 0..1
+  \param[in] p1 minimum position value
+  \param[in] p2 maximum position value
+  \return the corresponding value
+*/
+double Fl_Slider::position_value(double p, double p1, double p2) const {
+  double minv = minimum();
+  double maxv = maximum();
+  if (log_ && minv > 0 && maxv > 0) {
+    // logarithmic mapping
+    double log_min = ::log(minv);
+    double log_max = ::log(maxv);
+    double log_val = log_min + (p - p1) / (p2 - p1) * (log_max - log_min);
+    return exp(log_val);
+  } else {
+    // linear mapping
+    return minv + (p - p1) / (p2 - p1) * (maxv - minv);
+  }
+}
+
+/**
+  Convert a value to a linear position, applying log scale if enabled.
+  \param[in] v the value to convert
+  \param[in] p1 minimum position value
+  \param[in] p2 maximum position value
+  \return position in range p1..p2
+*/
+double Fl_Slider::value_position(double v, double p1, double p2) const {
+  double minv = minimum();
+  double maxv = maximum();
+  if (log_ && minv > 0 && maxv > 0 && v > 0) {
+    // logarithmic mapping
+    double log_min = ::log(minv);
+    double log_max = ::log(maxv);
+    double log_v = ::log(v);
+    return p1 + (log_v - log_min) / (log_max - log_min) * (p2 - p1);
+  } else {
+    // linear mapping
+    if (maxv == minv) return p1;
+    return p1 + (v - minv) / (maxv - minv) * (p2 - p1);
   }
 }
 
@@ -104,8 +179,34 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
   Fl_Color black = active_r() ? FL_FOREGROUND_COLOR : FL_INACTIVE_COLOR;
   if (type() == FL_VERT_NICE_SLIDER) {
     draw_box(FL_THIN_DOWN_BOX, X+W/2-2, Y, 4, H, black);
+    // Draw tick marks if enabled
+    if (tick_size_ > 0 && H > 0) {
+      fl_color(black);
+      int tick_count = 10; // number of tick marks
+      for (int i = 0; i <= tick_count; i++) {
+        double t = (double)i / tick_count;
+        int yy = Y + int(t * (H - 1) + 0.5);
+        // Draw tick on left side of slider track
+        fl_line(X + W/2 - 2 - tick_size_, yy, X + W/2 - 2, yy);
+        // Draw tick on right side of slider track
+        fl_line(X + W/2 + 2, yy, X + W/2 + 2 + tick_size_, yy);
+      }
+    }
   } else if (type() == FL_HOR_NICE_SLIDER) {
     draw_box(FL_THIN_DOWN_BOX, X, Y+H/2-2, W, 4, black);
+    // Draw tick marks if enabled
+    if (tick_size_ > 0 && W > 0) {
+      fl_color(black);
+      int tick_count = 10; // number of tick marks
+      for (int i = 0; i <= tick_count; i++) {
+        double t = (double)i / tick_count;
+        int xx = X + int(t * (W - 1) + 0.5);
+        // Draw tick above the slider track
+        fl_line(xx, Y + H/2 - 2 - tick_size_, xx, Y + H/2 - 2);
+        // Draw tick below the slider track
+        fl_line(xx, Y + H/2 + 2, xx, Y + H/2 + 2 + tick_size_);
+      }
+    }
   }
 }
 
@@ -115,7 +216,8 @@ void Fl_Slider::draw(int X, int Y, int W, int H) {
   if (minimum() == maximum())
     val = 0.5;
   else {
-    val = (value()-minimum())/(maximum()-minimum());
+    // Use logarithmic positioning if enabled
+    val = value_position(value(), 0.0, 1.0);
     if (val > 1.0) val = 1.0;
     else if (val < 0.0) val = 0.0;
   }
@@ -231,7 +333,8 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
     if (minimum() == maximum())
       val = 0.5;
     else {
-      val = (value()-minimum())/(maximum()-minimum());
+      // Use logarithmic positioning if enabled
+      val = value_position(value(), 0.0, 1.0);
       if (val > 1.0) val = 1.0;
       else if (val < 0.0) val = 0.0;
     }
@@ -279,7 +382,9 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
         xx = ww-S;
         offcenter = mx-xx; if (offcenter > S) offcenter = S;
       }
-      v = round(xx*(maximum()-minimum())/(ww-S) + minimum());
+      // Use logarithmic positioning if enabled
+      double pos = (double)xx / (double)(ww-S);
+      v = round(position_value(pos, 0.0, 1.0));
       // make sure a click outside the sliderbar moves it:
       if (event == FL_PUSH && v == value()) {
         offcenter = S/2;
