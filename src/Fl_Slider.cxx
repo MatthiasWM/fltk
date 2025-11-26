@@ -102,14 +102,16 @@ void Fl_Slider::log(bool v) {
 double Fl_Slider::position_value(double p, double p1, double p2) const {
   double minv = minimum();
   double maxv = maximum();
-  if (log_ && minv > 0 && maxv > 0) {
+  if (log_ && minv > 0 && maxv > 0 && minv != maxv) {
     // logarithmic mapping
     double log_min = ::log(minv);
     double log_max = ::log(maxv);
+    if (p2 == p1) return minv;
     double log_val = log_min + (p - p1) / (p2 - p1) * (log_max - log_min);
     return exp(log_val);
   } else {
     // linear mapping
+    if (p2 == p1) return minv;
     return minv + (p - p1) / (p2 - p1) * (maxv - minv);
   }
 }
@@ -124,7 +126,7 @@ double Fl_Slider::position_value(double p, double p1, double p2) const {
 double Fl_Slider::value_position(double v, double p1, double p2) const {
   double minv = minimum();
   double maxv = maximum();
-  if (log_ && minv > 0 && maxv > 0 && v > 0) {
+  if (log_ && minv > 0 && maxv > 0 && v > 0 && minv != maxv) {
     // logarithmic mapping
     double log_min = ::log(minv);
     double log_max = ::log(maxv);
@@ -171,6 +173,9 @@ int Fl_Slider::scrollvalue(int pos, int size, int first, int total) {
 // position on the widget itself covers a wider range than 0-1,
 // actually it ranges from 0 to 1/(1-size).
 
+// Number of tick marks to draw on Nice_Slider types when tick_size > 0
+static const int FL_SLIDER_TICK_COUNT = 10;
+
 void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
   fl_push_clip(X, Y, W, H);
   draw_box();
@@ -182,9 +187,8 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
     // Draw tick marks if enabled
     if (tick_size_ > 0 && H > 0) {
       fl_color(black);
-      int tick_count = 10; // number of tick marks
-      for (int i = 0; i <= tick_count; i++) {
-        double t = (double)i / tick_count;
+      for (int i = 0; i <= FL_SLIDER_TICK_COUNT; i++) {
+        double t = (double)i / FL_SLIDER_TICK_COUNT;
         int yy = Y + int(t * (H - 1) + 0.5);
         // Draw tick on left side of slider track
         fl_line(X + W/2 - 2 - tick_size_, yy, X + W/2 - 2, yy);
@@ -197,9 +201,8 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
     // Draw tick marks if enabled
     if (tick_size_ > 0 && W > 0) {
       fl_color(black);
-      int tick_count = 10; // number of tick marks
-      for (int i = 0; i <= tick_count; i++) {
-        double t = (double)i / tick_count;
+      for (int i = 0; i <= FL_SLIDER_TICK_COUNT; i++) {
+        double t = (double)i / FL_SLIDER_TICK_COUNT;
         int xx = X + int(t * (W - 1) + 0.5);
         // Draw tick above the slider track
         fl_line(xx, Y + H/2 - 2 - tick_size_, xx, Y + H/2 - 2);
