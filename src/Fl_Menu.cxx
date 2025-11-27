@@ -1065,7 +1065,7 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
   STARTUP:
     menuwindow& cw = *pp.p[pp.menu_number];
     const Fl_Menu_Item* m = pp.current_item;
-    if (!m->activevisible()) { // pointing at inactive item
+    if (!m || !m->activevisible()) { // pointing at nothing or inactive item
       cw.set_selected(-1);
       initial_item = 0; // turn off startup code
       continue;
