@@ -7,6 +7,7 @@
 extern Grid_Tab *widget_tab_grid;
 
 void Grid_Tab::cb_widget_grid_rows_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~~=~~~~~=~=--=-~=~=-~= ▼ ﬂ//
   // grid_rows_cb
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
@@ -30,32 +31,38 @@ void Grid_Tab::cb_widget_grid_rows_i(fld::widget::Formula_Input* o, void* v) {
       widget_tab_grid->do_callback(widget_tab_grid, LOAD);
     }
   }
+//ﬂ ▲ ----------=~---==~-~~=----------~--~=-=~~==~=--~=--~~~ ▲ ﬂ//
 }
 void Grid_Tab::cb_widget_grid_rows(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_widget_grid_rows_i(o,v);
 }
 
 void Grid_Tab::cb__i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~~--=~~=-=-=-==-~---~- ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_rows->value( widget_grid_rows->value()-1 );
     widget_grid_rows->do_callback();
   }
+//ﬂ ▲ ----------~==--~-~-=-~-------------=-=-~=-~~-=-=~--=~- ▲ ﬂ//
 }
 void Grid_Tab::cb_(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb__i(o,v);
 }
 
 void Grid_Tab::cb_1_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback --~=-~=~~~-~---~-=-~~= ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_rows->value( widget_grid_rows->value()+1 );
     widget_grid_rows->do_callback();
   }
+//ﬂ ▲ ----------~=~=---~~~~~------------=~-~~==-=~~---~=-==~ ▲ ﬂ//
 }
 void Grid_Tab::cb_1(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_1_i(o,v);
 }
 
 void Grid_Tab::cb_widget_grid_cols_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~-=~-=~=-=~=-~=--=~~~- ▼ ﬂ//
   // grid_rows_cb
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
@@ -79,32 +86,38 @@ void Grid_Tab::cb_widget_grid_cols_i(fld::widget::Formula_Input* o, void* v) {
       widget_tab_grid->do_callback(widget_tab_grid, LOAD);
     }
   }
+//ﬂ ▲ ----------=~=~-==~--------------~~~=--~-=~-~-~~=~=-=-= ▲ ﬂ//
 }
 void Grid_Tab::cb_widget_grid_cols(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_widget_grid_cols_i(o,v);
 }
 
 void Grid_Tab::cb_2_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback -~~-~-=---=---~-----~~ ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_cols->value( widget_grid_cols->value()-1 );
     widget_grid_cols->do_callback();
   }
+//ﬂ ▲ ----------=~=-~--~~==~-----------~=~=~~----~~=~~~-=-~~ ▲ ﬂ//
 }
 void Grid_Tab::cb_2(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_2_i(o,v);
 }
 
 void Grid_Tab::cb_3_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ---=-==-~~-==-~-=~=-~- ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_cols->value( widget_grid_cols->value()+1 );
     widget_grid_cols->do_callback();
   }
+//ﬂ ▲ ----------=~=--~~~=-~=-----------~-=~-=---=---=~~==-~= ▲ ﬂ//
 }
 void Grid_Tab::cb_3(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_3_i(o,v);
 }
 
 void Grid_Tab::cb_Left_i(Fl_Value_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~=~--~==--~~~~---~-~- ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int m = 0;
@@ -121,12 +134,14 @@ void Grid_Tab::cb_Left_i(Fl_Value_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~==--=~-=~=------------~=----=-~-=-=-=-~-~~= ▲ ﬂ//
 }
 void Grid_Tab::cb_Left(Fl_Value_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_Left_i(o,v);
 }
 
 void Grid_Tab::cb_Top_i(Fl_Value_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~-~==~~~=--~~--~-~-==- ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int m = 0;
@@ -143,12 +158,14 @@ void Grid_Tab::cb_Top_i(Fl_Value_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~=--~-~---=-------------=~~~=--~~-=~-~-=~-=~ ▲ ﬂ//
 }
 void Grid_Tab::cb_Top(Fl_Value_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_Top_i(o,v);
 }
 
 void Grid_Tab::cb_Right_i(Fl_Value_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~---=~-~~==-~=~==~=-~~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int m = 0;
@@ -165,12 +182,14 @@ void Grid_Tab::cb_Right_i(Fl_Value_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------=~=-=~~~~==~----------~~-=~~-~-=~=~~~=-~-=~= ▲ ﬂ//
 }
 void Grid_Tab::cb_Right(Fl_Value_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_Right_i(o,v);
 }
 
 void Grid_Tab::cb_Bottom_i(Fl_Value_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -----~~=~~=~=~~-=~=~=- ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int m = 0;
@@ -187,12 +206,14 @@ void Grid_Tab::cb_Bottom_i(Fl_Value_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~==--~--=~=~------------~--~-==~=-~-~--==~=- ▲ ﬂ//
 }
 void Grid_Tab::cb_Bottom(Fl_Value_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_Bottom_i(o,v);
 }
 
 void Grid_Tab::cb_Row_i(Fl_Value_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback --~=-~-=~=~-~~=-~=~-~~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   if (v == LOAD) {
@@ -209,12 +230,14 @@ void Grid_Tab::cb_Row_i(Fl_Value_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------=~-~--=-=---------------~==~---==--~=~=-=~-- ▲ ﬂ//
 }
 void Grid_Tab::cb_Row(Fl_Value_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_Row_i(o,v);
 }
 
 void Grid_Tab::cb_Col_i(Fl_Value_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~~--~~-=~---=-~~~-~~= ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   if (v == LOAD) {
@@ -231,12 +254,14 @@ void Grid_Tab::cb_Col_i(Fl_Value_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~=~=-~~~-~~~----------~~=~=-=~=--~~--~~=-~~- ▲ ﬂ//
 }
 void Grid_Tab::cb_Col(Fl_Value_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_Col_i(o,v);
 }
 
 void Grid_Tab::cb_Row1_i(Fl_Group* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~--=~-~~=-=-=~~-=~~-~- ▼ ﬂ//
   if (v == LOAD) {
     Fl_Grid *grid = Grid_Node::selected();
     if (grid)
@@ -245,12 +270,14 @@ void Grid_Tab::cb_Row1_i(Fl_Group* o, void* v) {
       o->deactivate();
     propagate_load(o, v);
   }
+//ﬂ ▲ ----------~=~~-~-~~~=~-----------~~==~-~=-=~=---~~~--~ ▲ ﬂ//
 }
 void Grid_Tab::cb_Row1(Fl_Group* o, void* v) {
   ((Grid_Tab*)(o->parent()))->cb_Row1_i(o,v);
 }
 
 void Grid_Tab::cb_widget_grid_curr_row_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~-=~--=~==~~--~--~~~~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int r = o->value(), old_r = r;
@@ -262,32 +289,38 @@ void Grid_Tab::cb_widget_grid_curr_row_i(fld::widget::Formula_Input* o, void* v)
   } else {
     widget_grid_curr_row_attributes->do_callback(widget_grid_curr_row_attributes, LOAD);
   }
+//ﬂ ▲ ----------~=-~~-~==~~-----------~-=-~=-=--~-=~~~-=---~ ▲ ﬂ//
 }
 void Grid_Tab::cb_widget_grid_curr_row(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_widget_grid_curr_row_i(o,v);
 }
 
 void Grid_Tab::cb_4_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ---=~-=-=--~~~=-~==~~- ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_curr_row->value( widget_grid_curr_row->value()-1 );
     widget_grid_curr_row->do_callback();
   }
+//ﬂ ▲ ----------~=--~~-=~-~~----------~--=~-~=-~~==~=-=~=~~~ ▲ ﬂ//
 }
 void Grid_Tab::cb_4(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_4_i(o,v);
 }
 
 void Grid_Tab::cb_5_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~-~~~=~~=~~-~~=~-~-=~- ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_curr_row->value( widget_grid_curr_row->value()+1 );
     widget_grid_curr_row->do_callback();
   }
+//ﬂ ▲ ----------=~-~=~-=-~-~----------~~~~=-~--=~~--~~~~~--~ ▲ ﬂ//
 }
 void Grid_Tab::cb_5(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_5_i(o,v);
 }
 
 void Grid_Tab::cb_Height_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~=--==--=~~~==~---=~= ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int r = widget_grid_curr_row->value();
@@ -303,12 +336,14 @@ void Grid_Tab::cb_Height_i(fld::widget::Formula_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~==~---~-=-~-----------~~=~=---=~----=-=~==- ▲ ﬂ//
 }
 void Grid_Tab::cb_Height(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_Height_i(o,v);
 }
 
 void Grid_Tab::cb_Weight_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~~=~-=--~=-~~=--~=~=- ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int r = widget_grid_curr_row->value();
@@ -324,12 +359,14 @@ void Grid_Tab::cb_Weight_i(fld::widget::Formula_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~=---~~-=-~-------------~==-~-=-~~--~-=-~-~= ▲ ﬂ//
 }
 void Grid_Tab::cb_Weight(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_Weight_i(o,v);
 }
 
 void Grid_Tab::cb_Gap_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~---=--~=--=~=~~-~--~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int r = widget_grid_curr_row->value();
@@ -345,12 +382,14 @@ void Grid_Tab::cb_Gap_i(fld::widget::Formula_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~=-~~--=~-~~----------~-~--=~~~==-=~=~=~-=-- ▲ ﬂ//
 }
 void Grid_Tab::cb_Gap(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_Gap_i(o,v);
 }
 
 void Grid_Tab::cb_widget_grid_curr_col_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~---~--=-~=-~=--~--==~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int c = o->value(), old_c = c;
@@ -362,32 +401,38 @@ void Grid_Tab::cb_widget_grid_curr_col_i(fld::widget::Formula_Input* o, void* v)
   } else {
     widget_grid_curr_col_attributes->do_callback(widget_grid_curr_col_attributes, LOAD);
   }
+//ﬂ ▲ ----------~=~=--~~=~~~----------~~-~~~~~-==~-~~---~=-- ▲ ﬂ//
 }
 void Grid_Tab::cb_widget_grid_curr_col(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()))->cb_widget_grid_curr_col_i(o,v);
 }
 
 void Grid_Tab::cb_6_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback -~~-~=~---~---~--~-~~~ ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_curr_col->value( widget_grid_curr_col->value()-1 );
     widget_grid_curr_col->do_callback();
   }
+//ﬂ ▲ ----------~=~==-~=-==~------------~-~~~--~-=~-=--~=-~~ ▲ ﬂ//
 }
 void Grid_Tab::cb_6(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_6_i(o,v);
 }
 
 void Grid_Tab::cb_7_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback -~---~--=~-~~=~--=-==- ▼ ﬂ//
   if (v != LOAD) {
     widget_grid_curr_col->value( widget_grid_curr_col->value()+1 );
     widget_grid_curr_col->do_callback();
   }
+//ﬂ ▲ ----------=~=-~--~~~-------------~=--=~=-=-~=-~~=----~ ▲ ﬂ//
 }
 void Grid_Tab::cb_7(Fl_Button* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_7_i(o,v);
 }
 
 void Grid_Tab::cb_Width_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~-~==-~~-=-=~---=--=-- ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int c = widget_grid_curr_col->value();
@@ -403,12 +448,14 @@ void Grid_Tab::cb_Width_i(fld::widget::Formula_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~=-=~-~~-=~=----------~~=---~=~--=~~~==-~~-- ▲ ﬂ//
 }
 void Grid_Tab::cb_Width(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_Width_i(o,v);
 }
 
 void Grid_Tab::cb_Weight1_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~~=~--=~-=~---~-~-~=~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int c = widget_grid_curr_col->value();
@@ -424,12 +471,14 @@ void Grid_Tab::cb_Weight1_i(fld::widget::Formula_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~==~=-~-=-~-----------~~~-~~~--~-=~==-=~~=~= ▲ ﬂ//
 }
 void Grid_Tab::cb_Weight1(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_Weight1_i(o,v);
 }
 
 void Grid_Tab::cb_Gap1_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~~~~~~=~~~-~~~---=~=-~ ▼ ﬂ//
   Fl_Grid *grid = Grid_Node::selected();
   if (!grid) return;
   int c = widget_grid_curr_col->value();
@@ -445,6 +494,7 @@ void Grid_Tab::cb_Gap1_i(fld::widget::Formula_Input* o, void* v) {
       Fluid.proj.set_modflag(1);
     }
   }
+//ﬂ ▲ ----------~=~~=~-----=----------~~~---=~-~=-~=-=--=--= ▲ ﬂ//
 }
 void Grid_Tab::cb_Gap1(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Tab*)(o->parent()->parent()->parent()))->cb_Gap1_i(o,v);

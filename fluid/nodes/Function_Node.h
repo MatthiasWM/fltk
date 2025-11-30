@@ -269,7 +269,7 @@ public:
   typedef Node super;
   static Class_Node prototype;
 private:
-  const char* subclass_of;
+  std::string base_class_;
   char public_;
   const char* class_prefix;
 public:
@@ -292,8 +292,8 @@ public:
   bool is_a(Type inType) const override { return (inType==Type::Class) ? true : super::is_a(inType); }
   void write_properties(fld::io::Project_Writer &f) override;
   void read_property(fld::io::Project_Reader &f, const char *) override;
-  const char* base_class_name() { return subclass_of; }
-  void base_class_name(const char* name) { storestring(name, subclass_of); }
+  const std::string& base_class() const { return base_class_; }
+  void base_class(std::string const& name) { base_class_ = name; }
   char visibility() { return public_; }
   void visibility(char v) { public_ = v; }
 

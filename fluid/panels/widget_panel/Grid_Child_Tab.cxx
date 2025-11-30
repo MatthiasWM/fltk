@@ -7,62 +7,75 @@
 extern Grid_Child_Tab *widget_tab_grid_child;
 
 void Grid_Child_Tab::cb_widget_grid_row_input_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~~-~=-~=-~~=-~==--~-= ▼ ﬂ//
   grid_child_cb(o, v, 8);
     if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
+//ﬂ ▲ ----------~=--=-=-~==~-----------~-~-=~----=~=-=-~=-=~ ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_widget_grid_row_input(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_widget_grid_row_input_i(o,v);
 }
 
 void Grid_Child_Tab::cb__i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ---~~---~==~~---=~-~~= ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_row_input, v, 0x0100 + 8);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------=~~~=~-==~-------------~~-=~~=~--==-=--~-~=- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb__i(o,v);
 }
 
 void Grid_Child_Tab::cb_1_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback -----~-=--=~~-~-=-~~~~ ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_row_input, v, 0x0200 + 8);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------~=~-~-=~=-=-----------~~-~~=-=~-=-~~~=-=-=~- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_1(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_1_i(o,v);
 }
 
 void Grid_Child_Tab::cb_widget_grid_col_input_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~=~~-=~-=---=-=-~-~=- ▼ ﬂ//
   grid_child_cb(o, v, 9);
     if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
+//ﬂ ▲ ----------~=-~-=-~~=~=----------~---=--~--=~---=-==-~- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_widget_grid_col_input(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_widget_grid_col_input_i(o,v);
 }
 
 void Grid_Child_Tab::cb_2_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~~-=-~---=~---=~~-~=~~ ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_col_input, v, 0x0100 + 9);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------~=---=~--~-~-----------~~=~==~=-=-=--=-=~--- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_2(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_2_i(o,v);
 }
 
 void Grid_Child_Tab::cb_3_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~-~------=-=-=~~-~=-=- ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_col_input, v, 0x0200 + 9);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------=~--~~-~=--=----------~~=-=~=-=--=~~=~-~=~=~ ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_3(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_3_i(o,v);
 }
 
 void Grid_Child_Tab::cb_widget_grid_transient_i(Fl_Box* o, void* v) {
+//ﬂ ▼ ---------------------- callback --~-~==~~=-=~=--=~~--- ▼ ﬂ//
   if (v==LOAD) {
     Fl_Widget *child = ((Widget_Node*)current_widget)->o;
     Fl_Grid_Proxy *g = ((Fl_Grid_Proxy*)((Widget_Node*)current_widget->parent)->o);
@@ -76,12 +89,14 @@ void Grid_Child_Tab::cb_widget_grid_transient_i(Fl_Box* o, void* v) {
       widget_grid_unlinked->show();
     }
   }
+//ﬂ ▲ ----------=~-=~=-=~~-~------------=-=-~~~~=~~~-~-=--~~ ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_widget_grid_transient(Fl_Box* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_widget_grid_transient_i(o,v);
 }
 
 void Grid_Child_Tab::cb_Horizontal_i(Fl_Choice* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~~=~--~--=--=--~~-=~~- ▼ ﬂ//
   if (   !current_widget
         || !current_widget->parent
         || !current_widget->parent->is_a(Type::Grid))
@@ -114,6 +129,7 @@ void Grid_Child_Tab::cb_Horizontal_i(Fl_Choice* o, void* v) {
         }
       }
     }
+//ﬂ ▲ ----------=~-~-=-~~-=~----------~-=~~-=~-~----~-~~--=~ ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_Horizontal(Fl_Choice* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_Horizontal_i(o,v);
@@ -129,6 +145,7 @@ Fl_Menu_Item Grid_Child_Tab::menu_Horizontal[] = {
 Fl_Menu_Item* Grid_Child_Tab::GRID_LEFT = Grid_Child_Tab::menu_Horizontal + 0;
 
 void Grid_Child_Tab::cb_Vertical_i(Fl_Choice* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~-------=--=~-=-~~-~=- ▼ ﬂ//
   if (   !current_widget
         || !current_widget->parent
         || !current_widget->parent->is_a(Type::Grid))
@@ -161,6 +178,7 @@ void Grid_Child_Tab::cb_Vertical_i(Fl_Choice* o, void* v) {
         }
       }
     }
+//ﬂ ▲ ----------~==~~=----=--------------~=-~~~--~=-~-=-~-=- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_Vertical(Fl_Choice* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_Vertical_i(o,v);
@@ -175,70 +193,86 @@ Fl_Menu_Item Grid_Child_Tab::menu_Vertical[] = {
 };
 
 void Grid_Child_Tab::cb_Width_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~--=~-=-~~-=~=~--=--= ▼ ﬂ//
   grid_child_cb(o, v, 12);
+//ﬂ ▲ ----------=~-~~=~-=~~-----------~~~-~~---==~-~-~~~-~=~ ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_Width(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_Width_i(o,v);
 }
 
 void Grid_Child_Tab::cb_Height_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback --=~=--~~--~-=~=~=~--= ▼ ﬂ//
   grid_child_cb(o, v, 13);
+//ﬂ ▲ ----------=~-~-=~--~=------------~=-~~=-~~=~=~~-~==-~- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_Height(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_Height_i(o,v);
 }
 
 void Grid_Child_Tab::cb_widget_grid_rowspan_input_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback ~--~--=~~-~~~-=-~~--=- ▼ ﬂ//
   grid_child_cb(o, v, 10);
     if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
+//ﬂ ▲ ----------=~~-~=-~-~~~----------~-~--~=-=~-~=--=--~=~- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_widget_grid_rowspan_input(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_widget_grid_rowspan_input_i(o,v);
 }
 
 void Grid_Child_Tab::cb_4_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback -~~-=~=~=-=~=-~~-=-~~- ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_rowspan_input, v, 0x0100 + 10);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------~=-~~~=-~=~=--------------=~~~=-~~=~-=-~-=~- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_4(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_4_i(o,v);
 }
 
 void Grid_Child_Tab::cb_5_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~---=~--~---~--==-~=-= ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_rowspan_input, v, 0x0200 + 10);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------~=~=~---~=~~----------~~~~~-=~--~~-=~--~-~-= ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_5(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_5_i(o,v);
 }
 
 void Grid_Child_Tab::cb_widget_grid_colspan_input_i(fld::widget::Formula_Input* o, void* v) {
+//ﬂ ▼ ---------------------- callback -~-=~----~~--=--=---=- ▼ ﬂ//
   grid_child_cb(o, v, 11);
     if (v!=LOAD) widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
+//ﬂ ▲ ----------~==-=-~~~~=------------~~~--~==~~-~~-==-~==~ ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_widget_grid_colspan_input(fld::widget::Formula_Input* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()))->cb_widget_grid_colspan_input_i(o,v);
 }
 
 void Grid_Child_Tab::cb_6_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~--~-=~-~~=~--=~-~---~ ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_colspan_input, v, 0x0100 + 11);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------=~~=~--~~==-----------~~-~=--=~~=~--~=---~-= ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_6(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_6_i(o,v);
 }
 
 void Grid_Child_Tab::cb_7_i(Fl_Button*, void* v) {
+//ﬂ ▼ ---------------------- callback ~--~~-----~~=~-~~=--~~ ▼ ﬂ//
   if (v!=LOAD) {
       grid_child_cb(widget_grid_colspan_input, v, 0x0200 + 11);
       widget_tab_grid_child->do_callback(widget_tab_grid_child, LOAD);
     }
+//ﬂ ▲ ----------=~-==~=---~~------------~-----~==~~~-----=~- ▲ ﬂ//
 }
 void Grid_Child_Tab::cb_7(Fl_Button* o, void* v) {
   ((Grid_Child_Tab*)(o->parent()->parent()->parent()))->cb_7_i(o,v);
@@ -468,6 +502,7 @@ Grid_Child_Tab::Grid_Child_Tab(int X, int Y, int W, int H, const char *L) :
 }
 
 void Grid_Child_Tab::grid_child_cb(fld::widget::Formula_Input* i, void* v, int what) {
+//ﬂ ▼ ------------------------ code ------~--==-~=-~~=~~=~~~ ▼ ﬂ//
   if (   !current_widget
         || !current_widget->parent
         || !current_widget->parent->is_a(Type::Grid))
@@ -535,4 +570,5 @@ void Grid_Child_Tab::grid_child_cb(fld::widget::Formula_Input* i, void* v, int w
         Fluid.proj.set_modflag(1);
       }
     }
+//ﬂ ▲ ----------~~=~~=~=~-~=----------~-~-~=~~~-=-=~~-~--=-= ▲ ﬂ//
 }
