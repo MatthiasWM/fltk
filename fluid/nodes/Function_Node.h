@@ -206,13 +206,14 @@ public:
     STATIC_IN_HEADER = 4,
     STATIC_IN_SOURCE = 8
   };
+
 private:
-  const char* after { nullptr };      ///< code after all children of this block
+  std::string terminating_directive_;  ///< code after all children of this block
   int write_map_ { CODE_IN_SOURCE };  ///< see enum above
 
 public:
   DeclBlock_Node();
-  ~DeclBlock_Node();
+  ~DeclBlock_Node() override = default;
   Node *make(Strategy strategy) override;
   void write_static(fld::io::Code_Writer& f) override;
   void write_static_after(fld::io::Code_Writer& f) override;
@@ -227,8 +228,10 @@ public:
   int is_public() const override;
   Type type() const override { return Type::DeclBlock; }
   bool is_a(Type inType) const override { return (inType==Type::DeclBlock) ? true : super::is_a(inType); }
-  const char *end_code() { return after; }
-  void end_code(const char *c) { storestring(c, after); }
+
+  std::string const& terminating_directive() { return terminating_directive_; }
+  void terminating_directive(std::string const& c) { terminating_directive_ = c; }
+
   int write_map() { return write_map_; }
   void write_map(int v) { write_map_ = v; }
 };
@@ -240,6 +243,7 @@ class Comment_Node : public Node
 public:
   typedef Node super;
   static Comment_Node prototype;
+
 private:
   char in_c_, in_h_, style_;
 
@@ -273,10 +277,10 @@ private:
   char public_ { 1 };
   std::string prefix_;
   std::string base_class_;
-  
+
 public:
   Class_Node();
-  ~Class_Node() = default;
+  ~Class_Node() override = default;
   // state variables for output:
   char write_public_state; // true when public: has been printed
   Class_Node* parent_class; // save class if nested
@@ -297,10 +301,10 @@ public:
   char visibility() { return public_; }
   void visibility(char v) { public_ = v; }
 
-  const std::string& prefix() const { return prefix_; }
+  std::string const& prefix() const { return prefix_; }
   void prefix(std::string const& name) { prefix_ = name; }
   
-  const std::string& base_class() const { return base_class_; }
+  std::string const& base_class() const { return base_class_; }
   void base_class(std::string const& name) { base_class_ = name; }
 
 };

@@ -2968,19 +2968,16 @@ static void cb_End(Fl_Input* o, void* v) {
 //ﬂ ▼ ---------------------- callback -~-~--~-----=-~~~~~=-~ ▼ ﬂ//
   if (!current_node || !current_node->is_a(Type::DeclBlock)) return;
   DeclBlock_Node* nd = (DeclBlock_Node*)current_node;
-
-  if (v == LOAD) {
-    o->value( nd->end_code() );
+   if (v == LOAD) {
+    o->value( nd->terminating_directive().c_str() );
   } else {
-    const char *nn = nd->end_code();
-    if (   ( nn && (strcmp(nn, o->value()) != 0))
-        || (!nn && (strcmp("", o->value()) != 0)) )
-    {
-      nd->end_code( o->value() );
+    std::string new_code = o->value();
+    if (nd->terminating_directive() != new_code) {
+      nd->terminating_directive( new_code );
       Fluid.proj.set_modflag(1);
     }
   }
-//ﬂ ▲ ----------~=~==---=-----------------~-~~=~~=---~-==-~- ▲ ﬂ//
+//ﬂ ▲ ----------~=~==---=---------------=~-~~-=~~~-~-=-~~==- ▲ ﬂ//
 }
 
 static void cb_implementations(Fl_Check_Button* o, void* v) {

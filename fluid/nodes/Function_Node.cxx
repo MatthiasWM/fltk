@@ -1223,14 +1223,6 @@ DeclBlock_Node::DeclBlock_Node()
 { }
 
 /**
- Destructor.
- */
-DeclBlock_Node::~DeclBlock_Node() {
-  if (after)
-    ::free((void*)after);
-}
-
-/**
  Return 1 if this block is public.
  */
 int DeclBlock_Node::is_public() const {
@@ -1253,7 +1245,7 @@ Node *DeclBlock_Node::make(Strategy strategy) {
   DeclBlock_Node *o = new DeclBlock_Node();
   o->name("#if 1");
   o->write_map_ = CODE_IN_SOURCE;
-  o->after = fl_strdup("#endif");
+  o->terminating_directive("#endif");
   o->add(anchor, strategy);
   o->factory = this;
   return o;
@@ -1272,7 +1264,7 @@ void DeclBlock_Node::write_properties(fld::io::Project_Writer &f) {
   if (write_map_ != CODE_IN_SOURCE)
     f.write_string("map %d", write_map_);
   f.write_string("after");
-  f.write_word(after);
+  f.write_word(terminating_directive().c_str());
 }
 
 /**
@@ -1286,7 +1278,7 @@ void DeclBlock_Node::read_property(fld::io::Project_Reader &f, const char *c) {
   } else if(!strcmp(c,"map")) {
     write_map_ = (int)atol(f.read_word());
   } else  if (!strcmp(c,"after")) {
-    storestring(f.read_word(),after);
+    terminating_directive( f.read_word() );
   } else {
     Node::read_property(f, c);
   }
@@ -1317,12 +1309,11 @@ void DeclBlock_Node::write_static(fld::io::Code_Writer& f) {
  Write the \b after static code to the source file, and to the header file if declared public.
  */
 void DeclBlock_Node::write_static_after(fld::io::Code_Writer& f) {
-  const char* c = after;
-  if (c && *c) {
+  if (!terminating_directive().empty()) {
     if (write_map_ & STATIC_IN_HEADER)
-      f.write_h("%s\n", c);
+      f.write_h("%s\n", terminating_directive().c_str());
     if (write_map_ & STATIC_IN_SOURCE)
-      f.write_c("%s\n", c);
+      f.write_c("%s\n", terminating_directive().c_str());
   }
 }
 
@@ -1344,12 +1335,11 @@ void DeclBlock_Node::write_code1(fld::io::Code_Writer& f) {
  Write the \b after code to the source file, and to the header file if declared public.
  */
 void DeclBlock_Node::write_code2(fld::io::Code_Writer& f) {
-  const char* c = after;
-  if (c && *c) {
+  if (!terminating_directive().empty()) {
     if (write_map_ & CODE_IN_HEADER)
-      f.write_h("%s\n", c);
+      f.write_h("%s\n", terminating_directive().c_str());
     if (write_map_ & CODE_IN_SOURCE)
-      f.write_c("%s\n", c);
+      f.write_c("%s\n", terminating_directive().c_str());
   }
 }
 
