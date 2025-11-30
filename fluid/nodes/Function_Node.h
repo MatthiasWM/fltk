@@ -36,9 +36,9 @@
 
 extern class Class_Node *current_class;
 
-int has_toplevel_function(const char *rtype, const char *sig);
+int has_toplevel_function(const char* rtype, const char* sig);
 
-const char *c_check(const char *c, int type = 0);
+const char* c_check(const char* c, int type = 0);
 
 // ---- Function_Node declaration
 
@@ -63,8 +63,8 @@ public:
   void write_code2(fld::io::Code_Writer& f) override;
   void open() override;
   int ismain() {return name_ == nullptr;}
-  const char *type_name() override {return "Function";}
-  const char *title() override {
+  const char* type_name() override { return "Function"; }
+  const char* title() override {
     return name() ? name() : "main()";
   }
   int can_have_children() const override {return 1;}
@@ -72,11 +72,11 @@ public:
   int is_public() const override;
   Type type() const override { return Type::Function; }
   bool is_a(Type inType) const override { return (inType==Type::Function) ? true : super::is_a(inType); }
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
-  int has_signature(const char *, const char*) const;
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
+  int has_signature(std::string const&, std::string const&) const;
 
-  std::string const& return_type() const { return return_type_; }
+  std::string return_type() const { return return_type_; }
   void return_type(std::string const& t) { return_type_ = t; }
 
   char visibility() { return public_; }
@@ -102,11 +102,11 @@ private:
 public:
   Code_Node();
   Node *make(Strategy strategy) override;
-  void write(fld::io::Project_Writer &f) override;
+  void write(fld::io::Project_Writer& f) override;
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override { }
   void open() override;
-  const char *type_name() override {return "code";}
+  const char* type_name() override { return "code"; }
   int is_code_block() const override {return 0;}
   Type type() const override { return Type::Code; }
   bool is_a(Type inType) const override { return (inType==Type::Code) ? true : super::is_a(inType); }
@@ -134,16 +134,16 @@ public:
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override;
   void open() override;
-  const char *type_name() override {return "codeblock";}
+  const char* type_name() override { return "codeblock"; }
   int is_code_block() const override {return 1;}
   int can_have_children() const override {return 1;}
   int is_public() const override { return -1; }
   Type type() const override { return Type::CodeBlock; }
   bool is_a(Type inType) const override { return (inType==Type::CodeBlock) ? true : super::is_a(inType); }
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
 
-  std::string const& terminating_statement() { return terminating_statement_; }
+  std::string terminating_statement() { return terminating_statement_; }
   void terminating_statement(std::string const& c) { terminating_statement_ = c; }
 };
 
@@ -165,9 +165,9 @@ public:
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override { }
   void open() override;
-  const char *type_name() override {return "decl";}
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
+  const char* type_name() override { return "decl"; }
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
   int is_public() const override;
   Type type() const override { return Type::Decl; }
   bool is_a(Type inType) const override { return (inType==Type::Decl) ? true : super::is_a(inType); }
@@ -196,14 +196,14 @@ public:
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override {}
   void open() override;
-  const char *type_name() override {return "data";}
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
+  const char* type_name() override { return "data"; }
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
   Type type() const override { return Type::Data; }
   bool is_a(Type inType) const override { return (inType==Type::Data) ? true : super::is_a(inType); }
 
+  std::string filename() const { return filename_; }
   void filename(std::string const& fn) { filename_ = fn; }
-  std::string const& filename() const { return filename_; }
 
   int output_format() { return output_format_; }
   void output_format(int fmt) { output_format_ = fmt; }
@@ -236,16 +236,16 @@ public:
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override;
   void open() override;
-  const char *type_name() override {return "declblock";}
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
+  const char* type_name() override { return "declblock"; }
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
   int can_have_children() const override {return 1;}
   int is_decl_block() const override {return 1;}
   int is_public() const override;
   Type type() const override { return Type::DeclBlock; }
   bool is_a(Type inType) const override { return (inType==Type::DeclBlock) ? true : super::is_a(inType); }
 
-  std::string const& terminating_directive() { return terminating_directive_; }
+  std::string terminating_directive() { return terminating_directive_; }
   void terminating_directive(std::string const& c) { terminating_directive_ = c; }
 
   int write_map() { return write_map_; }
@@ -269,9 +269,9 @@ public:
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override { }
   void open() override;
-  const char *type_name() override {return "comment";}
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
+  const char* type_name() override { return "comment"; }
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
   int is_public() const override { return 1; }
   Type type() const override { return Type::Comment; }
   bool is_a(Type inType) const override { return (inType==Type::Comment) ? true : super::is_a(inType); }
@@ -305,22 +305,22 @@ public:
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override;
   void open() override;
-  const char *type_name() override {return "class";}
+  const char* type_name() override { return "class"; }
   int can_have_children() const override {return 1;}
   int is_decl_block() const override {return 1;}
   int is_class() const override {return 1;}
   int is_public() const override;
   Type type() const override { return Type::Class; }
   bool is_a(Type inType) const override { return (inType==Type::Class) ? true : super::is_a(inType); }
-  void write_properties(fld::io::Project_Writer &f) override;
-  void read_property(fld::io::Project_Reader &f, const char *) override;
+  void write_properties(fld::io::Project_Writer& f) override;
+  void read_property(fld::io::Project_Reader& f, const char*) override;
   char visibility() { return public_; }
   void visibility(char v) { public_ = v; }
 
-  std::string const& prefix() const { return prefix_; }
+  std::string prefix() const { return prefix_; }
   void prefix(std::string const& name) { prefix_ = name; }
   
-  std::string const& base_class() const { return base_class_; }
+  std::string base_class() const { return base_class_; }
   void base_class(std::string const& name) { base_class_ = name; }
 
 };

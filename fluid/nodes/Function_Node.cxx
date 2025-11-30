@@ -472,13 +472,13 @@ void Function_Node::write_code2(fld::io::Code_Writer& f) {
  \param[in] rtype function return type
  \param[in] sig function name followed by arguments
  \return 1 if they match, 0 if not
+ \todo If return_type() is empty, the actual return type is the topmost
+    widget type. Also, return_type() may contain the keywords
+    `static` and `virtual` which may not be relevant here.
  */
-int Function_Node::has_signature(const char *rtype, const char *sig) const {
-  if (rtype && return_type().empty())
-    return 0;
+int Function_Node::has_signature(std::string const& rtype, std::string const& sig) const {
   if (!name()) return 0;
-  if ( ( (rtype == nullptr) || (return_type() == rtype))
-      && fl_filename_match(name(), sig)) {
+  if ( (return_type() == rtype) && fl_filename_match(name(), sig.c_str()) ) {
     return 1;
   }
   return 0;
