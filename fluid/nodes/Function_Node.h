@@ -268,13 +268,15 @@ class Class_Node : public Node
 public:
   typedef Node super;
   static Class_Node prototype;
+
 private:
+  char public_ { 1 };
+  std::string prefix_;
   std::string base_class_;
-  char public_;
-  const char* class_prefix;
+  
 public:
   Class_Node();
-  ~Class_Node();
+  ~Class_Node() = default;
   // state variables for output:
   char write_public_state; // true when public: has been printed
   Class_Node* parent_class; // save class if nested
@@ -292,14 +294,15 @@ public:
   bool is_a(Type inType) const override { return (inType==Type::Class) ? true : super::is_a(inType); }
   void write_properties(fld::io::Project_Writer &f) override;
   void read_property(fld::io::Project_Reader &f, const char *) override;
-  const std::string& base_class() const { return base_class_; }
-  void base_class(std::string const& name) { base_class_ = name; }
   char visibility() { return public_; }
   void visibility(char v) { public_ = v; }
 
-  // class prefix attribute access
-  void prefix(const char* p);
-  const char*  prefix() const {return class_prefix;}
+  const std::string& prefix() const { return prefix_; }
+  void prefix(std::string const& name) { prefix_ = name; }
+  
+  const std::string& base_class() const { return base_class_; }
+  void base_class(std::string const& name) { base_class_ = name; }
+
 };
 
 #endif // FLUID_NODES_FUNCTION_NODE_H

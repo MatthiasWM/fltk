@@ -2859,19 +2859,17 @@ static void cb_Attribute(Fl_Input* o, void* v) {
 //ﬂ ▼ ---------------------- callback -~~==-~---~~~~~=~=--~~ ▼ ﬂ//
   if (!current_node || !current_node->is_a(Type::Class)) return;
   Class_Node* nd = (Class_Node*)current_node;
-
-  if (v == LOAD) {
-    o->value( nd->prefix() );
+   if (v == LOAD) {
+    o->value( nd->prefix().c_str() );
   } else {
-    const char *nn = nd->prefix();
-    if (   ( nn && (strcmp(nn, o->value()) != 0))
-        || (!nn && (strcmp("", o->value()) != 0)) )
+    std::string new_prefix = o->value();
+    if ( nd->prefix() != new_prefix )
     {
-      nd->prefix( o->value() );
+      nd->prefix( new_prefix );
       Fluid.proj.set_modflag(1);
     }
   }
-//ﬂ ▲ ----------=~--~~---~-=----------~------=--=~~-~=-~--~= ▲ ﬂ//
+//ﬂ ▲ ----------=~--~~---~-=----------~~~~---=~~~=-=~-~--~-~ ▲ ﬂ//
 }
 
 static void cb_Class(Fl_Input* o, void* v) {
