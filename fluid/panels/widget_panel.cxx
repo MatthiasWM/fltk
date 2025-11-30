@@ -2585,21 +2585,16 @@ static void cb_wp_data_filename(Fl_Input* o, void* v) {
 //ﬂ ▼ ---------------------- callback ~-~=~~~~~~-=~~=~-==--- ▼ ﬂ//
   if (!current_node || !current_node->is_a(Type::Data)) return;
   Data_Node* nd = (Data_Node*)current_node;
-
-  if (v == LOAD) {
-    const char *fn = nd->filename();
-    o->value( fn ? fn : "" );
+   if (v == LOAD) {
+    o->value( nd->filename().c_str() );
   } else {
-    const char *c = o->value();
-    const char *fn = nd->filename();
-    if (   ( fn && (strcmp(fn, c) != 0))
-        || (!fn && (strcmp("", c) != 0)) )
-    {
-      nd->filename(c);
+    std::string new_filename = o->value();
+    if ( nd->filename() != new_filename ) {
+      nd->filename( new_filename );
       Fluid.proj.set_modflag(1);
     }
   }
-//ﬂ ▲ ----------~=-==----~~-----------~~-~-----~=~-~=~--~-~- ▲ ﬂ//
+//ﬂ ▲ ----------~=-==----~~-----------~~~~=~~~-~~==-=~---~~~ ▲ ﬂ//
 }
 
 static void cb_fileopen(Fl_Button*, void* v) {
@@ -2863,13 +2858,12 @@ static void cb_Attribute(Fl_Input* o, void* v) {
     o->value( nd->prefix().c_str() );
   } else {
     std::string new_prefix = o->value();
-    if ( nd->prefix() != new_prefix )
-    {
+    if ( nd->prefix() != new_prefix ) {
       nd->prefix( new_prefix );
       Fluid.proj.set_modflag(1);
     }
   }
-//ﬂ ▲ ----------=~--~~---~-=----------~~~~---=~~~=-=~-~--~-~ ▲ ﬂ//
+//ﬂ ▲ ----------=~--~~---~-=-----------~-----~=-=~-~~-~-~~=- ▲ ﬂ//
 }
 
 static void cb_Class(Fl_Input* o, void* v) {
@@ -2972,12 +2966,12 @@ static void cb_End(Fl_Input* o, void* v) {
     o->value( nd->terminating_directive().c_str() );
   } else {
     std::string new_code = o->value();
-    if (nd->terminating_directive() != new_code) {
+    if ( nd->terminating_directive() != new_code ) {
       nd->terminating_directive( new_code );
       Fluid.proj.set_modflag(1);
     }
   }
-//ﬂ ▲ ----------~=~==---=---------------=~-~~-=~~~-~-=-~~==- ▲ ﬂ//
+//ﬂ ▲ ----------~=~==---=--------------~=-~-~~---~~=~=~~~~-~ ▲ ﬂ//
 }
 
 static void cb_implementations(Fl_Check_Button* o, void* v) {
@@ -3250,19 +3244,16 @@ static void cb_End1(Fl_Input* o, void* v) {
 //ﬂ ▼ ---------------------- callback ~~-~~=~=-~=-~-=~~~=-=~ ▼ ﬂ//
   if (!current_node || !current_node->is_a(Type::CodeBlock)) return;
   CodeBlock_Node* nd = (CodeBlock_Node*)current_node;
-
-  if (v == LOAD) {
-    o->value( nd->end_code() );
+   if (v == LOAD) {
+    o->value( nd->terminating_statement().c_str() );
   } else {
-    const char *nn = nd->end_code();
-    if (   ( nn && (strcmp(nn, o->value()) != 0))
-        || (!nn && (strcmp("", o->value()) != 0)) )
-    {
-      nd->end_code( o->value() );
+    std::string new_code = o->value();
+    if ( nd->terminating_statement() != new_code ) {
+      nd->terminating_statement( new_code );
       Fluid.proj.set_modflag(1);
     }
   }
-//ﬂ ▲ ----------~=~=-~=~~----------------=~~--=--~=~=--~-~~- ▲ ﬂ//
+//ﬂ ▲ ----------~=~=-~=~~----------------~----~~~~--=-~~=~-= ▲ ﬂ//
 }
 
 static void cb_Comment4(Fl_Text_Editor* o, void* v) {
@@ -3451,22 +3442,16 @@ static void cb_Return(fld::widget::Code_Editor* o, void* v) {
 //ﬂ ▼ ---------------------- callback -~=--~-~=~=~~~---=~~=~ ▼ ﬂ//
   if (!current_node || !current_node->is_a(Type::Function)) return;
   Function_Node* nd = (Function_Node*)current_node;
-
-  if (v == LOAD) {
-    const char *cmttext = nd->return_type();
-    o->buffer()->text( cmttext ? cmttext : "" );
+   if (v == LOAD) {
+    o->buffer()->text( nd->return_type().c_str() );
   } else {
-    char *c = o->buffer()->text();
-    const char *nn = nd->return_type();
-    if (   ( nn && (strcmp(nn, c) != 0))
-        || (!nn && (strcmp("", c) != 0)) )
-    {
-      nd->return_type(c);
+    std::string new_type = o->buffer()->text_str();
+    if (nd->return_type() != new_type) {
+      nd->return_type( new_type );
       Fluid.proj.set_modflag(1);
     }
-    free(c);
   }
-//ﬂ ▲ ----------=~=~=-=--~=~-----------~~=------=~-=~==~-~-- ▲ ﬂ//
+//ﬂ ▲ ----------=~=~=-=--~=~------------~~=-=~=~-=-~=~-=~~~- ▲ ﬂ//
 }
 
 static void cb_Comment5(Fl_Text_Editor* o, void* v) {

@@ -47,12 +47,17 @@ class Function_Node : public Node
 public:
   typedef Node super;
   static Function_Node prototype;
+
 private:
-  const char* return_type_;
-  char public_, declare_c_, constructor, havewidgets;
+  std::string return_type_;
+  char public_ { 0 };
+  char declare_c_ { 0 };
+  char constructor { 0 };
+  char havewidgets { 0 };
+
 public:
-  Function_Node();
-  ~Function_Node();
+  Function_Node() = default;
+  ~Function_Node() override = default;
   Node *make(Strategy strategy) override;
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override;
@@ -70,8 +75,10 @@ public:
   void write_properties(fld::io::Project_Writer &f) override;
   void read_property(fld::io::Project_Reader &f, const char *) override;
   int has_signature(const char *, const char*) const;
-  const char *return_type() { return return_type_; }
-  void return_type(const char *t) { storestring(t, return_type_); }
+
+  std::string const& return_type() const { return return_type_; }
+  void return_type(std::string const& t) { return_type_ = t; }
+
   char visibility() { return public_; }
   void visibility(char v) { public_ = v; }
   char declare_c() { return declare_c_; }
@@ -88,8 +95,10 @@ public:
   int cursor_position_;
   int code_input_scroll_row;
   int code_input_scroll_col;
+
 private:
   ExternalCodeEditor editor_;
+
 public:
   Code_Node();
   Node *make(Strategy strategy) override;
@@ -114,11 +123,13 @@ class CodeBlock_Node : public Node
 public:
   typedef Node super;
   static CodeBlock_Node prototype;
+
 private:
-  const char* after;
+  std::string terminating_statement_;
+
 public:
-  CodeBlock_Node();
-  ~CodeBlock_Node();
+  CodeBlock_Node() = default;
+  ~CodeBlock_Node() override = default;
   Node *make(Strategy strategy) override;
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override;
@@ -131,8 +142,9 @@ public:
   bool is_a(Type inType) const override { return (inType==Type::CodeBlock) ? true : super::is_a(inType); }
   void write_properties(fld::io::Project_Writer &f) override;
   void read_property(fld::io::Project_Reader &f, const char *) override;
-  const char *end_code() { return after; }
-  void end_code(const char *c) { storestring(c, after); }
+
+  std::string const& terminating_statement() { return terminating_statement_; }
+  void terminating_statement(std::string const& c) { terminating_statement_ = c; }
 };
 
 // ---- Decl_Node declaration
@@ -142,6 +154,7 @@ class Decl_Node : public Node
 public:
   typedef Node super;
   static Decl_Node prototype;
+
 protected:
   char public_; // public = 0, private = 1, protected = 2
   char static_;
@@ -171,13 +184,14 @@ class Data_Node : public Decl_Node
 public:
   typedef Decl_Node super;
   static Data_Node prototype;
+
 private:
-  const char *filename_ { nullptr };
+  std::string filename_;
   int output_format_ { 0 };
 
 public:
-  Data_Node();
-  ~Data_Node();
+  Data_Node() = default;
+  ~Data_Node() override = default;
   Node *make(Strategy strategy) override;
   void write_code1(fld::io::Code_Writer& f) override;
   void write_code2(fld::io::Code_Writer& f) override {}
@@ -187,8 +201,10 @@ public:
   void read_property(fld::io::Project_Reader &f, const char *) override;
   Type type() const override { return Type::Data; }
   bool is_a(Type inType) const override { return (inType==Type::Data) ? true : super::is_a(inType); }
-  void filename(const char* fn);
-  const char* filename() { return filename_; }
+
+  void filename(std::string const& fn) { filename_ = fn; }
+  std::string const& filename() const { return filename_; }
+
   int output_format() { return output_format_; }
   void output_format(int fmt) { output_format_ = fmt; }
 };
