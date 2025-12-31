@@ -14,9 +14,9 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Scheme_Choice.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Scheme_Choice.H>
 
 
 /**
@@ -48,7 +48,7 @@ Fl_Scheme_Choice::Fl_Scheme_Choice(int X, int Y, int W, int H, const char *L)
   by calling Fl::scheme(const char *).
 
   The Fl_Scheme_Choice widget does this automatically when the widget is
-  shown (when receiving the FL_SHOW event) which should always be after
+  shown (when receiving the fltk3::SHOW event) which should always be after
   Fl_Window::show(argc, argv) which may set the current scheme by interpreting
   the commandline.
 
@@ -84,7 +84,7 @@ void Fl_Scheme_Choice::init_value() {
 
   \param[in]  w   The Fl_Scheme_Choice widget
 */
-void Fl_Scheme_Choice::scheme_cb_(Fl_Widget *w, void *) {
+void Fl_Scheme_Choice::scheme_cb_(fltk3::Widget *w, void *) {
   Fl_Choice *c = reinterpret_cast<Fl_Choice *>(w);
   // set the new scheme only if the scheme was changed
   const char *new_scheme = c->text(c->value());
@@ -96,7 +96,7 @@ void Fl_Scheme_Choice::scheme_cb_(Fl_Widget *w, void *) {
 /**
   \brief Handle FLTK events.
 
-  This widget uses FL_SHOW and some other events to initialize its value()
+  This widget uses fltk3::SHOW and some other events to initialize its value()
   according to the current scheme.
 
   All events are also handled by the base class Fl_Choice.
@@ -105,21 +105,21 @@ void Fl_Scheme_Choice::scheme_cb_(Fl_Widget *w, void *) {
   \return     1 if the event was used, 0 otherwise
 
   \internal
-    Usually the FL_SHOW event is used to initialize the value, and this should
+    Usually the fltk3::SHOW event is used to initialize the value, and this should
     in most cases be sufficient. However, if the scheme is changed after show()
     the widget doesn't "know" this and can't update itself. Therefore the enter
     and push events are also used to update the displayed value.
 
     In the future we will be able to register a callback that will be triggered
-    when the scheme is changed. This will make the special handling of FL_PUSH
-    and FL_ENTER obsolete, but FL_SHOW is still required.
+    when the scheme is changed. This will make the special handling of fltk3::PUSH
+    and fltk3::ENTER obsolete, but fltk3::SHOW is still required.
 */
 int Fl_Scheme_Choice::handle(int event) {
   int ret = 0;
   switch (event) {
-    case FL_SHOW:
-    case FL_PUSH:
-    case FL_ENTER:
+    case fltk3::SHOW:
+    case fltk3::PUSH:
+    case fltk3::ENTER:
       init_value();
       ret = 1;
       break;

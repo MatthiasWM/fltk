@@ -124,21 +124,21 @@ int Fl::has_idle(Fl_Idle_Handler cb, void* data) {
   Example for a "one-shot" idle callback, i.e. one that removes itself
   when it is called for the first time.
   \code
-    #include <FL/Fl.H>
-    #include <FL/Fl_Double_Window.H>
-    #include <FL/Fl_Button.H>
+    #include <fltk3/Fl.H>
+    #include <fltk3/Fl_Double_Window.H>
+    #include <fltk3/Button.H>
     void idle1(void *data) {
       printf("idle1 called with data %4d\n", fl_int(data));
       fflush(stdout);
       // ... do something ...
       Fl::remove_idle(idle1, data);
     }
-    void quit_cb(Fl_Widget *w, void *v) {
+    void quit_cb(fltk3::Widget *w, void *v) {
       w->window()->hide();
     }
     int main(int argc, char **argv) {
       auto window = new Fl_Double_Window(200, 100);
-      auto button = new Fl_Button(20, 20, 160, 60, "Quit");
+      auto button = new fltk3::Button(20, 20, 160, 60, "Quit");
       button->callback(quit_cb);
       window->end();
       window->show(argc, argv);

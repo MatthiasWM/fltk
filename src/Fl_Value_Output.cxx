@@ -18,9 +18,9 @@
 // This is much lighter than Fl_Value_Input because it has no text editor
 // If step() is zero then it can be used to display a floating-point value
 
-#include <FL/Fl.H>
-#include <FL/Fl_Value_Output.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Value_Output.H>
+#include <fltk3/fl_draw.H>
 
 void Fl_Value_Output::draw() {
   Fl_Boxtype b = box() ? box() : FL_DOWN_BOX;
@@ -48,12 +48,12 @@ int Fl_Value_Output::handle(int event) {
   int mx = Fl::event_x();
   static int ix, drag;
   switch (event) {
-  case FL_PUSH:
+  case fltk3::PUSH:
     ix = mx;
     drag = Fl::event_button();
     handle_push();
     return 1;
-  case FL_DRAG:
+  case fltk3::DRAG:
     delta = Fl::event_x()-ix;
     if (delta > 5) delta -= 5;
     else if (delta < -5) delta += 5;
@@ -66,11 +66,11 @@ int Fl_Value_Output::handle(int event) {
     v = round(v);
     handle_drag(soft()?softclamp(v):clamp(v));;
     return 1;
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     handle_release();
     return 1;
-  case FL_ENTER :
-  case FL_LEAVE :
+  case fltk3::ENTER :
+  case fltk3::LEAVE :
     return 1;
   default:
     return 0;

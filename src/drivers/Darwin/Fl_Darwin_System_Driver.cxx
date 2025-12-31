@@ -16,12 +16,12 @@
 
 #include "Fl_Darwin_System_Driver.H"
 #include "../Cocoa/Fl_MacOS_Sys_Menu_Bar_Driver.H"
-#include <FL/Fl.H>
-#include <FL/Fl_File_Browser.H>
-#include <FL/Fl_Tree_Prefs.H>
-#include <FL/Fl_Pixmap.H>
-#include <FL/platform.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_File_Browser.H>
+#include <fltk3/Fl_Tree_Prefs.H>
+#include <fltk3/Fl_Pixmap.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_draw.H>
 #include "../../flstring.h"
 #include <string.h>
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4

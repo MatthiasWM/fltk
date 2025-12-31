@@ -16,8 +16,8 @@
 
 #if defined(__APPLE__)
 
-#include <FL/platform.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/platform.H>
+#include <fltk3/fl_string_functions.h>
 #include "drivers/Cocoa/Fl_MacOS_Sys_Menu_Bar_Driver.H"
 #include "flstring.h"
 #include <stdio.h>
@@ -37,10 +37,10 @@ extern void (*fl_lock_function)();
 extern void (*fl_unlock_function)();
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12
-static void previous_tab_cb(Fl_Widget *, void *data);
-static void next_tab_cb(Fl_Widget *, void *data);
-static void move_tab_cb(Fl_Widget *, void *data);
-static void merge_all_windows_cb(Fl_Widget *, void *data);
+static void previous_tab_cb(fltk3::Widget *, void *data);
+static void next_tab_cb(fltk3::Widget *, void *data);
+static void move_tab_cb(fltk3::Widget *, void *data);
+static void merge_all_windows_cb(fltk3::Widget *, void *data);
 #endif
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_13
@@ -451,7 +451,7 @@ void Fl_MacOS_Sys_Menu_Bar_Driver::update()
 
 static int process_sys_menu_shortcuts(int event)
 {
-  if (event != FL_SHORTCUT || !fl_sys_menu_bar || Fl::modal()) return 0;
+  if (event != fltk3::SHORTCUT || !fl_sys_menu_bar || Fl::modal()) return 0;
   // is the last event the shortcut of an item of the fl_sys_menu_bar menu ?
   const Fl_Menu_Item *item = fl_sys_menu_bar->menu()->test_shortcut();
   if (!item) return 0;
@@ -580,34 +580,34 @@ void Fl_Mac_App_Menu::custom_application_menu_items(const Fl_Menu_Item *m)
   }
 }
 
-static void minimize_win_cb(Fl_Widget *, void *data)
+static void minimize_win_cb(fltk3::Widget *, void *data)
 {
   [[NSApp mainWindow] miniaturize:nil];
 }
 
-static void window_menu_cb(Fl_Widget *, void *data)
+static void window_menu_cb(fltk3::Widget *, void *data)
 {
   if (data) ((Fl_Window*)data)->show();
 }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_12
 
-static void previous_tab_cb(Fl_Widget *, void *data)
+static void previous_tab_cb(fltk3::Widget *, void *data)
 {
   [[NSApp mainWindow] selectPreviousTab:nil];
 }
 
-static void next_tab_cb(Fl_Widget *, void *data)
+static void next_tab_cb(fltk3::Widget *, void *data)
 {
   [[NSApp mainWindow] selectNextTab:nil];
 }
 
-static void move_tab_cb(Fl_Widget *, void *data)
+static void move_tab_cb(fltk3::Widget *, void *data)
 {
   [[NSApp mainWindow] moveTabToNewWindow:nil];
 }
 
-static void merge_all_windows_cb(Fl_Widget *, void *)
+static void merge_all_windows_cb(fltk3::Widget *, void *)
 {
   Fl_Window *first = Fl::first_window();
   while (first && (first->parent() || !first->border()))

@@ -17,7 +17,7 @@
 
 #include <config.h>
 #include "Fl_Sys_Menu_Bar_Driver.H"
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "Fl_System_Driver.H"
 
 

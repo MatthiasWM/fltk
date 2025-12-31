@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Menu_Button.H>
-#include <FL/Fl_Rect.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Menu_Button.H>
+#include <fltk3/Fl_Rect.H>
+#include <fltk3/fl_draw.H>
 #include "Fl_Window_Driver.H"
 
 
@@ -60,7 +60,7 @@ void Fl_Menu_Button::draw() {
   \see Fl_Menu_::menu_end()
 */
 const Fl_Menu_Item* Fl_Menu_Button::popup() {
-  handle(FL_BEFORE_MENU);
+  handle(fltk3::BEFORE_MENU);
   menu_end();
   const Fl_Menu_Item* m;
   pressed_menu_button_ = this;
@@ -82,10 +82,10 @@ const Fl_Menu_Item* Fl_Menu_Button::popup() {
 int Fl_Menu_Button::handle(int e) {
   if (!menu() || !menu()->text) return 0;
   switch (e) {
-  case FL_ENTER: /* FALLTHROUGH */
-  case FL_LEAVE:
+  case fltk3::ENTER: /* FALLTHROUGH */
+  case fltk3::LEAVE:
     return (box() && !type()) ? 1 : 0;
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (!box()) {
       if (Fl::event_button() != 3) return 0;
     } else if (type()) {
@@ -94,18 +94,18 @@ int Fl_Menu_Button::handle(int e) {
     if (Fl::visible_focus()) Fl::focus(this);
     popup();
     return 1;
-  case FL_KEYBOARD:
+  case fltk3::KEYBOARD:
     if (!box()) return 0;
     if (Fl::event_key() == ' ' &&
         !(Fl::event_state() & (FL_SHIFT | FL_CTRL | FL_ALT | FL_META))) {
       popup();
       return 1;
     } else return 0;
-  case FL_SHORTCUT:
-    if (Fl_Widget::test_shortcut()) {popup(); return 1;}
+  case fltk3::SHORTCUT:
+    if (fltk3::Widget::test_shortcut()) {popup(); return 1;}
     return test_shortcut() != 0;
-  case FL_FOCUS: /* FALLTHROUGH */
-  case FL_UNFOCUS:
+  case fltk3::FOCUS: /* FALLTHROUGH */
+  case fltk3::UNFOCUS:
     if (box() && Fl::visible_focus()) {
       redraw();
       return 1;

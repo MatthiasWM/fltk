@@ -20,9 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <FL/Fl_Spinner.H>
-#include <FL/Fl_Rect.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Spinner.H>
+#include <fltk3/Fl_Rect.H>
+#include <fltk3/fl_draw.H>
 
 /*
   This widget is a combination of the input widget and repeat buttons.
@@ -31,7 +31,7 @@
   change the value.
 */
 
-void Fl_Spinner::sb_cb(Fl_Widget *w, Fl_Spinner *sb) {
+void Fl_Spinner::sb_cb(fltk3::Widget *w, Fl_Spinner *sb) {
   double v;                             // New value
 
   if (w == &(sb->input_)) {
@@ -146,8 +146,8 @@ int Fl_Spinner::handle(int event) {
 
   switch (event) {
 
-    case FL_KEYDOWN:
-    case FL_SHORTCUT:
+    case fltk3::KEYDOWN:
+    case fltk3::SHORTCUT:
       if (Fl::event_key() == FL_Up) {
         up_button_.do_callback(FL_REASON_DRAGGED);
         return 1;
@@ -157,7 +157,7 @@ int Fl_Spinner::handle(int event) {
       }
       return 0;
 
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       if (input_.take_focus()) return 1;
       return 0;
   }
@@ -214,10 +214,10 @@ void Fl_Spinner::type(uchar v) {
   so they can be handled by the parent widget (Fl_Spinner).
 */
 int Fl_Spinner::Fl_Spinner_Input::handle(int event) {
-  if (event == FL_KEYBOARD) {
+  if (event == fltk3::KEYBOARD) {
     const int key = Fl::event_key();
     if (key == FL_Up || key == FL_Down) {
-      Fl_Input::handle(FL_UNFOCUS); // sets and potentially clips the input value
+      Fl_Input::handle(fltk3::UNFOCUS); // sets and potentially clips the input value
       return 0;
     }
   }

@@ -19,13 +19,13 @@
 
 extern int fl_gl_load_plugin;
 
-#include <FL/gl.h>
-#include <FL/Fl_Gl_Window.H>
+#include <fltk3/gl.h>
+#include <fltk3/Fl_Gl_Window.H>
 #include "Fl_Gl_Window_Driver.H"
 #include "Fl_Window_Driver.H"
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include "Fl_Scalable_Graphics_Driver.H" // Fl_Fontdesc
-#include <FL/fl_utf8.h>
+#include <fltk3/fl_utf8.h>
 #include "drivers/OpenGL/Fl_OpenGL_Display_Device.H"
 #include "drivers/OpenGL/Fl_OpenGL_Graphics_Driver.H"
 
@@ -300,7 +300,7 @@ void Fl_Gl_Window::resize(int X,int Y,int W,int H) {
 //  printf("Fl_Gl_Window::resize(X=%d, Y=%d, W=%d, H=%d)\n", X, Y, W, H);
 //  printf("current: x()=%d, y()=%d, w()=%d, h()=%d\n", x(), y(), w(), h());
 
-  int is_a_resize = (W != Fl_Widget::w() || H != Fl_Widget::h() || is_a_rescale());
+  int is_a_resize = (W != fltk3::Widget::w() || H != fltk3::Widget::h() || is_a_rescale());
   if (is_a_resize) valid(0);
   pGlWindowDriver->resize(is_a_resize, W, H);
   Fl_Window::resize(X,Y,W,H);
@@ -445,7 +445,7 @@ void Fl_Gl_Window::draw_end() {
   initialization if it is false.
 
   The draw() method can <I>only</I> use OpenGL calls.  Do not
-  attempt to call X, any of the functions in <FL/fl_draw.H>, or glX
+  attempt to call X, any of the functions in <fltk3/fl_draw.H>, or glX
   directly.  Do not call gl_start() or gl_finish().
 
   If double-buffering is enabled in the window, the back and front

@@ -14,14 +14,14 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Repeat_Button.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Repeat_Button.H>
 
 #define INITIALREPEAT .5
 #define REPEAT .1
 
 void Fl_Repeat_Button::repeat_callback(void *v) {
-  Fl_Button *b = (Fl_Button*)v;
+  fltk3::Button *b = (fltk3::Button*)v;
   Fl::add_timeout(REPEAT,repeat_callback,b);
   b->do_callback(FL_REASON_RESELECTED);
 }
@@ -29,12 +29,12 @@ void Fl_Repeat_Button::repeat_callback(void *v) {
 int Fl_Repeat_Button::handle(int event) {
   int newval;
   switch (event) {
-  case FL_HIDE:
-  case FL_DEACTIVATE:
-  case FL_RELEASE:
+  case fltk3::HIDE:
+  case fltk3::DEACTIVATE:
+  case fltk3::RELEASE:
     newval = 0; goto J1;
-  case FL_PUSH:
-  case FL_DRAG:
+  case fltk3::PUSH:
+  case fltk3::DRAG:
     if (Fl::visible_focus()) Fl::focus(this);
     newval = Fl::event_inside(this);
   J1:
@@ -50,12 +50,12 @@ int Fl_Repeat_Button::handle(int event) {
     }
     return 1;
   default:
-    return Fl_Button::handle(event);
+    return fltk3::Button::handle(event);
   }
 }
 
 
 Fl_Repeat_Button::Fl_Repeat_Button(int X,int Y,int W,int H,const char *l)
-: Fl_Button(X,Y,W,H,l)
+: fltk3::Button(X,Y,W,H,l)
 {
 }

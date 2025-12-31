@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Counter.H>
-#include <FL/Fl_Simple_Counter.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Counter.H>
+#include <fltk3/Fl_Simple_Counter.H>
+#include <fltk3/fl_draw.H>
 
 // This struct describes the four arrow boxes
 struct arrow_box {
@@ -170,7 +170,7 @@ int Fl_Counter::calc_mouseobj() {
 int Fl_Counter::handle(int event) {
   int i;
   switch (event) {
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     if (mouseobj_) {
       Fl::remove_timeout(repeat_callback, this);
       mouseobj_ = 0;
@@ -178,13 +178,13 @@ int Fl_Counter::handle(int event) {
     }
     handle_release();
     return 1;
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (Fl::visible_focus()) Fl::focus(this);
     { Fl_Widget_Tracker wp(this);
       handle_push();
       if (wp.deleted()) return 1;
     }
-  case FL_DRAG:
+  case fltk3::DRAG:
     i = calc_mouseobj();
     if (i != mouseobj_) {
       Fl::remove_timeout(repeat_callback, this);
@@ -197,10 +197,10 @@ int Fl_Counter::handle(int event) {
       redraw();
     }
     return 1;
-  case FL_MOUSEWHEEL:
+  case fltk3::MOUSEWHEEL:
     handle_drag(clamp(increment(value(),(Fl::event_dy() - Fl::event_dx()) / 2 )));
     return 1;
-  case FL_KEYBOARD :
+  case fltk3::KEYBOARD :
     switch (Fl::event_key()) {
       case FL_Left:
         handle_drag(clamp(increment(value(),-1)));
@@ -212,16 +212,16 @@ int Fl_Counter::handle(int event) {
         return 0;
     }
     // break not required because of switch...
-  case FL_UNFOCUS :
+  case fltk3::UNFOCUS :
     mouseobj_ = 0;
     /* FALLTHROUGH */
-  case FL_FOCUS :
+  case fltk3::FOCUS :
     if (Fl::visible_focus()) {
       redraw();
       return 1;
     } else return 0;
-  case FL_ENTER : /* FALLTHROUGH */
-  case FL_LEAVE :
+  case fltk3::ENTER : /* FALLTHROUGH */
+  case fltk3::LEAVE :
     return 1;
   default:
     return 0;

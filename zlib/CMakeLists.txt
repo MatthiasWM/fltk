@@ -75,5 +75,5 @@ set(FLTK_LIBRARIES_SHARED ${FLTK_LIBRARIES_SHARED} PARENT_SCOPE)
 #######################################################################
 
 install(FILES zconf.h zlib.h zutil.h
-        DESTINATION ${FLTK_INCLUDEDIR}/FL/images
+        DESTINATION ${FLTK_INCLUDEDIR}/fltk3/images
 )

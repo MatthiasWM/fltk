@@ -24,13 +24,13 @@
 // Include necessary header files...
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Progress.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Progress.H>
+#include <fltk3/fl_draw.H>
 
 
 //
-// Fl_Progress is a progress bar widget based off Fl_Widget that shows a
+// Fl_Progress is a progress bar widget based off fltk3::Widget that shows a
 // standard progress bar...
 //
 
@@ -97,7 +97,7 @@ void Fl_Progress::draw()
     The default colors are FL_BACKGROUND2_COLOR and FL_YELLOW, resp.
 */
 Fl_Progress::Fl_Progress(int X, int Y, int W, int H, const char* L)
-: Fl_Widget(X, Y, W, H, L) {
+: fltk3::Widget(X, Y, W, H, L) {
   align(FL_ALIGN_INSIDE);
   box(FL_DOWN_BOX);
   color(FL_BACKGROUND2_COLOR, FL_YELLOW);

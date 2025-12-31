@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Copy_Surface.H>
+#include <fltk3/Fl_Copy_Surface.H>
 
 /** the constructor
 \param w, h Width and height of the drawing surface in FLTK units */

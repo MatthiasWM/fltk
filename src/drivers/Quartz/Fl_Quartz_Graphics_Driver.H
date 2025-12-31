@@ -23,8 +23,8 @@
 #ifndef FL_QUARTZ_GRAPHICS_DRIVER_H
 #define FL_QUARTZ_GRAPHICS_DRIVER_H
 
-#include <FL/platform.H>
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include <ApplicationServices/ApplicationServices.h>
 
 // condition for the ATSU API to be available at compile time

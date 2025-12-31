@@ -14,11 +14,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Tooltip.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Menu_Window.H>
-#include <FL/Fl.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl_Tooltip.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Menu_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_string_functions.h>
 #include "Fl_System_Driver.H"
 #include "Fl_Window_Driver.H"
 #include "Fl_Screen_Driver.H"
@@ -69,7 +69,7 @@ public:
   }
 
   int handle(int e) FL_OVERRIDE {
-    if (e == FL_PUSH || e == FL_KEYDOWN) {
+    if (e == fltk3::PUSH || e == fltk3::KEYDOWN) {
       hide();
       Fl::remove_timeout(tooltip_hide_timeout);
       return 1;
@@ -78,7 +78,7 @@ public:
   }
 };
 
-Fl_Widget* Fl_Tooltip::widget_ = 0;
+fltk3::Widget* Fl_Tooltip::widget_ = 0;
 static Fl_TooltipBox *window = 0;
 static int currentTooltipY, currentTooltipH;
 
@@ -101,7 +101,7 @@ void Fl_TooltipBox::layout() {
     oy = Fl::event_y_root()+13;
   } else {
     oy = currentTooltipY + currentTooltipH+2;
-    for (Fl_Widget* p = Fl_Tooltip::current(); p; p = p->window()) {
+    for (fltk3::Widget* p = Fl_Tooltip::current(); p; p = p->window()) {
       oy += p->y();
     }
   }
@@ -146,7 +146,7 @@ static char recursion;
 
 // Is top level window iconified?
 static int top_win_iconified_() {
-  Fl_Widget *w = Fl_Tooltip::current();
+  fltk3::Widget *w = Fl_Tooltip::current();
   if ( !w ) return 0;
   Fl_Window *topwin = w->top_window();
   if ( !topwin ) return 0;
@@ -161,7 +161,7 @@ static void tooltip_hide_timeout(void*) {
 /**
   Use this method to temporarily change the tooltip text before it is displayed.
 
-  When FLTK sends an FL_BEFORE_TOOLTIP event to the widget under the mouse
+  When FLTK sends an fltk3::BEFORE_TOOLTIP event to the widget under the mouse
   pointer, you can handle this event to modify the tooltip text dynamically.
   The provided text will be copied into a local buffer. To apply the override,
   the event handler must return 1.
@@ -170,16 +170,16 @@ static void tooltip_hide_timeout(void*) {
  or an empty string ("") and return 1.
 
  \param[in] new_text a C string that will be copied into a buffer
- \return always 1, so this call can finish the FL_BEFORE_TOOLTIP event handling.
+ \return always 1, so this call can finish the fltk3::BEFORE_TOOLTIP event handling.
 
- \see void Fl_Widget::tooltip(const char *text).
+ \see void fltk3::Widget::tooltip(const char *text).
 
  \see `test/color_chooser.cxx` for a usage example.
 */
 int Fl_Tooltip::override_text(const char *new_text) {
   if (new_text != override_text_) {
     if (window && window->label()==override_text_)
-      ((Fl_Widget *) window)->label(nullptr);
+      ((fltk3::Widget *) window)->label(nullptr);
     if (override_text_)
       ::free(override_text_);
     override_text_ = nullptr;
@@ -198,7 +198,7 @@ void Fl_Tooltip::tooltip_timeout_(void*) {
   recursion = 1;
   if (!top_win_iconified_()) {   // no tooltip if top win iconified (STR #3157)
     if (Fl_Tooltip::current()) {
-      if (Fl_Tooltip::current()->handle(FL_BEFORE_TOOLTIP))
+      if (Fl_Tooltip::current()->handle(fltk3::BEFORE_TOOLTIP))
         tip = Fl_Tooltip::override_text_;
     }
     if (!tip || !*tip) {
@@ -211,7 +211,7 @@ void Fl_Tooltip::tooltip_timeout_(void*) {
       if ( condition ) {
         if (!window) window = new Fl_TooltipBox;
         // this cast bypasses the normal Fl_Window label() code:
-        ((Fl_Widget *) window)->label(tip);
+        ((fltk3::Widget *) window)->label(tip);
         window->layout();
         window->redraw();
         // printf("tooltip_timeout: Showing window %p with tooltip \"%s\"...\n",
@@ -236,7 +236,7 @@ void Fl_Tooltip::tooltip_timeout_(void*) {
    if you want the tooltip to reappear when the mouse moves back in)
    call the fancier enter_area() below.
 */
-void Fl_Tooltip::enter_(Fl_Widget* w) {
+void Fl_Tooltip::enter_(fltk3::Widget* w) {
 #ifdef DEBUG
   printf("Fl_Tooltip::enter_(w=%p)\n", w);
   printf("    window=%p\n", window);
@@ -249,7 +249,7 @@ void Fl_Tooltip::enter_(Fl_Widget* w) {
     if (w->x() == oldx && w->y() == oldy) return;
   }
   // find the enclosing group with a tooltip:
-  Fl_Widget* tw = w;
+  fltk3::Widget* tw = w;
   for (;;) {
     if (!tw) {exit_(0); return;}
     if (tw == widget_) return;
@@ -265,14 +265,14 @@ void Fl_Tooltip::enter_(Fl_Widget* w) {
      a modal overlapping window is deleted. FLTK does this automatically
      when you click the mouse button.
 */
-void Fl_Tooltip::current(Fl_Widget* w) {
+void Fl_Tooltip::current(fltk3::Widget* w) {
 #ifdef DEBUG
   printf("Fl_Tooltip::current(w=%p)\n", w);
 #endif // DEBUG
 
   exit_(0);
   // find the enclosing group with a tooltip:
-  Fl_Widget* tw = w;
+  fltk3::Widget* tw = w;
   for (;;) {
     if (!tw) return;
     if (tw->tooltip()) break;
@@ -284,7 +284,7 @@ void Fl_Tooltip::current(Fl_Widget* w) {
 
 // Hide any visible tooltip.
 /**  This method is called when the mouse pointer leaves a  widget. */
-void Fl_Tooltip::exit_(Fl_Widget *w) {
+void Fl_Tooltip::exit_(fltk3::Widget *w) {
 #ifdef DEBUG
   printf("Fl_Tooltip::exit_(w=%p)\n", w);
   printf("    widget=%p, window=%p\n", widget_, window);
@@ -319,7 +319,7 @@ void Fl_Tooltip::exit_(Fl_Widget *w) {
   where to put the tooltip), and the text of the tooltip (which must be
   a pointer to static data as it is not copied).
 */
-void Fl_Tooltip::enter_area(Fl_Widget* wid, int x,int y,int w,int h, const char* t)
+void Fl_Tooltip::enter_area(fltk3::Widget* wid, int x,int y,int w,int h, const char* t)
 {
   (void)x;
   (void)w;
@@ -394,7 +394,7 @@ void Fl_Tooltip::set_enter_exit_once_() {
   the child’s tooltip to an empty string ("").
 
   Tooltips can be updated dynamically before they are displayed. When a tooltip
-  is about to be shown, FLTK sends an `FL_BEFORE_TOOLTIP` event to the widget’s
+  is about to be shown, FLTK sends an `fltk3::BEFORE_TOOLTIP` event to the widget’s
   `handle()` method. Developers can override the tooltip text temporarily
   using `Fl_Tooltip::override_text(const char* new_text)` and returning 1 from
   `handle()` to apply the change.
@@ -402,7 +402,7 @@ void Fl_Tooltip::set_enter_exit_once_() {
   \param[in] text New tooltip text (no copy is made)
   \see copy_tooltip(const char*), tooltip()
 */
-void Fl_Widget::tooltip(const char *text) {
+void fltk3::Widget::tooltip(const char *text) {
   Fl_Tooltip::set_enter_exit_once_();
   if (flags() & COPIED_TOOLTIP) {
     // reassigning a copied tooltip remains the same copied tooltip
@@ -428,7 +428,7 @@ void Fl_Widget::tooltip(const char *text) {
   \param[in] text New tooltip text (an internal copy is made and managed)
   \see tooltip(const char*), tooltip()
 */
-void Fl_Widget::copy_tooltip(const char *text) {
+void fltk3::Widget::copy_tooltip(const char *text) {
   Fl_Tooltip::set_enter_exit_once_();
   if (flags() & COPIED_TOOLTIP) free((void *)(tooltip_));
   if (text) {

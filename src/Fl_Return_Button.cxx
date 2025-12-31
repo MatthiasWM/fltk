@@ -14,9 +14,9 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Return_Button.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Return_Button.H>
+#include <fltk3/fl_draw.H>
 
 int fl_return_arrow(int x, int y, int w, int h) {
   int size = w; if (h<size) size = h;
@@ -49,17 +49,17 @@ void Fl_Return_Button::draw() {
 }
 
 int Fl_Return_Button::handle(int event) {
-  if (event == FL_SHORTCUT &&
+  if (event == fltk3::SHORTCUT &&
       (Fl::event_key() == FL_Enter || Fl::event_key() == FL_KP_Enter)) {
     simulate_key_action();
     do_callback(FL_REASON_SELECTED);
     return 1;
   } else
-    return Fl_Button::handle(event);
+    return fltk3::Button::handle(event);
 }
 
 
 Fl_Return_Button::Fl_Return_Button(int X, int Y, int W, int H,const char *l)
-: Fl_Button(X,Y,W,H,l)
+: fltk3::Button(X,Y,W,H,l)
 {
 }

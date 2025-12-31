@@ -15,10 +15,10 @@
 //
 
 #include <config.h>
-#include <FL/Fl_PNG_Image.H>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/fl_string_functions.h>
-#include <FL/fl_utf8.h>               // fl_fopen()
+#include <fltk3/Fl_PNG_Image.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/fl_string_functions.h>
+#include <fltk3/fl_utf8.h>               // fl_fopen()
 #include <stdio.h>
 
 // FIXME: see original commit 2db94dcb4c5bf2ef3fa92f1cd6a41f3f90105361

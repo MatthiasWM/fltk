@@ -19,12 +19,12 @@
 #include "Fl_Cocoa_Screen_Driver.H"
 #include "Fl_Cocoa_Window_Driver.H"
 #include "../Quartz/Fl_Font.H"
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Graphics_Driver.H>
-#include <FL/Fl_Input.H>
-#include <FL/fl_ask.H>
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Input.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include <stdio.h>
 
 

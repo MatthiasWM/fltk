@@ -14,11 +14,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/forms.H>
+#include <fltk3/forms.H>
 /** Creates a bitmap widget from a box type, position, size and optional label specification */
 Fl_FormsBitmap::Fl_FormsBitmap(
   Fl_Boxtype t, int X, int Y, int W, int H, const char* l)
-: Fl_Widget(X, Y, W, H, l) {
+: fltk3::Widget(X, Y, W, H, l) {
   box(t);
   b = 0;
   color(FL_BLACK);

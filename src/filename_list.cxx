@@ -16,10 +16,10 @@
 
 // Wrapper for scandir with const-correct function prototypes.
 
-#include <FL/filename.H>
-#include <FL/Fl.H>
+#include <fltk3/filename.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
-#include <FL/fl_utf8.h>
+#include <fltk3/fl_utf8.h>
 #include "flstring.h"
 #include <stdlib.h>
 
@@ -46,7 +46,7 @@ int fl_casealphasort(struct dirent **a, struct dirent **b) {
 
   \b Include:
   \code
-  #include <FL/filename.H>
+  #include <fltk3/filename.H>
   \endcode
 
   \param[in] d the name of the directory to list.  It does not matter if it has a trailing slash.

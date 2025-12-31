@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0500
-header_name {../FL/Fl_Help_Dialog.H}
+header_name {../fltk3/Fl_Help_Dialog.H}
 code_name {.cxx}
 comment {//
 // Fl_Help_Dialog dialog for the Fast Light Tool Kit (FLTK).
@@ -18,7 +18,7 @@ comment {//
 //     https://www.fltk.org/bugs.php
 //
 // ========================================================================
-//  DO NOT EDIT FL/Fl_Help_Dialog.H and src/Fl_Help_Dialog.cxx !!!
+//  DO NOT EDIT fltk3/Fl_Help_Dialog.H and src/Fl_Help_Dialog.cxx !!!
 // ========================================================================
 //  Please use fluid to change src/Fl_Help_Dialog.fl interactively
 //  and then use fluid to "write code" or edit and use fluid -c .
@@ -27,16 +27,16 @@ comment {//
 } {in_source in_header
 }
 
-decl {\#include <FL/Fl_Shared_Image.H>} {private local
+decl {\#include <fltk3/Fl_Shared_Image.H>} {private local
 }
 
 decl {\#include "flstring.h"} {private local
 }
 
-decl {\#include <FL/fl_ask.H>} {private local
+decl {\#include <fltk3/fl_ask.H>} {private local
 }
 
-decl {\#include <FL/filename.H>} {public global
+decl {\#include <fltk3/filename.H>} {public global
 }
 
 class FL_EXPORT Fl_Help_Dialog {open
@@ -59,7 +59,7 @@ class FL_EXPORT Fl_Help_Dialog {open
       Fl_Group {} {open
         xywh {10 10 511 25}
       } {
-        Fl_Button back_ {
+        fltk3::Button back_ {
           label {@<-}
           callback {if (index_ > 0)
   index_ --;
@@ -77,7 +77,7 @@ if (strcmp(view_->filename(), file_[index_]) != 0)
 view_->topline(l);}
           private tooltip {Show the previous help page.} xywh {10 10 25 25} shortcut 0xff51 labelcolor 2
         }
-        Fl_Button forward_ {
+        fltk3::Button forward_ {
           label {@->}
           callback {if (index_ < max_)
   index_ ++;
@@ -95,7 +95,7 @@ if (strcmp(view_->filename(), file_[index_]) != 0)
 view_->topline(l);}
           private tooltip {Show the next help page.} xywh {45 10 25 25} shortcut 0xff53 labelcolor 2
         }
-        Fl_Button smaller_ {
+        fltk3::Button smaller_ {
           label F
           callback {if (view_->textsize() > 8)
   view_->textsize(view_->textsize() - 2);
@@ -105,7 +105,7 @@ if (view_->textsize() <= 8)
 larger_->activate();}
           private tooltip {Make the help text smaller.} xywh {80 10 25 25} labelfont 1 labelsize 10
         }
-        Fl_Button larger_ {
+        fltk3::Button larger_ {
           label F
           callback {if (view_->textsize() < 18)
   view_->textsize(view_->textsize() + 2);

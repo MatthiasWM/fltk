@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Color_Chooser.H>
-#include <FL/fl_draw.H>
-#include <FL/math.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Color_Chooser.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/math.h>
 #include <stdio.h>
 
 // Besides being a useful object on it's own, the Fl_Color_Chooser was
@@ -205,14 +205,14 @@ int Flcc_HueBox::handle(int e) {
   static double ih, is;
   Fl_Color_Chooser* c = (Fl_Color_Chooser*)parent();
   switch (e) {
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (Fl::visible_focus()) {
       Fl::focus(this);
       redraw();
     }
     ih = c->hue();
     is = c->saturation();
-  case FL_DRAG: {
+  case fltk3::DRAG: {
     double Xf, Yf, H, S;
     Xf = (Fl::event_x()-x()-Fl::box_dx(box()))/double(w()-Fl::box_dw(box()));
     Yf = (Fl::event_y()-y()-Fl::box_dy(box()))/double(h()-Fl::box_dh(box()));
@@ -222,14 +222,14 @@ int Flcc_HueBox::handle(int e) {
     if (Fl::event_state(FL_CTRL)) H = ih;
     if (c->hsv(H, S, c->value())) c->do_callback(FL_REASON_DRAGGED);
     } return 1;
-  case FL_FOCUS : /* FALLTHROUGH */
-  case FL_UNFOCUS :
+  case fltk3::FOCUS : /* FALLTHROUGH */
+  case fltk3::UNFOCUS :
     if (Fl::visible_focus()) {
       redraw();
       return 1;
     }
     else return 1;
-  case FL_KEYBOARD :
+  case fltk3::KEYBOARD :
     return handle_key(Fl::event_key());
   default:
     return 0;
@@ -337,26 +337,26 @@ int Flcc_ValueBox::handle(int e) {
   static double iv;
   Fl_Color_Chooser* c = (Fl_Color_Chooser*)parent();
   switch (e) {
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (Fl::visible_focus()) {
       Fl::focus(this);
       redraw();
     }
     iv = c->value();
-  case FL_DRAG: {
+  case fltk3::DRAG: {
     double Yf;
     Yf = 1-(Fl::event_y()-y()-Fl::box_dy(box()))/double(h()-Fl::box_dh(box()));
     if (fabs(Yf-iv)<(3*1.0/h())) Yf = iv;
     if (c->hsv(c->hue(),c->saturation(),Yf)) c->do_callback(FL_REASON_DRAGGED);
     } return 1;
-  case FL_FOCUS : /* FALLTHROUGH */
-  case FL_UNFOCUS :
+  case fltk3::FOCUS : /* FALLTHROUGH */
+  case fltk3::UNFOCUS :
     if (Fl::visible_focus()) {
       redraw();
       return 1;
     }
     else return 1;
-  case FL_KEYBOARD :
+  case fltk3::KEYBOARD :
     return handle_key(Fl::event_key());
   default:
     return 0;
@@ -426,7 +426,7 @@ int Flcc_ValueBox::handle_key(int key) {
 
 ////////////////////////////////////////////////////////////////
 
-void Fl_Color_Chooser::rgb_cb(Fl_Widget* o, void*) {
+void Fl_Color_Chooser::rgb_cb(fltk3::Widget* o, void*) {
   Fl_Color_Chooser* c = (Fl_Color_Chooser*)(o->parent());
   // clamp input values to valid ranges (issue #749, part 1)
   double R = c->rvalue.clamp(c->rvalue.value());
@@ -448,7 +448,7 @@ void Fl_Color_Chooser::rgb_cb(Fl_Widget* o, void*) {
   if (c->rgb(R,G,B)) c->do_callback(FL_REASON_CHANGED);
 }
 
-void Fl_Color_Chooser::mode_cb(Fl_Widget* o, void*) {
+void Fl_Color_Chooser::mode_cb(fltk3::Widget* o, void*) {
   Fl_Color_Chooser* c = (Fl_Color_Chooser*)(o->parent());
   // force them to redraw even if value is the same:
   c->rvalue.value(-1);
@@ -515,8 +515,8 @@ int Fl_Color_Chooser::handle(int e) {
   unsigned int shift = Fl::event_state() & FL_SHIFT;
 
   switch (e) {
-    case FL_KEYBOARD:
-    case FL_SHORTCUT:
+    case fltk3::KEYBOARD:
+    case fltk3::SHORTCUT:
       // ignore CTRL-SHIFT-C, CTRL-SHIFT-X and CTRL-SHIFT-Insert
       if (shift)
         return Fl_Group::handle(e);
@@ -580,15 +580,15 @@ Fl_Color_Chooser::Fl_Color_Chooser(int X, int Y, int W, int H, const char* L)
 ////////////////////////////////////////////////////////////////
 // fl_color_chooser():
 
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Return_Button.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Box.H>
+#include <fltk3/Fl_Return_Button.H>
 
-class ColorChip : public Fl_Widget {
+class ColorChip : public fltk3::Widget {
   void draw() FL_OVERRIDE;
 public:
   uchar r,g,b;
-  ColorChip(int X, int Y, int W, int H) : Fl_Widget(X,Y,W,H) {
+  ColorChip(int X, int Y, int W, int H) : fltk3::Widget(X,Y,W,H) {
     box(FL_ENGRAVED_FRAME);}
 };
 
@@ -600,7 +600,7 @@ void ColorChip::draw() {
            h()-Fl::box_dh(box()),r,g,b);
 }
 
-static void chooser_cb(Fl_Widget* o, void* vv) {
+static void chooser_cb(fltk3::Widget* o, void* vv) {
   Fl_Color_Chooser* c = (Fl_Color_Chooser*)o;
   ColorChip* v = (ColorChip*)vv;
   v->r = uchar(255*c->r()+.5);
@@ -616,7 +616,7 @@ extern const char* fl_cancel;
 //  [in] o is a pointer to okay_button (below)
 //  [in] p is a pointer to an int to receive the return value (1)
 // closes the fl_color_chooser window
-static void cc_ok_cb (Fl_Widget *o, void *p) {
+static void cc_ok_cb (fltk3::Widget *o, void *p) {
   *((int *)p) = 1; // set return value
   o->window()->hide();
 }
@@ -625,7 +625,7 @@ static void cc_ok_cb (Fl_Widget *o, void *p) {
 //  [in] o is a pointer to cancel_button (below) _or_ the dialog window
 //  [in] p is a pointer to an int to receive the return value (0)
 // closes the fl_color_chooser window
-static void cc_cancel_cb (Fl_Widget *o, void *p) {
+static void cc_cancel_cb (fltk3::Widget *o, void *p) {
   *((int *)p) = 0; // set return value
   if (o->window()) // cancel button
     o->window()->hide();
@@ -637,7 +637,7 @@ static void cc_cancel_cb (Fl_Widget *o, void *p) {
     @{ */
 /**
   \brief Pops up a window to let the user pick an arbitrary RGB color.
-  \note \#include <FL/Fl_Color_Chooser.H>
+  \note \#include <fltk3/Fl_Color_Chooser.H>
   \image html fl_color_chooser.jpg
   \image latex  fl_color_chooser.jpg "fl_color_chooser" width=8cm
   \param[in] name Title label for the window
@@ -659,7 +659,7 @@ int fl_color_chooser(const char* name, double& r, double& g, double& b, int cmod
   cancel_color.r = uchar(255*r+.5); ok_color.r = cancel_color.r;
   ok_color.g = cancel_color.g = uchar(255*g+.5);
   ok_color.b = cancel_color.b = uchar(255*b+.5);
-  Fl_Button cancel_button(110, 165, 95, 25, fl_cancel);
+  fltk3::Button cancel_button(110, 165, 95, 25, fl_cancel);
   cancel_button.callback(cc_cancel_cb,&ret);
   window.resizable(chooser);
   chooser.rgb(r,g,b);
@@ -680,7 +680,7 @@ int fl_color_chooser(const char* name, double& r, double& g, double& b, int cmod
 
 /**
   \brief Pops up a window to let the user pick an arbitrary RGB color.
-  \note \#include <FL/Fl_Color_Chooser.H>
+  \note \#include <fltk3/Fl_Color_Chooser.H>
   \image html fl_color_chooser.jpg
   \image latex  fl_color_chooser.jpg "fl_color_chooser" width=8cm
   \param[in] name Title label for the window

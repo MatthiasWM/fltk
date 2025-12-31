@@ -17,8 +17,8 @@
 #ifndef FL_XLIB_COPY_SURFACE_DRIVER_H
 #define FL_XLIB_COPY_SURFACE_DRIVER_H
 
-#include <FL/Fl_Copy_Surface.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Copy_Surface.H>
+#include <fltk3/platform.H>
 #if FLTK_USE_CAIRO
 #  include <cairo/cairo.h>
 #endif // FLTK_USE_CAIRO

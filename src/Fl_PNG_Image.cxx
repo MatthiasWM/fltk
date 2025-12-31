@@ -27,11 +27,11 @@
 //
 
 #include <config.h>
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
-#include <FL/Fl_PNG_Image.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/Fl_PNG_Image.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/fl_utf8.h>
 
 #include <stdio.h>
 #include <stdlib.h>

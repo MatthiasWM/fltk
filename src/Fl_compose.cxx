@@ -19,7 +19,7 @@
 Utility functions to support text input.
 */
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Screen_Driver.H"
 
 #ifndef FL_DOXYGEN
@@ -27,7 +27,7 @@ int Fl::compose_state = 0;
 #endif
 
 
-/** Any text editing widget should call this for each FL_KEYBOARD event.
+/** Any text editing widget should call this for each fltk3::KEYBOARD event.
  Use of this function is very simple.
 
  <p>If <i>true</i> is returned, then it has modified the
@@ -55,7 +55,7 @@ int Fl::compose_state = 0;
  <tt>int Fl::compose_state</tt> <i>after</i> having called Fl::compose(int&)
  to obtain the length in bytes of marked text that always finishes at the
  current insertion point. Widgets should also call
- void fl_reset_spot() when processing FL_UNFOCUS
+ void fl_reset_spot() when processing fltk3::UNFOCUS
  events. The Fl_Input and Fl_Text_Editor widgets underline marked text.
  If none of this is done by a user-defined text editing widget,
  text input will work, but will not signal to the user what text is marked.

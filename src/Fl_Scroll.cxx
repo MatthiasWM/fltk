@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Tiled_Image.H>
-#include <FL/Fl_Scroll.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Tiled_Image.H>
+#include <fltk3/Fl_Scroll.H>
+#include <fltk3/fl_draw.H>
 
 /** Clear all but the scrollbars... */
 void Fl_Scroll::clear() {
@@ -59,7 +59,7 @@ Fl_Scroll::~Fl_Scroll() {
     anything because the scrollbars will always be in the correct places.
 */
 void Fl_Scroll::fix_scrollbar_order() {
-  Fl_Widget** a = (Fl_Widget**)array();
+  fltk3::Widget** a = (fltk3::Widget**)array();
   if (children() > 1 &&
       (a[children()-2] != &scrollbar ||
        a[children()-1] != &hscrollbar)) {
@@ -93,9 +93,9 @@ void Fl_Scroll::fix_scrollbar_order() {
 
   \version 1.4.0
 
-  \see Fl_Group::on_insert(Fl_Widget *candidate, int index)
+  \see Fl_Group::on_insert(fltk3::Widget *candidate, int index)
 */
-int Fl_Scroll::on_insert(Fl_Widget *candidate, int index) {
+int Fl_Scroll::on_insert(fltk3::Widget *candidate, int index) {
   if (children() > 1 && index > children() - 2 &&
       candidate != &scrollbar && candidate != &hscrollbar) {
     index = children() - 2;
@@ -140,7 +140,7 @@ int Fl_Scroll::on_move(int old_index, int new_index) {
 int Fl_Scroll::delete_child(int index) {
   if (index < 0 || index >= children())
     return 1;
-  Fl_Widget *w = child(index);
+  fltk3::Widget *w = child(index);
   if (w == &scrollbar || w == &hscrollbar)
     return 2; // can't delete scrollbars
   return Fl_Group::delete_child(index);
@@ -168,9 +168,9 @@ void Fl_Scroll::draw_clip(void* v,int X, int Y, int W, int H) {
   }
 
   // draw visible children
-  Fl_Widget*const* a = s->array();
+  fltk3::Widget*const* a = s->array();
   for (int i=s->children()-2; i--;) {
-    Fl_Widget& o = **a++;
+    fltk3::Widget& o = **a++;
     s->draw_child(o);
     s->draw_outside_label(o);
   }
@@ -207,9 +207,9 @@ void Fl_Scroll::recalc_scrollbars(ScrollInfo &si) const {
   si.child.b = si.innerbox.y;
   si.child.t = si.innerbox.y;
   int first = 1;
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
   for (int i=children(); i--;) {
-    Fl_Widget* o = *a++;
+    fltk3::Widget* o = *a++;
     if ( o==&scrollbar || o==&hscrollbar || o->visible()==0 ) continue;
     if ( first ) {
         first = 0;
@@ -345,7 +345,7 @@ void Fl_Scroll::draw() {
       fl_scroll(X, Y, W, H, oldx-xposition_, oldy-yposition_, draw_clip, this);
 
       // Erase the background as needed...
-      Fl_Widget*const* a = array();
+      fltk3::Widget*const* a = array();
       int L, R, T, B;
       L = 999999;
       R = 0;
@@ -364,7 +364,7 @@ void Fl_Scroll::draw() {
     }
     if (d & FL_DAMAGE_CHILD) { // draw damaged children
       fl_push_clip(X, Y, W, H);
-      Fl_Widget*const* a = array();
+      fltk3::Widget*const* a = array();
       for (int i=children()-2; i--;) update_child(**a++);
       fl_pop_clip();
     }
@@ -445,17 +445,17 @@ void Fl_Scroll::draw() {
   This may change in a future release.
 
   \sa Fl_Group::resizable()
-  \sa Fl_Widget::resize(int,int,int,int)
+  \sa fltk3::Widget::resize(int,int,int,int)
 */
 void Fl_Scroll::resize(int X, int Y, int W, int H) {
   int dx = X-x(), dy = Y-y();
   int dw = W-w(), dh = H-h();
-  Fl_Widget::resize(X,Y,W,H); // resize _before_ moving children around
+  fltk3::Widget::resize(X,Y,W,H); // resize _before_ moving children around
   fix_scrollbar_order();
   // move all the children:
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
   for (int i=children()-2; i--;) {
-    Fl_Widget* o = *a++;
+    fltk3::Widget* o = *a++;
     o->position(o->x()+dx, o->y()+dy);
   }
   if (dw==0 && dh==0) {
@@ -492,9 +492,9 @@ void Fl_Scroll::scroll_to(int X, int Y) {
   if (!dx && !dy) return;
   xposition_ = X;
   yposition_ = Y;
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
   for (int i=children(); i--;) {
-    Fl_Widget* o = *a++;
+    fltk3::Widget* o = *a++;
     if (o == &hscrollbar || o == &scrollbar) continue;
     o->position(o->x()+dx, o->y()+dy);
   }
@@ -502,12 +502,12 @@ void Fl_Scroll::scroll_to(int X, int Y) {
   else damage(FL_DAMAGE_SCROLL);
 }
 
-void Fl_Scroll::hscrollbar_cb(Fl_Widget* o, void*) {
+void Fl_Scroll::hscrollbar_cb(fltk3::Widget* o, void*) {
   Fl_Scroll* s = (Fl_Scroll*)(o->parent());
   s->scroll_to(int(((Fl_Scrollbar*)o)->value()), s->yposition());
 }
 
-void Fl_Scroll::scrollbar_cb(Fl_Widget* o, void*) {
+void Fl_Scroll::scrollbar_cb(fltk3::Widget* o, void*) {
   Fl_Scroll* s = (Fl_Scroll*)(o->parent());
   s->scroll_to(s->xposition(), int(((Fl_Scrollbar*)o)->value()));
 }

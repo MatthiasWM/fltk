@@ -15,12 +15,12 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Printer.H>
+#include <fltk3/Fl_Printer.H>
 #include <config.h>
 
 #if defined(FL_NO_PRINT_SUPPORT)
-#include <FL/Fl_PostScript.H>
-#include <FL/Fl_PDF_File_Surface.H>
+#include <fltk3/Fl_PostScript.H>
+#include <fltk3/Fl_PDF_File_Surface.H>
 
 Fl_Printer::Fl_Printer(void) {
   printer = NULL;

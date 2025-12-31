@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <FL/Fl_Tree.H>
-#include <FL/Fl_Preferences.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl_Tree.H>
+#include <fltk3/Fl_Preferences.H>
+#include <fltk3/fl_string_functions.h>
 
 //////////////////////
 // Fl_Tree.cxx
@@ -27,7 +27,7 @@
 //
 
 // INTERNAL: scroller callback (hor+vert scroll)
-static void scroll_cb(Fl_Widget*,void *data) {
+static void scroll_cb(fltk3::Widget*,void *data) {
   ((Fl_Tree*)data)->redraw();
 }
 
@@ -222,18 +222,18 @@ enum { PUSHED_NONE=0, PUSHED_OPEN_CLOSE, PUSHED_USER_ICON, PUSHED_LABEL };
 /// Standard FLTK event handler for this widget.
 /// \todo add Fl_Widget_Tracker (see Fl_Browser_.cxx::handle())
 int Fl_Tree::handle(int e) {
-  if (e == FL_NO_EVENT) return(0);              // XXX: optimize to prevent slow resizes on large trees!
+  if (e == fltk3::NO_EVENT) return(0);              // XXX: optimize to prevent slow resizes on large trees!
   int ret = 0;
   char is_shift   = Fl::event_state() & FL_SHIFT   ? 1 : 0;
   char is_ctrl    = Fl::event_state() & FL_CTRL    ? 1 : 0;
   char is_command = Fl::event_state() & FL_COMMAND ? 1 : 0;     // ctrl on win/lin, 'Command' on mac
   // Developer note: Fl_Browser_::handle() used for reference here..
-  // #include <FL/names.h>      // for event debugging
+  // #include <fltk3/names.h>      // for event debugging
   // fprintf(stderr, "DEBUG: %s (%d)\n", fl_eventnames[e], e);
 
-  if (e == FL_ENTER || e == FL_LEAVE) return(1);
+  if (e == fltk3::ENTER || e == fltk3::LEAVE) return(1);
   switch (e) {
-    case FL_FOCUS: {
+    case fltk3::FOCUS: {
       // FLTK tests if we want focus.
       //     If a nav key was used to give us focus, and we've got no saved
       //     focus widget, determine which item gets focus depending on nav key.
@@ -261,11 +261,11 @@ int Fl_Tree::handle(int e) {
       if ( visible_focus() ) redraw();  // draw focus change
       return(1);
     }
-    case FL_UNFOCUS: {          // FLTK telling us some other widget took focus.
+    case fltk3::UNFOCUS: {          // FLTK telling us some other widget took focus.
       if ( visible_focus() ) redraw();  // draw focus change
       return(1);
     }
-    case FL_KEYBOARD: {         // keyboard shortcut
+    case fltk3::KEYBOARD: {         // keyboard shortcut
       // Do shortcuts first or scrollbar will get them...
       if ( (Fl::focus() == this) &&                             // tree has focus?
            _prefs.selectmode() > FL_TREE_SELECT_NONE ) {        // select mode that supports kb events?
@@ -380,11 +380,11 @@ int Fl_Tree::handle(int e) {
   if ( ! _root ) return(ret);
   static int last_my = 0;
   switch ( e ) {
-    case FL_PUSH: {             // clicked on tree
+    case fltk3::PUSH: {             // clicked on tree
       last_my = Fl::event_y();  // save for dragging direction..
-      if (Fl::visible_focus() && handle(FL_FOCUS)) Fl::focus(this);
+      if (Fl::visible_focus() && handle(fltk3::FOCUS)) Fl::focus(this);
       Fl_Tree_Item *item = find_clicked(0);
-      // Tell FL_DRAG what was pushed
+      // Tell fltk3::DRAG what was pushed
       _lastpushed = item ? item->event_on_collapse_icon(_prefs) ? PUSHED_OPEN_CLOSE  // open/close icon clicked
                          : item->event_on_user_icon(_prefs)     ? PUSHED_USER_ICON   // usericon clicked
                                                                 : PUSHED_LABEL       // label clicked
@@ -438,8 +438,8 @@ int Fl_Tree::handle(int e) {
       }
       break;
     }
-    case FL_DRAG: {
-      // FL_PUSH outside item or on open/close?
+    case fltk3::DRAG: {
+      // fltk3::PUSH outside item or on open/close?
       //     Ignore drag to prevent unexpected selections (STR #3527)
       //
       if ( _lastpushed == PUSHED_NONE ||
@@ -502,7 +502,7 @@ int Fl_Tree::handle(int e) {
       _lastselect = item;                       // save current item for later
       break;
     }
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       if (_prefs.selectmode() == FL_TREE_SELECT_SINGLE_DRAGGABLE &&
           Fl::event_button() == FL_LEFT_MOUSE) {
         Fl_Tree_Item *item = find_clicked(1);                // item mouse is over (vertically)
@@ -2491,7 +2491,7 @@ void Fl_Tree::hposition(int pos) {
  \code
  :
  for ( int i=0; i<tree->children(); i++ ) {    // walk children
-     Fl_Widget *w = tree->child(i);
+     fltk3::Widget *w = tree->child(i);
      if ( tree->is_scrollbar(w) ) continue;    // skip scrollbars
      ..do work here..
  }
@@ -2501,7 +2501,7 @@ void Fl_Tree::hposition(int pos) {
  \returns 1 if \p w is a scrollbar, 0 if not.
  \todo should be const
 */
-int Fl_Tree::is_scrollbar(Fl_Widget *w) {
+int Fl_Tree::is_scrollbar(fltk3::Widget *w) {
   return( (w==_vscroll || w==_hscroll) ? 1 : 0 );
 }
 
@@ -2571,7 +2571,7 @@ int Fl_Tree::is_hscroll_visible() const {
 void Fl_Tree::do_callback_for_item(Fl_Tree_Item* item, Fl_Tree_Reason reason) {
   callback_reason(reason);
   callback_item(item);
-  do_callback((Fl_Widget*)this, user_data(), (Fl_Callback_Reason)reason);
+  do_callback((fltk3::Widget*)this, user_data(), (Fl_Callback_Reason)reason);
 }
 
 /// Sets the item that was changed for this callback.
@@ -2602,7 +2602,7 @@ void Fl_Tree::callback_reason(Fl_Tree_Reason reason) {
  \par
  \code
  :
- void MyTreeCallback(Fl_Widget *w, void *userdata) {
+ void MyTreeCallback(fltk3::Widget *w, void *userdata) {
      Fl_Tree *tree = (Fl_Tree*)w;
      Fl_Tree_Item *item = tree->callback_item();    // the item changed (can be NULL if more than one item was changed!)
      switch ( tree->callback_reason() ) {           // reason callback was invoked
@@ -2672,7 +2672,7 @@ void Fl_Tree::load(Fl_Preferences &prefs) {
 
 /// Ensure the scrollbars are the last children
 void Fl_Tree::fix_scrollbar_order() {
-  Fl_Widget** a = (Fl_Widget**)array();
+  fltk3::Widget** a = (fltk3::Widget**)array();
   if (a[children()-1] != _vscroll) {
     int i,j;
     for (i = j = 0; j < children(); j++) {

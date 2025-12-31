@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Device.H>
+#include <fltk3/Fl_Device.H>
 
 class Fl_OpenGL_Graphics_Driver;
 

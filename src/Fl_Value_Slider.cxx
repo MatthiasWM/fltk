@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Value_Slider.H>
-#include <FL/Fl_Hor_Value_Slider.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Value_Slider.H>
+#include <fltk3/Fl_Hor_Value_Slider.H>
+#include <fltk3/fl_draw.H>
 #include <math.h>
 
 /**
@@ -61,7 +61,7 @@ void Fl_Value_Slider::draw() {
 }
 
 int Fl_Value_Slider::handle(int event) {
-  if (event == FL_PUSH && Fl::visible_focus()) {
+  if (event == fltk3::PUSH && Fl::visible_focus()) {
     Fl::focus(this);
     redraw();
   }

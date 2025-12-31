@@ -21,9 +21,9 @@
 
 // Implementation of fl_color(i), fl_color(r,g,b).
 
-#include <FL/Fl.H>
-#include <FL/Fl_Device.H>
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Device.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 
 // fl_cmap needs to be defined globally (here) and is used in the device
 // specific graphics drivers. It is required to 'FL_EXPORT' this symbol

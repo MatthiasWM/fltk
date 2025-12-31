@@ -16,8 +16,8 @@
 
 #include "src/drivers/Base/Fl_Base_Pen_Events.H"
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
 #include "../../Fl_Screen_Driver.H"
 
 #import <Cocoa/Cocoa.h>
@@ -64,8 +64,8 @@ namespace Pen {
 class Cocoa_Driver : public Driver {
 public:
   Cocoa_Driver() = default;
-  //virtual void subscribe(Fl_Widget* widget) override;
-  //virtual void unsubscribe(Fl_Widget* widget) override;
+  //virtual void subscribe(fltk3::Widget* widget) override;
+  //virtual void unsubscribe(fltk3::Widget* widget) override;
   //virtual void release() override;
   virtual Trait traits() override { return driver_traits_; }
   virtual Trait pen_traits(int pen_id) override {
@@ -107,8 +107,8 @@ static void copy_state() {
 /*
  Offset coordinates for subwindows and subsubwindows.
  */
-static void offset_subwindow_event(Fl_Widget *w, double &x, double &y) {
-  Fl_Widget *p = w, *q;
+static void offset_subwindow_event(fltk3::Widget *w, double &x, double &y) {
+  fltk3::Widget *p = w, *q;
   while (p) {
     q = p->parent();
     if (p->as_window() && q) {
@@ -124,7 +124,7 @@ static void offset_subwindow_event(Fl_Widget *w, double &x, double &y) {
  Coordinates are in top_window space. We iterate up the hierarchy to ensure
  that we handle subwindows correctly.
  */
-static bool event_inside(Fl_Widget *w, double x, double y) {
+static bool event_inside(fltk3::Widget *w, double x, double y) {
   offset_subwindow_event(w, x, y);
   if (w->as_window()) {
     return ((x >= 0) && (y >= 0) && (x < w->w()) && (y < w->h()));
@@ -138,9 +138,9 @@ static bool event_inside(Fl_Widget *w, double x, double y) {
  Search the subscriber list for widgets that are inside the same top window,
  are visible, and are within the give coordinates. Subwindow aware.
  */
-static Fl_Widget *find_below_pen(Fl_Window *win, double x, double y) {
+static fltk3::Widget *find_below_pen(Fl_Window *win, double x, double y) {
   for (auto &sub: subscriber_list_) {
-    Fl_Widget *candidate = sub.second->widget();
+    fltk3::Widget *candidate = sub.second->widget();
     if (candidate && (candidate->top_window() == win)) {
       if (candidate->visible() && event_inside(candidate, x, y)) {
         return candidate;
@@ -155,7 +155,7 @@ static Fl_Widget *find_below_pen(Fl_Window *win, double x, double y) {
  Note: we will get the wrong coordinates if the widget is not a child of
  the current event window (LEAVE events between windows).
  */
-static int pen_send(Fl_Widget *w, int event, State trigger, bool &copied) {
+static int pen_send(fltk3::Widget *w, int event, State trigger, bool &copied) {
   // Copy most event data only once
   if (!copied) {
     copy_state();
@@ -309,7 +309,7 @@ bool fl_cocoa_tablet_handler(NSEvent *event, Fl_Window *eventWindow) {
     }
   }
 
-  Fl_Widget *receiver = nullptr;
+  fltk3::Widget *receiver = nullptr;
   bool pushed = false;
   bool event_data_copied = false;
 

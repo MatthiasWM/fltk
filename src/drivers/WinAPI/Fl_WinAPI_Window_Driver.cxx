@@ -16,15 +16,15 @@
 
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Image.H>
-#include <FL/Fl_Bitmap.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_Overlay_Window.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Image.H>
+#include <fltk3/Fl_Bitmap.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_Overlay_Window.H>
+#include <fltk3/platform.H>
 #include "Fl_WinAPI_Window_Driver.H"
 #include "Fl_WinAPI_Screen_Driver.H"
 #include "../GDI/Fl_GDI_Graphics_Driver.H"
@@ -577,7 +577,7 @@ void Fl_WinAPI_Window_Driver::make_fullscreen(int X, int Y, int W, int H) {
 void Fl_WinAPI_Window_Driver::fullscreen_on() {
   pWindow->_set_fullscreen();
   make_fullscreen(x(), y(), w(), h());
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 
@@ -624,7 +624,7 @@ void Fl_WinAPI_Window_Driver::fullscreen_off(int X, int Y, int W, int H) {
     SetWindowPos(fl_xid(pWindow), 0, WX, WY, WW, WH,
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
   }
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 

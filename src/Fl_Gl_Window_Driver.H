@@ -24,8 +24,8 @@
 #ifndef Fl_Gl_Window_Driver_H
 #define Fl_Gl_Window_Driver_H
 
-#include <FL/Fl_Gl_Window.H>
-#include <FL/gl.h> // for GLint
+#include <fltk3/Fl_Gl_Window.H>
+#include <fltk3/gl.h> // for GLint
 
 class Fl_Gl_Choice;
 class Fl_Font_Descriptor;

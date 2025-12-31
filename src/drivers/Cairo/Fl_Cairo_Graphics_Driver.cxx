@@ -23,9 +23,9 @@
 
 #include "Fl_Cairo_Graphics_Driver.H"
 #include "../../Fl_Screen_Driver.H"
-#include <FL/platform.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/platform.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_utf8.h>
 #include <cairo/cairo.h>
 #include <pango/pangocairo.h>
 #if ! PANGO_VERSION_CHECK(1,16,0)

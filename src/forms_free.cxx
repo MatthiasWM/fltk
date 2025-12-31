@@ -19,8 +19,8 @@
 // me to port several other programs, but it is in no way
 // complete.
 
-#include <FL/Fl.H>
-#include <FL/Fl_Free.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Free.H>
 
 void Fl_Free::step(void *v) {
   Fl_Free *f = (Fl_Free *)v;
@@ -40,7 +40,7 @@ void Fl_Free::step(void *v) {
   The constructor takes both the type and the handle function. The handle
   function should be declared as follows:
   \code
-  int handle_function(Fl_Widget *w,
+  int handle_function(fltk3::Widget *w,
                       int       event,
                       float     event_x,
                       float     event_y,
@@ -52,7 +52,7 @@ void Fl_Free::step(void *v) {
   The event argument contains the event type:
   \code
   // old event names for compatibility:
-  #define FL_MOUSE              FL_DRAG
+  #define FL_MOUSE              fltk3::DRAG
   #define FL_DRAW               0
   #define FL_STEP               9
   #define FL_FREEMEM            12
@@ -62,7 +62,7 @@ void Fl_Free::step(void *v) {
 */
 Fl_Free::Fl_Free(uchar t,int X, int Y, int W, int H,const char *L,
                  FL_HANDLEPTR hdl) :
-Fl_Widget(X,Y,W,H,L) {
+fltk3::Widget(X,Y,W,H,L) {
   type(t);
   hfunc = hdl;
   if (t == FL_SLEEPING_FREE) set_flag(INACTIVE);
@@ -83,15 +83,15 @@ void Fl_Free::draw() {hfunc(this,FL_DRAW,0,0,0);}
 int Fl_Free::handle(int e) {
   char key = Fl::event_key();
   switch (e) {
-  case FL_FOCUS:
+  case fltk3::FOCUS:
     if (type()!=FL_INPUT_FREE && type()!=FL_ALL_FREE) return 0;
     break;
-  case FL_PUSH:
-  case FL_DRAG:
-  case FL_RELEASE:
+  case fltk3::PUSH:
+  case fltk3::DRAG:
+  case fltk3::RELEASE:
     key = 4-Fl::event_button();
     break;
-  case FL_SHORTCUT:
+  case fltk3::SHORTCUT:
     return 0;
   }
   if (hfunc(this, e, float(Fl::event_x()), float(Fl::event_y()), key)) do_callback();

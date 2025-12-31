@@ -15,9 +15,9 @@
 //   https://www.fltk.org/str.php
 //
 
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Rect.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Rect.H>
 #include "fl_oxy.h"
 
 // Note:

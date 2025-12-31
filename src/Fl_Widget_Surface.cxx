@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Widget_Surface.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Widget_Surface.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include "Fl_Window_Driver.H"
 #include "Fl_Screen_Driver.H"
 
@@ -40,7 +40,7 @@ Fl_Widget_Surface::Fl_Widget_Surface(Fl_Graphics_Driver *d) : Fl_Surface_Device(
  \param[in] delta_x,delta_y Optional horizontal and vertical offsets for positioning the widget top left relatively
  to the current origin of graphics.
  */
-void Fl_Widget_Surface::draw(Fl_Widget* widget, int delta_x, int delta_y)
+void Fl_Widget_Surface::draw(fltk3::Widget* widget, int delta_x, int delta_y)
 {
   int old_x, old_y, new_x, new_y, is_window;
   if ( ! widget->visible() ) return;
@@ -90,13 +90,13 @@ void Fl_Widget_Surface::draw(Fl_Widget* widget, int delta_x, int delta_y)
 }
 
 
-void Fl_Widget_Surface::traverse(Fl_Widget *widget)
+void Fl_Widget_Surface::traverse(fltk3::Widget *widget)
 {
   Fl_Group *g = widget->as_group();
   if (!g) return;
   int n = g->children();
   for (int i = 0; i < n; i++) {
-    Fl_Widget *c = g->child(i);
+    fltk3::Widget *c = g->child(i);
     if ( !c->visible() ) continue;
     if ( c->as_window() ) {
       draw(c, c->x(), c->y());

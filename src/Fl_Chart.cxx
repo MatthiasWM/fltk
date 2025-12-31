@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/math.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Chart.H>
-#include <FL/fl_draw.H>
+#include <fltk3/math.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Chart.H>
+#include <fltk3/fl_draw.H>
 #include "flstring.h"
 #include <stdlib.h>
 
@@ -339,7 +339,7 @@ void Fl_Chart::draw() {
   \param[in] L widget label, default is no label
 */
 Fl_Chart::Fl_Chart(int X, int Y, int W, int H, const char *L)
-  : Fl_Widget(X, Y, W, H, L) {
+  : fltk3::Widget(X, Y, W, H, L) {
   box(FL_BORDER_BOX);
   align(FL_ALIGN_BOTTOM);
   numb = 0;

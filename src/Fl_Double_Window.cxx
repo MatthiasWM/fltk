@@ -17,10 +17,10 @@
  Fl_Double_Window implementation.
  */
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Double_Window.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Double_Window.H>
+#include <fltk3/fl_draw.H>
 #include "Fl_Window_Driver.H"
 
 // On systems that support double buffering "naturally" the base

@@ -18,11 +18,11 @@
 // Other label types (symbols) are in their own source files
 // to avoid linking if not used.
 
-#include <FL/Fl.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Group.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Image.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Group.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Image.H>
 
 void
 fl_no_label(const Fl_Label*,int,int,int,int,Fl_Align) {}
@@ -113,7 +113,7 @@ void Fl_Label::measure(int& W, int& H) const {
 /** Draws the widget's label at the defined label position.
     This is the normal call for a widget's draw() method.
  */
-void Fl_Widget::draw_label() const {
+void fltk3::Widget::draw_label() const {
   int X = x_+Fl::box_dx(box());
   int W = w_-Fl::box_dw(box());
   if (W > 11 && align()&(FL_ALIGN_LEFT|FL_ALIGN_RIGHT)) {X += 3; W -= 6;}
@@ -123,7 +123,7 @@ void Fl_Widget::draw_label() const {
 /** Draws the label in an arbitrary bounding box.
     draw() can use this instead of draw_label(void) to change the bounding box
  */
-void Fl_Widget::draw_label(int X, int Y, int W, int H) const {
+void fltk3::Widget::draw_label(int X, int Y, int W, int H) const {
   // quit if we are not drawing a label inside the widget:
   if ((align()&15) && !(align() & FL_ALIGN_INSIDE)) return;
   draw_label(X,Y,W,H,align());
@@ -132,7 +132,7 @@ void Fl_Widget::draw_label(int X, int Y, int W, int H) const {
 /** Draws the label in an arbitrary bounding box with an arbitrary alignment.
     Anybody can call this to force the label to draw anywhere.
  */
-void Fl_Widget::draw_label(int X, int Y, int W, int H, Fl_Align a) const {
+void fltk3::Widget::draw_label(int X, int Y, int W, int H, Fl_Align a) const {
   if (flags()&SHORTCUT_LABEL) fl_draw_shortcut = 1;
   Fl_Label l1 = label_;
   if (!active_r()) {
@@ -145,4 +145,4 @@ void Fl_Widget::draw_label(int X, int Y, int W, int H, Fl_Align a) const {
 
 // include these vars here so they can be referenced without including
 // Fl_Input_ code:
-#include <FL/Fl_Input_.H>
+#include <fltk3/Fl_Input_.H>

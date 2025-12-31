@@ -22,7 +22,7 @@
 #define FL_POSTSCRIPT_GRAPHICS_DRIVER_H
 
 #include <config.h>
-#include <FL/Fl_PostScript.H>
+#include <fltk3/Fl_PostScript.H>
 
 #ifndef USE_PANGO
 #define USE_PANGO 0

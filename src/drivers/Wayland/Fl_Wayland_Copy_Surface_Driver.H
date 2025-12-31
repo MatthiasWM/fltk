@@ -17,8 +17,8 @@
 #ifndef FL_WAYLAND_COPY_SURFACE_DRIVER_H
 #define FL_WAYLAND_COPY_SURFACE_DRIVER_H
 
-#include <FL/Fl_Copy_Surface.H>
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Copy_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 
 class Fl_Wayland_Copy_Surface_Driver : public Fl_Copy_Surface_Driver {
   friend class Fl_Copy_Surface_Driver;

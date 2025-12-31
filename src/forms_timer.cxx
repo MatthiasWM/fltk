@@ -18,10 +18,10 @@
 // You don't want to use this if you just want a timeout, call
 // Fl::add_timeout directly!
 
-#include <FL/Fl.H>
-#include <FL/Fl_Timer.H>
-#include <FL/fl_draw.H>
-#include <FL/forms.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Timer.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/forms.H>
 #include "Fl_System_Driver.H"
 #include <stdio.h>
 
@@ -88,7 +88,7 @@ void Fl_Timer::step() {
 }
 
 int Fl_Timer::handle(int event) {
-  if (event == FL_RELEASE && delay <= 0) value(0.0);
+  if (event == fltk3::RELEASE && delay <= 0) value(0.0);
   return 0;
 }
 
@@ -113,7 +113,7 @@ Fl_Timer::~Fl_Timer() {
 */
 Fl_Timer::Fl_Timer(uchar t, int X, int Y, int W, int H, const char* l)
 
-: Fl_Widget(X, Y, W, H, l) {
+: fltk3::Widget(X, Y, W, H, l) {
   box(FL_DOWN_BOX);
   selection_color(FL_RED);
   delay = 0;

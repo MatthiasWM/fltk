@@ -30,9 +30,9 @@
 // all driver code is now in drivers/XXX/Fl_XXX_Graphics_Driver_xyz.cxx
 // -----------------------------------------------------------------------------
 
-#include <FL/Fl_Graphics_Driver.H>
-#include <FL/Fl.H>
-#include <FL/math.h>
+#include <fltk3/Fl_Graphics_Driver.H>
+#include <fltk3/Fl.H>
+#include <fltk3/math.h>
 #include <stdlib.h>
 
 /**

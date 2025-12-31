@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "Fl_Xlib_Image_Surface_Driver.H"
 #include "../../Fl_Screen_Driver.H"
 #include <stdlib.h>

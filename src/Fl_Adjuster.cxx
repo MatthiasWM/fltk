@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Adjuster.H>
-#include <FL/Fl_Bitmap.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Adjuster.H>
+#include <fltk3/Fl_Bitmap.H>
+#include <fltk3/fl_draw.H>
 
 #include "fastarrow.h"
 static Fl_Bitmap fastarrow(fastarrow_bits, fastarrow_width, fastarrow_height);
@@ -60,7 +60,7 @@ int Fl_Adjuster::handle(int event) {
   int mx = Fl::event_x();
   // Fl_Widget_Tracker wp(this);
   switch (event) {
-    case FL_PUSH:
+    case fltk3::PUSH:
       if (Fl::visible_focus()) Fl::focus(this);
       ix = mx;
       if (w()>=h())
@@ -73,7 +73,7 @@ int Fl_Adjuster::handle(int event) {
       }
       redraw();
       return 1;
-    case FL_DRAG:
+    case fltk3::DRAG:
       if (w() >= h()) {
         delta = x()+(drag-1)*w()/3;     // left edge of button
         if (mx < delta)
@@ -97,7 +97,7 @@ int Fl_Adjuster::handle(int event) {
       }
       handle_drag(soft() ? softclamp(v) : clamp(v));
       return 1;
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       if (Fl::event_is_click()) { // detect click but no drag
         if (Fl::event_state()&0xF0000) delta = -10;
         else delta = 10;
@@ -114,7 +114,7 @@ int Fl_Adjuster::handle(int event) {
       redraw();
       handle_release();
       return 1;
-    case FL_KEYBOARD :
+    case fltk3::KEYBOARD :
       switch (Fl::event_key()) {
         case FL_Up:
           if (w() > h()) return 0;
@@ -137,15 +137,15 @@ int Fl_Adjuster::handle(int event) {
       }
       // break not required because of switch...
 
-    case FL_FOCUS:
-    case FL_UNFOCUS:
+    case fltk3::FOCUS:
+    case fltk3::UNFOCUS:
       if (Fl::visible_focus()) {
         redraw();
         return 1;
       } else return 0;
 
-    case FL_ENTER :
-    case FL_LEAVE :
+    case fltk3::ENTER :
+    case fltk3::LEAVE :
       return 1;
   }
   return 0;

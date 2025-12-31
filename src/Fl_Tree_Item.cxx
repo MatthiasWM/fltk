@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Tree_Item.H>
-#include <FL/Fl_Tree_Prefs.H>
-#include <FL/Fl_Tree.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Tree_Item.H>
+#include <fltk3/Fl_Tree_Prefs.H>
+#include <fltk3/Fl_Tree.H>
+#include <fltk3/fl_string_functions.h>
 #include "Fl_System_Driver.H"
 
 //////////////////////

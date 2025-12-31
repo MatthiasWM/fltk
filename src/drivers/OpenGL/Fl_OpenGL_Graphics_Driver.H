@@ -23,8 +23,8 @@
 #ifndef FL_OPENGL_GRAPHICS_DRIVER_H
 #define FL_OPENGL_GRAPHICS_DRIVER_H
 
-#include <FL/Fl_Graphics_Driver.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Graphics_Driver.H>
+#include <fltk3/fl_draw.H>
 
 /**
  \brief OpenGL specific graphics class.

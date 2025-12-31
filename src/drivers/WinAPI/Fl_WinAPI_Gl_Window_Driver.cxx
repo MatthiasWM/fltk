@@ -16,9 +16,9 @@
 
 #include <config.h>
 #if HAVE_GL
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "../../Fl_Screen_Driver.H"
-#include <FL/gl.h>
+#include <fltk3/gl.h>
 #include "Fl_WinAPI_Gl_Window_Driver.H"
 #include "../../Fl_Gl_Choice.H"
 #include "Fl_WinAPI_Window_Driver.H"

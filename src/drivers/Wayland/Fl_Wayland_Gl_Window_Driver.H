@@ -22,7 +22,7 @@
 #include "../../Fl_Gl_Window_Driver.H"
 #include <wayland-egl.h>
 #include <EGL/egl.h>
-#include <FL/gl.h>
+#include <fltk3/gl.h>
 
 
 class Fl_Wayland_Gl_Window_Driver : public Fl_Gl_Window_Driver {

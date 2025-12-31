@@ -30,22 +30,22 @@
 // This allows punctuation shortcuts like "#" to work (rather than
 // calling it "shift+3" on a US keyboard)
 
-#include <FL/Fl.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Button.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
 #include "Fl_Screen_Driver.H"
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 #include <stdlib.h>
 #include <ctype.h>
 #include "flstring.h"
 
 /**
-  Tests the current event, which must be an FL_KEYBOARD or
-  FL_SHORTCUT, against a shortcut value (described in Fl_Button).
+  Tests the current event, which must be an fltk3::KEYBOARD or
+  fltk3::SHORTCUT, against a shortcut value (described in fltk3::Button).
 
-  Not to be confused with Fl_Widget::test_shortcut().
+  Not to be confused with fltk3::Widget::test_shortcut().
 
   \return non-zero if there is a match.
 */
@@ -84,7 +84,7 @@ int Fl::test_shortcut(unsigned int shortcut) {
 /**
   Get a human-readable string from a shortcut value.
 
-  Unparse a shortcut value as used by Fl_Button or Fl_Menu_Item into
+  Unparse a shortcut value as used by fltk3::Button or Fl_Menu_Item into
   a human-readable string like "Alt+N". This only works if the shortcut
   is a character key or a numbered function key. If the shortcut is
   zero then an empty string is returned. The return value points at
@@ -299,7 +299,7 @@ unsigned int fl_old_shortcut(const char* s) {
 
   \note Internal use only.
 */
-unsigned int Fl_Widget::label_shortcut(const char *t) {
+unsigned int fltk3::Widget::label_shortcut(const char *t) {
   if (!t) return 0;
   for (;;) {
     if (*t==0) return 0;
@@ -316,7 +316,7 @@ unsigned int Fl_Widget::label_shortcut(const char *t) {
 /** Returns true if the given text \p t contains the entered '&x' shortcut.
 
   This method must only be called in handle() methods or callbacks after
-  a keypress event (usually FL_KEYDOWN or FL_SHORTCUT). The given text
+  a keypress event (usually fltk3::KEYDOWN or fltk3::SHORTCUT). The given text
   \p t (usually a widget's label or menu text) is searched for a '&x'
   shortcut, and if found, this is compared with the entered key value.
 
@@ -330,9 +330,9 @@ unsigned int Fl_Widget::label_shortcut(const char *t) {
   \return true, if the entered text matches the '&x' shortcut in \p t
           false (0) otherwise.
 
-  \note Useful when a widget's handle(int) method needs dedicated processing of FL_SHORTCUT.
+  \note Useful when a widget's handle(int) method needs dedicated processing of fltk3::SHORTCUT.
 */
-int Fl_Widget::test_shortcut(const char *t, const bool require_alt) {
+int fltk3::Widget::test_shortcut(const char *t, const bool require_alt) {
   static int extra_test = Fl::system_driver()->need_test_shortcut_extra();
   if (!t) return 0;
   // for menubars etc. shortcuts must work only if the Alt modifier is pressed
@@ -355,7 +355,7 @@ int Fl_Widget::test_shortcut(const char *t, const bool require_alt) {
 /** Returns true if the widget's label contains the entered '&x' shortcut.
 
   This method must only be called in handle() methods or callbacks after
-  a keypress event (usually FL_KEYDOWN or FL_SHORTCUT).
+  a keypress event (usually fltk3::KEYDOWN or fltk3::SHORTCUT).
   The widget's label is searched for a '&x'
   shortcut, and if found, this is compared with the entered key value.
 
@@ -364,10 +364,10 @@ int Fl_Widget::test_shortcut(const char *t, const bool require_alt) {
   \return true, if the entered text matches the widget's'&x' shortcut,
           false (0) otherwise.
 
- \note Useful when a widget's handle(int) method needs dedicated processing of FL_SHORTCUT.
+ \note Useful when a widget's handle(int) method needs dedicated processing of fltk3::SHORTCUT.
 */
 
-int Fl_Widget::test_shortcut() {
+int fltk3::Widget::test_shortcut() {
   if (!(flags()&SHORTCUT_LABEL)) return 0;
   return test_shortcut(label());
 }

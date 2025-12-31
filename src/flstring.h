@@ -18,7 +18,7 @@
  /*
  * Important note: this header file includes '<config.h>' !
  *
- * This header MUST NOT be included in public headers (i.e. in 'FL/') and
+ * This header MUST NOT be included in public headers (i.e. in 'fltk3/') and
  * SHOULD NOT be included in test and demo programs (i.e. in 'test/' or
  * 'examples/') because it includes '<config.h>'.
  */
@@ -26,7 +26,7 @@
 #ifndef flstring_h
 #  define flstring_h
 
-#  include <FL/Fl_Export.H>
+#  include <fltk3/Fl_Export.H>
 #  include <config.h>
 #  include <stdio.h>
 #  include <stdarg.h>
@@ -35,7 +35,7 @@
 #    include <strings.h>
 #  endif /* HAVE_STRINGS_H */
 #  include <ctype.h>
-#  include <FL/fl_string_functions.h>
+#  include <fltk3/fl_string_functions.h>
 
 /*
  * Apparently Unixware defines "index" to strchr (!) rather than
@@ -82,7 +82,7 @@ FL_EXPORT extern size_t fl_strlcat(char *, const char *, size_t);
 #    define strlcat fl_strlcat
 #  endif /* !HAVE_STRLCAT */
 
-/* promoted to <FL/fl_string_functions.h> */
+/* promoted to <fltk3/fl_string_functions.h> */
 /* FL_EXPORT extern size_t fl_strlcpy(char *, const char *, size_t); */
 #  ifndef HAVE_STRLCPY
 #    define strlcpy fl_strlcpy

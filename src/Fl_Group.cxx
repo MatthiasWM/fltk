@@ -20,10 +20,10 @@
 // Fl_Window itself is a subclass of this, and most of the event
 // handling is designed so windows themselves work correctly.
 
-#include <FL/Fl_Group.H>
+#include <fltk3/Fl_Group.H>
 #include "Fl_Window_Driver.H"
-#include <FL/Fl_Rect.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Rect.H>
+#include <fltk3/fl_draw.H>
 
 #include <stdlib.h> // malloc etc.
 
@@ -38,7 +38,7 @@ Fl_Group* Fl_Group::current_;
   \internal This "array" of children is the storage area of an
         internal std::vector.
 */
-Fl_Widget*const* Fl_Group::array() const {
+fltk3::Widget*const* Fl_Group::array() const {
   return child_.data();
 }
 
@@ -47,8 +47,8 @@ Fl_Widget*const* Fl_Group::array() const {
 
   Returns children() if the widget is NULL or not found.
 */
-int Fl_Group::find(const Fl_Widget* o) const {
-  Fl_Widget*const* a = array();
+int Fl_Group::find(const fltk3::Widget* o) const {
+  fltk3::Widget*const* a = array();
   int i;
   for (i = 0; i < children(); i++) {
     if (*a++ == o) break;
@@ -78,7 +78,7 @@ void Fl_Group::end() {current_ = parent();}
 /**
   Returns the currently active group.
 
-  The Fl_Widget constructor automatically does current()->add(widget) if this
+  The fltk3::Widget constructor automatically does current()->add(widget) if this
   is not null. To prevent new widgets from being added to a group, call
   Fl_Group::current(0).
 */
@@ -90,19 +90,19 @@ Fl_Group *Fl_Group::current() {return current_;}
 */
 void Fl_Group::current(Fl_Group *g) {current_ = g;}
 
-extern Fl_Widget* fl_oldfocus; // set by Fl::focus
+extern fltk3::Widget* fl_oldfocus; // set by Fl::focus
 
 // For back-compatibility, we must adjust all events sent to child
 // windows so they are relative to that window.
 
-static int send(Fl_Widget* o, int event) {
+static int send(fltk3::Widget* o, int event) {
   if (!o->as_window()) return o->handle(event);
   switch ( event )
   {
-  case FL_DND_ENTER: /* FALLTHROUGH */
-  case FL_DND_DRAG:
+  case fltk3::DND_ENTER: /* FALLTHROUGH */
+  case fltk3::DND_DRAG:
     // figure out correct type of event:
-    event = (o->contains(Fl::belowmouse())) ? FL_DND_DRAG : FL_DND_ENTER;
+    event = (o->contains(Fl::belowmouse())) ? fltk3::DND_DRAG : fltk3::DND_ENTER;
   }
   int save_x = Fl::e_x; Fl::e_x -= o->x();
   int save_y = Fl::e_y; Fl::e_y -= o->y();
@@ -111,9 +111,9 @@ static int send(Fl_Widget* o, int event) {
   Fl::e_x = save_x;
   switch ( event )
   {
-  case FL_ENTER: /* FALLTHROUGH */
-  case FL_DND_ENTER:
-    // Successful completion of FL_ENTER means the widget is now the
+  case fltk3::ENTER: /* FALLTHROUGH */
+  case fltk3::DND_ENTER:
+    // Successful completion of fltk3::ENTER means the widget is now the
     // belowmouse widget, but only call Fl::belowmouse if the child
     // widget did not do so:
     if (!o->contains(Fl::belowmouse())) Fl::belowmouse(o);
@@ -128,7 +128,7 @@ static int navkey() {
   if (Fl::event_state(FL_CTRL | FL_ALT | FL_META)) return 0;
 
   switch (Fl::event_key()) {
-  case 0: // not an FL_KEYBOARD/FL_SHORTCUT event
+  case 0: // not an fltk3::KEYBOARD/fltk3::SHORTCUT event
     break;
   case FL_Tab:
     if (!Fl::event_state(FL_SHIFT)) return FL_Right;
@@ -147,13 +147,13 @@ static int navkey() {
 
 int Fl_Group::handle(int event) {
 
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
   int i;
-  Fl_Widget* o;
+  fltk3::Widget* o;
 
   switch (event) {
 
-  case FL_FOCUS:
+  case fltk3::FOCUS:
     switch (navkey()) {
     default:
       if (savedfocus_ && savedfocus_->take_focus()) return 1;
@@ -168,51 +168,51 @@ int Fl_Group::handle(int event) {
     }
     return 0;
 
-  case FL_UNFOCUS:
+  case fltk3::UNFOCUS:
     savedfocus_ = fl_oldfocus;
     return 0;
 
-  case FL_KEYBOARD:
+  case fltk3::KEYBOARD:
     return navigation(navkey());
 
-  case FL_SHORTCUT:
+  case fltk3::SHORTCUT:
     for (i = children(); i--;) {
       o = a[i];
-      if (o->takesevents() && Fl::event_inside(o) && send(o,FL_SHORTCUT))
+      if (o->takesevents() && Fl::event_inside(o) && send(o,fltk3::SHORTCUT))
         return 1;
     }
     for (i = children(); i--;) {
       o = a[i];
-      if (o->takesevents() && !Fl::event_inside(o) && send(o,FL_SHORTCUT))
+      if (o->takesevents() && !Fl::event_inside(o) && send(o,fltk3::SHORTCUT))
         return 1;
     }
     if ((Fl::event_key() == FL_Enter || Fl::event_key() == FL_KP_Enter)) return navigation(FL_Down);
     return 0;
 
-  case FL_ENTER:
-  case FL_MOVE:
+  case fltk3::ENTER:
+  case fltk3::MOVE:
     for (i = children(); i--;) {
       o = a[i];
       if (o->visible() && Fl::event_inside(o)) {
         if (o->contains(Fl::belowmouse())) {
-          return send(o,FL_MOVE);
+          return send(o,fltk3::MOVE);
         } else {
           Fl::belowmouse(o);
-          if (send(o,FL_ENTER)) return 1;
+          if (send(o,fltk3::ENTER)) return 1;
         }
       }
     }
     Fl::belowmouse(this);
     return 1;
 
-  case FL_DND_ENTER:
-  case FL_DND_DRAG:
+  case fltk3::DND_ENTER:
+  case fltk3::DND_DRAG:
     for (i = children(); i--;) {
       o = a[i];
       if (o->takesevents() && Fl::event_inside(o)) {
         if (o->contains(Fl::belowmouse())) {
-          return send(o,FL_DND_DRAG);
-        } else if (send(o,FL_DND_ENTER)) {
+          return send(o,fltk3::DND_DRAG);
+        } else if (send(o,fltk3::DND_ENTER)) {
           if (!o->contains(Fl::belowmouse())) Fl::belowmouse(o);
           return 1;
         }
@@ -221,12 +221,12 @@ int Fl_Group::handle(int event) {
     Fl::belowmouse(this);
     return 0;
 
-  case FL_PUSH:
+  case fltk3::PUSH:
     for (i = children(); i--;) {
       o = a[i];
       if (o->takesevents() && Fl::event_inside(o)) {
         Fl_Widget_Tracker wp(o);
-        if (send(o,FL_PUSH)) {
+        if (send(o,fltk3::PUSH)) {
           if (Fl::pushed() && wp.exists() && !o->contains(Fl::pushed())) Fl::pushed(o);
           return 1;
         }
@@ -234,8 +234,8 @@ int Fl_Group::handle(int event) {
     }
     return 0;
 
-  case FL_RELEASE:
-  case FL_DRAG:
+  case fltk3::RELEASE:
+  case fltk3::DRAG:
     o = Fl::pushed();
     if (o == this) return 0;
     else if (o) send(o,event);
@@ -249,35 +249,35 @@ int Fl_Group::handle(int event) {
     }
     return 0;
 
-  case FL_MOUSEWHEEL:
+  case fltk3::MOUSEWHEEL:
     for (i = children(); i--;) {
       o = a[i];
-      if (o->takesevents() && Fl::event_inside(o) && send(o,FL_MOUSEWHEEL))
+      if (o->takesevents() && Fl::event_inside(o) && send(o,fltk3::MOUSEWHEEL))
         return 1;
     }
     for (i = children(); i--;) {
       o = a[i];
-      if (o->takesevents() && !Fl::event_inside(o) && send(o,FL_MOUSEWHEEL))
+      if (o->takesevents() && !Fl::event_inside(o) && send(o,fltk3::MOUSEWHEEL))
         return 1;
     }
     return 0;
 
-  case FL_DEACTIVATE:
-  case FL_ACTIVATE:
+  case fltk3::DEACTIVATE:
+  case fltk3::ACTIVATE:
     for (i = children(); i--;) {
       o = *a++;
       if (o->active()) o->handle(event);
     }
     return 1;
 
-  case FL_SHOW:
-  case FL_HIDE:
+  case fltk3::SHOW:
+  case fltk3::HIDE:
     for (i = children(); i--;) {
       o = *a++;
-      if (event == FL_HIDE && o == Fl::focus()) {
+      if (event == fltk3::HIDE && o == Fl::focus()) {
         // Give up input focus...
         int old_event = Fl::e_number;
-        o->handle(Fl::e_number = FL_UNFOCUS);
+        o->handle(Fl::e_number = fltk3::UNFOCUS);
         Fl::e_number = old_event;
         Fl::focus(0);
       }
@@ -313,7 +313,7 @@ int Fl_Group::navigation(int key) {
     if (i >= children()) return 0;
     if (child_[i]->contains(Fl::focus())) break;
   }
-  Fl_Widget *previous = child_[i];
+  fltk3::Widget *previous = child_[i];
 
   for (;;) {
     switch (key) {
@@ -336,7 +336,7 @@ int Fl_Group::navigation(int key) {
     default:
       return 0;
     }
-    Fl_Widget* o = child_[i];
+    fltk3::Widget* o = child_[i];
     if (o == previous) return 0;
     switch (key) {
     case FL_Down:
@@ -352,7 +352,7 @@ int Fl_Group::navigation(int key) {
 ////////////////////////////////////////////////////////////////
 
 Fl_Group::Fl_Group(int X, int Y, int W, int H, const char *L)
-  : Fl_Widget(X, Y, W, H, L) {
+  : fltk3::Widget(X, Y, W, H, L) {
   align(FL_ALIGN_TOP);
   savedfocus_ = 0;
   resizable_ = this;
@@ -388,7 +388,7 @@ void Fl_Group::clear() {
   // the group's children. Otherwise fl_fix_focus() would send lots
   // of events to children that are about to be deleted anyway.
 
-  Fl_Widget *pushed = Fl::pushed();     // save pushed() widget
+  fltk3::Widget *pushed = Fl::pushed();     // save pushed() widget
   if (contains(pushed)) pushed = this;  // set it to be the group, if it's a child
   Fl::pushed(this);                     // for fl_fix_focus etc.
 
@@ -462,7 +462,7 @@ Fl_Group::~Fl_Group() {
  \return a new index to force the child to a different position
  \return -1 to keep the group from adding the candidate
  */
-int Fl_Group::on_insert(Fl_Widget *candidate, int index) {
+int Fl_Group::on_insert(fltk3::Widget *candidate, int index) {
   (void)candidate;
   return index;
 }
@@ -498,7 +498,7 @@ int Fl_Group::on_move(int oldIndex, int newIndex) {
   if n >= children(). This can also be used to rearrange
   the widgets inside a group.
 */
-void Fl_Group::insert(Fl_Widget &o, int index) {
+void Fl_Group::insert(fltk3::Widget &o, int index) {
   if (o.parent()) {
     Fl_Group* g = o.parent();
     int n = g->find(o);
@@ -542,7 +542,7 @@ void Fl_Group::insert(Fl_Widget &o, int index) {
   The widget is removed from its current group (if any) and then added
   to the end of this group.
 */
-void Fl_Group::add(Fl_Widget &o) {
+void Fl_Group::add(fltk3::Widget &o) {
   insert(o, children());
 }
 
@@ -576,7 +576,7 @@ void Fl_Group::remove(int index) {
   if (index >= children())  // do nothing if the subclass removed it (?)
     return;
 
-  Fl_Widget &o = *child(index);
+  fltk3::Widget &o = *child(index);
   if (&o == savedfocus_) savedfocus_ = 0;
   if (&o == resizable_) resizable_ = this;
   if (o.parent_ == this) {      // this should always be true
@@ -603,7 +603,7 @@ void Fl_Group::remove(int index) {
   because this doesn't need a child lookup in the group's table of children.
   This can be much faster, if there are lots of children.
 */
-void Fl_Group::remove(Fl_Widget &o) {
+void Fl_Group::remove(fltk3::Widget &o) {
   if (!children()) return;
   int i = find(o);
   if (i < children())
@@ -650,7 +650,7 @@ void Fl_Group::remove(Fl_Widget &o) {
 int Fl_Group::delete_child(int index) {
   if (index < 0 || index >= children())
     return 1;
-  Fl_Widget *w = child(index);
+  fltk3::Widget *w = child(index);
   remove(index);
   delete w;
   return 0;
@@ -706,7 +706,7 @@ void Fl_Group::init_sizes() {
         its contents. If you need to rearrange children in a group, do
         so by resizing the children and call init_sizes().
 
-  \#include \<FL/Fl_Rect.H\> if you want to access the bounds() array in
+  \#include \<fltk3/Fl_Rect.H\> if you want to access the bounds() array in
   your derived class. Fl_Rect.H is intentionally not included by
   Fl_Group.H to avoid unnecessary dependencies.
 
@@ -736,7 +736,7 @@ Fl_Rect* Fl_Group::bounds() {
     int top    = p->y();
     int right  = p->r();
     int bottom = p->b();
-    Fl_Widget* r = resizable();
+    fltk3::Widget* r = resizable();
     if (r && r != this) { // then clip the resizable to it
       int t;
       t = r->x(); if (t > left) left = t;
@@ -747,7 +747,7 @@ Fl_Rect* Fl_Group::bounds() {
     p[1] = Fl_Rect(left, top, right-left, bottom-top);
     // next is all the children's sizes:
     p += 2;
-    Fl_Widget*const* a = array();
+    fltk3::Widget*const* a = array();
     for (int i = children(); i--;) {
       *p++ = Fl_Rect(*a++);
     }
@@ -800,11 +800,11 @@ int* Fl_Group::sizes() {
 
   The Fl_Group widget first resizes itself, and then it moves and resizes
   all its children according to the rules documented for
-  Fl_Group::resizable(Fl_Widget*)
+  Fl_Group::resizable(fltk3::Widget*)
 
-  \sa Fl_Group::resizable(Fl_Widget*)
+  \sa Fl_Group::resizable(fltk3::Widget*)
   \sa Fl_Group::resizable()
-  \sa Fl_Widget::resize(int,int,int,int)
+  \sa fltk3::Widget::resize(int,int,int,int)
 */
 void Fl_Group::resize(int X, int Y, int W, int H) {
 
@@ -815,7 +815,7 @@ void Fl_Group::resize(int X, int Y, int W, int H) {
 
   Fl_Rect* p = bounds(); // save initial sizes and positions
 
-  Fl_Widget::resize(X, Y, W, H); // make new xywh values visible for children
+  fltk3::Widget::resize(X, Y, W, H); // make new xywh values visible for children
 
   // Part 1: no resizable() or both width and height didn't change,
   // just move the children.
@@ -832,9 +832,9 @@ void Fl_Group::resize(int X, int Y, int W, int H) {
     // didn't change, at least on macOS, if it's a rescale.
 
     if (Fl_Window::is_a_rescale() || dx || dy) {
-      Fl_Widget*const* a = array();
+      fltk3::Widget*const* a = array();
       for (int i = children(); i--;) {
-        Fl_Widget* o = *a++;
+        fltk3::Widget* o = *a++;
         o->resize(o->x() + dx, o->y() + dy, o->w(), o->h());
       }
     }
@@ -868,11 +868,11 @@ void Fl_Group::resize(int X, int Y, int W, int H) {
     p++;
 
     // resize children
-    Fl_Widget*const* a = array();
+    fltk3::Widget*const* a = array();
 
     for (int i = children(); i--; p++) {
 
-      Fl_Widget* o = *a++;
+      fltk3::Widget* o = *a++;
       int L = p->x();
       int R = L + p->w();
       int T = p->y();
@@ -902,7 +902,7 @@ void Fl_Group::resize(int X, int Y, int W, int H) {
   after drawing the box, border, or background.
 */
 void Fl_Group::draw_children() {
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
 
   if (clip_children()) {
     fl_push_clip(x() + Fl::box_dx(box()),
@@ -913,7 +913,7 @@ void Fl_Group::draw_children() {
 
   if (damage() & ~FL_DAMAGE_CHILD) { // redraw the entire thing:
     for (int i = children(); i--;) {
-      Fl_Widget& o = **a++;
+      fltk3::Widget& o = **a++;
       draw_child(o);
       draw_outside_label(o);
     }
@@ -939,9 +939,9 @@ void Fl_Group::draw() {
   This draws a child widget, if it is not clipped \em and if any damage() bits
   are set. The damage bits are cleared after drawing.
 
-  \sa Fl_Group::draw_child(Fl_Widget& widget) const
+  \sa Fl_Group::draw_child(fltk3::Widget& widget) const
 */
-void Fl_Group::update_child(Fl_Widget& widget) const {
+void Fl_Group::update_child(fltk3::Widget& widget) const {
   if (widget.damage() && widget.visible() && widget.type() < FL_WINDOW &&
       fl_not_clipped(widget.x(), widget.y(), widget.w(), widget.h())) {
     widget.draw();
@@ -955,7 +955,7 @@ void Fl_Group::update_child(Fl_Widget& widget) const {
   This draws a child widget, if it is not clipped.
   The damage bits are cleared after drawing.
 */
-void Fl_Group::draw_child(Fl_Widget& widget) const {
+void Fl_Group::draw_child(fltk3::Widget& widget) const {
   if (widget.visible() && widget.type() < FL_WINDOW &&
       fl_not_clipped(widget.x(), widget.y(), widget.w(), widget.h())) {
     // The following call clears all damage flags and then *sets* FL_DAMAGE_ALL
@@ -966,7 +966,7 @@ void Fl_Group::draw_child(Fl_Widget& widget) const {
 }
 
 /** Parents normally call this to draw outside labels of child widgets. */
-void Fl_Group::draw_outside_label(const Fl_Widget& widget) const {
+void Fl_Group::draw_outside_label(const fltk3::Widget& widget) const {
   if (!widget.visible()) return;
   // skip any labels that are inside the widget:
   if (!(widget.align()&15) || (widget.align() & FL_ALIGN_INSIDE)) return;

@@ -17,11 +17,11 @@
 #include <config.h>
 #if !defined(FL_DOXYGEN) && !defined(FL_NO_PRINT_SUPPORT)
 
-#include <FL/Fl_PostScript.H>
+#include <fltk3/Fl_PostScript.H>
 #include "Fl_PostScript_Graphics_Driver.H"
-#include <FL/Fl.H>
-#include <FL/Fl_Pixmap.H>
-#include <FL/Fl_Bitmap.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Pixmap.H>
+#include <fltk3/Fl_Bitmap.H>
 #include <stdlib.h>  // abs(int)
 #include <string.h>  // memcpy()
 

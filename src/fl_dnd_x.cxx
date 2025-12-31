@@ -17,9 +17,9 @@
 // Note: this file contains platform specific code and will therefore
 // not be processed by doxygen (see Doxyfile.in).
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/platform.H>
 #include "flstring.h"
 #include "drivers/X11/Fl_X11_Screen_Driver.H"
 #include "Fl_Window_Driver.H"
@@ -64,7 +64,7 @@ static int dnd_aware(Window& window) {
 }
 
 static int grabfunc(int event) {
-  if (event == FL_RELEASE) Fl::pushed(0);
+  if (event == fltk3::RELEASE) Fl::pushed(0);
   return 0;
 }
 
@@ -116,7 +116,7 @@ int Fl_X11_Screen_Driver::dnd(int unused) {
 
     if (new_window != target_window) {
       if (local_window) {
-        local_handle(FL_DND_LEAVE, local_window);
+        local_handle(fltk3::DND_LEAVE, local_window);
       } else if (dndversion) {
         fl_sendClientMessage(target_window, fl_XdndLeave, source_window);
       }
@@ -124,7 +124,7 @@ int Fl_X11_Screen_Driver::dnd(int unused) {
       target_window = new_window;
       local_window = new_local_window;
       if (local_window) {
-        local_handle(FL_DND_ENTER, local_window);
+        local_handle(fltk3::DND_ENTER, local_window);
       } else if (dndversion) {
         // Send an X-DND message to the target window.  In order to
         // support dragging of files/URLs as well as arbitrary text,
@@ -155,7 +155,7 @@ int Fl_X11_Screen_Driver::dnd(int unused) {
       }
     }
     if (local_window) {
-      local_handle(FL_DND_DRAG, local_window);
+      local_handle(fltk3::DND_DRAG, local_window);
     } else if (dndversion) {
       int exroot = Fl::e_x_root, eyroot = Fl::e_y_root;
 #if USE_XFT || FLTK_USE_CAIRO
@@ -174,7 +174,7 @@ int Fl_X11_Screen_Driver::dnd(int unused) {
 
   if (local_window) {
     fl_i_own_selection[0] = 1;
-    if (local_handle(FL_DND_RELEASE, local_window)) Fl::paste(*Fl::belowmouse(), 0);
+    if (local_handle(fltk3::DND_RELEASE, local_window)) Fl::paste(*Fl::belowmouse(), 0);
   } else if (dndversion) {
     fl_sendClientMessage(target_window, fl_XdndDrop, source_window,
                          0, fl_event_time);
@@ -205,7 +205,7 @@ int Fl_X11_Screen_Driver::dnd(int unused) {
   }
 
   fl_local_grab = 0;
-  Fl::handle(FL_RELEASE, source_fl_win);
+  Fl::handle(fltk3::RELEASE, source_fl_win);
   source_fl_win->cursor(FL_CURSOR_DEFAULT);
   return 1;
 }

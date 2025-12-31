@@ -32,9 +32,9 @@
 #include <config.h>
 #include "Fl_Xlib_Graphics_Driver.H"
 #  include "../../Fl_XColor.H"
-#  include <FL/Fl.H>
-#  include <FL/platform.H>
-#  include <FL/fl_draw.H>
+#  include <fltk3/Fl.H>
+#  include <fltk3/platform.H>
+#  include <fltk3/fl_draw.H>
 
 extern unsigned fl_cmap[256]; // defined in fl_color.cxx
 

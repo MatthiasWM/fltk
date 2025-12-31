@@ -15,7 +15,7 @@
 //
 
 #include "Fl_System_Driver.H"
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 
 /** Expands a filename containing shell variables and tilde (~).
     Currently handles these variants:
@@ -27,7 +27,7 @@
 
     \b Examples:
     \code
-    #include <FL/filename.H>
+    #include <fltk3/filename.H>
     [..]
     putenv("TMPDIR=/var/tmp");
     fl_filename_expand(out, sizeof(out), "~fred/.cshrc");     // out="/usr/fred/.cshrc"

@@ -21,8 +21,8 @@
 // These box types are in separate files so they are not linked
 // in if not used.
 
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
 
 static void gtk_color(Fl_Color c) {
   Fl::set_box_color(c);

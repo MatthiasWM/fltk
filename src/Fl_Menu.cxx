@@ -20,12 +20,12 @@
 
 // The menu code is in the process of refactoring.
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Screen_Driver.H"
 #include "Fl_Window_Driver.H"
-#include <FL/Fl_Menu_Window.H>
-#include <FL/Fl_Menu_.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Menu_Window.H>
+#include <fltk3/Fl_Menu_.H>
+#include <fltk3/fl_draw.H>
 #include <stdio.h>
 #include "flstring.h"
 
@@ -125,7 +125,7 @@ struct Menu_State
   // go to next item in menu menu if possible
   bool next_item(menu_index_t menu);
 
-  // handle FL_SHORTCUT in any of the menu windows
+  // handle fltk3::SHORTCUT in any of the menu windows
   int handle_shortcut();
 
   // move menu item selection left
@@ -430,7 +430,7 @@ bool Menu_State::prev_item(menu_index_t menu) { // previous item in menu menu if
   return false;
 }
 
-/* Handle the FL_SHORTCUT event.
+/* Handle the fltk3::SHORTCUT event.
   \return 1 if the shortcut was found in the menu and handled.
 */
 int Menu_State::handle_shortcut() {
@@ -554,16 +554,16 @@ int Menu_State::handle_keyboard_event() {
 */
 int Menu_State::handle_mouse_events(int e) {
   switch (e) {
-    case FL_MOVE: {
+    case fltk3::MOVE: {
       static int use_part1_extra = Fl::screen_driver()->need_menu_handle_part1_extra();
       if (use_part1_extra && state == State::DONE) {
         return 1; // Fix for STR #2619
       }
     }
       /* FALLTHROUGH */
-    case FL_ENTER:
-    case FL_PUSH:
-    case FL_DRAG:
+    case fltk3::ENTER:
+    case fltk3::PUSH:
+    case fltk3::DRAG:
     {
       int mx = Fl::event_x_root();
       int my = Fl::event_y_root();
@@ -572,7 +572,7 @@ int Menu_State::handle_mouse_events(int e) {
       // Clicking or dragging outside menu cancels it...
       if ((!in_menubar || mymenu) && !is_inside(mx, my)) {
         set_current_item(0, -1, 0);
-        if (e==FL_PUSH)
+        if (e==fltk3::PUSH)
           state = State::DONE;
         return 1;
       }
@@ -582,12 +582,12 @@ int Menu_State::handle_mouse_events(int e) {
           break;
         if (mymenu <= 0) {
           // buttons in menubars must be deselected if we move outside of them!
-          if (current_menu_ix==-1 && e==FL_PUSH) {
+          if (current_menu_ix==-1 && e==fltk3::PUSH) {
             state = State::DONE;
             return 1;
           }
           if (current_item && current_menu_ix==0 && !current_item->submenu()) {
-            if (e==FL_PUSH) {
+            if (e==fltk3::PUSH) {
               state = State::DONE;
               set_current_item(0, -1, 0);
             }
@@ -598,7 +598,7 @@ int Menu_State::handle_mouse_events(int e) {
         }
       }
       set_current_item(mymenu, item);
-      if (e == FL_PUSH) {
+      if (e == fltk3::PUSH) {
         if (current_item && current_item->submenu() // this is a menu title
             && item != menu_window[mymenu]->selected // and it is not already on
             && !current_item->callback_) // and it does not have a callback
@@ -608,7 +608,7 @@ int Menu_State::handle_mouse_events(int e) {
       }
     }
       return 1;
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       // Mouse must either be held down/dragged some, or this must be
       // the second click (not the one that popped up the menu):
       if (   !Fl::event_is_click()
@@ -936,17 +936,17 @@ int Menu_Window::handle(int e) {
 int Menu_Window::handle_part1(int e) {
   Menu_State &pp = *menu_state;
   switch (e) {
-    case FL_KEYBOARD:
+    case fltk3::KEYBOARD:
       if (pp.handle_keyboard_event()) return 1;
       break;
-    case FL_SHORTCUT:
+    case fltk3::SHORTCUT:
       if (pp.handle_shortcut()) return 1;
       break;
-    case FL_MOVE:
-    case FL_ENTER:
-    case FL_PUSH:
-    case FL_DRAG:
-    case FL_RELEASE:
+    case fltk3::MOVE:
+    case fltk3::ENTER:
+    case fltk3::PUSH:
+    case fltk3::DRAG:
+    case fltk3::RELEASE:
       if (pp.handle_mouse_events(e)) return 1;
       break;
   }
@@ -1406,7 +1406,7 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
 
   // track the Fl_Menu_ widget to make sure we notice if it gets
   // deleted while the menu is open (STR #3503)
-  Fl_Widget_Tracker wp((Fl_Widget *)pbutton);
+  Fl_Widget_Tracker wp((fltk3::Widget *)pbutton);
 
   button = pbutton;
   if (pbutton && pbutton->window()) {
@@ -1444,7 +1444,7 @@ const Fl_Menu_Item* Fl_Menu_Item::pulldown(
   pp.current_item_ix = -1;
   if (menubar) {
     // find the initial menu
-    if (!mw.handle(FL_DRAG)) {
+    if (!mw.handle(fltk3::DRAG)) {
       Fl::grab(0);
       return 0;
     }
@@ -1575,8 +1575,8 @@ const Fl_Menu_Item* Fl_Menu_Item::popup(
  Search only the top level menu for a shortcut.
  Either &x in the label or the shortcut fields are used.
 
- This tests the current event, which must be an FL_KEYBOARD or
- FL_SHORTCUT, against a shortcut value.
+ This tests the current event, which must be an fltk3::KEYBOARD or
+ fltk3::SHORTCUT, against a shortcut value.
 
  \param ip returns the index of the item, if \p ip is not NULL.
  \param require_alt if true: match only if Alt key is pressed.
@@ -1588,13 +1588,13 @@ const Fl_Menu_Item* Fl_Menu_Item::find_shortcut(int* ip, const bool require_alt)
   if (m) for (int ii = 0; m->text; m = next_visible_or_not(m), ii++) {
     if (m->active()) {
       if (Fl::test_shortcut(m->shortcut_)
-          || (!is_special_labeltype(m->labeltype_) && Fl_Widget::test_shortcut(m->text, require_alt))
+          || (!is_special_labeltype(m->labeltype_) && fltk3::Widget::test_shortcut(m->text, require_alt))
           || (m->labeltype_ == _FL_MULTI_LABEL
               && !is_special_labeltype(((Fl_Multi_Label*)m->text)->typea)
-              && Fl_Widget::test_shortcut(((Fl_Multi_Label*)m->text)->labela, require_alt))
+              && fltk3::Widget::test_shortcut(((Fl_Multi_Label*)m->text)->labela, require_alt))
           || (m->labeltype_ == _FL_MULTI_LABEL
               && !is_special_labeltype(((Fl_Multi_Label*)m->text)->typeb)
-              && Fl_Widget::test_shortcut(((Fl_Multi_Label*)m->text)->labelb, require_alt))) {
+              && fltk3::Widget::test_shortcut(((Fl_Multi_Label*)m->text)->labelb, require_alt))) {
         if (ip) *ip=ii;
         return m;
       }
@@ -1607,7 +1607,7 @@ const Fl_Menu_Item* Fl_Menu_Item::find_shortcut(int* ip, const bool require_alt)
 // shortcut.  Only uses the shortcut field, ignores &x in the labels:
 /**
  This is designed to be called by a widgets handle() method in
- response to a FL_SHORTCUT event.  If the current event matches
+ response to a fltk3::SHORTCUT event.  If the current event matches
  one of the items shortcut, that item is returned.  If the keystroke
  does not match any shortcuts then NULL is returned.  This only
  matches the shortcut() fields, not the letters in the title
@@ -1620,7 +1620,7 @@ const Fl_Menu_Item* Fl_Menu_Item::test_shortcut() const {
     if (m->active()) {
       // return immediately any match of an item in top level menu:
       if (Fl::test_shortcut(m->shortcut_)) return m;
-      // if (Fl_Widget::test_shortcut(m->text)) return m;
+      // if (fltk3::Widget::test_shortcut(m->text)) return m;
       // only return matches from lower menu if nothing found in top menu:
       if (!ret && m->submenu()) {
         const Fl_Menu_Item* s =

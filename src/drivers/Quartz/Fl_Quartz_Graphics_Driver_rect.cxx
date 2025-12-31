@@ -15,8 +15,8 @@
 //
 
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include <math.h>
 
 

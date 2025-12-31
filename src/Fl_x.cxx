@@ -27,17 +27,17 @@
 /* #define BACKSPACE_HACK 1 */
 
 #  include <config.h>
-#  include <FL/Fl.H>
-#  include <FL/platform.H>
+#  include <fltk3/Fl.H>
+#  include <fltk3/platform.H>
 #  include "Fl_Window_Driver.H"
-#  include <FL/Fl_Window.H>
-#  include <FL/fl_utf8.h>
-#  include <FL/Fl_Tooltip.H>
-#  include <FL/fl_draw.H>
-#  include <FL/Fl_Paged_Device.H>
-#  include <FL/Fl_Shared_Image.H>
-#  include <FL/fl_ask.H>
-#  include <FL/filename.H>
+#  include <fltk3/Fl_Window.H>
+#  include <fltk3/fl_utf8.h>
+#  include <fltk3/Fl_Tooltip.H>
+#  include <fltk3/fl_draw.H>
+#  include <fltk3/Fl_Paged_Device.H>
+#  include <fltk3/Fl_Shared_Image.H>
+#  include <fltk3/fl_ask.H>
+#  include <fltk3/filename.H>
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include "flstring.h"
@@ -96,7 +96,7 @@ static bool have_xfixes = false;
 #    define POLLIN 1
 #  endif /* USE_POLL */
 
-extern Fl_Widget *fl_selection_requestor;
+extern fltk3::Widget *fl_selection_requestor;
 extern Fl_Window *fl_xmousewin;
 
 static void open_display_i(Display *d); // open display (internal)
@@ -116,14 +116,14 @@ static void do_queued_events() {
       continue;
     fl_handle(xevent);
   }
-  // we send FL_LEAVE only if the mouse did not enter some other window:
+  // we send fltk3::LEAVE only if the mouse did not enter some other window:
   if (!in_a_window) {
-    Fl::handle(FL_LEAVE, 0);
+    Fl::handle(fltk3::LEAVE, 0);
   }
 #if FLTK_CONSOLIDATE_MOTION
   else if (send_motion && send_motion == fl_xmousewin) {
     send_motion = 0;
-    Fl::handle(FL_MOVE, fl_xmousewin);
+    Fl::handle(fltk3::MOVE, fl_xmousewin);
   }
 #endif
 }
@@ -696,12 +696,12 @@ char fl_i_own_selection[2] = {0,0};
 
 
 // Call this when a "paste" operation happens:
-void Fl_X11_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const char *type) {
+void Fl_X11_Screen_Driver::paste(fltk3::Widget &receiver, int clipboard, const char *type) {
   if (fl_i_own_selection[clipboard]) {
     // We already have it, do it quickly without window server.
     if (type == Fl::clipboard_plain_text && fl_selection_type[clipboard] == type) {
       // Notice that the text is clobbered if set_selection is
-      // called in response to FL_PASTE!
+      // called in response to fltk3::PASTE!
       // However, for now, we only paste text in this function
       Fl::e_text = fl_selection_buffer[clipboard];
       Fl::e_length = fl_selection_length[clipboard];
@@ -710,7 +710,7 @@ void Fl_X11_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const char 
       Fl::e_clipboard_data = Fl_Unix_System_Driver::own_bmp_to_RGB(fl_selection_buffer[1]);
       Fl::e_clipboard_type = Fl::clipboard_image;
     } else return;
-    int retval = receiver.handle(FL_PASTE);
+    int retval = receiver.handle(fltk3::PASTE);
     if (retval == 0 && type == Fl::clipboard_image) {
       delete (Fl_RGB_Image*)Fl::e_clipboard_data;
       Fl::e_clipboard_data = NULL;
@@ -998,7 +998,7 @@ static ulong ptime;
 // take care not to use these undefined bits (found by accident).
 // These undefined bits are ignored and not set in Fl::event_state(), otherwise we
 // might overwrite other valid bits (since FLTK 1.4.0, Sep 2024 or later).
-// See definition of FL_BUTTONS in FL/Enumerations.H:
+// See definition of FL_BUTTONS in fltk3/Enumerations.H:
 // there are only five "sticky" mouse buttons as of Sep 27, 2024.
 
 static unsigned int xbutton_state = 0; // extended button state (back, forward)
@@ -1346,7 +1346,7 @@ int fl_handle(const XEvent& thisevent)
   if( XRRUpdateConfiguration_f && xevent.type == randrEventBase + RRScreenChangeNotify) {
     XRRUpdateConfiguration_f(&xevent);
     react_to_screen_reconfiguration();
-    Fl::handle(FL_SCREEN_CONFIGURATION_CHANGED, NULL);
+    Fl::handle(fltk3::SCREEN_CONFIGURATION_CHANGED, NULL);
   }
 #endif // USE_XRANDR
 
@@ -1504,7 +1504,7 @@ int fl_handle(const XEvent& thisevent)
       Fl::e_length = bytesread;
     }
     int old_event = Fl::e_number;
-    int retval = fl_selection_requestor->handle(Fl::e_number = FL_PASTE);
+    int retval = fl_selection_requestor->handle(Fl::e_number = fltk3::PASTE);
     if (!retval && Fl::e_clipboard_type == Fl::clipboard_image) {
       delete (Fl_RGB_Image*)Fl::e_clipboard_data;
       Fl::e_clipboard_data = NULL;
@@ -1614,7 +1614,7 @@ int fl_handle(const XEvent& thisevent)
   if (window) switch (xevent.type) {
 
     case DestroyNotify: { // an X11 window was closed externally from the program
-      Fl::handle(FL_CLOSE, window);
+      Fl::handle(fltk3::CLOSE, window);
       Fl_X* X = Fl_X::flx(window);
       if (X) { // indicates the FLTK window was not closed
         X->xid = (Window)0; // indicates the X11 window was already destroyed
@@ -1630,7 +1630,7 @@ int fl_handle(const XEvent& thisevent)
     Atom message = fl_xevent->xclient.message_type;
     const long* data = fl_xevent->xclient.data.l;
     if ((Atom)(data[0]) == WM_DELETE_WINDOW) {
-      event = FL_CLOSE;
+      event = fltk3::CLOSE;
     } else if (message == fl_XdndEnter) {
       /*
        Excerpt from the XDND protocol at https://www.freedesktop.org/wiki/Specifications/XDND/ :
@@ -1705,7 +1705,7 @@ int fl_handle(const XEvent& thisevent)
       if (!fl_dnd_type) // not found: pick first type
         fl_dnd_type = fl_dnd_source_types[0];
 
-      event = FL_DND_ENTER;
+      event = fltk3::DND_ENTER;
       Fl::e_text = unknown;
       Fl::e_length = unknown_len;
       break;
@@ -1729,7 +1729,7 @@ int fl_handle(const XEvent& thisevent)
       fl_dnd_action = fl_XdndActionCopy;
       Fl::e_text = unknown;
       Fl::e_length = unknown_len;
-      int accept = Fl::handle(FL_DND_DRAG, window);
+      int accept = Fl::handle(fltk3::DND_DRAG, window);
       fl_sendClientMessage(data[0], fl_XdndStatus,
                            fl_xevent->xclient.window,
                            accept ? 1 : 0,
@@ -1740,7 +1740,7 @@ int fl_handle(const XEvent& thisevent)
 
     } else if (message == fl_XdndLeave) {
       fl_dnd_source_window = 0; // don't send a finished message to it
-      event = FL_DND_LEAVE;
+      event = fltk3::DND_LEAVE;
       Fl::e_text = unknown;
       Fl::e_length = unknown_len;
       break;
@@ -1753,7 +1753,7 @@ int fl_handle(const XEvent& thisevent)
       Window to_window = fl_xevent->xclient.window;
       Fl::e_text = unknown;
       Fl::e_length = unknown_len;
-      if (Fl::handle(FL_DND_RELEASE, window)) {
+      if (Fl::handle(fltk3::DND_RELEASE, window)) {
         fl_selection_requestor = Fl::belowmouse();
         Fl::e_clipboard_type = Fl::clipboard_plain_text;
         XConvertSelection(fl_display, fl_XdndSelection,
@@ -1774,7 +1774,7 @@ int fl_handle(const XEvent& thisevent)
   } // case ClientMessage
 
   case UnmapNotify:
-    event = FL_HIDE;
+    event = fltk3::HIDE;
     break;
 
   case Expose:
@@ -1802,7 +1802,7 @@ int fl_handle(const XEvent& thisevent)
 
   case FocusIn:
     if (Fl_X11_Screen_Driver::xim_ic) XSetICFocus(Fl_X11_Screen_Driver::xim_ic);
-    event = FL_FOCUS;
+    event = fltk3::FOCUS;
     // If the user has toggled from another application to this one,
     // then it's a good time to check for clipboard changes.
     poll_clipboard_owner();
@@ -1810,7 +1810,7 @@ int fl_handle(const XEvent& thisevent)
 
   case FocusOut:
     if (Fl_X11_Screen_Driver::xim_ic) XUnsetICFocus(Fl_X11_Screen_Driver::xim_ic);
-    event = FL_UNFOCUS;
+    event = fltk3::UNFOCUS;
     break;
 
   case KeyPress:
@@ -1826,7 +1826,7 @@ int fl_handle(const XEvent& thisevent)
       kp_buffer = (char*) malloc(kp_buffer_len);
     }
     if (xevent.type == KeyPress) {
-      event = FL_KEYDOWN;
+      event = fltk3::KEYDOWN;
 
       int len;
       if (Fl_X11_Screen_Driver::xim_ic) {
@@ -1892,7 +1892,7 @@ int fl_handle(const XEvent& thisevent)
         }
       }
 
-      event = FL_KEYUP;
+      event = fltk3::KEYUP;
       fl_key_vector[keycode/8] &= ~(1 << (keycode%8));
       // keyup events just get the unshifted keysym:
       keysym = fl_KeycodeToKeysym(fl_display, keycode, 0);
@@ -2057,16 +2057,16 @@ int fl_handle(const XEvent& thisevent)
 
     if (mb == Button4 && !Fl::event_shift()) {
       Fl::e_dy = -1;                            // up
-      event = FL_MOUSEWHEEL;
+      event = fltk3::MOUSEWHEEL;
     } else if (mb == Button5 && !Fl::event_shift()) {
       Fl::e_dy = +1;                            // down
-      event = FL_MOUSEWHEEL;
+      event = fltk3::MOUSEWHEEL;
     } else if (mb == 6 || (mb == Button4 && Fl::event_shift())) {
       Fl::e_dx = -1;                            // left
-      event = FL_MOUSEWHEEL;
+      event = fltk3::MOUSEWHEEL;
     } else if (mb == 7 || (mb == Button5 && Fl::event_shift())) {
       Fl::e_dx = +1;                            // right
-      event = FL_MOUSEWHEEL;
+      event = fltk3::MOUSEWHEEL;
     } else if (mb < 4 || mb > 7) {              // real mouse *buttons*, not scroll wheel
       if (mb > 7)                               // 8 = back, 9 = forward
         mb -= 4;                                // map to 4 and 5, resp.
@@ -2074,7 +2074,7 @@ int fl_handle(const XEvent& thisevent)
       Fl::e_state |= (FL_BUTTON1 << (mb-1));    // set button state
       if (mb == 4) xbutton_state |= FL_BUTTON4; // save extra button state internally
       if (mb == 5) xbutton_state |= FL_BUTTON5; // save extra button state internally
-      event = FL_PUSH;
+      event = fltk3::PUSH;
       checkdouble();
     } else { // unknown button or shift combination
       return 0;
@@ -2099,7 +2099,7 @@ int fl_handle(const XEvent& thisevent)
         mb -= 4;                    // map to 4 and 5, respectively
         break;                      // continue
       default:                      // unknown button or scroll wheel:
-        return 0;                   // don't send FL_RELEASE event
+        return 0;                   // don't send fltk3::RELEASE event
     }
     Fl::e_keysym = FL_Button + mb;  // == FL_BUTTON1 .. FL_BUTTON5
     set_event_xy(window);
@@ -2107,7 +2107,7 @@ int fl_handle(const XEvent& thisevent)
     Fl::e_state &= ~(FL_BUTTON1 << (mb-1));
     if (mb == 4) xbutton_state &= ~FL_BUTTON4; // clear internal button state
     if (mb == 5) xbutton_state &= ~FL_BUTTON5; // clear internal button state
-    event = FL_RELEASE;
+    event = fltk3::RELEASE;
 
     fl_xmousewin = window;
     in_a_window = true;
@@ -2140,17 +2140,17 @@ int fl_handle(const XEvent& thisevent)
       Fl_Window_Driver::driver(window)->is_maximized(maximize_state);
       if (window->fullscreen_active() && !fullscreen_state) {
         window->_clear_fullscreen();
-        event = FL_FULLSCREEN;
+        event = fltk3::FULLSCREEN;
       }
       if (!window->fullscreen_active() && fullscreen_state) {
         window->_set_fullscreen();
-        event = FL_FULLSCREEN;
+        event = fltk3::FULLSCREEN;
       }
       if (!event) {
         if (minimize_state) {
-          event = FL_HIDE;
+          event = fltk3::HIDE;
         } else if (!window->visible()) {
-          event = FL_SHOW;
+          event = fltk3::SHOW;
         }
       }
     }
@@ -2166,7 +2166,7 @@ int fl_handle(const XEvent& thisevent)
     return 0;
 #endif // FLTK_CONSOLIDATE_MOTION
 
-    event = FL_MOVE;
+    event = fltk3::MOVE;
     break;
 
   case EnterNotify:
@@ -2174,7 +2174,7 @@ int fl_handle(const XEvent& thisevent)
     // XInstallColormap(fl_display, Fl_X::flx(window)->colormap);
     set_event_xy(window);
     Fl::e_state = xevent.xcrossing.state << 16;
-    event = FL_ENTER;
+    event = fltk3::ENTER;
 
     fl_xmousewin = window;
     in_a_window = true;
@@ -2191,7 +2191,7 @@ int fl_handle(const XEvent& thisevent)
     set_event_xy(window);
     Fl::e_state = xevent.xcrossing.state << 16;
     fl_xmousewin = 0;
-    in_a_window = false; // make do_queued_events produce FL_LEAVE event
+    in_a_window = false; // make do_queued_events produce fltk3::LEAVE event
     return 0;
 
   // We cannot rely on the x,y position in the configure notify event.
@@ -2202,7 +2202,7 @@ int fl_handle(const XEvent& thisevent)
   // window managers do not send this fake event anyway)
   // So anyway, do a round trip to find the correct x,y:
   case MapNotify:
-    event = FL_SHOW;
+    event = fltk3::SHOW;
 
   case ConfigureNotify: {
     if (window->parent()) break; // ignore child windows
@@ -2335,7 +2335,7 @@ void Fl_X11_Window_Driver::resize(int X,int Y,int W,int H) {
     x(X); y(Y);
     if (Fl_X11_Screen_Driver::xim_win && Fl::focus()) {
       // Force the Input Method auxiliary window to move too.
-      Fl::focus()->handle(FL_FOCUS);
+      Fl::focus()->handle(fltk3::FOCUS);
       fl_set_spot(fl_font(), fl_size(), Fl::focus()->x(), Fl::focus()->y() + fl_size(), Fl::focus()->w(), Fl::focus()->h(), NULL);
     }
   }
@@ -2477,7 +2477,7 @@ void Fl_X11_Window_Driver::fullscreen_on() {
     /* We want to grab the window, not a widget, so we cannot use Fl::grab */
     XGrabKeyboard(fl_display, fl_xid(pWindow), 1, GrabModeAsync, GrabModeAsync, fl_event_time);
   }
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 void Fl_X11_Window_Driver::fullscreen_off(int X, int Y, int W, int H) {
@@ -2490,7 +2490,7 @@ void Fl_X11_Window_Driver::fullscreen_off(int X, int Y, int W, int H) {
     resize(X,Y,W,H);
     show();
   }
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 
@@ -2812,7 +2812,7 @@ void Fl_X::make_xid(Fl_Window* win, XVisualInfo *visual, Colormap colormap)
   if (showit) {
     win->set_visible();
     int old_event = Fl::e_number;
-    win->handle(Fl::e_number = FL_SHOW); // get child windows to appear
+    win->handle(Fl::e_number = fltk3::SHOW); // get child windows to appear
     Fl::e_number = old_event;
     win->redraw();
   }
@@ -2821,7 +2821,7 @@ void Fl_X::make_xid(Fl_Window* win, XVisualInfo *visual, Colormap colormap)
   if (win->fullscreen_active() && !Fl_X11_Screen_Driver::ewmh_supported()) {
     XGrabKeyboard(fl_display, xp->xid, 1, GrabModeAsync, GrabModeAsync, fl_event_time);
   }
-  if (win->fullscreen_active()) Fl::handle(FL_FULLSCREEN, win);
+  if (win->fullscreen_active()) Fl::handle(fltk3::FULLSCREEN, win);
 }
 
 ////////////////////////////////////////////////////////////////

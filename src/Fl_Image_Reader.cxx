@@ -21,8 +21,8 @@
 
 #include "Fl_Image_Reader.h"
 
-#include <FL/fl_utf8.h>
-#include <FL/fl_string_functions.h>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_string_functions.h>
 #include <stdlib.h>
 #include <string.h>
 

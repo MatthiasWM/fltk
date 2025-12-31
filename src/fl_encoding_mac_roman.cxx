@@ -15,10 +15,10 @@
 //
 
 #include <config.h>
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 #include "Fl_System_Driver.H"
-#include <FL/Fl.H>
-#include <FL/Enumerations.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Enumerations.H>
 #include <stdlib.h>
 #include "flstring.h"
 

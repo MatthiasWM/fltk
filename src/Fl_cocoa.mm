@@ -19,17 +19,17 @@ extern "C" {
 }
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include "Fl_Window_Driver.H"
 #include "Fl_Screen_Driver.H"
 #include "Fl_Timeout.h"
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Tooltip.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Rect.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Tooltip.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Rect.H>
+#include <fltk3/fl_string_functions.h>
 #include "drivers/Quartz/Fl_Quartz_Graphics_Driver.H"
 #include "drivers/Quartz/Fl_Quartz_Copy_Surface_Driver.H"
 #include "drivers/Cocoa/Fl_Cocoa_Screen_Driver.H"
@@ -577,7 +577,7 @@ void Fl_Cocoa_Screen_Driver::breakMacEventLoop()
 #endif
 > {
   BOOL in_key_event; // YES means keypress is being processed by handleEvent
-  BOOL need_handle; // YES means Fl::handle(FL_KEYBOARD,) is needed after handleEvent processing
+  BOOL need_handle; // YES means Fl::handle(fltk3::KEYBOARD,) is needed after handleEvent processing
   NSInteger identifier;
   NSRange selectedRange;
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_14
@@ -1021,12 +1021,12 @@ static void cocoaMouseWheelHandler(NSEvent *theEvent)
   if (dx) {
     Fl::e_dx = -dx;
     Fl::e_dy = 0;
-    Fl::handle( FL_MOUSEWHEEL, window );
+    Fl::handle( fltk3::MOUSEWHEEL, window );
   }
   if (dy) {
     Fl::e_dx = 0;
     Fl::e_dy = -dy;
-    Fl::handle( FL_MOUSEWHEEL, window );
+    Fl::handle( fltk3::MOUSEWHEEL, window );
   }
   fl_unlock_function();
 }
@@ -1051,7 +1051,7 @@ static void cocoaMagnifyHandler(NSEvent *theEvent)
     NSUInteger mods = [theEvent modifierFlags];
     mods_to_e_state( mods );
     update_e_xy_and_e_xy_root([theEvent window]);
-    Fl::handle( FL_ZOOM_GESTURE, window );
+    Fl::handle( fltk3::ZOOM_GESTURE, window );
   }
   fl_unlock_function();
 #endif
@@ -1135,7 +1135,7 @@ static void cocoaMouseHandler(NSEvent *theEvent)
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown:
     case NSEventTypeOtherMouseDown:
-      sendEvent = FL_PUSH;
+      sendEvent = fltk3::PUSH;
       Fl::e_is_click = 1;
       Fl::Private::e_x_down = (int)pos.x;
       Fl::Private::e_y_down = (int)pos.y;
@@ -1149,20 +1149,20 @@ static void cocoaMouseHandler(NSEvent *theEvent)
     case NSEventTypeOtherMouseUp:
       if ( !window ) break;
       if ( !sendEvent ) {
-        sendEvent = FL_RELEASE;
+        sendEvent = fltk3::RELEASE;
       }
       Fl::e_keysym = keysym[ btn ];
       // fall through
     case NSEventTypeMouseMoved:
       if ( !sendEvent ) {
-        sendEvent = FL_MOVE;
+        sendEvent = fltk3::MOVE;
       }
       // fall through
     case NSEventTypeLeftMouseDragged:
     case NSEventTypeRightMouseDragged:
     case NSEventTypeOtherMouseDragged: {
       if ( !sendEvent ) {
-        sendEvent = FL_MOVE; // Fl::handle will convert into FL_DRAG
+        sendEvent = fltk3::MOVE; // Fl::handle will convert into fltk3::DRAG
         if ( (fabs(pos.x - Fl::Private::e_x_down) > 5) ||
              (fabs(pos.y - Fl::Private::e_y_down) > 5))
           Fl::e_is_click = 0;
@@ -1187,10 +1187,10 @@ static void cocoaMouseHandler(NSEvent *theEvent)
       break;
     case NSEventTypeMouseEntered :
       if ([theEvent window]) update_e_xy_and_e_xy_root([theEvent window]);
-      Fl::handle(FL_ENTER, window);
+      Fl::handle(fltk3::ENTER, window);
       break;
     case NSEventTypeMouseExited :
-      Fl::handle(FL_LEAVE, window);
+      Fl::handle(fltk3::LEAVE, window);
       break;
     default:
       break;
@@ -1361,7 +1361,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
       if (!Fl_Cocoa_Window_Driver::driver(window)->through_resize())
          window->position(X, Y);
       else
-        window->Fl_Widget::resize(X,Y,window->w(),window->h());
+        window->fltk3::Widget::resize(X,Y,window->w(),window->h());
     }
     update_e_xy_and_e_xy_root(nsw);
     // at least since MacOS 10.9: OS moves subwindows contained in a moved window
@@ -1483,7 +1483,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
     [nsw setLevel:NSNormalWindowLevel];
     fixup_window_levels();
   }
-  Fl::handle( FL_UNFOCUS, window);
+  Fl::handle( fltk3::UNFOCUS, window);
   fl_unlock_function();
 }
 - (void)windowDidBecomeKey:(NSNotification *)notif
@@ -1500,7 +1500,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
     [nsw setLevel:NSStatusWindowLevel];
     fixup_window_levels();
   }
-  Fl::handle( FL_FOCUS, w);
+  Fl::handle( fltk3::FOCUS, w);
   fl_unlock_function();
 }
 - (void)windowDidBecomeMain:(NSNotification *)notif
@@ -1533,12 +1533,12 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
   FLWindow *nsw = (FLWindow*)[notif object];
   if ([nsw miniwindowImage]) { [nsw setMiniwindowImage:nil]; }
   Fl_Window *window = [nsw getFl_Window];
-  Fl::handle(FL_SHOW, window);
+  Fl::handle(fltk3::SHOW, window);
   // necessary when resolutions before miniaturization and after deminiaturization differ
   // or if GUI was resized while window was minimized
   [nsw recursivelySendToSubwindows:@selector(setSubwindowFrame) applyToSelf:YES];
   update_e_xy_and_e_xy_root(nsw);
-  Fl::flush(); // Process redraws set by FL_SHOW.
+  Fl::flush(); // Process redraws set by fltk3::SHOW.
   fl_unlock_function();
 }
 - (void)fl_windowMiniaturize:(NSNotification *)notif
@@ -1565,7 +1565,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
   fl_lock_function();
   FLWindow *nsw = (FLWindow*)[notif object];
   Fl_Window *window = [nsw getFl_Window];
-  Fl::handle(FL_HIDE, window);
+  Fl::handle(fltk3::HIDE, window);
   fl_unlock_function();
 }
 - (void)windowWillEnterFullScreen:(NSNotification *)notif
@@ -1584,7 +1584,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
 {
   fl_lock_function();
   Fl_Window *win = [(FLWindow *)fl getFl_Window];
-  if (win) Fl::handle(FL_CLOSE, win); // this might or might not close the window
+  if (win) Fl::handle(fltk3::CLOSE, win); // this might or might not close the window
   fl_unlock_function();
   // the system doesn't need to send [fl close] because FLTK does it when needed
   return NO;
@@ -1655,7 +1655,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
     Fl_Window *win = Fl::first_window();
     if (win->parent()) win = win->top_window();
     Fl_Widget_Tracker wt(win); // track the window object
-    Fl::handle(FL_CLOSE, win);
+    Fl::handle(fltk3::CLOSE, win);
     if (wt.exists() && win->shown()) { // the user didn't close win
       break;
     }
@@ -1681,7 +1681,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
    */
   fixup_window_levels();
 
-  Fl::handle(FL_APP_ACTIVATE, nullptr);
+  Fl::handle(fltk3::APP_ACTIVATE, nullptr);
   fl_unlock_function();
 }
 - (void)applicationDidChangeScreenParameters:(NSNotification *)unused
@@ -1689,7 +1689,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
   fl_lock_function();
   main_screen_height = CGDisplayBounds(CGMainDisplayID()).size.height;
   Fl::call_screen_init();
-  Fl::handle(FL_SCREEN_CONFIGURATION_CHANGED, NULL);
+  Fl::handle(fltk3::SCREEN_CONFIGURATION_CHANGED, NULL);
   fl_unlock_function();
 }
 - (void)applicationDidUpdate:(NSNotification *)aNotification
@@ -1767,7 +1767,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
       }
     }
   }
-  Fl::handle(FL_APP_DEACTIVATE, nullptr);
+  Fl::handle(fltk3::APP_DEACTIVATE, nullptr);
   fl_unlock_function();
 }
 - (void)applicationWillHide:(NSNotification *)notify
@@ -1776,7 +1776,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
   Fl_X *x;
   for (x = Fl_X::first;x;x = x->next) {
     Fl_Window *window = x->w;
-    if ( !window->parent() ) Fl::handle( FL_HIDE, window);
+    if ( !window->parent() ) Fl::handle( fltk3::HIDE, window);
     }
   fl_unlock_function();
 }
@@ -1786,7 +1786,7 @@ static FLWindowDelegate *flwindowdelegate_instance = nil;
   for (Fl_X *x = Fl_X::first;x;x = x->next) {
     Fl_Window *w = x->w;
     if ( !w->parent() && ![(FLWindow*)x->xid isMiniaturized]) {
-      Fl::handle(FL_SHOW, w);
+      Fl::handle(fltk3::SHOW, w);
       }
   }
   fl_unlock_function();
@@ -2288,27 +2288,27 @@ static void  q_set_window_title(NSWindow *nsw, const char * name, const char *mi
  ForwardDelete, arrows and F1, and when the Ctrl or Cmd modifiers are used. Other key presses send keyDown: messages.
  The keyDown: method calls [myview process_keydown:theEvent] that is equivalent to
  [[myview inputContext] handleEvent:theEvent], and triggers system processing of keyboard events.
- The performKeyEquivalent: method directly calls Fl::handle(FL_KEYBOARD, focus-window)
+ The performKeyEquivalent: method directly calls Fl::handle(fltk3::KEYBOARD, focus-window)
  when the Ctrl or Cmd modifiers are used. If not, it also calls [[myview inputContext] handleEvent:theEvent].
  The performKeyEquivalent: method returns YES when the keystroke has been handled and NO otherwise, which allows
  shortcuts of the system menu to be processed. Three sorts of messages are then sent back by the system to myview:
- doCommandBySelector:, setMarkedText: and insertText:. All 3 messages eventually produce Fl::handle(FL_KEYBOARD, win) calls.
+ doCommandBySelector:, setMarkedText: and insertText:. All 3 messages eventually produce Fl::handle(fltk3::KEYBOARD, win) calls.
  The doCommandBySelector: message allows to process events such as new-line, forward and backward delete, arrows,
  escape, tab, F1. The message setMarkedText: is sent when marked text, that is, temporary text that gets replaced later
  by some other text, is inserted. This happens when a dead key is pressed, and also
  when entering complex scripts (e.g., Chinese). Fl_Cocoa_Screen_Driver::next_marked_length gives the byte
- length of marked text before the FL_KEYBOARD event is processed. Fl::compose_state gives this length after this processing.
+ length of marked text before the fltk3::KEYBOARD event is processed. Fl::compose_state gives this length after this processing.
  Message insertText: is sent to enter text in the focused widget. If there's marked text, Fl::compose_state is > 0, and this
  marked text gets replaced by the inserted text. If there's no marked text, the new text is inserted at the insertion point.
  When the character palette is used to enter text, the system sends an insertText: message to myview.
  The in_key_event field of the FLView class allows to differentiate keyboard from palette inputs.
 
  During processing of the handleEvent message, inserted and marked strings are concatenated in a single string
- inserted in a single FL_KEYBOARD event after return from handleEvent. The need_handle member variable of FLView allows
+ inserted in a single fltk3::KEYBOARD event after return from handleEvent. The need_handle member variable of FLView allows
  to determine when setMarkedText or insertText strings have been sent during handleEvent processing and must trigger
- an FL_KEYBOARD event. Concatenating two insertText operations or an insertText followed by a setMarkedText is possible.
+ an fltk3::KEYBOARD event. Concatenating two insertText operations or an insertText followed by a setMarkedText is possible.
  In contrast, setMarkedText followed by insertText or by another setMarkedText isn't correct if concatenated in a single
- string. Thus, in such case, the setMarkedText and the next operation produce each an FL_KEYBOARD event.
+ string. Thus, in such case, the setMarkedText and the next operation produce each an fltk3::KEYBOARD event.
 
  OS >= 10.7 contains a feature where pressing and holding certain keys opens a menu window that shows a list
  of possible accented variants of this key. The selectedRange field of the FLView class and the selectedRange, insertText:
@@ -2579,13 +2579,13 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
       }
     [FLView prepareEtext:s];
     Fl::compose_state = 0;
-    handled = Fl::handle(FL_KEYBOARD, w);
+    handled = Fl::handle(fltk3::KEYBOARD, w);
   }
   else {
     in_key_event = YES;
     need_handle = NO;
     handled = [self process_keydown:theEvent];
-    if (need_handle) handled = Fl::handle(FL_KEYBOARD, w);
+    if (need_handle) handled = Fl::handle(fltk3::KEYBOARD, w);
     in_key_event = NO;
     }
   fl_unlock_function();
@@ -2690,7 +2690,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   Fl::first_window(window);
   cocoaKeyboardHandler(theEvent);
   in_key_event = YES;
-  Fl_Widget *f = Fl::focus();
+  fltk3::Widget *f = Fl::focus();
   if (f && f->as_gl_window()) { // ignore text input methods for GL windows
     need_handle = YES;
     [FLView prepareEtext:[theEvent characters]];
@@ -2698,7 +2698,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
     need_handle = NO;
     [self process_keydown:theEvent];
   }
-  if (need_handle) Fl::handle(FL_KEYBOARD, window);
+  if (need_handle) Fl::handle(fltk3::KEYBOARD, window);
   in_key_event = NO;
   fl_unlock_function();
 }
@@ -2712,7 +2712,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   cocoaKeyboardHandler(theEvent);
   NSString *s = [theEvent characters];
   if ([s length] >= 1) [FLView prepareEtext:[s substringToIndex:1]];
-  Fl::handle(FL_KEYUP,window);
+  Fl::handle(fltk3::KEYUP,window);
   fl_unlock_function();
 }
 #if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_10
@@ -2732,7 +2732,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
     if (!macKeyLookUp) macKeyLookUp = Fl_Darwin_System_Driver::compute_macKeyLookUp();
     Fl::e_keysym = Fl::e_original_keysym = macKeyLookUp[keycode & 0x7f];
     if ( Fl::e_keysym )
-      sendEvent = ( prevMods<mods ) ? FL_KEYBOARD : FL_KEYUP;
+      sendEvent = ( prevMods<mods ) ? fltk3::KEYBOARD : fltk3::KEYUP;
     Fl::e_length = 0;
     Fl::e_text = (char*)"";
     prevMods = mods;
@@ -2747,7 +2747,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   Fl_Window *target = [(FLWindow*)[self window] getFl_Window];
   update_e_xy_and_e_xy_root([self window]);
   fl_dnd_target_window = target;
-  int ret = Fl::handle( FL_DND_ENTER, target );
+  int ret = Fl::handle( fltk3::DND_ENTER, target );
   Fl_Cocoa_Screen_Driver::breakMacEventLoop();
   fl_unlock_function();
   Fl::flush();
@@ -2759,7 +2759,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   Fl_Window *target = [(FLWindow*)[self window] getFl_Window];
   update_e_xy_and_e_xy_root([self window]);
   fl_dnd_target_window = target;
-  int ret = Fl::handle( FL_DND_DRAG, target );
+  int ret = Fl::handle( fltk3::DND_DRAG, target );
   Fl_Cocoa_Screen_Driver::breakMacEventLoop();
   fl_unlock_function();
   // if the DND started in the same application, Fl::dnd() will not return until
@@ -2773,7 +2773,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   static char *DragData = NULL;
   fl_lock_function();
   Fl_Window *target = [(FLWindow*)[self window] getFl_Window];
-  if ( !Fl::handle( FL_DND_RELEASE, target ) ) {
+  if ( !Fl::handle( fltk3::DND_RELEASE, target ) ) {
     Fl_Cocoa_Screen_Driver::breakMacEventLoop();
     fl_unlock_function();
     return NO;
@@ -2830,7 +2830,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   Fl::e_text = DragData;
   Fl::e_length = (int)strlen(DragData);
   int old_event = Fl::e_number;
-  Fl::belowmouse()->handle(Fl::e_number = FL_PASTE);
+  Fl::belowmouse()->handle(Fl::e_number = fltk3::PASTE);
   Fl::e_number = old_event;
   if (DragData) { free(DragData); DragData = NULL; }
   Fl::e_text = NULL;
@@ -2844,7 +2844,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
 {
   fl_lock_function();
   if ( fl_dnd_target_window ) {
-    Fl::handle( FL_DND_LEAVE, fl_dnd_target_window );
+    Fl::handle( fltk3::DND_LEAVE, fl_dnd_target_window );
     fl_dnd_target_window = 0;
   }
   fl_unlock_function();
@@ -2887,7 +2887,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   s = [s substringFromIndex:[s length] - 1];
   [FLView prepareEtext:s]; // use the last character of the event; necessary for deadkey + Tab
   Fl_Window *target = [(FLWindow*)[self window] getFl_Window];
-  Fl::handle(FL_KEYBOARD, target);
+  Fl::handle(fltk3::KEYBOARD, target);
 }
 
 - (void)insertText:(id)aString {
@@ -2915,12 +2915,12 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   while (replacementRange.length--) { // delete replacementRange.length characters before insertion point
     int saved_keysym = Fl::e_keysym;
     Fl::e_keysym = FL_BackSpace;
-    Fl::handle(FL_KEYBOARD, target);
+    Fl::handle(fltk3::KEYBOARD, target);
     Fl::e_keysym = saved_keysym;
     }
   if (in_key_event && Fl_Cocoa_Screen_Driver::next_marked_length && Fl::e_length) {
-    // if setMarkedText + insertText is sent during handleEvent, text cannot be concatenated in single FL_KEYBOARD event
-    Fl::handle(FL_KEYBOARD, target);
+    // if setMarkedText + insertText is sent during handleEvent, text cannot be concatenated in single fltk3::KEYBOARD event
+    Fl::handle(fltk3::KEYBOARD, target);
     Fl::e_length = 0;
     }
   if (in_key_event && Fl::e_length) [FLView concatEtext:received];
@@ -2932,10 +2932,10 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   // YES if key has text attached
   BOOL has_text_key = Fl::e_keysym <= '~' || Fl::e_keysym == FL_Iso_Key ||
                       (Fl::e_keysym >= FL_KP && Fl::e_keysym <= FL_KP_Last && Fl::e_keysym != FL_KP_Enter);
-  // insertText sent during handleEvent of a key without text cannot be processed in a single FL_KEYBOARD event.
+  // insertText sent during handleEvent of a key without text cannot be processed in a single fltk3::KEYBOARD event.
   // Occurs with deadkey followed by non-text key
   if (!in_key_event || !has_text_key) {
-    Fl::handle(FL_KEYBOARD, target);
+    Fl::handle(fltk3::KEYBOARD, target);
     Fl::e_length = 0;
     }
   else need_handle = YES;
@@ -2967,18 +2967,18 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
     Fl::e_keysym = FL_BackSpace;
     Fl::compose_state = 0;
     Fl_Cocoa_Screen_Driver::next_marked_length = 0;
-    Fl::handle(FL_KEYBOARD, target);
+    Fl::handle(fltk3::KEYBOARD, target);
     Fl::e_keysym = 'a'; // pretend a letter key was hit
   }
   if (in_key_event && Fl_Cocoa_Screen_Driver::next_marked_length && Fl::e_length) {
-    // if setMarkedText + setMarkedText is sent during handleEvent, text cannot be concatenated in single FL_KEYBOARD event
-    Fl::handle(FL_KEYBOARD, target);
+    // if setMarkedText + setMarkedText is sent during handleEvent, text cannot be concatenated in single fltk3::KEYBOARD event
+    Fl::handle(fltk3::KEYBOARD, target);
     Fl::e_length = 0;
   }
   if (in_key_event && Fl::e_length) [FLView concatEtext:received];
   else [FLView prepareEtext:received];
   Fl_Cocoa_Screen_Driver::next_marked_length = (int)strlen([received UTF8String]);
-  if (!in_key_event) Fl::handle( FL_KEYBOARD, target);
+  if (!in_key_event) Fl::handle( fltk3::KEYBOARD, target);
   else need_handle = YES;
   selectedRange = NSMakeRange(100, newSelection.length);
   fl_unlock_function();
@@ -2992,7 +2992,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
 }
 
 - (NSRange)selectedRange {
-  Fl_Widget *w = Fl::focus();
+  fltk3::Widget *w = Fl::focus();
   if (w && w->use_accents_menu()) return selectedRange;
   return NSMakeRange(NSNotFound, 0);
 }
@@ -3026,7 +3026,7 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
   //NSLog(@"firstRectForCharacterRange %d %d actualRange=%p",aRange.location, aRange.length,actualRange);
   NSRect glyphRect;
   fl_lock_function();
-  Fl_Widget *focus = Fl::focus();
+  fltk3::Widget *focus = Fl::focus();
   Fl_Window *wfocus = [(FLWindow*)[self window] getFl_Window];
   if (!focus) focus = wfocus;
   glyphRect.size.width = 0;
@@ -3092,10 +3092,10 @@ static FLTextInputContext* fltextinputcontext_instance = nil;
 - (void)draggingSession:(NSDraggingSession *)session
            endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
 {
-  Fl_Widget *w = Fl::pushed();
+  fltk3::Widget *w = Fl::pushed();
   if ( w ) {
     int old_event = Fl::e_number;
-    w->handle(Fl::e_number = FL_RELEASE);
+    w->handle(Fl::e_number = fltk3::RELEASE);
     Fl::e_number = old_event;
     Fl::pushed( 0 );
   }
@@ -3312,11 +3312,11 @@ void Fl_Cocoa_Window_Driver::makeWindow()
 
   w->set_visible();
   if ( w->border() || (!w->modal() && !w->tooltip_window() &&
-                       w->user_data() != (void*)&Fl_Screen_Driver::transient_scale_display) ) Fl::handle(FL_FOCUS, w);
+                       w->user_data() != (void*)&Fl_Screen_Driver::transient_scale_display) ) Fl::handle(fltk3::FOCUS, w);
   [cw setDelegate:[FLWindowDelegate singleInstance]];
   if (show_iconic()) {
     show_iconic(0);
-    w->handle(FL_SHOW); // create subwindows if any
+    w->handle(fltk3::SHOW); // create subwindows if any
     if (fl_mac_os_version < 101300) { // TODO: threshold may be smaller
       // draw the window and its subwindows before its icon is computed
       [cw recursivelySendToSubwindows:@selector(display) applyToSelf:YES];
@@ -3353,7 +3353,7 @@ void Fl_Cocoa_Window_Driver::makeWindow()
     Fl_MacOS_Sys_Menu_Bar_Driver::driver()->new_window(w);
   }
   int old_event = Fl::e_number;
-  w->handle(Fl::e_number = FL_SHOW);
+  w->handle(Fl::e_number = fltk3::SHOW);
   Fl::e_number = old_event;
 
   // if (w->modal()) { Fl::modal_ = w; fl_fix_focus(); }
@@ -3455,7 +3455,7 @@ void Fl_Cocoa_Window_Driver::fullscreen_on() {
     pWindow->hide();
     pWindow->show();
   }
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 
@@ -3539,7 +3539,7 @@ void Fl_Cocoa_Window_Driver::fullscreen_off(int X, int Y, int W, int H) {
     pWindow->resize(X, Y, W, H);
     pWindow->show();
   }
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
   fullscreen_screen_border = NO;
 #endif
@@ -3951,7 +3951,7 @@ static int get_plain_text_from_clipboard(int clipboard)
   return (int)length;
 }
 
-static Fl_RGB_Image* get_image_from_clipboard(Fl_Widget *receiver)
+static Fl_RGB_Image* get_image_from_clipboard(fltk3::Widget *receiver)
 {
   NSPasteboard *clip = [NSPasteboard generalPasteboard];
   NSArray *present = [clip types]; // types in pasteboard in order of decreasing preference
@@ -3992,7 +3992,7 @@ static Fl_RGB_Image* get_image_from_clipboard(Fl_Widget *receiver)
 }
 
 // Call this when a "paste" operation happens:
-void Fl_Cocoa_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const char *type) {
+void Fl_Cocoa_Screen_Driver::paste(fltk3::Widget &receiver, int clipboard, const char *type) {
   if (type[0] == 0) type = Fl::clipboard_plain_text;
   if (clipboard) {
     Fl::e_clipboard_type = "";
@@ -4002,7 +4002,7 @@ void Fl_Cocoa_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const cha
     else if (strcmp(type, Fl::clipboard_image) == 0) {
       Fl::e_clipboard_data = get_image_from_clipboard(&receiver);
       if (Fl::e_clipboard_data) {
-        int done = receiver.handle(FL_PASTE);
+        int done = receiver.handle(fltk3::PASTE);
         Fl::e_clipboard_type = "";
         if (done == 0) {
           delete (Fl_Image*)Fl::e_clipboard_data;
@@ -4017,7 +4017,7 @@ void Fl_Cocoa_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const cha
   Fl::e_text = fl_selection_buffer[clipboard];
   Fl::e_length = fl_selection_length[clipboard];
   if (!Fl::e_length) Fl::e_text = (char *)"";
-  receiver.handle(FL_PASTE);
+  receiver.handle(fltk3::PASTE);
 }
 
 int Fl_Cocoa_Screen_Driver::clipboard_contains(const char *type) {
@@ -4456,7 +4456,7 @@ int Fl_Cocoa_Screen_Driver::dnd(int use_selection)
   if (text==NULL) return false;
   NSAutoreleasePool *localPool;
   localPool = [[NSAutoreleasePool alloc] init];
-  Fl_Widget *w = Fl::pushed();
+  fltk3::Widget *w = Fl::pushed();
   Fl_Window *win = w->top_window();
   FLView *myview = (FLView*)[fl_mac_xid(win) contentView];
   NSEvent *theEvent = [NSApp currentEvent];
@@ -4498,7 +4498,7 @@ int Fl_Cocoa_Screen_Driver::dnd(int use_selection)
 #pragma clang diagnostic pop
     if ( w ) {
       int old_event = Fl::e_number;
-      w->handle(Fl::e_number = FL_RELEASE);
+      w->handle(Fl::e_number = fltk3::RELEASE);
       Fl::e_number = old_event;
       Fl::pushed( 0 );
     }

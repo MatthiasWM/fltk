@@ -14,11 +14,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Clock.H>
-#include <FL/Fl_Round_Clock.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Clock.H>
+#include <fltk3/Fl_Round_Clock.H>
 #include "Fl_System_Driver.H"
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 #include <math.h>
 #include <time.h>
 
@@ -155,7 +155,7 @@ void Fl_Clock_Output::value(ulong v) {
   \param[in] L widget label, default is no label
  */
 Fl_Clock_Output::Fl_Clock_Output(int X, int Y, int W, int H, const char *L)
-: Fl_Widget(X, Y, W, H, L) {
+: fltk3::Widget(X, Y, W, H, L) {
   box(FL_UP_BOX);
   selection_color(fl_gray_ramp(5));
   align(FL_ALIGN_BOTTOM);
@@ -224,10 +224,10 @@ static void tick(void *v) {
 
 int Fl_Clock::handle(int event) {
   switch (event) {
-  case FL_SHOW:
+  case fltk3::SHOW:
     tick(this);
     break;
-  case FL_HIDE:
+  case fltk3::HIDE:
     Fl::remove_timeout(tick, this);
     break;
   }

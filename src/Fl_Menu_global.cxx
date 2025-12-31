@@ -18,13 +18,13 @@
 // Currently only one menu at a time and you cannot destruct the menu,
 // is this sufficient?
 
-#include <FL/Fl.H>
-#include <FL/Fl_Menu_.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Menu_.H>
 
 static Fl_Menu_* the_widget;
 
 static int handler(int e) {
-  if (e != FL_SHORTCUT || Fl::modal()) return 0;
+  if (e != fltk3::SHORTCUT || Fl::modal()) return 0;
   Fl::first_window(the_widget->window());
   return the_widget->handle(e);
 }

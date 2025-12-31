@@ -15,9 +15,9 @@
 //
 
 #include <config.h>
-#include <FL/Fl_Gl_Window.H>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/Fl_Device.H>
+#include <fltk3/Fl_Gl_Window.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/Fl_Device.H>
 #include "Fl_Gl_Window_Driver.H"
 
 
@@ -29,7 +29,7 @@ class Fl_Gl_Device_Plugin : public Fl_Device_Plugin {
 public:
   Fl_Gl_Device_Plugin() : Fl_Device_Plugin(name()) { }
   const char *name() FL_OVERRIDE { return "opengl.device.fltk.org"; }
-  int print(Fl_Widget *w) FL_OVERRIDE {
+  int print(fltk3::Widget *w) FL_OVERRIDE {
     Fl_Gl_Window *glw = w->as_gl_window();
     if (!glw) return 0;
     Fl_RGB_Image *img =  Fl_Gl_Window_Driver::driver(glw)->capture_gl_rectangle(0, 0, glw->w(), glw->h());
@@ -38,7 +38,7 @@ public:
     delete img;
     return 1;
   }
-  Fl_RGB_Image* rectangle_capture(Fl_Widget *widget, int x, int y, int w, int h) FL_OVERRIDE {
+  Fl_RGB_Image* rectangle_capture(fltk3::Widget *widget, int x, int y, int w, int h) FL_OVERRIDE {
     Fl_Gl_Window *glw = widget->as_gl_window();
     if (!glw) return NULL;
     return Fl_Gl_Window_Driver::driver(glw)->capture_gl_rectangle(x, y, w, h);

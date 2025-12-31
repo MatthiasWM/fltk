@@ -16,7 +16,7 @@
 
 // You can also override this by redefining all of these.
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
 #include <stdarg.h>
 

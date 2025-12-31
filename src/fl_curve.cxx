@@ -24,7 +24,7 @@
   If anybody has a better algorithm, please send it!
 */
 
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 #include <math.h>
 
 /**

@@ -20,15 +20,15 @@
 // equivalent (but totally different) crap for Windows is in Fl_win32.cxx
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include "Fl_Window_Driver.H"
 #include "Fl_Screen_Driver.H"
-#include <FL/Fl_RGB_Image.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Tooltip.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Tooltip.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h>
 #include <stdlib.h>
 #include "flstring.h"
 
@@ -104,8 +104,8 @@ Fl_Window::~Fl_Window() {
           (if any), not <I>this</I> window.
     \see top_window()
 */
-Fl_Window *Fl_Widget::window() const {
-  for (Fl_Widget *o = parent(); o; o = o->parent())
+Fl_Window *fltk3::Widget::window() const {
+  for (fltk3::Widget *o = parent(); o; o = o->parent())
     if (o->type() >= FL_WINDOW) return (Fl_Window*)o;
   return 0;
 }
@@ -116,10 +116,10 @@ Fl_Window *Fl_Widget::window() const {
     \returns the top-level window, or NULL if no top-level window is associated with this widget.
     \see window()
 */
-Fl_Window *Fl_Widget::top_window() const {
-  const Fl_Widget *w = this;
+Fl_Window *fltk3::Widget::top_window() const {
+  const fltk3::Widget *w = this;
   while (w->parent()) { w = w->parent(); }              // walk up the widget hierarchy to top-level item
-  return const_cast<Fl_Widget*>(w)->as_window();        // return if window, or NULL if not
+  return const_cast<fltk3::Widget*>(w)->as_window();        // return if window, or NULL if not
 }
 
 /**
@@ -127,15 +127,15 @@ Fl_Window *Fl_Widget::top_window() const {
   \param[out] xoff,yoff Returns the x/y offset
   \returns the top-level window (or NULL for a widget that's not in any window)
 */
-Fl_Window* Fl_Widget::top_window_offset(int& xoff, int& yoff) const {
+Fl_Window* fltk3::Widget::top_window_offset(int& xoff, int& yoff) const {
   xoff = yoff = 0;
-  const Fl_Widget *w = this;
+  const fltk3::Widget *w = this;
   while (w && w->window()) {
     xoff += w->x();                     // accumulate offsets
     yoff += w->y();
     w = w->window();                    // walk up window hierarchy
   }
-  return w ? const_cast<Fl_Widget*>(w)->as_window() : NULL;
+  return w ? const_cast<fltk3::Widget*>(w)->as_window() : NULL;
 }
 
 /** Gets the x position of the window on the screen */
@@ -157,7 +157,7 @@ void Fl_Window::label(const char *name) {
 
 /** Sets the window titlebar label to a copy of a character string */
 void Fl_Window::copy_label(const char *a) {
-  Fl_Widget::copy_label(a);
+  fltk3::Widget::copy_label(a);
   label(label(), iconlabel());  // platform dependent
 }
 
@@ -171,7 +171,7 @@ void Fl_Window::iconlabel(const char *iname) {
 /** Default callback for window widgets. It hides the window and then calls the default widget callback. */
 void Fl::default_atclose(Fl_Window* window, void* v) {
   window->hide();
-  Fl_Widget::default_callback(window, v); // put on Fl::read_queue()
+  fltk3::Widget::default_callback(window, v); // put on Fl::read_queue()
 }
 
 /** Back compatibility: default window callback handler \see Fl::set_atclose() */
@@ -540,7 +540,7 @@ void Fl_Window::make_current()
 }
 
 void Fl_Window::label(const char *name, const char *mininame) {
-  Fl_Widget::label(name);
+  fltk3::Widget::label(name);
   iconlabel_ = mininame;
   pWindowDriver->label(name, mininame);
 }
@@ -568,7 +568,7 @@ void Fl_Window::hide() {
 }
 
 
-// FL_SHOW and FL_HIDE are called whenever the visibility of this widget
+// fltk3::SHOW and fltk3::HIDE are called whenever the visibility of this widget
 // or any parent changes.  We must correctly map/unmap the system's window.
 
 // For top-level windows it is assumed the window has already been
@@ -579,13 +579,13 @@ int Fl_Window::handle(int ev)
 {
   if (parent()) {
     switch (ev) {
-      case FL_SHOW:
+      case fltk3::SHOW:
         if (!shown()) show();
         else {
           pWindowDriver->map();
         }
         break;
-      case FL_HIDE:
+      case fltk3::HIDE:
         if (shown()) {
           // Find what really turned invisible, if it was a parent window
           // we do nothing.  We need to avoid unnecessary unmap calls
@@ -595,7 +595,7 @@ int Fl_Window::handle(int ev)
           // unmap because when the parent window is remapped we don't
           // want to reappear.
           if (visible()) {
-            Fl_Widget* p = parent();
+            fltk3::Widget* p = parent();
             for (; p && p->visible(); p = p->parent()) { /* empty*/ }
             if (p && p->as_window()) break; // don't do the unmap
           }
@@ -799,7 +799,7 @@ void Fl_Window::default_size_range() {
 
   // Calculate default size range depending on the resizable() widget
 
-  Fl_Widget *r = resizable();
+  fltk3::Widget *r = resizable();
 
   int maxw = 0;
   int maxh = 0;

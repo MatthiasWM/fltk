@@ -14,11 +14,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "Fl_Wayland_Window_Driver.H"
 #include "Fl_Wayland_Screen_Driver.H"
 #include "Fl_Wayland_Graphics_Driver.H"
-#include <FL/filename.H>
+#include <fltk3/filename.H>
 #include <wayland-cursor.h>
 #include "../../../libdecor/build/fl_libdecor.h"
 #include "xdg-shell-client-protocol.h"
@@ -27,13 +27,13 @@
 #  include "xdg-dialog-client-protocol.h"
 #endif
 #include <pango/pangocairo.h>
-#include <FL/Fl_Overlay_Window.H>
-#include <FL/Fl_Tooltip.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_ask.H>
-#include <FL/Fl.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_Menu_Button.H>
+#include <fltk3/Fl_Overlay_Window.H>
+#include <fltk3/Fl_Tooltip.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_Menu_Button.H>
 #include <string.h>
 #include <math.h> // for ceil()
 #include <sys/types.h> // for pid_t
@@ -431,7 +431,7 @@ void Fl_Wayland_Window_Driver::show() {
     makeWindow();
   } else {
     // Wayland itself gives no way to programmatically unminimize a minimized window
-    Fl::handle(FL_SHOW, pWindow);
+    Fl::handle(fltk3::SHOW, pWindow);
   }
 }
 
@@ -591,7 +591,7 @@ void Fl_Wayland_Window_Driver::iconize() {
   if (wl_win->kind == DECORATED) {
     libdecor_frame_set_minimized(wl_win->frame);
     if (xdg_toplevel_get_version(xdg_toplevel()) < 6) {
-      Fl::handle(FL_HIDE, pWindow);
+      Fl::handle(fltk3::HIDE, pWindow);
     }
   }
   else if (wl_win->kind == UNFRAMED && wl_win->xdg_toplevel) xdg_toplevel_set_minimized(wl_win->xdg_toplevel);
@@ -864,7 +864,7 @@ static void does_window_cover_parent(Fl_Window *win) {
 // recursively explore all shown subwindows in a window and call f for each
 static void scan_subwindows(Fl_Group *g, void (*f)(Fl_Window *)) {
   for (int i = 0; i < g->children(); i++) {
-    Fl_Widget *o = g->child(i);
+    fltk3::Widget *o = g->child(i);
     if (o->as_window()) {
       if (!o->as_window()->shown()) continue;
       f(o->as_window());
@@ -873,11 +873,11 @@ static void scan_subwindows(Fl_Group *g, void (*f)(Fl_Window *)) {
   }
 }
 
-// Generate FL_APP_ACTIVATE and FL_APP_DEACTIVATE events
+// Generate fltk3::APP_ACTIVATE and fltk3::APP_DEACTIVATE events
 static bool app_has_active_window = false;
 
 // If a window is deactivated, check after a short delay if any other window has
-// become active. If not, send an FL_APP_DEACTIVATE event.
+// become active. If not, send an fltk3::APP_DEACTIVATE event.
 static void deferred_check_app_deactivate(void*) {
   if (!app_has_active_window) return;
   app_has_active_window = false;
@@ -891,7 +891,7 @@ static void deferred_check_app_deactivate(void*) {
       }
     }
   }
-  if (!app_has_active_window) Fl::handle(FL_APP_DEACTIVATE, nullptr);
+  if (!app_has_active_window) Fl::handle(fltk3::APP_DEACTIVATE, nullptr);
 }
 
 static void handle_configure(struct libdecor_frame *frame,
@@ -993,30 +993,30 @@ static void handle_configure(struct libdecor_frame *frame,
   if (is_2nd_run) driver->wait_for_expose_value = 0;
 //fprintf(stderr, "handle_configure fl_win=%p size:%dx%d state=%x wait_for_expose_value=%d is_2nd_run=%d\n", window->fl_win, width,height,window_state,driver->wait_for_expose_value, is_2nd_run);
 
-  // When no window is active, and one window gets activated, generate an FL_APP_ACTIVATE event
+  // When no window is active, and one window gets activated, generate an fltk3::APP_ACTIVATE event
   if (window_state & LIBDECOR_WINDOW_STATE_ACTIVE) {
     if (!app_has_active_window) {
       app_has_active_window = true;
-      Fl::handle(FL_APP_ACTIVATE, nullptr);
+      Fl::handle(fltk3::APP_ACTIVATE, nullptr);
     }
 
     if (Fl_Wayland_Screen_Driver::compositor == Fl_Wayland_Screen_Driver::WESTON) {
       // After click on titlebar, weston calls wl_keyboard_enter() for a
-      // titlebar-related surface that FLTK can't identify, so we send FL_FOCUS here.
-      Fl::handle(FL_FOCUS, window->fl_win);
+      // titlebar-related surface that FLTK can't identify, so we send fltk3::FOCUS here.
+      Fl::handle(fltk3::FOCUS, window->fl_win);
     }
     if (!window->fl_win->border()) libdecor_frame_set_visibility(window->frame, false);
     else if (!libdecor_frame_is_visible(window->frame)) {
       libdecor_frame_set_visibility(window->frame, true);
     } else if (!window->fl_win->visible()) {
-      Fl::handle(FL_SHOW, window->fl_win); // useful when un-minimizing
+      Fl::handle(fltk3::SHOW, window->fl_win); // useful when un-minimizing
     }
   } else if (window_state & LIBDECOR_WINDOW_STATE_SUSPENDED) { // window is minimized
-    Fl::handle(FL_HIDE, window->fl_win);
+    Fl::handle(fltk3::HIDE, window->fl_win);
   }
 
   // When a window gets deactivated and there are no other active windows,
-  // generate an FL_APP_DEACTIVATE event
+  // generate an fltk3::APP_DEACTIVATE event
   if ( ((window_state & LIBDECOR_WINDOW_STATE_ACTIVE) == 0) && app_has_active_window) {
     Fl::add_timeout(0.1, deferred_check_app_deactivate, nullptr);
   }
@@ -1066,7 +1066,7 @@ void Fl_Wayland_Window_Driver::wait_for_expose()
 
 static void delayed_close(Fl_Window *win) {
   Fl::remove_check((Fl_Timeout_Handler)delayed_close, win);
-  Fl::handle(FL_CLOSE, win);
+  Fl::handle(fltk3::CLOSE, win);
 }
 
 
@@ -1077,7 +1077,7 @@ static void handle_close(struct libdecor_frame *frame, void *user_data)
   Fl_Window* win = ((struct wld_window*)user_data)->fl_win;
   int X, Y;
   libdecor_frame_translate_coordinate(frame, 0, 0, &X, &Y);
-  if (Y == 0) Fl::handle(FL_CLOSE, win);
+  if (Y == 0) Fl::handle(fltk3::CLOSE, win);
   else {
     // the close window attempt is delayed because libdecor
     // uses the frame after return from this function
@@ -1219,7 +1219,7 @@ static void popup_configure(void *data, struct xdg_popup *xdg_popup, int32_t x, 
     Fl_Window_Driver::current_menu_button->top_window_offset(X, Y);
     if (y < Y) {
       Fl_Window *win = window->fl_win;
-      win->Fl_Widget::resize(win->x(), Y - win->h(), win->w(), win->h());
+      win->fltk3::Widget::resize(win->x(), Y - win->h(), win->w(), win->h());
     }
   }
 }
@@ -1357,7 +1357,7 @@ bool Fl_Wayland_Window_Driver::process_menu_or_tooltip(struct wld_window *new_wi
     if (!menu_origin && !previous_floatingtitle) menu_origin =
       Fl_Window_Driver::menu_title(pWindow);
   }
-  Fl_Widget *target = (pWindow->tooltip_window() ? Fl_Tooltip::current() : NULL);
+  fltk3::Widget *target = (pWindow->tooltip_window() ? Fl_Tooltip::current() : NULL);
   if (pWindow->user_data() == &Fl_Screen_Driver::transient_scale_display &&
       Fl_Screen_Driver::transient_scale_parent) {
     target = Fl_Screen_Driver::transient_scale_parent;
@@ -1625,7 +1625,7 @@ void Fl_Wayland_Window_Driver::makeWindow()
   pWindow->set_visible();
   int old_event = Fl::e_number;
   pWindow->redraw();
-  pWindow->handle(Fl::e_number = FL_SHOW); // get child windows to appear
+  pWindow->handle(Fl::e_number = fltk3::SHOW); // get child windows to appear
   Fl::e_number = old_event;
   if (pWindow->menu_window() && popup_window() && !is_floatingtitle) {
     // make sure each menu window is mapped with its constraints before mapping next popup
@@ -1675,7 +1675,7 @@ void Fl_Wayland_Window_Driver::makeWindow()
       previous_floatingtitle = NULL;
     }
   }
-  if (pWindow->fullscreen_active()) Fl::handle(FL_FULLSCREEN, pWindow);
+  if (pWindow->fullscreen_active()) Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 
@@ -1772,7 +1772,7 @@ void Fl_Wayland_Window_Driver::fullscreen_on() {
   if (xdg_toplevel()) {
     xdg_toplevel_set_fullscreen(xdg_toplevel(), NULL);
     pWindow->_set_fullscreen();
-    Fl::handle(FL_FULLSCREEN, pWindow);
+    Fl::handle(fltk3::FULLSCREEN, pWindow);
   }
 }
 
@@ -1785,7 +1785,7 @@ void Fl_Wayland_Window_Driver::fullscreen_off(int X, int Y, int W, int H) {
   if (!H) H = h();
   pWindow->resize(X, Y, W, H);
   pWindow->show();
-  Fl::handle(FL_FULLSCREEN, pWindow);
+  Fl::handle(fltk3::FULLSCREEN, pWindow);
 }
 
 

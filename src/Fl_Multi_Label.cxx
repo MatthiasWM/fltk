@@ -17,10 +17,10 @@
 // Allows two or more labels to be used on a widget (by having one of them
 // be one of these it allows an infinite number!)
 
-#include <FL/Fl.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Multi_Label.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Menu_Item.H>
+#include <fltk3/Fl_Multi_Label.H>
 
 static void multi_labeltype(
     const Fl_Label* o, int x, int y, int w, int h, Fl_Align a)
@@ -54,25 +54,25 @@ static void multi_measure(const Fl_Label* o, int& w, int& h) {
   w += W; if (H>h) h = H;
 }
 
-// used by FL_MULTI_LABEL to set up the internal table, see FL/Enumerations.H
+// used by FL_MULTI_LABEL to set up the internal table, see fltk3/Enumerations.H
 Fl_Labeltype fl_define_FL_MULTI_LABEL() {
   Fl::set_labeltype(_FL_MULTI_LABEL, multi_labeltype, multi_measure);
   return _FL_MULTI_LABEL;
 }
 
 /**
-  Associate an Fl_Multi_Label with an Fl_Widget.
+  Associate an Fl_Multi_Label with an fltk3::Widget.
 
-  This method uses Fl_Widget::label(Fl_Labeltype, const char *) internally
+  This method uses fltk3::Widget::label(Fl_Labeltype, const char *) internally
   to set the \e label of the widget, i.e. it stores a \e pointer to the
   Fl_Multi_Label object (\e this).
-  An existing label that has been set using Fl_Widget::copy_label() will be
+  An existing label that has been set using fltk3::Widget::copy_label() will be
   released prior to the assignment of the new label.
 
   This sets the type of the widget's label to \_FL_MULTI_LABEL - note the
   leading underscore ('_').
 
-  There is no way to use a method like Fl_Widget::copy_label() that transfers
+  There is no way to use a method like fltk3::Widget::copy_label() that transfers
   ownership of the Fl_Multi_Label and its linked objects (images, text, and
   chained Fl_Multi_Label's) to the widget.
 
@@ -85,7 +85,7 @@ Fl_Labeltype fl_define_FL_MULTI_LABEL() {
     widget has been deleted. This may cause memory leaks if Fl_Multi_Label
     is used and reassigned w/o releasing the objects assigned to it.
 */
-void Fl_Multi_Label::label(Fl_Widget* o) {
+void Fl_Multi_Label::label(fltk3::Widget* o) {
   o->label(FL_MULTI_LABEL, (const char*)this); // calls fl_define_FL_MULTI_LABEL()
 }
 
@@ -100,7 +100,7 @@ void Fl_Multi_Label::label(Fl_Widget* o) {
   This sets the type of the menu item's label to \_FL_MULTI_LABEL - note the
   leading underscore ('_').
 
-  There is no way to use a method like Fl_Widget::copy_label() that transfers
+  There is no way to use a method like fltk3::Widget::copy_label() that transfers
   ownership of the Fl_Multi_Label and its linked objects (images, text, and
   chained Fl_Multi_Label's) to the menu item.
 

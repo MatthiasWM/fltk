@@ -21,9 +21,9 @@
  \{
  */
 
-#include <FL/Fl_Native_File_Chooser.H>
-#include <FL/Fl_File_Chooser.H>
-#include <FL/Fl_File_Icon.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_File_Chooser.H>
+#include <fltk3/Fl_File_Icon.H>
 #include <string.h>
 #include <sys/stat.h>
 

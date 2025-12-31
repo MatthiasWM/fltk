@@ -19,12 +19,12 @@
 // Include necessary header files...
 //
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "config.h"
 #include "Fl_Image_Reader.h"
-#include <FL/Fl_ICO_Image.H>
+#include <fltk3/Fl_ICO_Image.H>
 #if defined(HAVE_LIBPNG) && defined(HAVE_LIBZ)
-#  include <FL/Fl_PNG_Image.H>
+#  include <fltk3/Fl_PNG_Image.H>
 #endif
 
 /**

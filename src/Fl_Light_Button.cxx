@@ -14,17 +14,17 @@
 //     https://www.fltk.org/bugs.php
 //
 
-// Subclass of Fl_Button where the "box" indicates whether it is
+// Subclass of fltk3::Button where the "box" indicates whether it is
 // pushed or not, and the "down box" is drawn small and square on
 // the left to indicate the current state.
 
 // The default down_box of zero draws a rectangle designed to look
 // just like Flame's buttons.
 
-#include <FL/Fl.H>
-#include <FL/Fl_Light_Button.H>
-#include <FL/Fl_Radio_Light_Button.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Light_Button.H>
+#include <fltk3/Fl_Radio_Light_Button.H>
+#include <fltk3/fl_draw.H>
 #include "flstring.h"
 
 void Fl_Light_Button::draw() {
@@ -115,10 +115,10 @@ void Fl_Light_Button::draw() {
 
 int Fl_Light_Button::handle(int event) {
   switch (event) {
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     if (box()) redraw();
   default:
-    return Fl_Button::handle(event);
+    return fltk3::Button::handle(event);
   }
 }
 
@@ -140,7 +140,7 @@ int Fl_Light_Button::handle(int event) {
     down_box() type the drawing behavior is undefined.
 */
 Fl_Light_Button::Fl_Light_Button(int X, int Y, int W, int H, const char* l)
-: Fl_Button(X, Y, W, H, l) {
+: fltk3::Button(X, Y, W, H, l) {
   type(FL_TOGGLE_BUTTON);
   selection_color(FL_YELLOW);
   align(FL_ALIGN_LEFT|FL_ALIGN_INSIDE);

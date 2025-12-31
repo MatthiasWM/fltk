@@ -15,12 +15,12 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
-#include <FL/Fl_File_Input.H>
-#include <FL/Fl_Window.H>
-#include <FL/fl_draw.H>
-#include <FL/filename.H>
+#include <fltk3/Fl_File_Input.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/filename.H>
 #include <stdio.h>
 #include "flstring.h"
 
@@ -181,8 +181,8 @@ Fl_File_Input::handle(int event)                // I - Event
   static char inButtonBar = 0;
 
   switch (event) {
-    case FL_MOVE :
-    case FL_ENTER :
+    case fltk3::MOVE :
+    case fltk3::ENTER :
       if (active_r()) {
         if (Fl::event_y() < (y() + DIR_HEIGHT))
           window()->cursor(FL_CURSOR_DEFAULT);
@@ -192,10 +192,10 @@ Fl_File_Input::handle(int event)                // I - Event
 
       return 1;
 
-    case FL_PUSH :
+    case fltk3::PUSH :
       inButtonBar = (Fl::event_y() < (y() + DIR_HEIGHT));
-    case FL_RELEASE :
-    case FL_DRAG :
+    case fltk3::RELEASE :
+    case fltk3::DRAG :
       if (inButtonBar)
         return handle_button(event);
       else
@@ -241,7 +241,7 @@ Fl_File_Input::handle_button(int event)         // I - Event
 //  printf("handle_button(event = %d), button = %d\n", event, i);
 
   // Redraw the directory bar...
-  if (event == FL_RELEASE) pressed_ = -1;
+  if (event == fltk3::RELEASE) pressed_ = -1;
   else pressed_ = (short)i;
 
   window()->make_current();
@@ -249,7 +249,7 @@ Fl_File_Input::handle_button(int event)         // I - Event
 
   // Return immediately if the user is clicking on the last button or
   // has not released the mouse button...
-  if (!buttons_[i] || event != FL_RELEASE) return 1;
+  if (!buttons_[i] || event != fltk3::RELEASE) return 1;
 
   // Figure out where to truncate the path...
   strlcpy(newvalue, value(), sizeof(newvalue));

@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0500
-header_name {../FL/Fl_File_Chooser.H}
+header_name {../fltk3/Fl_File_Chooser.H}
 code_name {.cxx}
 comment {//
 // Fl_File_Chooser dialog for the Fast Light Tool Kit (FLTK).
@@ -18,7 +18,7 @@ comment {//
 //     https://www.fltk.org/bugs.php
 //
 // =======================================================================
-//  DO NOT EDIT FL/Fl_File_Chooser.H and src/Fl_File_Chooser.cxx !!!
+//  DO NOT EDIT fltk3/Fl_File_Chooser.H and src/Fl_File_Chooser.cxx !!!
 // =======================================================================
 //  Please use fluid to change src/Fl_File_Chooser.fl interactively
 //  and then use fluid to "write code" or edit and use fluid -c .
@@ -27,7 +27,7 @@ comment {//
 } {in_source in_header
 }
 
-decl {\#include <FL/fl_draw.H>} {private local
+decl {\#include <fltk3/fl_draw.H>} {private local
 }
 
 class FL_EXPORT Fl_File_Chooser {open
@@ -60,7 +60,7 @@ Determines the type of file chooser presented to the user.
   }
   decl {void favoritesButtonCB();} {private local
   }
-  decl {void favoritesCB(Fl_Widget *w);} {private local
+  decl {void favoritesCB(fltk3::Widget *w);} {private local
   }
   decl {void fileListCB();} {private local
   }
@@ -105,10 +105,10 @@ hide();} open selected
           private xywh {290 10 155 25} down_box BORDER_BOX align 20
           code0 {favoritesButton->label(favorites_label);}
         } {}
-        Fl_Button newButton {
+        fltk3::Button newButton {
           callback {newdir();}
           image {new.xbm} compress_image 0 xywh {455 10 25 25} labelsize 8
-          code0 {\#include <FL/Fl_Preferences.H>}
+          code0 {\#include <fltk3/Fl_Preferences.H>}
           code1 {o->tooltip(new_directory_tooltip);}
         }
       }
@@ -119,7 +119,7 @@ hide();} open selected
         Fl_File_Browser fileList {
           callback {fileListCB();}
           private xywh {10 45 295 225} type Hold box DOWN_BOX hotspot
-          code0 {\#include <FL/Fl_File_Browser.H>}
+          code0 {\#include <fltk3/Fl_File_Browser.H>}
         }
         Fl_Box errorBox {
           label {dynamic error display}
@@ -173,10 +173,10 @@ hide();} open selected
 if (callback_)
   (*callback_)(this, data_);}
             private xywh {313 345 85 25}
-            code0 {\#include <FL/fl_ask.H>}
+            code0 {\#include <fltk3/fl_ask.H>}
             code1 {okButton->label(fl_ok);}
           }
-          Fl_Button cancelButton {
+          fltk3::Button cancelButton {
             label Cancel
             callback {fileName->value("");
 fileList->deselect();
@@ -202,17 +202,17 @@ hide();}
       Fl_Group {} {open
         xywh {320 10 25 95}
       } {
-        Fl_Button favUpButton {
+        fltk3::Button favUpButton {
           label {@8>}
           callback {favoritesCB(favUpButton);}
           private xywh {320 10 25 25}
         }
-        Fl_Button favDeleteButton {
+        fltk3::Button favDeleteButton {
           label X
           callback {favoritesCB(favDeleteButton);}
           private xywh {320 45 25 25} labelfont 1 resizable
         }
-        Fl_Button favDownButton {
+        fltk3::Button favDownButton {
           label {@2>}
           callback {favoritesCB(favDownButton);}
           private xywh {320 80 25 25}
@@ -221,7 +221,7 @@ hide();}
       Fl_Group {} {open
         xywh {10 113 335 29}
       } {
-        Fl_Button favCancelButton {
+        fltk3::Button favCancelButton {
           label Cancel
           callback {favWindow->hide();}
           private xywh {273 115 72 25}
@@ -231,7 +231,7 @@ hide();}
           label Save
           callback {favoritesCB(favOkButton);}
           private xywh {181 115 79 25}
-          code0 {\#include <FL/fl_ask.H>}
+          code0 {\#include <fltk3/fl_ask.H>}
           code1 {favOkButton->label(save_label);}
         }
         Fl_Box {} {
@@ -252,7 +252,7 @@ int e;
 prefs_->get("preview", e, 1);
 preview(e);
 Fl_Group::current(prev_current);} {}
-    code {ext_group=(Fl_Widget*)0;} {}
+    code {ext_group=(fltk3::Widget*)0;} {}
   }
   Function {~Fl_File_Chooser()} {open
   } {
@@ -479,11 +479,11 @@ else
     comment {the sort function that is used when loading
 the contents of a directory.} public local
   }
-  decl {Fl_Widget* ext_group;} {private local
+  decl {fltk3::Widget* ext_group;} {private local
   }
-  Function {add_extra(Fl_Widget* gr)} {open return_type {Fl_Widget*}
+  Function {add_extra(fltk3::Widget* gr)} {open return_type {fltk3::Widget*}
   } {
-    code {Fl_Widget* ret=ext_group;} {}
+    code {fltk3::Widget* ret=ext_group;} {}
     codeblock {if (gr==ext_group)} {open
     } {
       code {return ret;} {}
@@ -491,7 +491,7 @@ the contents of a directory.} public local
     codeblock {if (ext_group)} {open
     } {
       code {int sh=ext_group->h()+4;
-Fl_Widget* svres=window->resizable();
+fltk3::Widget* svres=window->resizable();
 window->resizable(NULL);
 window->size(window->w(),window->h()-sh);
 window->remove(ext_group);
@@ -501,7 +501,7 @@ window->resizable(svres);} {}
     codeblock {if (gr)} {open
     } {
       code {int nh=window->h()+gr->h()+4;
-Fl_Widget* svres=window->resizable();
+fltk3::Widget* svres=window->resizable();
 window->resizable(NULL);
 window->size(window->w(),nh);
 gr->position(2,okButton->y()+okButton->h()+2);

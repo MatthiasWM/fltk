@@ -14,17 +14,17 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Box.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Box.H>
 
 
 Fl_Box::Fl_Box(int X, int Y, int W, int H, const char *l)
-: Fl_Widget(X,Y,W,H,l)
+: fltk3::Widget(X,Y,W,H,l)
 {
 }
 
 Fl_Box::Fl_Box(Fl_Boxtype b, int X, int Y, int W, int H, const char *l)
-: Fl_Widget(X,Y,W,H,l)
+: fltk3::Widget(X,Y,W,H,l)
 {
   box(b);
 }
@@ -35,6 +35,6 @@ void Fl_Box::draw() {
 }
 
 int Fl_Box::handle(int event) {
-  if (event == FL_ENTER || event == FL_LEAVE) return 1;
+  if (event == fltk3::ENTER || event == fltk3::LEAVE) return 1;
   else return 0;
 }

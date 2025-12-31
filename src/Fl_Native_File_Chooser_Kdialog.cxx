@@ -21,7 +21,7 @@
  */
 
 #include <config.h>
-#include <FL/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
 #include "Fl_Native_File_Chooser_Kdialog.H"
 #include "Fl_Window_Driver.H"
 #include "Fl_System_Driver.H"

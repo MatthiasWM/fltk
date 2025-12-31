@@ -20,9 +20,9 @@
    Returns true if any changes were made.
 */
 
-#include <FL/filename.H>
-#include <FL/Fl.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/filename.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_string_functions.h>
 #include "Fl_System_Driver.H"
 #include <stdlib.h>
 #include "flstring.h"
@@ -31,7 +31,7 @@ static inline int isdirsep(int c) {return c == '/';}
 
 /** Makes a filename absolute from a relative filename to the current working directory.
     \code
-    #include <FL/filename.H>
+    #include <fltk3/filename.H>
     [..]
     fl_chdir("/var/tmp");
     fl_filename_absolute(out, sizeof(out), "foo.txt");         // out="/var/tmp/foo.txt"
@@ -55,7 +55,7 @@ int fl_filename_absolute(char *to, int tolen, const char *from) {
 
 /** Concatenate the absolute path `base` with `from` to form the new absolute path in `to`.
  \code
- #include <FL/filename.H>
+ #include <fltk3/filename.H>
  char out[FL_PATH_MAX];
  fl_filename_absolute(out, sizeof(out), "../foo.txt", "/var/tmp");   // out="/var/foo.txt"
  fl_filename_absolute(out, sizeof(out), "../local/bin", "/usr/bin");  // out="/usr/local/bin"
@@ -147,7 +147,7 @@ int Fl_System_Driver::filename_absolute(char *to, int tolen, const char *from, c
   buffer and 0 is returned.
 
   \code
-  #include <FL/filename.H>
+  #include <fltk3/filename.H>
   [..]
   fl_chdir("/var/tmp/somedir");       // set cwd to /var/tmp/somedir
   [..]

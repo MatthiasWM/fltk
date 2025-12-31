@@ -28,9 +28,9 @@
 // Include necessary header files...
 //
 
-#include <FL/Fl_Wizard.H>
-#include <FL/Fl_Window.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Wizard.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/fl_draw.H>
 
 
 //
@@ -51,14 +51,14 @@ Fl_Wizard::Fl_Wizard(int        xx,     // I - Lefthand position
 {
   box(FL_THIN_UP_BOX);
 
-  value_ = (Fl_Widget *)0;
+  value_ = (fltk3::Widget *)0;
 }
 
 
 //
 /** Draws the wizard border and visible child. */
 void Fl_Wizard::draw() {
-  Fl_Widget     *kid;   // Visible child
+  fltk3::Widget     *kid;   // Visible child
 
 
   kid = value();
@@ -86,7 +86,7 @@ void Fl_Wizard::draw() {
 */
 void Fl_Wizard::next() {
   int                   num_kids;
-  Fl_Widget     * const *kids;
+  fltk3::Widget     * const *kids;
 
 
   if ((num_kids = children()) == 0)
@@ -104,7 +104,7 @@ void Fl_Wizard::next() {
 void Fl_Wizard::prev()
 {
   int                   num_kids;
-  Fl_Widget     * const *kids;
+  fltk3::Widget     * const *kids;
 
 
   if ((num_kids = children()) == 0)
@@ -119,17 +119,17 @@ void Fl_Wizard::prev()
 }
 
 /**  Gets the current visible child widget. */
-Fl_Widget* Fl_Wizard::value()
+fltk3::Widget* Fl_Wizard::value()
 {
   int                   num_kids;
-  Fl_Widget     * const *kids;
-  Fl_Widget             *kid;
+  fltk3::Widget     * const *kids;
+  fltk3::Widget             *kid;
 
 
   if ((num_kids = children()) == 0)
-    return ((Fl_Widget *)0);
+    return ((fltk3::Widget *)0);
 
-  for (kids = array(), kid = (Fl_Widget *)0; num_kids > 0; kids ++, num_kids --)
+  for (kids = array(), kid = (fltk3::Widget *)0; num_kids > 0; kids ++, num_kids --)
   {
     if ((*kids)->visible())
     {
@@ -151,10 +151,10 @@ Fl_Widget* Fl_Wizard::value()
 }
 
 /**  Sets the child widget that is visible.*/
-void Fl_Wizard::value(Fl_Widget *kid)
+void Fl_Wizard::value(fltk3::Widget *kid)
 {
   int                   num_kids;
-  Fl_Widget     * const *kids;
+  fltk3::Widget     * const *kids;
 
 
   if ((num_kids = children()) == 0)

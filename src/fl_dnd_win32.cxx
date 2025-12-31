@@ -21,11 +21,11 @@
 // in.  Search other files for "_WIN32" or filenames ending in _win32.cxx
 // for other system-specific code.
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Window.H>
 #include "Fl_Window_Driver.H"
-#include <FL/fl_utf8.h>
+#include <fltk3/fl_utf8.h>
 #include "drivers/WinAPI/Fl_WinAPI_Screen_Driver.H"
 #include "flstring.h"
 #include <stdio.h>
@@ -100,7 +100,7 @@ public:
     px = pt.x; py = pt.y;
     if (fillCurrentDragData(pDataObj)) {
       // FLTK has no mechanism yet for the different drop effects, so we allow move and copy
-      if ( target && Fl::handle( FL_DND_ENTER, target ) )
+      if ( target && Fl::handle( fltk3::DND_ENTER, target ) )
         *pdwEffect = DROPEFFECT_MOVE|DROPEFFECT_COPY; //|DROPEFFECT_LINK;
       else
         *pdwEffect = DROPEFFECT_NONE;
@@ -133,7 +133,7 @@ public:
     }
     if (fillCurrentDragData(0)) {
       // Fl_Group will change DND_DRAG into DND_ENTER and DND_LEAVE if needed
-      if ( Fl::handle( FL_DND_DRAG, fl_dnd_target_window ) )
+      if ( Fl::handle( fltk3::DND_DRAG, fl_dnd_target_window ) )
         *pdwEffect = DROPEFFECT_MOVE|DROPEFFECT_COPY; //|DROPEFFECT_LINK;
       else
         *pdwEffect = DROPEFFECT_NONE;
@@ -149,7 +149,7 @@ public:
   HRESULT STDMETHODCALLTYPE DragLeave() FL_OVERRIDE {
     if ( fl_dnd_target_window && fillCurrentDragData(0))
     {
-      Fl::handle( FL_DND_LEAVE, fl_dnd_target_window );
+      Fl::handle( fltk3::DND_LEAVE, fl_dnd_target_window );
       fl_dnd_target_window = 0;
       clearCurrentDragData();
     }
@@ -170,10 +170,10 @@ public:
       Fl::e_y = Fl::e_y_root-target->y();
     }
     // tell FLTK that the user released an object on this widget
-    if ( !Fl::handle( FL_DND_RELEASE, target ) )
+    if ( !Fl::handle( fltk3::DND_RELEASE, target ) )
       return S_OK;
 
-    Fl_Widget *w = target;
+    fltk3::Widget *w = target;
     while (w->parent()) w = w->window();
     HWND hwnd = fl_xid( (Fl_Window*)w );
     if (fillCurrentDragData(data)) {
@@ -187,7 +187,7 @@ public:
       *b = 0;
       Fl::e_text = currDragData;
       Fl::e_length = (int) (b - currDragData);
-      Fl::belowmouse()->handle(Fl::e_number = FL_PASTE); // e_text will be invalid after this call
+      Fl::belowmouse()->handle(Fl::e_number = fltk3::PASTE); // e_text will be invalid after this call
       Fl::e_number = old_event;
       SetForegroundWindow( hwnd );
       clearCurrentDragData();
@@ -278,7 +278,7 @@ private:
     fmt.dwAspect = DVASPECT_CONTENT;
     fmt.lindex = -1;
     fmt.cfFormat = CF_HDROP;
-    // if it is a pathname list, send an FL_PASTE with a \n separated list of filepaths
+    // if it is a pathname list, send an fltk3::PASTE with a \n separated list of filepaths
     if ( data->GetData( &fmt, &medium )==S_OK )
     {
       HDROP hdrop = (HDROP)medium.hGlobal;
@@ -546,11 +546,11 @@ int Fl_WinAPI_Screen_Driver::dnd(int unused)
   fdo->Release();
   fds->Release();
 
-  Fl_Widget *w = Fl::pushed();
+  fltk3::Widget *w = Fl::pushed();
   if ( w )
   {
     int old_event = Fl::e_number;
-    w->handle(Fl::e_number = FL_RELEASE);
+    w->handle(Fl::e_number = fltk3::RELEASE);
     Fl::e_number = old_event;
     Fl::pushed( 0 );
   }

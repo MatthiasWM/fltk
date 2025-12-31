@@ -14,8 +14,8 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Check_Button.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Check_Button.H>
 
 /**
   \class Fl_Check_Button

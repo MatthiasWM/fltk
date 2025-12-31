@@ -22,8 +22,8 @@
   \since 1.4.0
 */
 
-#include <FL/Fl_Grid.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Grid.H>
+#include <fltk3/fl_draw.H>
 
 // private class Col for column management
 
@@ -362,7 +362,7 @@ void Fl_Grid::layout() {
     for (int c = 0; c < cols_; c++, col++) {
       cel = cell(r, c);
       if (cel) {
-        Fl_Widget *wi = cel->widget_;
+        fltk3::Widget *wi = cel->widget_;
         if (wi && wi->visible()) {
           if (cel->colspan_ == 1 && cel->w_ > col->w_) col->w_ = cel->w_;
           if (cel->rowspan_ == 1 && cel->h_ > row->h_) row->h_ = cel->h_;
@@ -459,7 +459,7 @@ void Fl_Grid::layout() {
       int wy = y0;  // widget's y
       cel = cell(r, c);
       if (cel) {
-        Fl_Widget *wi = cel->widget_;
+        fltk3::Widget *wi = cel->widget_;
         if (wi && wi->visible()) {
 
           // calculate the cell's position and size, take cell spanning into account
@@ -533,7 +533,7 @@ void Fl_Grid::layout() {
 */
 void Fl_Grid::on_remove(int index) {
 
-  Fl_Widget *wi = child(index);
+  fltk3::Widget *wi = child(index);
   Cell *c = cell(wi); // find the cell of this child
   if (c) {
     remove_cell(c->row_, c->col_);
@@ -586,7 +586,7 @@ void Fl_Grid::remove_cell(int row, int col) {
 */
 void Fl_Grid::resize(int X, int Y, int W, int H) {
   old_size = Fl_Rect(x(), y(), w(), h());
-  Fl_Widget::resize(X, Y, W, H);
+  fltk3::Widget::resize(X, Y, W, H);
   layout();
 }
 
@@ -764,7 +764,7 @@ Fl_Grid::Cell* Fl_Grid::cell(int row, int col) const {
   \param[in]  widget  widget whose cell is requested
   \retval     NULL    if \p widget is not assigned to a cell
 */
-Fl_Grid::Cell* Fl_Grid::cell(Fl_Widget *widget) const {
+Fl_Grid::Cell* Fl_Grid::cell(fltk3::Widget *widget) const {
   Row *row = Rows_;
   for (int r = 0; r < rows_; r++, row++) {
     Cell *cel = row->cells_;
@@ -783,7 +783,7 @@ Fl_Grid::Cell* Fl_Grid::cell(Fl_Widget *widget) const {
   This short form sets row and column spanning attributes to (1, 1).
 
   For more information see
-  Fl_Grid::widget(Fl_Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align)
+  Fl_Grid::widget(fltk3::Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align)
 
   \param[in]  wi      widget to be assigned to the cell
   \param[in]  row     row
@@ -793,9 +793,9 @@ Fl_Grid::Cell* Fl_Grid::cell(Fl_Widget *widget) const {
   \return     assigned cell
   \retval     NULL      if \p row or \p col is out of bounds
 
-  \see Fl_Grid::widget(Fl_Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align)
+  \see Fl_Grid::widget(fltk3::Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align)
 */
-Fl_Grid::Cell *Fl_Grid::widget(Fl_Widget *wi, int row, int col, Fl_Grid_Align align) {
+Fl_Grid::Cell *Fl_Grid::widget(fltk3::Widget *wi, int row, int col, Fl_Grid_Align align) {
   return widget(wi, row, col, 1, 1, align);
 }
 
@@ -824,7 +824,7 @@ Fl_Grid::Cell *Fl_Grid::widget(Fl_Widget *wi, int row, int col, Fl_Grid_Align al
   \return     assigned cell
   \retval     NULL      if \p row or \p col is out of bounds or \p wi is not a child
 */
-Fl_Grid::Cell *Fl_Grid::widget(Fl_Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align) {
+Fl_Grid::Cell *Fl_Grid::widget(fltk3::Widget *wi, int row, int col, int rowspan, int colspan, Fl_Grid_Align align) {
 
   int child = Fl_Group::find(wi); // is this widget one of our children?
   if (child >= children()) {

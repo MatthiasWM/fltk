@@ -17,9 +17,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <FL/platform_types.h>
-#include <FL/filename.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/platform_types.h>
+#include <fltk3/filename.H>
+#include <fltk3/fl_utf8.h>
 
 /**
   \file numericsort.c

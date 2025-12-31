@@ -40,16 +40,16 @@
 
 #include "print_button.h"
 
-#include <FL/Fl_Printer.H>
-#include <FL/Fl_PostScript.H>
-#include <FL/Fl_Copy_Surface.H>
+#include <fltk3/Fl_Printer.H>
+#include <fltk3/Fl_PostScript.H>
+#include <fltk3/Fl_Copy_Surface.H>
 
 #ifdef USE_PRINT_BUTTON
 
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Check_Button.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_ask.H>
+#include <fltk3/Button.H>
+#include <fltk3/Fl_Check_Button.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_ask.H>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -68,7 +68,7 @@ static Fl_Check_Button *deco_button = 0;  // window decoration button
 //  2: copy window to clipboard
 // else: see 2.
 
-static void output_cb(Fl_Widget * /*unused*/, void *data) {
+static void output_cb(fltk3::Widget * /*unused*/, void *data) {
 
   print_window->hide();
   Fl_Window *win = Fl::first_window();
@@ -93,7 +93,7 @@ static int shortcut_handler(int event) { // global shortcut handler
   const int state = FL_ALT | FL_SHIFT; //  | FL_CTRL | FL_COMMAND;
 
   if (print_window &&
-      (event == FL_SHORTCUT || event == FL_KEYBOARD) &&
+      (event == fltk3::SHORTCUT || event == fltk3::KEYBOARD) &&
       ((Fl::event_state() & state) == state) &&
       (Fl::event_key() == key)) {
     print_window->show();
@@ -118,8 +118,8 @@ int fl_create_print_window() {
     Fl_Group *cg = Fl_Group::current();
     Fl_Group::current(0);
     print_window  =     new Fl_Window( 0,  0, 200, 110, "FLTK screenshot");
-    Fl_Button *bp =     new Fl_Button(10, 10, 180,  30, "Print front window");
-    Fl_Button *bc =     new Fl_Button(10, 40, 180,  30, "Copy front window");
+    fltk3::Button *bp =     new fltk3::Button(10, 10, 180,  30, "Print front window");
+    fltk3::Button *bc =     new fltk3::Button(10, 40, 180,  30, "Copy front window");
     deco_button = new Fl_Check_Button(10, 70, 180,  30, "Window decoration");
     bp->callback(output_cb, (void *)1);
     bc->callback(output_cb, (void *)2);

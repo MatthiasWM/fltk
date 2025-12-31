@@ -14,13 +14,13 @@
 //     https://www.fltk.org/bugs.php
 //
 
-// A subclass of Fl_Button that always draws as a round circle.  This
+// A subclass of fltk3::Button that always draws as a round circle.  This
 // circle is smaller than the widget size and can be surrounded by
 // another box type, for compatibility with Forms.
 
-#include <FL/Fl.H>
-#include <FL/Fl_Round_Button.H>
-#include <FL/Fl_Radio_Round_Button.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Round_Button.H>
+#include <fltk3/Fl_Radio_Round_Button.H>
 
 /**
   Creates a new Fl_Round_Button widget using the given position, size, and label string.

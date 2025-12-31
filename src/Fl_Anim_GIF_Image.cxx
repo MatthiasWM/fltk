@@ -15,17 +15,17 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_GIF_Image.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/Fl_Graphics_Driver.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_GIF_Image.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/Fl_Graphics_Driver.H>
+#include <fltk3/fl_string_functions.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <math.h> // round()
 
-#include <FL/Fl_Anim_GIF_Image.H>
+#include <fltk3/Fl_Anim_GIF_Image.H>
 
 /** \class Fl_Anim_GIF_Image
 
@@ -498,9 +498,9 @@ bool Fl_Anim_GIF_Image::loop = true;
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/Fl_Group.H>
-#include <FL/Fl.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/Fl_Group.H>
+#include <fltk3/Fl.H>
 
 //
 // class Fl_Anim_GIF_Image implementation
@@ -521,7 +521,7 @@ bool Fl_Anim_GIF_Image::loop = true;
     `myGif->canvas(NULL);` before deleting the canvas.
  */
 Fl_Anim_GIF_Image::Fl_Anim_GIF_Image(const char *filename,
-                                     Fl_Widget *canvas /* = 0*/,
+                                     fltk3::Widget *canvas /* = 0*/,
                                      unsigned short flags /* = 0 */) :
   Fl_GIF_Image(),
   name_(0),
@@ -570,7 +570,7 @@ Fl_Anim_GIF_Image::Fl_Anim_GIF_Image(const char *filename,
     `myGif->canvas(NULL);` before deleting the canvas.
  */
 Fl_Anim_GIF_Image::Fl_Anim_GIF_Image(const char* imagename, const unsigned char *data,
-                                     const size_t length, Fl_Widget *canvas /* = 0 */,
+                                     const size_t length, fltk3::Widget *canvas /* = 0 */,
                                      unsigned short flags /* = 0 */) :
   Fl_GIF_Image(),
   name_(0),
@@ -637,7 +637,7 @@ Fl_Anim_GIF_Image::~Fl_Anim_GIF_Image() /* override */ {
  \note The GIF image must be decoupled from the canvas by calling
     `myGif->canvas(NULL);` before deleting the canvas.
  */
-void Fl_Anim_GIF_Image::canvas(Fl_Widget *canvas, unsigned short flags/* = 0*/) {
+void Fl_Anim_GIF_Image::canvas(fltk3::Widget *canvas, unsigned short flags/* = 0*/) {
   if (canvas_)
     canvas_->image(0);
   canvas_ = canvas;
@@ -665,7 +665,7 @@ void Fl_Anim_GIF_Image::canvas(Fl_Widget *canvas, unsigned short flags/* = 0*/) 
 /** Gets the current widget, that is used to display the frame images.
  \return a pointer to a widget
  */
-Fl_Widget *Fl_Anim_GIF_Image::canvas() const {
+fltk3::Widget *Fl_Anim_GIF_Image::canvas() const {
   return canvas_;
 }
 
@@ -1193,7 +1193,7 @@ void Fl_Anim_GIF_Image::set_frame(int frame) {
 
   fi_->set_frame(frame_);
 
-  Fl_Widget* cv = canvas();
+  fltk3::Widget* cv = canvas();
   if (cv) {
     Fl_Group* parent = cv->parent();
     bool no_bg = !Fl::box_bg(cv->box());

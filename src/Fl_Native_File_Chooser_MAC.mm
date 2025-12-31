@@ -20,12 +20,12 @@
 //        Possibly 'preset_file' could be used to select the filename.
 //
 
-#include <FL/Fl.H>
-#include <FL/platform.H> // for fl_mac_os_version
-#include <FL/Fl_Native_File_Chooser.H>
-#include <FL/Fl_File_Chooser.H>
-#include <FL/filename.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H> // for fl_mac_os_version
+#include <fltk3/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_File_Chooser.H>
+#include <fltk3/filename.H>
+#include <fltk3/fl_string_functions.h>
 #define MAXFILTERS      80
 #import <Cocoa/Cocoa.h>
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_VERSION_11_0

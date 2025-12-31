@@ -24,7 +24,7 @@
 #define FL_COCOA_WINDOW_DRIVER_H
 
 #include "../../Fl_Window_Driver.H"
-#include <FL/Fl_Plugin.H>
+#include <fltk3/Fl_Plugin.H>
 #include <ApplicationServices/ApplicationServices.h>
 
 class Fl_Image;

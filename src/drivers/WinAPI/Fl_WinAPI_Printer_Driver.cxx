@@ -15,15 +15,15 @@
 //
 
 #include "../GDI/Fl_GDI_Graphics_Driver.H"
-#include <FL/Fl_PDF_File_Surface.H>
-#include <FL/Fl_Paged_Device.H>
-#include <FL/Fl_Printer.H>
-#include <FL/Fl_Native_File_Chooser.H>
-#include <FL/fl_ask.H>
-#include <FL/math.h>
-#include <FL/fl_draw.H>
-#include <FL/platform.H> // for fl_win32_xid()
-#include <FL/fl_string_functions.h>  // fl_strdup()
+#include <fltk3/Fl_PDF_File_Surface.H>
+#include <fltk3/Fl_Paged_Device.H>
+#include <fltk3/Fl_Printer.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/math.h>
+#include <fltk3/fl_draw.H>
+#include <fltk3/platform.H> // for fl_win32_xid()
+#include <fltk3/fl_string_functions.h>  // fl_strdup()
 #include <commdlg.h>
 #include <winspool.h> // DocumentProperties(), OpenPrinter(), ClosePrinter()
 

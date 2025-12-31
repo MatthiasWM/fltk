@@ -23,9 +23,9 @@
 #ifndef FL_SCREEN_DRIVER_H
 #define FL_SCREEN_DRIVER_H
 
-#include <FL/fl_types.h>
-#include <FL/Fl.H> // for Fl_Timeout_Handler
-#include <FL/Fl_Text_Editor.H>
+#include <fltk3/fl_types.h>
+#include <fltk3/Fl.H> // for Fl_Timeout_Handler
+#include <fltk3/Fl_Text_Editor.H>
 
 
 // TODO: add text composition?
@@ -238,7 +238,7 @@ public:
   // implement to support copy-to-clipboard
   virtual void copy(const char * /*stuff*/, int /*len*/, int /*clipboard*/, const char * /*type*/) {}
   // implement to support paste-from-clipboard
-  virtual void paste(Fl_Widget &, int /*clipboard*/, const char * /*type*/) {}
+  virtual void paste(fltk3::Widget &, int /*clipboard*/, const char * /*type*/) {}
   // implement to support paste-from-clipboard
   virtual int clipboard_contains(const char * /*type*/) {return 0;}
   //  implement to support paste-from-clipboard

@@ -17,7 +17,7 @@
 // Startup method to set what display to use.
 // Using setenv makes programs that are exec'd use the same display.
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Screen_Driver.H"
 
 /**

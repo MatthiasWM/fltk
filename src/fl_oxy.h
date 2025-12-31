@@ -18,7 +18,7 @@
 #ifndef fl_oxy_h
 #define fl_oxy_h
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 
 // draw an arrow GUI element for the 'oxy' scheme
 //

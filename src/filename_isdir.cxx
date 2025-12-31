@@ -18,14 +18,14 @@
 
 #include "flstring.h"
 #include "Fl_System_Driver.H"
-#include <FL/filename.H>
-#include <FL/Fl.H>
+#include <fltk3/filename.H>
+#include <fltk3/Fl.H>
 #include <sys/stat.h>
 
 /**
    Determines if a file exists and is a directory from its filename.
    \code
-   #include <FL/filename.H>
+   #include <fltk3/filename.H>
    [..]
    fl_filename_isdir("/etc");           // returns non-zero
    fl_filename_isdir("/etc/hosts");     // returns 0

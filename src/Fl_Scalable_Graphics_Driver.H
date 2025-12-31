@@ -18,7 +18,7 @@
 #ifndef FL_SCALABLE_GRAPHICS_DRIVER_H
 #define FL_SCALABLE_GRAPHICS_DRIVER_H
 
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 
 #ifndef FL_DOXYGEN
 

@@ -18,11 +18,11 @@
 
 #if defined(FLTK_USE_SVG) || defined(FL_DOXYGEN)
 
-#include <FL/Fl_SVG_Image.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/fl_utf8.h>
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl_SVG_Image.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h>
 #include "Fl_Screen_Driver.H"
 #include "Fl_System_Driver.H"
 #include <stdio.h>

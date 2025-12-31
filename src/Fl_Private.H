@@ -21,8 +21,8 @@
 #ifndef Fl_Private_H
 #define Fl_Private_H
 
-#include <FL/fl_config.h> // build configuration
-#include <FL/Fl.H>
+#include <fltk3/fl_config.h> // build configuration
+#include <fltk3/Fl.H>
 
 /**
  FLTK private global variables and functions.

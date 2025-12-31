@@ -14,9 +14,9 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 
-#include <FL/fl_draw.H> // necessary for FL_EXPORT fl_*_offscreen()
+#include <fltk3/fl_draw.H> // necessary for FL_EXPORT fl_*_offscreen()
 
 #include <stdlib.h>     // realloc()
 

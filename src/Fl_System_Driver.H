@@ -36,10 +36,10 @@
 #ifndef FL_SYSTEM_DRIVER_H
 #define FL_SYSTEM_DRIVER_H
 
-#include <FL/Fl.H>
-#include <FL/Fl_Export.H>
-#include <FL/filename.H>
-#include <FL/Fl_Preferences.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Export.H>
+#include <fltk3/filename.H>
+#include <fltk3/Fl_Preferences.H>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -49,7 +49,7 @@
 class Fl_File_Icon;
 class Fl_File_Browser;
 class Fl_Pixmap;
-class Fl_Widget;
+namespace fltk3 { class Widget; }
 class Fl_Sys_Menu_Bar_Driver;
 
 /**

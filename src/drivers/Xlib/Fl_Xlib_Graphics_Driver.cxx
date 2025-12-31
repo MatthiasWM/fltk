@@ -18,8 +18,8 @@
 #include <config.h>
 #include "Fl_Xlib_Graphics_Driver.H"
 #include "Fl_Font.H"
-#include <FL/fl_draw.H>
-#include <FL/platform.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/platform.H>
 
 #include <string.h>
 #include <stdlib.h>

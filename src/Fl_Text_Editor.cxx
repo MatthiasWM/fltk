@@ -19,11 +19,11 @@
 #include <stdlib.h>
 #include "flstring.h"
 #include <ctype.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Text_Editor.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Text_Editor.H>
 #include "Fl_Screen_Driver.H"
-#include <FL/fl_ask.H>
+#include <fltk3/fl_ask.H>
 
 /* Keyboard Control Matrix
 
@@ -688,13 +688,13 @@ int Fl_Text_Editor::handle(int event) {
   if (!buffer()) return 0;
 
   switch (event) {
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       show_cursor(mCursorOn); // redraws the cursor
       if (buffer()->selected()) redraw(); // Redraw selections...
       Fl::focus(this);
       return 1;
 
-    case FL_UNFOCUS:
+    case fltk3::UNFOCUS:
       show_cursor(mCursorOn); // redraws the cursor
       if (Fl::screen_driver()->has_marked_text() && buffer()->selected() && Fl::compose_state) {
         int pos = insert_position();
@@ -703,16 +703,16 @@ int Fl_Text_Editor::handle(int event) {
       }
       if (buffer()->selected()) redraw(); // Redraw selections...
       // FALLTHROUGH
-    case FL_HIDE:
+    case fltk3::HIDE:
       if (when() & FL_WHEN_RELEASE) maybe_do_callback(FL_REASON_LOST_FOCUS);
       return 1;
 
-    case FL_KEYBOARD:
+    case fltk3::KEYBOARD:
       if (active_r() && window() && this == Fl::belowmouse())
         window()->cursor(FL_CURSOR_NONE);
       return handle_key();
 
-    case FL_PASTE:
+    case fltk3::PASTE:
       if (!Fl::event_text()) {
         fl_beep();
         return 1;
@@ -725,13 +725,13 @@ int Fl_Text_Editor::handle(int event) {
       if (when()&FL_WHEN_CHANGED) do_callback(FL_REASON_CHANGED);
       return 1;
 
-    case FL_ENTER:
+    case fltk3::ENTER:
 // MRS: Windows only?  Need to test!
-//  case FL_MOVE:
+//  case fltk3::MOVE:
       show_cursor(mCursorOn);
       return 1;
 
-    case FL_PUSH:
+    case fltk3::PUSH:
       if (Fl::event_button() == 2) {
         // don't let the text_display see this event
         if (Fl_Group::handle(event)) return 1;
@@ -756,7 +756,7 @@ int Fl_Text_Editor::handle(int event) {
         }
         if (Fl::focus() != this) {
           Fl::focus(this);
-          handle(FL_FOCUS);
+          handle(fltk3::FOCUS);
         }
         switch (handle_rmb(0)) {
           case 1: kf_cut(0, this); break;
@@ -768,10 +768,10 @@ int Fl_Text_Editor::handle(int event) {
 
       break;
 
-    case FL_SHORTCUT:
+    case fltk3::SHORTCUT:
       if (!(shortcut() ? Fl::test_shortcut(shortcut()) : test_shortcut()))
         return 0;
-      if (Fl::visible_focus() && handle(FL_FOCUS)) {
+      if (Fl::visible_focus() && handle(fltk3::FOCUS)) {
         Fl::focus(this);
         return 1;
       }
@@ -779,20 +779,20 @@ int Fl_Text_Editor::handle(int event) {
 
       // Handle drag'n'drop attempt by the user. This is a simplified
       // implementation which allows dnd operations onto the scroll bars.
-    case FL_DND_ENTER: // save the current cursor position
-      if (Fl::visible_focus() && handle(FL_FOCUS))
+    case fltk3::DND_ENTER: // save the current cursor position
+      if (Fl::visible_focus() && handle(fltk3::FOCUS))
         Fl::focus(this);
       show_cursor(mCursorOn);
       dndCursorPos = insert_position();
       /* fall through */
-    case FL_DND_DRAG: // show a temporary insertion cursor
+    case fltk3::DND_DRAG: // show a temporary insertion cursor
       insert_position(xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS));
       return 1;
-    case FL_DND_LEAVE: // restore original cursor
+    case fltk3::DND_LEAVE: // restore original cursor
       insert_position(dndCursorPos);
       return 1;
-    case FL_DND_RELEASE: // keep insertion cursor and wait for the FL_PASTE event
-      if (!dragging) buffer()->unselect(); // FL_PASTE must not destroy current selection if drag comes from outside
+    case fltk3::DND_RELEASE: // keep insertion cursor and wait for the fltk3::PASTE event
+      if (!dragging) buffer()->unselect(); // fltk3::PASTE must not destroy current selection if drag comes from outside
       return 1;
   }
 

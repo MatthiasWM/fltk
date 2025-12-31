@@ -16,16 +16,16 @@
 
 // Rapid-App style knob
 
-#include <FL/Fl.H>
-#include <FL/Fl_Roller.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Roller.H>
+#include <fltk3/fl_draw.H>
 #include <math.h>
 
 int Fl_Roller::handle(int event) {
   static int ipos;
   int newpos = horizontal() ? Fl::event_x() : Fl::event_y();
   switch (event) {
-    case FL_PUSH:
+    case fltk3::PUSH:
       if (Fl::visible_focus()) {
         Fl::focus(this);
         redraw();
@@ -33,13 +33,13 @@ int Fl_Roller::handle(int event) {
       handle_push();
       ipos = newpos;
       return 1;
-    case FL_DRAG:
+    case fltk3::DRAG:
       handle_drag(clamp(round(increment(previous_value(),newpos-ipos))));
       return 1;
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       handle_release();
       return 1;
-    case FL_MOUSEWHEEL :
+    case fltk3::MOUSEWHEEL :
       if (Fl::belowmouse()==this) {
         if (horizontal()) {
           if (Fl::e_dx!=0) {
@@ -54,7 +54,7 @@ int Fl_Roller::handle(int event) {
       } else {
         return 0;
       }
-    case FL_KEYBOARD :
+    case fltk3::KEYBOARD :
       switch (Fl::event_key()) {
         case FL_Up:
           if (horizontal()) return 0;
@@ -76,14 +76,14 @@ int Fl_Roller::handle(int event) {
           return 0;
       }
       // break not required because of switch...
-    case FL_FOCUS :
-    case FL_UNFOCUS :
+    case fltk3::FOCUS :
+    case fltk3::UNFOCUS :
       if (Fl::visible_focus()) {
         redraw();
         return 1;
       } else return 0;
-    case FL_ENTER :
-    case FL_LEAVE :
+    case fltk3::ENTER :
+    case fltk3::LEAVE :
       return 1;
     default:
       return 0;

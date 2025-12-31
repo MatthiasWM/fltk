@@ -21,7 +21,7 @@
 // which are used so that clicks outside the program's windows
 // can be used to dismiss the menus.
 
-#include <FL/Fl_Menu_Window.H>
+#include <fltk3/Fl_Menu_Window.H>
 #include "Fl_Window_Driver.H"
 
 /**  Destroys the window and all of its children.*/

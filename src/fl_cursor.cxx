@@ -20,13 +20,13 @@
 // This avoids a field in the Fl_Window, and I suspect is more
 // portable to other systems.
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Pixmap.H>
-#include <FL/Fl_RGB_Image.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Pixmap.H>
+#include <fltk3/Fl_RGB_Image.H>
 #include "Fl_Window_Driver.H"
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 
 #include "fl_cursor_wait.xpm"
 #include "fl_cursor_help.xpm"
@@ -36,7 +36,7 @@
 
 /**
   Sets the cursor for the current window to the specified shape and colors.
-  The cursors are defined in the <FL/Enumerations.H> header file.
+  The cursors are defined in the <fltk3/Enumerations.H> header file.
   */
 void fl_cursor(Fl_Cursor c) {
   if (Fl::first_window()) Fl::first_window()->cursor(c);
@@ -115,7 +115,7 @@ static void fallback_cursor(Fl_Window *w, Fl_Cursor c) {
   you may want to keep track of how you set it in a static variable
   and call this only if the new cursor is different.
 
-  The type Fl_Cursor is an enumeration defined in <FL/Enumerations.H>.
+  The type Fl_Cursor is an enumeration defined in <fltk3/Enumerations.H>.
 
   \see cursor(const Fl_RGB_Image*, int, int), default_cursor()
 */

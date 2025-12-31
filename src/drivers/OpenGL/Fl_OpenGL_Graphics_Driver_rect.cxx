@@ -22,11 +22,11 @@
 
 #include <config.h>
 #include "Fl_OpenGL_Graphics_Driver.H"
-#include <FL/gl.h>
-#include <FL/Fl_Gl_Window.H>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/Fl.H>
-#include <FL/math.h>
+#include <fltk3/gl.h>
+#include <fltk3/Fl_Gl_Window.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/Fl.H>
+#include <fltk3/math.h>
 
 // --- line and polygon drawing with integer coordinates
 

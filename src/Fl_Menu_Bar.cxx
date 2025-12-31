@@ -14,9 +14,9 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Menu_Bar.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Menu_Bar.H>
+#include <fltk3/fl_draw.H>
 
 void Fl_Menu_Bar::draw() {
   draw_box();
@@ -43,17 +43,17 @@ void Fl_Menu_Bar::draw() {
 int Fl_Menu_Bar::handle(int event) {
   const Fl_Menu_Item* v;
   if (menu() && menu()->text) switch (event) {
-  case FL_ENTER:
-  case FL_LEAVE:
+  case fltk3::ENTER:
+  case fltk3::LEAVE:
     return 1;
-  case FL_PUSH:
+  case fltk3::PUSH:
     v = 0;
   J1:
-    handle(FL_BEFORE_MENU);
+    handle(fltk3::BEFORE_MENU);
     v = menu()->pulldown(x(), y(), w(), h(), v, this, 0, 1);
     picked(v);
     return 1;
-  case FL_SHORTCUT:
+  case fltk3::SHORTCUT:
     if (visible_r()) {
       v = menu()->find_shortcut(0, true);
       if (v && v->submenu()) goto J1;
@@ -72,7 +72,7 @@ Fl_Menu_Bar::Fl_Menu_Bar(int X, int Y, int W, int H,const char *l)
 
 void Fl_Menu_Bar::play_menu(const Fl_Menu_Item *v) {
   if (v) {
-    handle(FL_BEFORE_MENU);
+    handle(fltk3::BEFORE_MENU);
     v = menu()->pulldown(x(), y(), w(), h(), v, this, 0, 1);
     picked(v);
   }

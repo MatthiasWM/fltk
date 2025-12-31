@@ -19,7 +19,7 @@
 
 #if !defined(FL_DOXYGEN)
 
-#include <FL/Fl_Sys_Menu_Bar.H>
+#include <fltk3/Fl_Sys_Menu_Bar.H>
 
 class Fl_Sys_Menu_Bar_Driver {
   friend class Fl_Sys_Menu_Bar;

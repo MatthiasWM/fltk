@@ -23,8 +23,8 @@
 #include "Fl_System_Driver.H"
 #include "Fl_Private.H"
 #include "Fl_Timeout.h"
-#include <FL/Fl_File_Icon.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/Fl_File_Icon.H>
+#include <fltk3/fl_utf8.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

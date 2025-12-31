@@ -16,13 +16,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <FL/fl_utf8.h>
-#include <FL/fl_string_functions.h>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_string_functions.h>
 #include "flstring.h"
 #include <ctype.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Text_Buffer.H>
-#include <FL/fl_ask.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Text_Buffer.H>
+#include <fltk3/fl_ask.H>
 
 
 /*
@@ -441,7 +441,7 @@ void Fl_Text_Buffer::vprintf(const char *fmt, va_list ap) {
  Appends printf formatted messages to the end of the buffer.
  Example:
  \code
- #include <FL/Fl_Text_Display.H>
+ #include <fltk3/Fl_Text_Display.H>
  int main(..) {
      :
      // Create a text display widget and assign it a text buffer

@@ -22,7 +22,7 @@
 // VK_x symbols.
 
 #include "drivers/WinAPI/Fl_WinAPI_Screen_Driver.H"
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 
 // Convert an FLTK (X) keysym to a Windows VK symbol:
 // See also the inverse converter in Fl_win32.cxx

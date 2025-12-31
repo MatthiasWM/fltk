@@ -18,9 +18,9 @@
 #include "Fl_Quartz_Graphics_Driver.H"
 #include "../Darwin/Fl_Darwin_System_Driver.H"
 #include "../Cocoa/Fl_Cocoa_Screen_Driver.H"
-#include <FL/platform.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Image_Surface.H>
 
 #if HAS_ATSU && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5
 Fl_Quartz_Graphics_Driver::pter_to_draw_member Fl_Quartz_Graphics_Driver::CoreText_or_ATSU_draw;

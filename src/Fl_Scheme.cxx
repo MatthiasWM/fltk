@@ -26,10 +26,10 @@
   \since 1.4.0
 */
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Scheme.H>
-#include <FL/fl_string_functions.h> // fl_strdup
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Scheme.H>
+#include <fltk3/fl_string_functions.h> // fl_strdup
 
 #include <stdlib.h>         // malloc, realloc
 

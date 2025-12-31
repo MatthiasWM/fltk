@@ -14,20 +14,20 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Paged_Device.H>
-#include <FL/Fl_Printer.H>
+#include <fltk3/Fl_Paged_Device.H>
+#include <fltk3/Fl_Printer.H>
 #include "../../Fl_Window_Driver.H"
 #include "../../Fl_Screen_Driver.H"
 #include "../Quartz/Fl_Quartz_Graphics_Driver.H"
 #include "../Darwin/Fl_Darwin_System_Driver.H"
-#include <FL/Fl_PDF_File_Surface.H>
+#include <fltk3/Fl_PDF_File_Surface.H>
 #include "Fl_Cocoa_Window_Driver.H"
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/fl_ask.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h>
 #import <Cocoa/Cocoa.h>
 
 typedef OSStatus (*PMSessionSetDocumentFormatGeneration_type)(

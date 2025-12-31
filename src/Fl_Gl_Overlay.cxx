@@ -17,9 +17,9 @@
 #include <config.h>
 #if HAVE_GL
 
-#include <FL/Fl.H>
-#include <FL/gl.h>
-#include <FL/Fl_Gl_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/gl.h>
+#include <fltk3/Fl_Gl_Window.H>
 #include "Fl_Gl_Window_Driver.H"
 #include <stdlib.h>
 

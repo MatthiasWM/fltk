@@ -14,14 +14,14 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Slider.H>
-#include <FL/Fl_Fill_Slider.H>
-#include <FL/Fl_Hor_Slider.H>
-#include <FL/Fl_Hor_Fill_Slider.H>
-#include <FL/Fl_Hor_Nice_Slider.H>
-#include <FL/Fl_Nice_Slider.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Slider.H>
+#include <fltk3/Fl_Fill_Slider.H>
+#include <fltk3/Fl_Hor_Slider.H>
+#include <fltk3/Fl_Hor_Fill_Slider.H>
+#include <fltk3/Fl_Hor_Nice_Slider.H>
+#include <fltk3/Fl_Nice_Slider.H>
+#include <fltk3/fl_draw.H>
 #include <math.h>
 #include "flstring.h"
 
@@ -118,7 +118,7 @@ void Fl_Slider::draw(int X, int Y, int W, int H) {
     val = 0.5;
   else
     val = value_to_position(value());
-  
+
   int ww = (horizontal() ? W : H);
   int xx, S;
   if (type()==FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) {
@@ -265,13 +265,13 @@ double Fl_Slider::increment_lin_log(double v, int n, int range) {
 int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
   // Fl_Widget_Tracker wp(this);
   switch (event) {
-  case FL_PUSH: {
+  case fltk3::PUSH: {
     Fl_Widget_Tracker wp(this);
     if (!Fl::event_inside(X, Y, W, H)) return 0;
     handle_push();
     if (wp.deleted()) return 1; }
     // fall through ...
-  case FL_DRAG: {
+  case fltk3::DRAG: {
 
     double val;
     if (minimum() == maximum())
@@ -287,7 +287,7 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
     if (type() == FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) {
 
       S = 0;
-      if (event == FL_PUSH) {
+      if (event == fltk3::PUSH) {
         int xx = int(val*ww+.5);
         offcenter = mx-xx;
         if (offcenter < -10 || offcenter > 10) offcenter = 0;
@@ -300,7 +300,7 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
       int T = (horizontal() ? H : W)/2+1;
       if (type()==FL_VERT_NICE_SLIDER || type()==FL_HOR_NICE_SLIDER) T += 4;
       if (S < T) S = T;
-      if (event == FL_PUSH) {
+      if (event == fltk3::PUSH) {
         int xx = int(val*(ww-S)+.5);
         offcenter = mx-xx;
         if (offcenter < 0) offcenter = 0;
@@ -326,18 +326,18 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
       double pos = (ww-S) > 0 ? double(xx) / double(ww-S) : 0.0;
       v = round(position_to_value(pos));
       // make sure a click outside the sliderbar moves it:
-      if (event == FL_PUSH && v == value()) {
+      if (event == fltk3::PUSH && v == value()) {
         offcenter = S/2;
-        event = FL_DRAG;
+        event = fltk3::DRAG;
         tryAgain = 1;
       }
     }
     handle_drag(clamp(v));
     } return 1;
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     handle_release();
     return 1;
-  case FL_KEYBOARD:
+  case fltk3::KEYBOARD:
     { Fl_Widget_Tracker wp(this);
       switch (Fl::event_key()) {
         case FL_Up:
@@ -377,14 +377,14 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
       }
     }
     // break not required because of switch...
-  case FL_FOCUS :
-  case FL_UNFOCUS :
+  case fltk3::FOCUS :
+  case fltk3::UNFOCUS :
     if (Fl::visible_focus()) {
       redraw();
       return 1;
     } else return 0;
-  case FL_ENTER :
-  case FL_LEAVE :
+  case fltk3::ENTER :
+  case fltk3::LEAVE :
     return 1;
   default:
     return 0;
@@ -393,7 +393,7 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
 
 
 int Fl_Slider::handle(int event) {
-  if (event == FL_PUSH && Fl::visible_focus()) {
+  if (event == fltk3::PUSH && Fl::visible_focus()) {
     Fl::focus(this);
     redraw();
   }

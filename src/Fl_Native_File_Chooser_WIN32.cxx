@@ -21,7 +21,7 @@
 //
 
 #ifndef FL_DOXYGEN              // PREVENT DOXYGEN'S USE OF THIS FILE
-#include <FL/Enumerations.H>
+#include <fltk3/Enumerations.H>
 
 #include <stdlib.h>             // malloc
 #include <stdio.h>              // snprintf
@@ -29,14 +29,14 @@
 
 #define FNFC_MAX_PATH 32768     // XXX: MAX_PATH under win32 is 260, too small for modern use
 
-#include <FL/fl_string_functions.h>       // fl_strdup()
+#include <fltk3/fl_string_functions.h>       // fl_strdup()
 #include "flstring.h"           // fl_strlcpy()/cat()
-#include <FL/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
 #  include <windows.h>
 #  include <commdlg.h>          // OPENFILENAMEW, GetOpenFileName()
 #  include <shlobj.h>           // BROWSEINFOW, SHBrowseForFolder()
-#  include <FL/filename.H>      // FL_EXPORT
-#include <FL/platform.H>        // fl_open_display
+#  include <fltk3/filename.H>      // FL_EXPORT
+#include <fltk3/platform.H>        // fl_open_display
 
 
 class Fl_WinAPI_Native_File_Chooser_Driver : public Fl_Native_File_Chooser_Driver {

@@ -22,23 +22,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Window.H>
 #include "Fl_System_Driver.H"
 #include "Fl_Screen_Driver.H"
-#include <FL/Fl_Input.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_ask.H>
+#include <fltk3/Fl_Input.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_ask.H>
 #include "flstring.h"           // this #includes "<config.h>" !
 
-#include <FL/Fl_Float_Input.H>
-#include <FL/Fl_Int_Input.H>
-#include <FL/Fl_Multiline_Input.H>
-#include <FL/Fl_Output.H>
-#include <FL/Fl_Multiline_Output.H>
-#include <FL/Fl_Secret_Input.H>
-#include <FL/Fl_Menu_Item.H>
+#include <fltk3/Fl_Float_Input.H>
+#include <fltk3/Fl_Int_Input.H>
+#include <fltk3/Fl_Multiline_Input.H>
+#include <fltk3/Fl_Output.H>
+#include <fltk3/Fl_Multiline_Output.H>
+#include <fltk3/Fl_Secret_Input.H>
+#include <fltk3/Fl_Menu_Item.H>
 
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
@@ -574,15 +574,15 @@ int Fl_Input::handle_rmb() {
 
 int Fl_Input::handle(int event) {
   static int dnd_save_position, dnd_save_mark, drag_start = -1, newpos;
-  static Fl_Widget *dnd_save_focus = NULL;
+  static fltk3::Widget *dnd_save_focus = NULL;
   switch (event) {
-    case FL_UNFOCUS:
+    case fltk3::UNFOCUS:
       if (Fl::screen_driver()->has_marked_text() && Fl::compose_state) {
         this->mark( this->insert_position() );
         fl_reset_spot();
       }
       break;
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       switch (Fl::event_key()) {
         case FL_Right:
           insert_position(0);
@@ -605,7 +605,7 @@ int Fl_Input::handle(int event) {
       }
       break;
 
-    case FL_KEYBOARD:
+    case fltk3::KEYBOARD:
       // Handle special case for multiline input with 'old tab behavior'
       // where tab is entered as a character: make sure user attempt to 'tab over'
       // widget doesn't destroy the field, replacing it with a tab character.
@@ -629,7 +629,7 @@ int Fl_Input::handle(int event) {
       }
       //NOTREACHED
 
-    case FL_PUSH:
+    case fltk3::PUSH:
       if (Fl::dnd_text_ops() && (Fl::event_button() != FL_RIGHT_MOUSE)) {
         int oldpos = insert_position(), oldmark = mark();
         Fl_Boxtype b = box();
@@ -649,7 +649,7 @@ int Fl_Input::handle(int event) {
 
       if (Fl::focus() != this) {
         Fl::focus(this);
-        handle(FL_FOCUS);
+        handle(fltk3::FOCUS);
       }
 
       if (Fl::event_button() == FL_RIGHT_MOUSE) {
@@ -658,7 +658,7 @@ int Fl_Input::handle(int event) {
 
       break;
 
-    case FL_DRAG:
+    case fltk3::DRAG:
       if (Fl::dnd_text_ops()) {
         if (drag_start >= 0) {
           if (Fl::event_is_click()) return 1; // debounce the mouse
@@ -674,7 +674,7 @@ int Fl_Input::handle(int event) {
       }
       break;
 
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       if (Fl::event_button() == FL_MIDDLE_MOUSE) {
         Fl::event_is_click(0); // stop double click from picking a word
         Fl::paste(*this, 0);
@@ -698,17 +698,17 @@ int Fl_Input::handle(int event) {
 
       return 1;
 
-    case FL_DND_ENTER:
+    case fltk3::DND_ENTER:
       Fl::belowmouse(this); // send the leave events first
       if (dnd_save_focus != this) {
         dnd_save_position = insert_position();
         dnd_save_mark = mark();
         dnd_save_focus = Fl::focus();
         Fl::focus(this);
-        handle(FL_FOCUS);
+        handle(fltk3::FOCUS);
       }
       // fall through:
-    case FL_DND_DRAG:
+    case fltk3::DND_DRAG:
       //int p = mouse_position(X, Y, W, H);
 #ifdef DND_OUT_XXXX
       if (Fl::focus()==this && (p>=dnd_save_position && p<=dnd_save_mark ||
@@ -724,20 +724,20 @@ int Fl_Input::handle(int event) {
       }
       return 1;
 
-    case FL_DND_LEAVE:
+    case fltk3::DND_LEAVE:
       insert_position(dnd_save_position, dnd_save_mark);
 #ifdef DND_OUT_XXXX
       if (!focused())
 #endif
         if (dnd_save_focus && dnd_save_focus != this) {
           Fl::focus(dnd_save_focus);
-          handle(FL_UNFOCUS);
+          handle(fltk3::UNFOCUS);
         }
       Fl::first_window()->cursor(FL_CURSOR_MOVE);
       dnd_save_focus = NULL;
       return 1;
 
-    case FL_DND_RELEASE:
+    case fltk3::DND_RELEASE:
       if (dnd_save_focus == this) { // if the dragged text comes from the same widget
         if (!readonly()) {
           // remove the selected text
@@ -755,7 +755,7 @@ int Fl_Input::handle(int event) {
         } // !readonly()
       } // from the same widget
       else if (dnd_save_focus) {
-        dnd_save_focus->handle(FL_UNFOCUS);
+        dnd_save_focus->handle(fltk3::UNFOCUS);
       }
       dnd_save_focus = NULL;
       take_focus();
@@ -764,7 +764,7 @@ int Fl_Input::handle(int event) {
       /* TODO: this will scroll the area, but stop if the cursor would become invisible.
        That clipping happens in drawtext(). Do we change the clipping or should
        we move the cursor (ouch)?
-       case FL_MOUSEWHEEL:
+       case fltk3::MOUSEWHEEL:
        if (Fl::e_dy > 0) {
        yscroll( yscroll() - Fl::e_dy*15 );
        } else if (Fl::e_dy < 0) {
@@ -831,7 +831,7 @@ Fl_Secret_Input::Fl_Secret_Input(int X,int Y,int W,int H,const char *l)
 
 int Fl_Secret_Input::handle(int event) {
   int retval = Fl_Input::handle(event);
-  if (event == FL_KEYBOARD && Fl::screen_driver()->has_marked_text() && Fl::compose_state) {
+  if (event == fltk3::KEYBOARD && Fl::screen_driver()->has_marked_text() && Fl::compose_state) {
     this->mark( this->insert_position() ); // don't underline marked text
   }
   return retval;

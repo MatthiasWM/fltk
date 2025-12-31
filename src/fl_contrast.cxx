@@ -21,7 +21,7 @@
   Implementation of fl_contrast() and its variants.
 */
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include <math.h>
 
 #ifndef DEBUG_CONTRAST_LEGACY

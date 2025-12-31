@@ -14,9 +14,9 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Choice.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Choice.H>
+#include <fltk3/fl_draw.H>
 #include "flstring.h"
 
 // Emulates the Forms choice widget.  This is almost exactly the same
@@ -183,19 +183,19 @@ int Fl_Choice::handle(int e) {
   const Fl_Menu_Item* v;
   Fl_Widget_Tracker wp(this);
   switch (e) {
-  case FL_ENTER:
-  case FL_LEAVE:
+  case fltk3::ENTER:
+  case fltk3::LEAVE:
     return 1;
 
-  case FL_KEYBOARD:
+  case fltk3::KEYBOARD:
     if (Fl::event_key() != ' ' ||
         (Fl::event_state() & (FL_SHIFT | FL_CTRL | FL_ALT | FL_META))) return 0;
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (Fl::visible_focus()) Fl::focus(this);
   J1:
     if (Fl::scheme()
         || fl_contrast(textcolor(), FL_BACKGROUND2_COLOR) != textcolor()) {
-      handle(FL_BEFORE_MENU);
+      handle(fltk3::BEFORE_MENU);
       v = menu()->pulldown(x(), y(), w(), h(), mvalue(), this);
       if (wp.deleted()) return 1;
     } else {
@@ -203,7 +203,7 @@ int Fl_Choice::handle(int e) {
       // temporarily override the color() of this widget...
       Fl_Color c = color();
       color(FL_BACKGROUND2_COLOR);
-      handle(FL_BEFORE_MENU);
+      handle(fltk3::BEFORE_MENU);
       v = menu()->pulldown(x(), y(), w(), h(), mvalue(), this);
       if (wp.deleted()) return 1;
       color(c);
@@ -212,15 +212,15 @@ int Fl_Choice::handle(int e) {
     if (v != mvalue()) redraw();
     picked(v);
     return 1;
-  case FL_SHORTCUT:
-    if (Fl_Widget::test_shortcut()) goto J1;
+  case fltk3::SHORTCUT:
+    if (fltk3::Widget::test_shortcut()) goto J1;
     v = menu()->test_shortcut();
     if (!v) return 0;
     if (v != mvalue()) redraw();
     picked(v);
     return 1;
-  case FL_FOCUS:
-  case FL_UNFOCUS:
+  case fltk3::FOCUS:
+  case fltk3::UNFOCUS:
     if (Fl::visible_focus()) {
       redraw();
       return 1;

@@ -14,10 +14,10 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Single_Window.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_show_colormap.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Single_Window.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_show_colormap.H>
 #include <config.h>
 
 #define BOXSIZE 14
@@ -73,8 +73,8 @@ void ColorMenu::draw() {
 int ColorMenu::handle(int e) {
   Fl_Color c = which;
   switch (e) {
-  case FL_PUSH:
-  case FL_DRAG: {
+  case fltk3::PUSH:
+  case fltk3::DRAG: {
     int X = (Fl::event_x_root() - x() - BORDER);
     if (X >= 0) X = X/BOXSIZE;
     int Y = (Fl::event_y_root() - y() - BORDER);
@@ -84,10 +84,10 @@ int ColorMenu::handle(int e) {
     else
       c = initial;
     } break;
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     done = 1;
     return 1;
-  case FL_KEYBOARD:
+  case fltk3::KEYBOARD:
     switch (Fl::event_key()) {
     case FL_Up: if (c > 7) c -= 8; break;
     case FL_Down: if (c < 256-8) c += 8; break;

@@ -19,14 +19,14 @@
 #define FL_BASE_PEN_EVENTS_H
 
 #include <config.h>
-#include <FL/core/pen_events.H>
-#include <FL/Fl.H>
+#include <fltk3/core/pen_events.H>
+#include <fltk3/Fl.H>
 
 #include <map>
 #include <memory>
 
 
-class Fl_Widget;
+namespace fltk3 { class Widget; }
 
 namespace Fl {
 
@@ -68,19 +68,19 @@ extern EventData e;
  */
 class Subscriber : public Fl_Widget_Tracker {
 public:
-  Subscriber(Fl_Widget *w) : Fl_Widget_Tracker(w) { }
+  Subscriber(fltk3::Widget *w) : Fl_Widget_Tracker(w) { }
 };
 
 
 /*
  Manage a list of subscribers.
  */
-class SubscriberList : public std::map<Fl_Widget*, std::shared_ptr<Subscriber>> {
+class SubscriberList : public std::map<fltk3::Widget*, std::shared_ptr<Subscriber>> {
 public:
   SubscriberList() = default;
   void cleanup();
-  std::shared_ptr<Subscriber> add(Fl_Widget *w);
-  void remove(Fl_Widget *w);
+  std::shared_ptr<Subscriber> add(fltk3::Widget *w);
+  void remove(fltk3::Widget *w);
 };
 
 extern SubscriberList subscriber_list_;
@@ -99,8 +99,8 @@ extern std::shared_ptr<Subscriber> below_pen_;
 class Driver {
 public:
   Driver() = default;
-  virtual void subscribe(Fl_Widget* widget);
-  virtual void unsubscribe(Fl_Widget* widget);
+  virtual void subscribe(fltk3::Widget* widget);
+  virtual void unsubscribe(fltk3::Widget* widget);
   virtual void release();
   virtual Trait traits();
   virtual Trait pen_traits(int pen_id);

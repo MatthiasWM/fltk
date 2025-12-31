@@ -70,12 +70,12 @@ unset(abi_version_temp)
 unset(reg_match)
 
 #######################################################################
-# configure the header file "FL/fl_config.h" in the build tree
+# configure the header file "fltk3/fl_config.h" in the build tree
 #######################################################################
 
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/fl_config.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/FL/fl_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/fltk3/fl_config.h
   @ONLY
 )
 

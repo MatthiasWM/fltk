@@ -17,7 +17,7 @@
 #include "src/drivers/Base/Fl_Base_Pen_Events.H"
 
 
-class Fl_Widget;
+namespace fltk3 { class Widget; }
 
 
 namespace Fl {
@@ -51,7 +51,7 @@ void Fl::Pen::SubscriberList::cleanup() {
 }
 
 /* Add a new subscriber, or return an existing one. */
-std::shared_ptr<Subscriber> Fl::Pen::SubscriberList::add(Fl_Widget *w) {
+std::shared_ptr<Subscriber> Fl::Pen::SubscriberList::add(fltk3::Widget *w) {
   cleanup();
   auto it = find(w);
   if (it == end()) {
@@ -64,7 +64,7 @@ std::shared_ptr<Subscriber> Fl::Pen::SubscriberList::add(Fl_Widget *w) {
 }
 
 /* Remove a subscriber from the list. */
-void Fl::Pen::SubscriberList::remove(Fl_Widget *w) {
+void Fl::Pen::SubscriberList::remove(fltk3::Widget *w) {
   auto it = find(w);
   if (it != end()) {
     it->second->clear();
@@ -75,12 +75,12 @@ void Fl::Pen::SubscriberList::remove(Fl_Widget *w) {
 // ---- Driver implementation --------------------------------------------------
 // Override the methods below to handle subscriptions and queries by user apps.
 
-void Fl::Pen::Driver::subscribe(Fl_Widget* widget) {
+void Fl::Pen::Driver::subscribe(fltk3::Widget* widget) {
   if (widget == nullptr) return;
   subscriber_list_.add(widget);
 }
 
-void Fl::Pen::Driver::unsubscribe(Fl_Widget* widget) {
+void Fl::Pen::Driver::unsubscribe(fltk3::Widget* widget) {
   if (widget == nullptr) return;
   subscriber_list_.remove(widget);
 }
@@ -101,11 +101,11 @@ Trait Fl::Pen::Driver::pen_traits(int pen_id) {
 
 // ---- Fl::Pen API ------------------------------------------------------------
 
-void Fl::Pen::subscribe(Fl_Widget* widget) {
+void Fl::Pen::subscribe(fltk3::Widget* widget) {
   driver.subscribe(widget);
 }
 
-void Fl::Pen::unsubscribe(Fl_Widget* widget) {
+void Fl::Pen::unsubscribe(fltk3::Widget* widget) {
   driver.unsubscribe(widget);
 }
 

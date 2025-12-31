@@ -17,9 +17,9 @@
 #ifndef FL_GDI_IMAGE_SURFACE_DRIVER_H
 #define FL_GDI_IMAGE_SURFACE_DRIVER_H
 
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/platform.H>
 
 class Fl_GDI_Image_Surface_Driver : public Fl_Image_Surface_Driver {
   void end_current() FL_OVERRIDE;

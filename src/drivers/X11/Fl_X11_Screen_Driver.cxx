@@ -20,13 +20,13 @@
 #include "Fl_X11_Window_Driver.H"
 #include "../../Fl_Scalable_Graphics_Driver.H"
 #include "../Posix/Fl_Posix_System_Driver.H"
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/fl_ask.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_Tooltip.H>
-#include <FL/filename.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/Fl_Box.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_Tooltip.H>
+#include <fltk3/filename.H>
 #include <sys/time.h>
 
 #include "../../Fl_Timeout.h"

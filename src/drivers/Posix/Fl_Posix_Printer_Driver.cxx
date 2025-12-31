@@ -18,10 +18,10 @@
 
 #if !defined(FL_NO_PRINT_SUPPORT)
 
-#include <FL/Fl_PostScript.H>
+#include <fltk3/Fl_PostScript.H>
 #include "../PostScript/Fl_PostScript_Graphics_Driver.H"
-#include <FL/Fl_Printer.H>
-#include <FL/fl_ask.H>
+#include <fltk3/Fl_Printer.H>
+#include <fltk3/fl_ask.H>
 
 #include <src/print_panel.cxx>
 
@@ -34,7 +34,7 @@ class Fl_Posix_Printer_Driver : public Fl_PostScript_File_Device {
 // GTK types
 #include <dlfcn.h>   // for dlopen et al
 #include <unistd.h>  // for mkstemp
-#include <FL/filename.H>
+#include <fltk3/filename.H>
 #include "Fl_Posix_System_Driver.H"
 #define GTK_PAPER_NAME_LETTER "na_letter"
 #define GTK_PAPER_NAME_LEGAL "na_legal"

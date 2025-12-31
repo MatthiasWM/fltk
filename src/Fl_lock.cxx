@@ -15,7 +15,7 @@
 //
 
 #include <config.h>
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
 
 #include <stdlib.h>

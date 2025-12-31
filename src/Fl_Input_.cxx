@@ -14,14 +14,14 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Input_.H>
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Input_.H>
+#include <fltk3/Fl_Window.H>
 #include "Fl_Screen_Driver.H"
-#include <FL/fl_draw.H>
-#include <FL/fl_ask.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_ask.H>
 #include <math.h>
-#include <FL/fl_utf8.h>
+#include <fltk3/fl_utf8.h>
 #include "flstring.h"
 #include <stdlib.h>
 #include <ctype.h>
@@ -1169,16 +1169,16 @@ void Fl_Input_::maybe_do_callback(Fl_Callback_Reason reason) {
 int Fl_Input_::handletext(int event, int X, int Y, int W, int H) {
   switch (event) {
 
-  case FL_ENTER:
-  case FL_MOVE:
+  case fltk3::ENTER:
+  case fltk3::MOVE:
     if (active_r() && window()) window()->cursor(FL_CURSOR_INSERT);
     return 1;
 
-  case FL_LEAVE:
+  case fltk3::LEAVE:
     if (active_r() && window()) window()->cursor(FL_CURSOR_DEFAULT);
     return 1;
 
-  case FL_FOCUS:
+  case fltk3::FOCUS:
     fl_set_spot(textfont(), textsize(), x(), y(), w(), h(), window());
     if (mark_ == position_) {
       minimal_update(size()+1);
@@ -1186,39 +1186,39 @@ int Fl_Input_::handletext(int event, int X, int Y, int W, int H) {
       minimal_update(mark_, position_);
     return 1;
 
-  case FL_UNFOCUS:
+  case fltk3::UNFOCUS:
     if (active_r() && window()) window()->cursor(FL_CURSOR_DEFAULT);
     if (mark_ == position_) {
       if (!(damage()&FL_DAMAGE_EXPOSE)) {minimal_update(position_); erase_cursor_only = 1;}
     } else //if (Fl::selection_owner() != this)
       minimal_update(mark_, position_);
       // FALLTHROUGH
-  case FL_HIDE:
+  case fltk3::HIDE:
     fl_reset_spot();
     if (!readonly() && (when() & FL_WHEN_RELEASE))
       maybe_do_callback(FL_REASON_LOST_FOCUS);
     return 1;
 
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (active_r() && window()) window()->cursor(FL_CURSOR_INSERT);
 
     handle_mouse(X, Y, W, H, Fl::event_state(FL_SHIFT));
 
     if (Fl::focus() != this) {
       Fl::focus(this);
-      handle(FL_FOCUS);
+      handle(fltk3::FOCUS);
     }
     return 1;
 
-  case FL_DRAG:
+  case fltk3::DRAG:
     handle_mouse(X, Y, W, H, 1);
     return 1;
 
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     copy(0);
     return 1;
 
-  case FL_PASTE: {
+  case fltk3::PASTE: {
     // Don't allow pastes into readonly widgets...
     if (readonly()) {
       fl_beep(FL_BEEP_ERROR);
@@ -1268,10 +1268,10 @@ int Fl_Input_::handletext(int event, int X, int Y, int W, int H) {
     }
     return replace(insert_position(), mark(), t, (int) (e-t));}
 
-  case FL_SHORTCUT:
+  case fltk3::SHORTCUT:
     if (!(shortcut() ? Fl::test_shortcut(shortcut()) : test_shortcut()))
       return 0;
-    if (Fl::visible_focus() && handle(FL_FOCUS)) {
+    if (Fl::visible_focus() && handle(fltk3::FOCUS)) {
       Fl::focus(this);
       return 1;
     } // else fall through
@@ -1294,7 +1294,7 @@ int Fl_Input_::handletext(int event, int X, int Y, int W, int H) {
   \param l an optional label text
 */
 Fl_Input_::Fl_Input_(int X, int Y, int W, int H, const char* l)
-: Fl_Widget(X, Y, W, H, l) {
+: fltk3::Widget(X, Y, W, H, l) {
   box(FL_DOWN_BOX);
   color(FL_BACKGROUND2_COLOR, FL_SELECTION_COLOR);
   align(FL_ALIGN_LEFT);
@@ -1514,12 +1514,12 @@ double Fl_Input_::dvalue() const {
   Changes the size of the widget.
   This call updates the text layout so that the cursor is visible.
   \param [in] X, Y, W, H new size of the widget
-  \see Fl_Widget::resize(int, int, int, int)
+  \see fltk3::Widget::resize(int, int, int, int)
 */
 void Fl_Input_::resize(int X, int Y, int W, int H) {
   if (W != w()) xscroll_ = 0;
   if (H != h()) yscroll_ = 0;
-  Fl_Widget::resize(X, Y, W, H);
+  fltk3::Widget::resize(X, Y, W, H);
 }
 
 /**

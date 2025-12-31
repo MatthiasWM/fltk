@@ -17,9 +17,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "flstring.h"
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h> // fl_strdup()
-#include <FL/Fl_Check_Browser.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h> // fl_strdup()
+#include <fltk3/Fl_Check_Browser.H>
 
 /* This uses a cache for faster access when you're scanning the list
 either forwards or backwards. */
@@ -374,7 +374,7 @@ void Fl_Check_Browser::check_none() {
 }
 
 int Fl_Check_Browser::handle(int event) {
-  if (event == FL_PUSH) {
+  if (event == fltk3::PUSH) {
     int X, Y, W, H;
     bbox(X, Y, W, H);
     if (Fl::event_inside(X, Y, W, H)) {

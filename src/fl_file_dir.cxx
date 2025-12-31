@@ -15,9 +15,9 @@
 //
 
 #include "flstring.h"
-#include <FL/filename.H>
-#include <FL/Fl_File_Chooser.H>
-#include <FL/fl_ask.H>
+#include <fltk3/filename.H>
+#include <fltk3/Fl_File_Chooser.H>
+#include <fltk3/fl_ask.H>
 
 
 static Fl_File_Chooser  *fc = (Fl_File_Chooser *)0;
@@ -52,7 +52,7 @@ static void popup(Fl_File_Chooser *filechooser) {
 
 /**
     Set the file chooser callback
-    \note \#include <FL/Fl_File_Chooser.H>
+    \note \#include <fltk3/Fl_File_Chooser.H>
     \relates Fl_File_Chooser
 */
 void fl_file_chooser_callback(void (*cb)(const char*)) {
@@ -62,7 +62,7 @@ void fl_file_chooser_callback(void (*cb)(const char*)) {
 
 /**
     Set the "OK" button label
-    \note \#include <FL/Fl_File_Chooser.H>
+    \note \#include <fltk3/Fl_File_Chooser.H>
     \relates Fl_File_Chooser
 */
 void fl_file_chooser_ok_label(const char *l) {
@@ -73,7 +73,7 @@ void fl_file_chooser_ok_label(const char *l) {
 /**
     Shows a file chooser dialog and gets a filename.
 
-    \note \#include <FL/Fl_File_Chooser.H>
+    \note \#include <fltk3/Fl_File_Chooser.H>
 
     \image html Fl_File_Chooser.jpg
     \image latex  Fl_File_Chooser.jpg "Fl_File_Chooser" width=12cm
@@ -173,7 +173,7 @@ fl_file_chooser(const char *message,    // I - Message in titlebar
 }
 
 /** Shows a file chooser dialog and gets a directory.
-    \note \#include <FL/Fl_File_Chooser.H>
+    \note \#include <fltk3/Fl_File_Chooser.H>
     \param[in] message title bar text
     \param[in] fname initial/default directory name
     \param[in] relative 0 for absolute path return, relative otherwise

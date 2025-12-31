@@ -16,11 +16,11 @@
 
 #if !defined(FL_DOXYGEN)
 
-#  include <FL/Fl.H>
-#  include <FL/platform.H>
-#  include <FL/Fl_Window.H>
-#  include <FL/Fl_Shared_Image.H>
-#  include <FL/Fl_Image_Surface.H>
+#  include <fltk3/Fl.H>
+#  include <fltk3/platform.H>
+#  include <fltk3/Fl_Window.H>
+#  include <fltk3/Fl_Shared_Image.H>
+#  include <fltk3/Fl_Image_Surface.H>
 #  include "Fl_Wayland_Screen_Driver.H"
 #  include "Fl_Wayland_Window_Driver.H"
 #  include "../Unix/Fl_Unix_System_Driver.H"
@@ -125,7 +125,7 @@ static void data_source_handle_cancelled(void *data, struct wl_data_source *sour
       save_cursor = NULL;
     }
     if (fl_dnd_target_window) {
-      Fl::handle(FL_RELEASE, fl_dnd_target_window);
+      Fl::handle(fltk3::RELEASE, fl_dnd_target_window);
       fl_dnd_target_window = 0;
     }
     Fl::pushed(0);
@@ -253,7 +253,7 @@ int Fl_Wayland_Screen_Driver::dnd(int use_selection) {
   int s = 1;
   if (use_selection) {
     // use the text as dragging icon
-    Fl_Widget *current = Fl::pushed() ? Fl::pushed() : Fl::first_window();
+    fltk3::Widget *current = Fl::pushed() ? Fl::pushed() : Fl::first_window();
     s = Fl_Wayland_Window_Driver::driver(current->top_window())->wld_scale();
     off = (struct Fl_Wayland_Graphics_Driver::wld_buffer *)offscreen_from_text(fl_selection_buffer[0], s);
     dnd_icon = wl_compositor_create_surface(scr_driver->wl_compositor);
@@ -457,7 +457,7 @@ static void data_device_handle_enter(void *data, struct wl_data_device *data_dev
     fl_dnd_target_window = win;
     Fl::e_x_root = Fl::e_x + fl_dnd_target_window->x();
     Fl::e_y_root = Fl::e_y + fl_dnd_target_window->y();
-    Fl::handle(FL_DND_ENTER, fl_dnd_target_window);
+    Fl::handle(fltk3::DND_ENTER, fl_dnd_target_window);
     current_drag_offer = offer;
     fl_dnd_serial = serial;
   } else fl_dnd_target_window = NULL; // we enter a non-FLTK window (titlebar, shade)
@@ -484,7 +484,7 @@ static void data_device_handle_motion(void *data, struct wl_data_device *data_de
     }
     Fl::e_x_root = Fl::e_x + fl_dnd_target_window->x();
     Fl::e_y_root = Fl::e_y + fl_dnd_target_window->y();
-    ret = Fl::handle(FL_DND_DRAG, fl_dnd_target_window);
+    ret = Fl::handle(fltk3::DND_DRAG, fl_dnd_target_window);
     if (Fl::belowmouse()) Fl::belowmouse()->take_focus();
   }
   uint32_t supported_actions =  ret && (Fl::pushed() || !doing_dnd) ?
@@ -498,14 +498,14 @@ static void data_device_handle_motion(void *data, struct wl_data_device *data_de
 
 static void data_device_handle_leave(void *data, struct wl_data_device *data_device) {
   //printf("Drag left our surface\n");
-  if (current_drag_offer)  Fl::handle(FL_DND_LEAVE, fl_dnd_target_window);
+  if (current_drag_offer)  Fl::handle(fltk3::DND_LEAVE, fl_dnd_target_window);
 }
 
 
 static void data_device_handle_drop(void *data, struct wl_data_device *data_device) {
   if (!current_drag_offer) return;
-  Fl::handle(FL_ENTER, fl_dnd_target_window); // useful to set the belowmouse widget
-  int ret = Fl::handle(FL_DND_RELEASE, fl_dnd_target_window);
+  Fl::handle(fltk3::ENTER, fl_dnd_target_window); // useful to set the belowmouse widget
+  int ret = Fl::handle(fltk3::DND_RELEASE, fl_dnd_target_window);
 //printf("data_device_handle_drop ret=%d doing_dnd=%d\n", ret, doing_dnd);
 
   if (!ret) {
@@ -523,7 +523,7 @@ static void data_device_handle_drop(void *data, struct wl_data_device *data_devi
     Fl::e_length = fl_selection_length[1];
   }
   int old_event = Fl::e_number;
-  Fl::belowmouse()->handle(Fl::e_number = FL_PASTE);
+  Fl::belowmouse()->handle(Fl::e_number = fltk3::PASTE);
   Fl::e_number = old_event;
 
   wl_data_offer_finish(current_drag_offer);
@@ -614,7 +614,7 @@ static int get_clipboard_image() {
 }
 
 
-void Fl_Wayland_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const char *type) {
+void Fl_Wayland_Screen_Driver::paste(fltk3::Widget &receiver, int clipboard, const char *type) {
   if (clipboard != 1) return;
   if (fl_i_own_selection[1]) {
     // We already have it, do it quickly without compositor.
@@ -626,7 +626,7 @@ void Fl_Wayland_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const c
       Fl::e_clipboard_data = Fl_Unix_System_Driver::own_bmp_to_RGB(fl_selection_buffer[1]);
       Fl::e_clipboard_type = Fl::clipboard_image;
     } else return;
-    receiver.handle(FL_PASTE);
+    receiver.handle(fltk3::PASTE);
     return;
   }
   // otherwise get the compositor to return it:
@@ -635,7 +635,7 @@ void Fl_Wayland_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const c
     get_clipboard_or_dragged_text(fl_selection_offer);
     Fl::e_text = fl_selection_buffer[1];
     Fl::e_length = fl_selection_length[1];
-    receiver.handle(FL_PASTE);
+    receiver.handle(fltk3::PASTE);
   } else if (type == Fl::clipboard_image && clipboard_contains(Fl::clipboard_image)) {
     if (get_clipboard_image()) return;
     struct wld_window * xid = fl_wl_xid(receiver.top_window());
@@ -646,7 +646,7 @@ void Fl_Wayland_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const c
         rgb->scale(rgb->data_w() / s, rgb->data_h() / s);
       }
     }
-    int done = receiver.handle(FL_PASTE);
+    int done = receiver.handle(fltk3::PASTE);
     Fl::e_clipboard_type = "";
     if (done == 0) {
       delete (Fl_RGB_Image*)Fl::e_clipboard_data;

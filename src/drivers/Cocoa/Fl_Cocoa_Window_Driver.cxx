@@ -19,12 +19,12 @@
 #include "Fl_Cocoa_Window_Driver.H"
 #include "../../Fl_Screen_Driver.H"
 #include "../Quartz/Fl_Quartz_Graphics_Driver.H"
-#include <FL/Fl_Double_Window.H>
-#include <FL/Fl_Overlay_Window.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Double_Window.H>
+#include <fltk3/Fl_Overlay_Window.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include <math.h>
 
 

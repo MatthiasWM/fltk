@@ -50,7 +50,7 @@
   `Fl_Tile::init_size_range(int default_minimum_width, int default_minimum_height)`
   or by assigning minimal sizes to individual
   children with
-  `size_range(Fl_Widget *child, int minimum_width, int minimum_height, int, int)`,
+  `size_range(fltk3::Widget *child, int minimum_width, int minimum_height, int, int)`,
   the tile group is put into size_range operation mode.
 
   In this mode, the child that is marked resizable() will behave as it would
@@ -105,7 +105,7 @@
   If desired, call position() after creating the children but before
   displaying the window to set the borders where you want.
 
-  <b>Note on resizable(Fl_Widget &w):</b>
+  <b>Note on resizable(fltk3::Widget &w):</b>
   The "resizable" child widget (which should be invisible) limits where
   the borders can be dragged to. All dragging will be limited inside the
   resizable widget's borders. If you don't set it, it will be possible
@@ -116,7 +116,7 @@
   that you can effectively set a border width that will never change.
   To ensure correct event delivery to all child widgets the resizable()
   widget must be the first child of the Fl_Tile widget group. Otherwise
-  some events (e.g. FL_MOVE and FL_ENTER) might be consumed by the resizable()
+  some events (e.g. fltk3::MOVE and fltk3::ENTER) might be consumed by the resizable()
   widget so that they are lost for widgets covered (overlapped) by the
   resizable() widget.
 
@@ -124,7 +124,7 @@
   You can still resize widgets \b inside the resizable() to zero width and/or
   height, i.e. box \b 2b above to zero width and box \b 3a to zero height.
 
-  \see void Fl_Group::resizable(Fl_Widget &w)
+  \see void Fl_Group::resizable(fltk3::Widget &w)
 
   Example for resizable with 20 pixel border distance:
   \code
@@ -140,9 +140,9 @@
   See also the complete example program in test/tile.cxx.
 */
 
-#include <FL/Fl_Tile.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Rect.H>
+#include <fltk3/Fl_Tile.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Rect.H>
 #include <stdlib.h>
 
 static Fl_Cursor Fl_Tile_cursors[4] = {
@@ -455,11 +455,11 @@ void Fl_Tile::move_intersection(int oldx, int oldy, int newx, int newy) {
     drag_intersection(oldx, oldy, newx, newy);
     init_sizes();
   } else {
-    Fl_Widget*const* a = array();
+    fltk3::Widget*const* a = array();
     Fl_Rect *p = bounds();
     p += 2; // skip group & resizable's saved size
     for (int i=children(); i--; p++) {
-      Fl_Widget* o = *a++;
+      fltk3::Widget* o = *a++;
       if (o == resizable()) continue;
       int X = o->x();
       int R = X+o->w();
@@ -581,7 +581,7 @@ void Fl_Tile::resize(int X,int Y,int W,int H) {
     // -- if the position changes, move all widgets first
     if ((dx!=0) || (dy!=0)) {
       for (int i = 0; i < children(); i++) {
-        Fl_Widget *c = child(i);
+        fltk3::Widget *c = child(i);
         c->position(c->x()+dx, c->y()+dy);
       }
     }
@@ -604,7 +604,7 @@ void Fl_Tile::resize(int X,int Y,int W,int H) {
     dh = bbb - b2;
     // perform the actual resize within a safe range
     if ((dw!=0) || (dh!=0)) {
-      Fl_Widget *r = resizable();
+      fltk3::Widget *r = resizable();
       // Find the target right and bottom position of the resizable child.
       int trr = 0, trb = 0;
       if (r) {
@@ -639,7 +639,7 @@ void Fl_Tile::resize(int X,int Y,int W,int H) {
     if (Fl_Window::is_a_rescale())
       Fl_Group::resize(X, Y, W, H);
     else
-      Fl_Widget::resize(X, Y, W, H);
+      fltk3::Widget::resize(X, Y, W, H);
     return;
   }
 
@@ -650,7 +650,7 @@ void Fl_Tile::resize(int X,int Y,int W,int H) {
   int dh = H-h();
   Fl_Rect *p = bounds();
   // resize this (skip the Fl_Group resize):
-  Fl_Widget::resize(X,Y,W,H);
+  fltk3::Widget::resize(X,Y,W,H);
 
   // find bottom-right corner of resizable:
   int OR = p[1].r();            // old right border
@@ -659,10 +659,10 @@ void Fl_Tile::resize(int X,int Y,int W,int H) {
   int NB = Y+H-(p[0].b()-OB);   // new bottom border
 
   // move everything to be on correct side of new resizable:
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
   p += 2;
   for (int i=children(); i--; p++) {
-    Fl_Widget* o = *a++;
+    fltk3::Widget* o = *a++;
     int xx = o->x()+dx;
     int R = xx+o->w();
     if (p->x() >= OR) xx += dw; else if (xx > NR) xx = NR;
@@ -710,9 +710,9 @@ int Fl_Tile::handle(int event) {
 
   switch (event) {
 
-  case FL_MOVE:
-  case FL_ENTER:
-  case FL_PUSH:
+  case fltk3::MOVE:
+  case fltk3::ENTER:
+  case fltk3::PUSH:
     // don't potentially change the mouse cursor if inactive:
     if (!active()) break; // will cascade inherited handle()
     {
@@ -720,11 +720,11 @@ int Fl_Tile::handle(int event) {
     int mindy = 100;
     int oldx = 0;
     int oldy = 0;
-    Fl_Widget*const* a = array();
+    fltk3::Widget*const* a = array();
     Fl_Rect *q = bounds();
     Fl_Rect *p = q+2;
     for (int i=children(); i--; p++) {
-      Fl_Widget* o = *a++;
+      fltk3::Widget* o = *a++;
       if (!size_range_ && o == resizable()) continue;
       if (p->r() < q->r() && o->y()<=my+GRABAREA && o->y()+o->h()>=my-GRABAREA) {
         int t = mx - (o->x()+o->w());
@@ -751,16 +751,16 @@ int Fl_Tile::handle(int event) {
     return Fl_Group::handle(event);
   }
 
-  case FL_LEAVE:
+  case fltk3::LEAVE:
     set_cursor(0); // set default cursor
     break;
 
-  case FL_DRAG:
+  case fltk3::DRAG:
     // This is necessary if CONSOLIDATE_MOTION in Fl_x.cxx is turned off:
     // if (damage()) return 1; // don't fall behind
-  case FL_RELEASE: {
+  case fltk3::RELEASE: {
     if (!sdrag) break;
-    Fl_Widget* r = resizable();
+    fltk3::Widget* r = resizable();
     if (size_range_ || !r) r = this;
     int newx;
     if (sdrag&DRAGH) {
@@ -779,7 +779,7 @@ int Fl_Tile::handle(int event) {
     } else {
       newy = sy;
     }
-    if (event == FL_DRAG) {
+    if (event == fltk3::DRAG) {
       drag_intersection(sx, sy, newx, newy);
       set_changed();
       do_callback(FL_REASON_DRAGGED);
@@ -788,7 +788,7 @@ int Fl_Tile::handle(int event) {
       do_callback(FL_REASON_CHANGED);
     }
     return 1;
-    } // case FL_RELEASE
+    } // case fltk3::RELEASE
 
   } // switch()
 
@@ -798,7 +798,7 @@ int Fl_Tile::handle(int event) {
 /**
  Insert a new entry in the size range list.
  */
-int Fl_Tile::on_insert(Fl_Widget *candidate, int index) {
+int Fl_Tile::on_insert(fltk3::Widget *candidate, int index) {
   if (size_range_) {
     if (index >= size_range_capacity_) {
       size_range_capacity_ = (index+8) & ~7; // allocate in steps of 8
@@ -874,7 +874,7 @@ void Fl_Tile::size_range(int index, int minw, int minh, int maxw, int maxh) {
  \param[in] minw, minh minimum width and height for that child
  \param[in] maxw, maxh maximum size, defaults to infinite, currently ignored
  */
-void Fl_Tile::size_range(Fl_Widget *w , int minw, int minh, int maxw, int maxh) {
+void Fl_Tile::size_range(fltk3::Widget *w , int minw, int minh, int maxw, int maxh) {
   int index = find(w);
   if ((index >= 0) && (index < children()))
     size_range(index, minw, minh, maxw, maxh);

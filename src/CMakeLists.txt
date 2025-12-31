@@ -36,7 +36,7 @@ set(CPPFILES
   Fl_Browser_.cxx
   Fl_Browser_load.cxx
   Fl_Box.cxx
-  Fl_Button.cxx
+  Button.cxx
   Fl_Chart.cxx
   Fl_Check_Browser.cxx
   Fl_Check_Button.cxx
@@ -117,7 +117,7 @@ set(CPPFILES
   Fl_Value_Input.cxx
   Fl_Value_Output.cxx
   Fl_Value_Slider.cxx
-  Fl_Widget.cxx
+  Widget.cxx
   Fl_Widget_Surface.cxx
   Fl_Window.cxx
   Fl_Window_Driver.cxx
@@ -189,11 +189,11 @@ if(FLTK_HAVE_CAIRO) # FLTK_OPTION_CAIRO_WINDOW or FLTK_OPTION_CAIRO_EXT
   list(APPEND CPPFILES Fl_Cairo.cxx)
 endif()
 
-# find all header files in includes directory <FL/...>
+# find all header files in includes directory <fltk3/...>
 file(GLOB
   HEADER_FILES
-  "../FL/*.[hH]"
-  "../FL/core/*.[hH]"
+  "../fltk3/*.[hH]"
+  "../fltk3/core/*.[hH]"
 )
 
 # find all private header files in source directory "src/..."
@@ -210,7 +210,7 @@ file(GLOB
 
 # add generated header files in build directory
 list(APPEND HEADER_FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/../FL/fl_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/../fltk3/fl_config.h
   ${CMAKE_CURRENT_BINARY_DIR}/../config.h
 )
 
@@ -890,19 +890,19 @@ target_link_libraries(fltk_images PRIVATE ${FLTK_IMAGE_LIBRARIES})
 if(FLTK_USE_BUNDLED_JPEG)
   target_include_directories(fltk_images PUBLIC
     $<BUILD_INTERFACE:${FLTK_SOURCE_DIR}/jpeg>
-    $<INSTALL_INTERFACE:include/FL/images>)
+    $<INSTALL_INTERFACE:include/fltk3/images>)
 endif()
 
 if(FLTK_USE_BUNDLED_PNG)
   target_include_directories(fltk_images PUBLIC
     $<BUILD_INTERFACE:${FLTK_SOURCE_DIR}/png>
-    $<INSTALL_INTERFACE:include/FL/images>)
+    $<INSTALL_INTERFACE:include/fltk3/images>)
 endif()
 
 if(FLTK_USE_BUNDLED_ZLIB)
   target_include_directories(fltk_images PUBLIC
     $<BUILD_INTERFACE:${FLTK_SOURCE_DIR}/zlib>
-    $<INSTALL_INTERFACE:include/FL/images>)
+    $<INSTALL_INTERFACE:include/fltk3/images>)
 endif()
 
 #######################################################################

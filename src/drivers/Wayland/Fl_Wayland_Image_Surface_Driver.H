@@ -17,7 +17,7 @@
 #ifndef FL_WAYLAND_IMAGE_SURFACE_DRIVER_H
 #define FL_WAYLAND_IMAGE_SURFACE_DRIVER_H
 
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 
 class Fl_Wayland_Image_Surface_Driver : public Fl_Image_Surface_Driver {
   void end_current() FL_OVERRIDE;

@@ -14,13 +14,13 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Dial.H>
-#include <FL/Fl_Fill_Dial.H>
-#include <FL/Fl_Line_Dial.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Dial.H>
+#include <fltk3/Fl_Fill_Dial.H>
+#include <fltk3/Fl_Line_Dial.H>
+#include <fltk3/fl_draw.H>
 #include <stdlib.h>
-#include <FL/math.h>
+#include <fltk3/math.h>
 
 
 // All angles are measured with 0 to the right and counter-clockwise
@@ -101,10 +101,10 @@ void Fl_Dial::draw() {
 */
 int Fl_Dial::handle(int event, int X, int Y, int W, int H) {
   switch (event) {
-  case FL_PUSH:
+  case fltk3::PUSH:
     handle_push();
     /* FALLTHROUGH */
-  case FL_DRAG: {
+  case fltk3::DRAG: {
     int mx = (Fl::event_x()-X-W/2)*H;
     int my = (Fl::event_y()-Y-H/2)*W;
     if (!mx && !my) return 1;
@@ -123,11 +123,11 @@ int Fl_Dial::handle(int event, int X, int Y, int W, int H) {
     handle_drag(clamp(round(val)));
     return 1;
   } /* NOTREACHED */
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     handle_release();
     return 1;
-  case FL_ENTER: /* FALLTHROUGH */
-  case FL_LEAVE:
+  case fltk3::ENTER: /* FALLTHROUGH */
+  case fltk3::LEAVE:
     return 1;
   default:
     return 0;

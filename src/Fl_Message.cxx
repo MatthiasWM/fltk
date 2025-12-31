@@ -36,26 +36,26 @@
 
   All common dialogs can be altered by changing the contents of some
   static class variables. This is done by accessor methods like
-  fl_message_title() and others defined in FL/fl_ask.H. This is for
+  fl_message_title() and others defined in fltk3/fl_ask.H. This is for
   backwards compatibility with FLTK 1.3.x and earlier.
 
   \note The documentation is only visible if the CMake option
     \c 'FLTK_INCLUDE_DRIVER_DOCS' is enabled.
 */
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "flstring.h"
-#include <FL/fl_ask.H>
+#include <fltk3/fl_ask.H>
 #include "Fl_Message.h"               // intentionally "hidden" in src/...
-#include "FL/fl_string_functions.h"   // fl_strdup()
+#include "fltk3/fl_string_functions.h"   // fl_strdup()
 
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Return_Button.H>
-#include <FL/Fl_Input.H>
-#include <FL/Fl_Secret_Input.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Box.H>
+#include <fltk3/Button.H>
+#include <fltk3/Fl_Return_Button.H>
+#include <fltk3/Fl_Input.H>
+#include <fltk3/Fl_Secret_Input.H>
+#include <fltk3/fl_draw.H>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -89,7 +89,7 @@ int Fl_Message::form_position_ = 0; // 0 = not set, 1 = absolute, 2 = centered
   by dialog button). Then the dialog window is closed (hidden).
 */
 
-void Fl_Message::button_cb_(Fl_Widget *w, void *d) {
+void Fl_Message::button_cb_(fltk3::Widget *w, void *d) {
   Fl_Window *window = w->window();
   Fl_Message *dialog = (Fl_Message *)window->user_data();
   dialog->window_closed_ = 0;
@@ -108,10 +108,10 @@ void Fl_Message::button_cb_(Fl_Widget *w, void *d) {
   Then the dialog window is closed (hidden).
 */
 
-void Fl_Message::window_cb_(Fl_Widget *w, void *d) {
+void Fl_Message::window_cb_(fltk3::Widget *w, void *d) {
   Fl_Window *window = (Fl_Window *)w;
   Fl_Message *dialog = (Fl_Message *)window->user_data();
-  if ((Fl::event() == FL_KEYBOARD || Fl::event() == FL_SHORTCUT) &&
+  if ((Fl::event() == fltk3::KEYBOARD || Fl::event() == fltk3::SHORTCUT) &&
       (Fl::event_key() == FL_Escape))
     dialog->window_closed_ = -1;
   else
@@ -184,7 +184,7 @@ Fl_Message::Fl_Message(const char *iconlabel)
     if (b == 1) {
       button_[b] = new Fl_Return_Button(x, 70, 90, 23);
     } else {
-      button_[b] = new Fl_Button(x, 70, 90, 23);
+      button_[b] = new fltk3::Button(x, 70, 90, 23);
     }
     button_[b]->align(FL_ALIGN_INSIDE | FL_ALIGN_WRAP);
     button_[b]->callback(button_cb_, fl_voidptr(b));
@@ -371,7 +371,7 @@ int Fl_Message::innards(const char *fmt, va_list ap, const char *b0, const char 
   else
     window_->free_position();
 
-  if (b0 && Fl_Widget::label_shortcut(b0))
+  if (b0 && fltk3::Widget::label_shortcut(b0))
     button_[0]->shortcut(0);
 
   // set the one-time window title, if defined and a specific title is not set
@@ -413,7 +413,7 @@ int Fl_Message::innards(const char *fmt, va_list ap, const char *b0, const char 
 
   \note This method replaces the deprecated method fl_message_icon().
   Note that this new method correctly returns an Fl_Box * pointer,
-  whereas fl_message_icon() returns Fl_Widget *.
+  whereas fl_message_icon() returns fltk3::Widget *.
 
   The current icon default values are:
 
@@ -567,8 +567,8 @@ void Fl_Message::icon_label(const char *str) {
 int Fl_Message_Box::handle(int e) {
   int mods = Fl::event_state() & (FL_META|FL_CTRL|FL_ALT);
   switch (e) {
-    case FL_KEYBOARD:
-    case FL_SHORTCUT:
+    case fltk3::KEYBOARD:
+    case fltk3::SHORTCUT:
       if (Fl::event_key() == 'c' && mods == FL_COMMAND) {
         Fl::copy(label(), int(strlen(label())), 1);
         return 1;

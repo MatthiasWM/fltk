@@ -16,7 +16,7 @@
 
 // Emulate the Forms file chooser using the fltk file chooser.
 
-#include <FL/forms.H>
+#include <fltk3/forms.H>
 #include "flstring.h"
 
 static char fl_directory[FL_PATH_MAX];

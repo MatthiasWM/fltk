@@ -22,9 +22,9 @@
 
 #include "Fl_OpenGL_Graphics_Driver.H"
 
-#include <FL/fl_draw.H>
-#include <FL/gl.h>
-#include <FL/math.h>
+#include <fltk3/fl_draw.H>
+#include <fltk3/gl.h>
+#include <fltk3/math.h>
 
 #include <stdlib.h>
 

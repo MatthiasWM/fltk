@@ -27,8 +27,8 @@
 
 #include "Fl_GDI_Graphics_Driver.H"
 
-#include <FL/math.h>
-#include <FL/platform.H>
+#include <fltk3/math.h>
+#include <fltk3/platform.H>
 
 void Fl_GDI_Graphics_Driver::arc_unscaled(int x, int y, int w, int h, double a1, double a2) {
   if (w <= 0 || h <= 0) return;

@@ -15,7 +15,7 @@
 //
 
 #include "Fl_Wayland_Copy_Surface_Driver.H"
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include "Fl_Wayland_Graphics_Driver.H"
 #include "Fl_Wayland_Screen_Driver.H"
 #include "Fl_Wayland_Window_Driver.H"

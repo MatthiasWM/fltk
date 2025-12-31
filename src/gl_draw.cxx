@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-// Functions from <FL/gl.h>
+// Functions from <fltk3/gl.h>
 // See also Fl_Gl_Window and gl_start.cxx
 
 /* Note about implementing GL text support for a new platform
@@ -33,18 +33,18 @@
 
 #if HAVE_GL || defined(FL_DOXYGEN)
 
-#include <FL/Fl.H>
-#include <FL/gl.h>
-#include <FL/gl_draw.H>
-#include <FL/fl_draw.H>
-#include <FL/math.h> // for ceil()
+#include <fltk3/Fl.H>
+#include <fltk3/gl.h>
+#include <fltk3/gl_draw.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/math.h> // for ceil()
 #include "Fl_Gl_Window_Driver.H"
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include "Fl_Scalable_Graphics_Driver.H" // Fl_Font_Descriptor
 #if HAVE_GL_GLU_H
-#  include <FL/glu.h>  // for gluUnProject()
+#  include <fltk3/glu.h>  // for gluUnProject()
 #endif
-#include <FL/glut.H> // for glutStrokeString() and glutStrokeLength()
+#include <fltk3/glut.H> // for glutStrokeString() and glutStrokeLength()
 #include <stdlib.h>
 
 #ifndef GL_TEXTURE_RECTANGLE_ARB

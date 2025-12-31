@@ -22,9 +22,9 @@
 /* \file
    Fl_Input_Choice widget . */
 
-#include <FL/Fl_Input_Choice.H>
+#include <fltk3/Fl_Input_Choice.H>
 
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 #include <string.h>
 
 /**
@@ -54,18 +54,18 @@
       - 1: the user picked a different item in the choice menu
       - 0: the user typed or pasted directly into the input field
 
-  FLTK triggers an `FL_BEFORE_MENU` event for this widget right before
+  FLTK triggers an `fltk3::BEFORE_MENU` event for this widget right before
   displaying the menu. This event provides an opportunity to update menu
   item states and activation.
 
   \par Example Use of Fl_Input_Choice
   \code
   #include <stdio.h>
-  #include <FL/Fl.H>
-  #include <FL/Fl_Double_Window.H>
-  #include <FL/Fl_Input_Choice.H>
+  #include <fltk3/Fl.H>
+  #include <fltk3/Fl_Double_Window.H>
+  #include <fltk3/Fl_Input_Choice.H>
   // Fl_Input_Choice callback()
-  void choice_cb(Fl_Widget *w, void *userdata) {
+  void choice_cb(fltk3::Widget *w, void *userdata) {
     // Show info about the picked item
     Fl_Input_Choice *choice = (Fl_Input_Choice*)w;
     printf("*** Choice Callback:\n");
@@ -99,9 +99,9 @@
  and menu_x/y/w/h() to take control of the internal Fl_Input and Fl_Menu_Button widget
  positioning. In this example, input and menubutton's positions are swapped:
  \code
-  #include <FL/Fl.H>
-  #include <FL/Fl_Window.H>
-  #include <FL/Fl_Input_Choice.H>
+  #include <fltk3/Fl.H>
+  #include <fltk3/Fl_Window.H>
+  #include <fltk3/Fl_Input_Choice.H>
 
   class MyInputChoice : public Fl_Input_Choice {
   protected:
@@ -156,7 +156,7 @@ void Fl_Input_Choice::InputMenuButton::draw() {
 
 // Make pulldown menu appear under entire width of widget
 const Fl_Menu_Item* Fl_Input_Choice::InputMenuButton::popup() {
-  handle(FL_BEFORE_MENU);
+  handle(fltk3::BEFORE_MENU);
   menu_end();
   redraw();
   Fl_Widget_Tracker mb(this);
@@ -173,10 +173,10 @@ const Fl_Menu_Item* Fl_Input_Choice::InputMenuButton::popup() {
 int Fl_Input_Choice::InputMenuButton::handle(int e) {
   if (!menu() || !menu()->text) return 0;
   switch (e) {
-  case FL_ENTER: /* FALLTHROUGH */
-  case FL_LEAVE:
+  case fltk3::ENTER: /* FALLTHROUGH */
+  case fltk3::LEAVE:
     return (box() && !type()) ? 1 : 0;
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (!box()) {
       if (Fl::event_button() != 3) return 0;
     } else if (type()) {
@@ -185,18 +185,18 @@ int Fl_Input_Choice::InputMenuButton::handle(int e) {
     if (Fl::visible_focus()) Fl::focus(this);
     popup();
     return 1;
-  case FL_KEYBOARD:
+  case fltk3::KEYBOARD:
     if (!box()) return 0;
     if (Fl::event_key() == ' ' &&
         !(Fl::event_state() & (FL_SHIFT | FL_CTRL | FL_ALT | FL_META))) {
       popup();
       return 1;
     } else return 0;
-  case FL_SHORTCUT:
-    if (Fl_Widget::test_shortcut()) {popup(); return 1;}
+  case fltk3::SHORTCUT:
+    if (fltk3::Widget::test_shortcut()) {popup(); return 1;}
     return test_shortcut() != 0;
-  case FL_FOCUS: /* FALLTHROUGH */
-  case FL_UNFOCUS:
+  case fltk3::FOCUS: /* FALLTHROUGH */
+  case fltk3::UNFOCUS:
     if (box() && Fl::visible_focus()) {
       redraw();
       return 1;
@@ -208,14 +208,14 @@ int Fl_Input_Choice::InputMenuButton::handle(int e) {
 
 /** Callback for the Fl_Input_Choice menu. */
 
-void Fl_Input_Choice::menu_cb(Fl_Widget*, void *data) {
+void Fl_Input_Choice::menu_cb(fltk3::Widget*, void *data) {
   Fl_Input_Choice *o=(Fl_Input_Choice *)data;
   Fl_Widget_Tracker wp(o);
   const Fl_Menu_Item *item = o->menubutton()->mvalue();
   if (item && item->flags & (FL_SUBMENU|FL_SUBMENU_POINTER)) return;    // ignore submenus
   if (!strcmp(o->inp_->value(), o->menu_->text()))
   {
-    o->Fl_Widget::clear_changed();
+    o->fltk3::Widget::clear_changed();
     if (o->when() & FL_WHEN_NOT_CHANGED)
       o->do_callback(FL_REASON_RESELECTED);
   }
@@ -223,7 +223,7 @@ void Fl_Input_Choice::menu_cb(Fl_Widget*, void *data) {
   {
     o->inp_->value(o->menu_->text());
     o->inp_->set_changed();
-    o->Fl_Widget::set_changed();
+    o->fltk3::Widget::set_changed();
     if (o->when() & (FL_WHEN_CHANGED|FL_WHEN_RELEASE))
       o->do_callback(FL_REASON_CHANGED);
   }
@@ -232,29 +232,29 @@ void Fl_Input_Choice::menu_cb(Fl_Widget*, void *data) {
 
   if (o->callback() != default_callback)
   {
-    o->Fl_Widget::clear_changed();
+    o->fltk3::Widget::clear_changed();
     o->inp_->clear_changed();
   }
 }
 
 /** Callback for the Fl_Input_Choice input field. */
 
-void Fl_Input_Choice::inp_cb(Fl_Widget*, void *data) {
+void Fl_Input_Choice::inp_cb(fltk3::Widget*, void *data) {
   Fl_Input_Choice *o=(Fl_Input_Choice *)data;
   Fl_Widget_Tracker wp(o);
   if (o->inp_->changed()) {
-    o->Fl_Widget::set_changed();
+    o->fltk3::Widget::set_changed();
     if (o->when() & (FL_WHEN_CHANGED|FL_WHEN_RELEASE))
       o->do_callback(FL_REASON_CHANGED);
   } else {
-    o->Fl_Widget::clear_changed();
+    o->fltk3::Widget::clear_changed();
     if (o->when() & FL_WHEN_NOT_CHANGED)
       o->do_callback(FL_REASON_RESELECTED);
   }
   if (wp.deleted()) return;
 
   if (o->callback() != default_callback)
-    o->Fl_Widget::clear_changed();
+    o->fltk3::Widget::clear_changed();
 }
 
 /**
@@ -298,13 +298,13 @@ void Fl_Input_Choice::value(int val) {
 */
 void Fl_Input_Choice::set_changed() {
   inp_->set_changed();
-  // no need to call Fl_Widget::set_changed()
+  // no need to call fltk3::Widget::set_changed()
 }
 
 /** Clears the changed() state of both input and menu button widgets. */
 void Fl_Input_Choice::clear_changed() {
   inp_->clear_changed();
-  Fl_Widget::clear_changed();
+  fltk3::Widget::clear_changed();
 }
 
 /** Updates the menubutton with the string value in Fl_Input.

@@ -16,9 +16,9 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Table.H>
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Table.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
 
 #include <sys/types.h>
 #include <string.h>             // memcpy
@@ -230,7 +230,7 @@ void Fl_Table::row_height(int row, int height) {
     redraw();
   }
   // ROW RESIZE CALLBACK
-  if ( Fl_Widget::callback() && when() & FL_WHEN_CHANGED ) {
+  if ( fltk3::Widget::callback() && when() & FL_WHEN_CHANGED ) {
     do_callback(CONTEXT_RC_RESIZE, row, 0);
   }
 }
@@ -257,7 +257,7 @@ void Fl_Table::col_width(int col, int width)
     redraw();
   }
   // COLUMN RESIZE CALLBACK
-  if ( Fl_Widget::callback() && when() & FL_WHEN_CHANGED ) {
+  if ( fltk3::Widget::callback() && when() & FL_WHEN_CHANGED ) {
     do_callback(CONTEXT_RC_RESIZE, 0, col);
   }
 }
@@ -506,7 +506,7 @@ void Fl_Table::_auto_drag_cb() {
     _dragging_y = Fl::e_y + 30;
   }
   _auto_drag = 2;
-  handle(FL_DRAG);
+  handle(fltk3::DRAG);
   _auto_drag = 1;
   Fl::e_x = lx;
   Fl::e_y = ly;
@@ -646,7 +646,7 @@ void Fl_Table::table_resized() {
 /**
   Callback for when someone moves a scrollbar.
 */
-void Fl_Table::scroll_cb(Fl_Widget*w, void *data) {
+void Fl_Table::scroll_cb(fltk3::Widget*w, void *data) {
   Fl_Table *o = (Fl_Table*)data;
   o->recalc_dimensions();       // recalc tix, tiy, etc.
   o->table_scrolled();
@@ -789,7 +789,7 @@ int Fl_Table::move_cursor(int R, int C) {
 
 //#define DEBUG 1
 #ifdef DEBUG
-#include <FL/names.h>
+#include <fltk3/names.h>
 #define PRINTEVENT \
     fprintf(stderr,"Table %s: ** Event: %s --\n", (label()?label():"none"), fl_eventnames[event]);
 #else
@@ -823,9 +823,9 @@ int Fl_Table::handle(int event) {
   int _event_y      = Fl::event_y();
   int _event_key    = Fl::event_key();
   int _event_state  = Fl::event_state();
-  Fl_Widget *_focus = Fl::focus();
+  fltk3::Widget *_focus = Fl::focus();
   switch ( event ) {
-    case FL_PUSH:
+    case fltk3::PUSH:
       // Single left-click on table? do user's callback with CONTEXT_TABLE
       if (_event_button == 1 && !_event_clicks) {
         if (_focus == this) {
@@ -849,7 +849,7 @@ int Fl_Table::handle(int event) {
       // A click on table with user's callback defined?
       //     Need this for eg. right click to pop up a menu
       //
-      if ( Fl_Widget::callback() &&             // callback defined?
+      if ( fltk3::Widget::callback() &&             // callback defined?
           resizeflag == RESIZE_NONE ) {         // not resizing?
         do_callback(context, R, C);             // do callback with context (cell, header, etc)
       }
@@ -860,12 +860,12 @@ int Fl_Table::handle(int event) {
       //
       switch ( context ) {
         case CONTEXT_CELL:
-          // FL_PUSH on a cell?
-          ret = 1;                              // express interest in FL_RELEASE
+          // fltk3::PUSH on a cell?
+          ret = 1;                              // express interest in fltk3::RELEASE
           break;
 
         case CONTEXT_NONE:
-          // FL_PUSH on table corner?
+          // fltk3::PUSH on table corner?
           if ( _event_button == 1 && _event_x < x() + row_header_width()) {
             current_col = 0;
             select_col = cols() - 1;
@@ -877,7 +877,7 @@ int Fl_Table::handle(int event) {
           break;
 
         case CONTEXT_COL_HEADER:
-          // FL_PUSH on a column header?
+          // fltk3::PUSH on a column header?
           if ( _event_button == 1) {
             // Resizing? Handle it
             if ( resizeflag ) {
@@ -904,7 +904,7 @@ int Fl_Table::handle(int event) {
           break;
 
         case CONTEXT_ROW_HEADER:
-          // FL_PUSH on a row header?
+          // fltk3::PUSH on a row header?
           if ( _event_button == 1 ) {
             // Resizing? Handle it
             if ( resizeflag ) {
@@ -937,7 +937,7 @@ int Fl_Table::handle(int event) {
       _last_row = R;
       break;
 
-    case FL_DRAG:
+    case fltk3::DRAG:
       if (_auto_drag == 1) {
         ret = 1;
         break;
@@ -958,7 +958,7 @@ int Fl_Table::handle(int event) {
         redraw();
         change_cursor(FL_CURSOR_WE);
         ret = 1;
-        if ( Fl_Widget::callback() && when() & FL_WHEN_CHANGED ) {
+        if ( fltk3::Widget::callback() && when() & FL_WHEN_CHANGED ) {
           do_callback(CONTEXT_RC_RESIZE, R, C);
         }
       }
@@ -978,7 +978,7 @@ int Fl_Table::handle(int event) {
         redraw();
         change_cursor(FL_CURSOR_NS);
         ret = 1;
-        if ( Fl_Widget::callback() && when() & FL_WHEN_CHANGED ) {
+        if ( fltk3::Widget::callback() && when() & FL_WHEN_CHANGED ) {
           do_callback(CONTEXT_RC_RESIZE, R, C);
         }
       } else {
@@ -1024,7 +1024,7 @@ int Fl_Table::handle(int event) {
           }
       break;
 
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       _stop_auto_drag();
       switch ( context ) {
         case CONTEXT_ROW_HEADER:                // release on row header
@@ -1033,7 +1033,7 @@ int Fl_Table::handle(int event) {
         case CONTEXT_TABLE:                     // release on dead zone
           if ( _resizing_col == -1 &&           // not resizing a column
               _resizing_row == -1 &&            // not resizing a row
-              Fl_Widget::callback() &&          // callback defined
+              fltk3::Widget::callback() &&          // callback defined
               when() & FL_WHEN_RELEASE &&       // on button release
               _last_row == R ) {                // release on same row PUSHed?
             // Need this for eg. left clicking on a cell to select it
@@ -1052,7 +1052,7 @@ int Fl_Table::handle(int event) {
       }
       break;
 
-    case FL_MOVE:
+    case fltk3::MOVE:
       if ( context == CONTEXT_COL_HEADER &&             // in column header?
           resizeflag ) {                                // resize + near boundary?
         change_cursor(FL_CURSOR_WE);                    // show resize cursor
@@ -1066,31 +1066,31 @@ int Fl_Table::handle(int event) {
       ret = 1;
       break;
 
-    case FL_ENTER:              // See FLTK event docs on the FL_ENTER widget
+    case fltk3::ENTER:              // See FLTK event docs on the fltk3::ENTER widget
       if (!ret) take_focus();
       ret = 1;
       //FALLTHROUGH
 
-    case FL_LEAVE:              // We want to track the mouse if resizing is allowed.
+    case fltk3::LEAVE:              // We want to track the mouse if resizing is allowed.
       if ( resizeflag ) {
         ret = 1;
       }
-      if ( event == FL_LEAVE ) {
+      if ( event == fltk3::LEAVE ) {
         _stop_auto_drag();
         change_cursor(FL_CURSOR_DEFAULT);
       }
       break;
 
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       Fl::focus(this);
       //FALLTHROUGH
 
-    case FL_UNFOCUS:
+    case fltk3::UNFOCUS:
       _stop_auto_drag();
       ret = 1;
       break;
 
-    case FL_KEYBOARD: {
+    case fltk3::KEYBOARD: {
       ret = 0;
       int is_row = select_row;
       int is_col = select_col;
@@ -1132,8 +1132,8 @@ int Fl_Table::handle(int event) {
         do_callback(CONTEXT_TABLE, -1, -1);
         take_focus();
       }
-      //if (!ret && Fl_Widget::callback() && when() & FL_WHEN_NOT_CHANGED  )
-      if ( Fl_Widget::callback() &&
+      //if (!ret && fltk3::Widget::callback() && when() & FL_WHEN_NOT_CHANGED  )
+      if ( fltk3::Widget::callback() &&
           (
            ( !ret && when() & FL_WHEN_NOT_CHANGED ) ||
            ( is_row!= select_row || is_col!= select_col )

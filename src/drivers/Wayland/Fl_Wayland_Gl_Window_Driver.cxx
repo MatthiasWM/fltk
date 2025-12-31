@@ -16,8 +16,8 @@
 
 #include <config.h>
 #if HAVE_GL
-#include <FL/platform.H>
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include "../../Fl_Gl_Choice.H"
 #include "Fl_Wayland_Window_Driver.H"
 #include "Fl_Wayland_Graphics_Driver.H"
@@ -28,7 +28,7 @@
 #endif
 #include <wayland-egl.h>
 #include <EGL/egl.h>
-#include <FL/gl.h>
+#include <fltk3/gl.h>
 
 /* Implementation notes about OpenGL drawing on the Wayland platform
 

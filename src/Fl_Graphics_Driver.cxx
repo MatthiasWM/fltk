@@ -18,7 +18,7 @@
 \brief Implementation of class Fl_Graphics_Driver.
 */
 #include <config.h> // for HAVE_GL
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include "Fl_Scalable_Graphics_Driver.H" // Fl_Fontdesc
 /** Points to the driver that currently receives all graphics requests */
 FL_EXPORT Fl_Graphics_Driver *fl_graphics_driver;
@@ -30,9 +30,9 @@ FL_EXPORT Fl_Graphics_Driver *fl_graphics_driver;
  */
 
 #include "Fl_Screen_Driver.H"
-#include <FL/Fl_Image_Surface.H>
-#include <FL/math.h> // for fabs(), sqrt()
-#include <FL/platform.H> // for fl_open_display()
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/math.h> // for fabs(), sqrt()
+#include <fltk3/platform.H> // for fl_open_display()
 #include <stdlib.h>
 
 

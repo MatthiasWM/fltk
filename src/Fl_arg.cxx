@@ -17,9 +17,9 @@
 // OPTIONAL initialization code for a program using FLTK.
 // You do not need to call this!  Feel free to make up your own switches.
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Tooltip.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Tooltip.H>
 #include "Fl_Window_Driver.H"
 #include "Fl_System_Driver.H"
 #include "Fl_Screen_Driver.H"
@@ -303,7 +303,7 @@ void Fl_Window::show(int argc, char **argv) {
       //  int mw,mh; minsize(mw,mh);
       //  if (mw > gw) gw = mw;
       //  if (mh > gh) gh = mh;
-      Fl_Widget *r = resizable();
+      fltk3::Widget *r = resizable();
       if (!r) resizable(this);
       // for Windows we assume window is not mapped yet:
       if (fl & (Fl_Screen_Driver::fl_XValue | Fl_Screen_Driver::fl_YValue))

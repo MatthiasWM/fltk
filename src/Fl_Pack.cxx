@@ -19,9 +19,9 @@
 // them on each redraw (only if box() is zero)
 // Bugs: ?
 
-#include <FL/Fl.H>
-#include <FL/Fl_Pack.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Pack.H>
+#include <fltk3/fl_draw.H>
 
 /**
   Creates a new Fl_Pack widget using the given position, size,
@@ -74,7 +74,7 @@ void Fl_Pack::draw() {
   int current_position = horizontal() ? tx : ty;
   int maximum_position = current_position;
   uchar d = damage();
-  Fl_Widget*const* a = array();
+  fltk3::Widget*const* a = array();
   if (horizontal()) {
     rw = -spacing_;
     rh = th;
@@ -95,7 +95,7 @@ void Fl_Pack::draw() {
       }
   }
   for (int i = children(); i--;) {
-    Fl_Widget* o = *a++;
+    fltk3::Widget* o = *a++;
     if (o->visible()) {
       int X,Y,W,H;
       if (horizontal()) {
@@ -160,7 +160,7 @@ void Fl_Pack::draw() {
   tw += Fl::box_dw(box()); if (tw <= 0) tw = 1;
   th += Fl::box_dh(box()); if (th <= 0) th = 1;
   if (tw != w() || th != h()) {
-    Fl_Widget::resize(x(),y(),tw,th);
+    fltk3::Widget::resize(x(),y(),tw,th);
     Fl_Group *parent = this->parent();
     if (parent) parent->init_sizes();
     d = FL_DAMAGE_ALL;
@@ -185,6 +185,6 @@ void Fl_Pack::draw() {
   \param[in] X, Y, W, H new position and size of the Fl_Pack widget
 */
 void Fl_Pack::resize(int X, int Y, int W, int H) {
-  Fl_Widget::resize(X, Y, W, H);
+  fltk3::Widget::resize(X, Y, W, H);
   redraw();
 }

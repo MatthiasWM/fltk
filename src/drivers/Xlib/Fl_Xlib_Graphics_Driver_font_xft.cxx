@@ -21,11 +21,11 @@
 #if USE_PANGO
 #  include "../Cairo/Fl_Cairo_Graphics_Driver.H"
 #endif
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h>  // fl_strdup()
-#include <FL/platform.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h>  // fl_strdup()
+#include <fltk3/platform.H>
+#include <fltk3/fl_utf8.h>
 #include "Fl_Font.H"
 
 #include <stdio.h>

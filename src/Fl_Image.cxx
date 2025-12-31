@@ -15,11 +15,11 @@
 //
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Image.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Menu_Item.H>
+#include <fltk3/Fl_Image.H>
 #include "flstring.h"
 
 #include <stdlib.h>
@@ -142,7 +142,7 @@ void Fl_Image::color_average(Fl_Color, float) {
 void Fl_Image::desaturate() {
 }
 
-// Doxygen documentation in FL/Enumerations.H
+// Doxygen documentation in fltk3/Enumerations.H
 Fl_Labeltype fl_define_FL_IMAGE_LABEL() {
   return Fl_Image::define_FL_IMAGE_LABEL();
 }
@@ -156,9 +156,9 @@ Fl_Labeltype Fl_Image::define_FL_IMAGE_LABEL() {
   This method is an obsolete way to set the image attribute of a widget
   or menu item.
 
-  \deprecated Please use Fl_Widget::image() or Fl_Widget::deimage() instead.
+  \deprecated Please use fltk3::Widget::image() or fltk3::Widget::deimage() instead.
 */
-void Fl_Image::label(Fl_Widget* widget) {
+void Fl_Image::label(fltk3::Widget* widget) {
   widget->image(this);
 }
 
@@ -895,7 +895,7 @@ void Fl_RGB_Image::draw(int XP, int YP, int WP, int HP, int cx, int cy) {
     fl_graphics_driver->draw_rgb(this, XP, YP, WP, HP, cx, cy);
 }
 
-void Fl_RGB_Image::label(Fl_Widget* widget) {
+void Fl_RGB_Image::label(fltk3::Widget* widget) {
   widget->image(this);
 }
 

@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl_Window.H>
 #include "Fl_Window_Driver.H"
 
 void Fl_Window::iconize() {

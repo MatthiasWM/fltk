@@ -17,19 +17,19 @@
 // Complete implementation to draw into an SVG file using the standard FLTK drawing API.
 
 #include <config.h>
-#include <FL/Fl_SVG_File_Surface.H>
+#include <fltk3/Fl_SVG_File_Surface.H>
 #ifdef FLTK_USE_SVG
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 #include <stdio.h>
-#include <FL/math.h>
-#include <FL/Fl_Widget_Surface.H>
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/math.h>
+#include <fltk3/Fl_Widget_Surface.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include "../../Fl_System_Driver.H"
-#include <FL/Fl.H>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/Fl_Pixmap.H>
-#include <FL/Fl_Bitmap.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/Fl_Pixmap.H>
+#include <fltk3/Fl_Bitmap.H>
+#include <fltk3/fl_string_functions.h>
 #include <stdlib.h>
 #include <stdarg.h>
 

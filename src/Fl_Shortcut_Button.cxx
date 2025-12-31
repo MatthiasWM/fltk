@@ -14,11 +14,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Shortcut_Button.H>
+#include <fltk3/Fl_Shortcut_Button.H>
 
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_utf8.h>
 #include "Fl_System_Driver.H"
 #include "flstring.h"
 
@@ -44,7 +44,7 @@
  \param l label text when no shortcut is set
  */
 Fl_Shortcut_Button::Fl_Shortcut_Button(int X,int Y,int W,int H, const char* l)
-: Fl_Button(X,Y,W,H,l),
+: fltk3::Button(X,Y,W,H,l),
   hot_(false),
   pre_hot_(false),
   default_set_(false),
@@ -178,22 +178,22 @@ int Fl_Shortcut_Button::handle(int e) {
   static int alt_modifier_extra_handler = Fl::system_driver()->need_test_shortcut_extra();
 #if 0
   bool inside_default_button = false;
-  if (default_set_ && ( (e == FL_PUSH) || (e == FL_DRAG) || (e == FL_RELEASE) ) ) {
+  if (default_set_ && ( (e == fltk3::PUSH) || (e == fltk3::DRAG) || (e == fltk3::RELEASE) ) ) {
     int X = x() + Fl::box_dx(box());
     int W = w() - Fl::box_dw(box());
     int H = h() - Fl::box_dh(box());
     if (Fl::event_inside(this) && (Fl::event_x() > X+W-H))
       inside_default_button = true;
   }
-  if ((e == FL_PUSH) && default_set_ && inside_default_button) {
-    if (Fl::visible_focus() && handle(FL_FOCUS)) Fl::focus(this);
+  if ((e == fltk3::PUSH) && default_set_ && inside_default_button) {
+    if (Fl::visible_focus() && handle(fltk3::FOCUS)) Fl::focus(this);
     handle_default_button_ = true;
     return 1;
   }
   if (handle_default_button_) {
-    if (e == FL_DRAG)
+    if (e == fltk3::DRAG)
       return 1;
-    if (e == FL_RELEASE) {
+    if (e == fltk3::RELEASE) {
       if (inside_default_button && (shortcut_value != default_shortcut_)) {
         shortcut_value = default_shortcut_;
         set_changed();
@@ -207,31 +207,31 @@ int Fl_Shortcut_Button::handle(int e) {
   }
 #endif
   switch (e) {
-    case FL_PUSH:
-      if (Fl::visible_focus() && handle(FL_FOCUS)) Fl::focus(this);
+    case fltk3::PUSH:
+      if (Fl::visible_focus() && handle(fltk3::FOCUS)) Fl::focus(this);
       pre_hot_ = hot_;
       /* FALLTHROUGH */
-    case FL_DRAG:
-    case FL_RELEASE:
+    case fltk3::DRAG:
+    case fltk3::RELEASE:
       if (Fl::event_inside(this)) {
         hot_ = !pre_hot_;
       } else {
         hot_ = pre_hot_;
       }
-      if ((e == FL_RELEASE) && pre_hot_ && !hot_)
+      if ((e == fltk3::RELEASE) && pre_hot_ && !hot_)
         do_end_hot_callback();
       redraw();
       handle_default_button_ = false;
       return 1;
-    case FL_UNFOCUS:
+    case fltk3::UNFOCUS:
       if (hot_) do_end_hot_callback();
       hot_ = false;
       handle_default_button_ = false;
       /* FALLTHROUGH */
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       redraw();
       return 1;
-    case FL_KEYBOARD:
+    case fltk3::KEYBOARD:
       if (hot_) {
         // Note: we can't really handle non-Latin shortcuts in the Fl_Shortcut
         //       type, so we don't handle them here either
@@ -285,10 +285,10 @@ int Fl_Shortcut_Button::handle(int e) {
         }
       }
       break;
-    case FL_SHORTCUT:
+    case fltk3::SHORTCUT:
       if (hot_) return 1;
       break;
   }
-  return Fl_Button::handle(e);
+  return fltk3::Button::handle(e);
 }
 

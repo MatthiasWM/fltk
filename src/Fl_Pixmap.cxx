@@ -21,12 +21,12 @@
 // Implemented without using the xpm library (which I can't use because
 // it interferes with the color cube used by fl_draw_image).
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Pixmap.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Menu_Item.H>
+#include <fltk3/Fl_Pixmap.H>
 
 #include <stdio.h>
 #include "flstring.h"
@@ -68,7 +68,7 @@ void Fl_Pixmap::uncache() {
   }
 }
 
-void Fl_Pixmap::label(Fl_Widget* widget) {
+void Fl_Pixmap::label(fltk3::Widget* widget) {
   widget->image(this);
 }
 

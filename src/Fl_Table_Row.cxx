@@ -23,15 +23,15 @@
 //    o Row headings (only column headings supported currently)
 //
 
-#include <FL/Fl_Table_Row.H>
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl_Table_Row.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
 #include <stdlib.h>
 
 // for debugging...
 // #define DEBUG 1
 #ifdef DEBUG
-#include <FL/names.h>
+#include <fltk3/names.h>
 #include <stdio.h>              // fprintf()
 #define PRINTEVENT \
     fprintf(stderr,"TableRow %s: ** Event: %s --\n", (label()?label():"none"), fl_eventnames[event]);
@@ -197,7 +197,7 @@ int Fl_Table_Row::handle(int event) {
   int _event_y      = Fl::event_y();
   //int _event_key    = Fl::event_key();        // uncomment if needed
   int _event_state  = Fl::event_state();
-  //Fl_Widget *_focus = Fl::focus();            // uncomment if needed
+  //fltk3::Widget *_focus = Fl::focus();            // uncomment if needed
 
   // Let base class handle event
   //     Note: base class may invoke user callbacks that post menus,
@@ -216,7 +216,7 @@ int Fl_Table_Row::handle(int event) {
   ResizeFlag resizeflag;                // which resizing area are we over? (0=none)
   TableContext context = cursor2rowcol(R, C, resizeflag);
   switch ( event ) {
-    case FL_PUSH:
+    case fltk3::PUSH:
       if ( _event_button == 1 ) {
         _last_push_x = _event_x;        // save regardless of context
         _last_push_y = _event_y;        // " "
@@ -254,13 +254,13 @@ int Fl_Table_Row::handle(int event) {
 
           _last_row = R;
           _dragging_select = 1;
-          ret = 1;      // FL_PUSH handled (ensures FL_DRAG will be sent)
+          ret = 1;      // fltk3::PUSH handled (ensures fltk3::DRAG will be sent)
           // redraw();  // redraw() handled by select_row()
         }
       }
       break;
 
-    case FL_DRAG: {
+    case fltk3::DRAG: {
       if ( _dragging_select ) {
         // Dragged off table edges? Handle scrolling
         int offtop = toy - _last_y;                     // >0 if off top of table
@@ -318,7 +318,7 @@ int Fl_Table_Row::handle(int event) {
       break;
     }
 
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       if ( _event_button == 1 ) {
         _dragging_select = 0;
         ret = 1;                        // release handled

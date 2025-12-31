@@ -21,11 +21,11 @@
 // Expands all unprintable characters to ^X or \nnn notation
 // Aligns them against the inside of the box.
 
-#include <FL/fl_utf8.h>
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl_Image.H>
-#include <FL/platform.H>        // fl_open_display()
+#include <fltk3/fl_utf8.h>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl_Image.H>
+#include <fltk3/platform.H>        // fl_open_display()
 
 #include "flstring.h"
 #include "fl_oxy.h"

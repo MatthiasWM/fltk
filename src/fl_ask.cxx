@@ -29,7 +29,7 @@
   - fl_alert()
   - fl_beep()
   - fl_message()
-  - fl_ask()      // deprecated since 1.1.7 (2006), see comment in FL/fl_ask.H
+  - fl_ask()      // deprecated since 1.1.7 (2006), see comment in fltk3/fl_ask.H
   - fl_choice()
   - fl_input()
   - fl_input_str()
@@ -43,12 +43,12 @@
     implemented in class Fl_Message.
 */
 
-#include <FL/Fl.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Input_.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Box.H>
+#include <fltk3/Fl_Input_.H>
 #include "flstring.h"
 #include "Fl_Screen_Driver.H"
-#include <FL/fl_ask.H>
+#include <fltk3/fl_ask.H>
 #include "Fl_Message.h" // intentionally "hidden" in src/...
 
 #include <stdio.h>
@@ -91,7 +91,7 @@ const char *fl_close = "Close";   ///< string pointer used in common dialogs, yo
 
   \param[in] type The beep type from the \ref Fl_Beep enumeration (optional)
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 */
 void fl_beep(int type) {
   Fl::screen_driver()->beep(type);
@@ -99,7 +99,7 @@ void fl_beep(int type) {
 
 /** Shows an information message dialog box.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] fmt can be used as an sprintf-like format and variables for the message text
 */
@@ -115,7 +115,7 @@ void fl_message(const char *fmt, ...) {
 
 /** Shows an alert message dialog box.
 
-   \code #include <FL/fl_ask.H> \endcode
+   \code #include <fltk3/fl_ask.H> \endcode
 
    \param[in] fmt can be used as an sprintf-like format and variables for the message text
 */
@@ -129,12 +129,12 @@ void fl_alert(const char *fmt, ...) {
   va_end(ap);
 }
 
-#if FLTK_INCLUDE_FL_ASK // see FL/fl_ask.H
+#if FLTK_INCLUDE_FL_ASK // see fltk3/fl_ask.H
 
 /** Shows a dialog displaying the \p fmt message,
     this dialog features 2 yes/no buttons.
 
-   \code #include <FL/fl_ask.H> \endcode
+   \code #include <fltk3/fl_ask.H> \endcode
 
    \param[in] fmt can be used as an sprintf-like format and variables for the message text
    \retval 0 if the no button is selected
@@ -165,7 +165,7 @@ int fl_ask(const char *fmt, ...) {
   \image html  fl_choice_left_middle_right.png
   \image latex fl_choice_left_middle_right.png  "fl_choice() button ordering" width=4cm
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   Three choices with printf() style formatting:
   \image html  fl_choice_three_fmt.png
@@ -268,7 +268,7 @@ int fl_choice_n(const char *fmt, const char *b0, const char *b1, const char *b2,
   fl_ask(), fl_choice(), fl_input(), fl_password().
 
   The return value cannot be Null. The object pointed to is an Fl_Box widget.
-  The returned pointer (Fl_Widget *) can be safely cast to an Fl_Box* pointer.
+  The returned pointer (fltk3::Widget *) can be safely cast to an Fl_Box* pointer.
 
   \note You can set some attributes of this \b default icon box. These attributes
     are sticky, i.e. they will be used in all subsequent common dialogs unless
@@ -288,9 +288,9 @@ int fl_choice_n(const char *fmt, const char *b0, const char *b1, const char *b2,
   The icon size can not be changed. If you set an image() you should scale it
   to the available size, i.e. \p w() and \p h() of the icon box.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 */
-Fl_Widget *fl_message_icon() {
+fltk3::Widget *fl_message_icon() {
   return Fl_Message::message_icon();
 }
 
@@ -300,7 +300,7 @@ Fl_Widget *fl_message_icon() {
   You \b must copy the string immediately after return from this method - at least
   before the next execution of the event loop.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] fmt can be used as an sprintf-like format and variables for the message text
   \param[in] defstr defines the default returned string if no text is entered
@@ -329,7 +329,7 @@ const char *fl_input(const char *fmt, const char *defstr, ...) {
   You \b must copy the string immediately after return from this method - at least
   before the next execution of the event loop.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] maxchar maximum number of characters the user can input (UTF-8 aware)
   \param[in] fmt can be used as an sprintf-like format and variables for the message text
@@ -365,7 +365,7 @@ const char *fl_input(int maxchar, const char *fmt, const char *defstr, ...) {
   value if the user canceled the dialog. If the dialog was canceled, the returned
   string will be empty.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   Example:
   \code
@@ -419,7 +419,7 @@ std::string fl_input_str(int maxchar, const char *fmt, const char *defstr, ...) 
   Like fl_input() except the input text is not shown,
   '*' or similar replacement characters are displayed instead.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] fmt can be used as an sprintf-like format and variables for the message text
   \param[in] defstr defines the default returned string if no text is entered
@@ -441,7 +441,7 @@ const char *fl_password(const char *fmt, const char *defstr, ...) {
   Like fl_input() except the input text is not shown,
   '*' or similar replacement characters are displayed instead.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] maxchar  input lenght limit in chars, 0 = no limit
   \param[in] fmt can be used as an sprintf-like format and variables for the message text
@@ -472,7 +472,7 @@ const char *fl_password(int maxchar, const char *fmt, const char *defstr, ...) {
 
   For an example see fl_input_str()
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[out] ret    0 if user clicked OK, negative if dialog was canceled
   \param[in] maxchar input size limit in characters (not bytes), use 0 for no limit
@@ -526,7 +526,7 @@ std::string fl_password_str(int maxchar, const char *fmt, const char *defstr, ..
   will be centered at the given coordinates rather than using the X/Y
   position as the window position (top left corner).
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] x        Preferred X position
   \param[in] y        Preferred Y position
@@ -548,13 +548,13 @@ void fl_message_position(const int x, const int y, const int center) {
   Everything else is like fl_message_position(int, int, int) with
   argument 'center' set to 1.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] widget   Widget or window to position the message box over.
 
   \see int fl_message_position(int x, int y, int center)
 */
-void fl_message_position(Fl_Widget *widget) {
+void fl_message_position(fltk3::Widget *widget) {
   Fl_Message::message_position(widget);
 }
 
@@ -562,7 +562,7 @@ void fl_message_position(Fl_Widget *widget) {
   many common dialogs like fl_message(), fl_alert(),
   fl_ask(), fl_choice(), fl_input(), fl_password().
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   The position set with this method overrides the hotspot setting,
   i.e. setting a position has higher priority than the hotspot mode
@@ -584,7 +584,7 @@ void fl_message_position(Fl_Widget *widget) {
   \see fl_message_hotspot(int)
   \see fl_message_position(int, int)
   \see fl_message_position(const int x, const int y, const int center)
-  \see fl_message_position(Fl_Widget *)
+  \see fl_message_position(fltk3::Widget *)
 */
 int fl_message_position(int *x, int *y) {
   return Fl_Message::message_position(x, y);
@@ -598,7 +598,7 @@ int fl_message_position(int *x, int *y) {
   The default is \e enabled, so that the default button is the
   hotspot and appears at the mouse position.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in]  enable  non-zero enables hotspot behavior,
                       0 disables hotspot
@@ -616,13 +616,13 @@ void fl_message_hotspot(int enable) {
   position unless overridden by an explicit positioning request by means
   of one of the fl_message_position() variants.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \return  0 if disabled, non-zero otherwise
 
   \see void fl_message_hotspot(int)
   \see int fl_message_position(int *x, int *y)
-  \see void fl_message_position(Fl_Widget *)
+  \see void fl_message_position(fltk3::Widget *)
   \see fl_message_position()
 */
 int fl_message_hotspot() {
@@ -641,7 +641,7 @@ int fl_message_hotspot() {
   will be reset to an empty title (the default for all dialogs) after
   that call.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
   \param[in] title    window label, string copied internally
 */
 void fl_message_title(const char *title) {
@@ -661,7 +661,7 @@ void fl_message_title(const char *title) {
   The \p title string is copied internally, so that you can use a
   local variable or free the string immediately after this call.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
 
   \param[in] title default window label, string copied internally
 */
@@ -686,7 +686,7 @@ void fl_message_title_default(const char *title) {
     it fits in the icon box. You can use any valid UTF-8 character, e.g.
     the Euro sign ("€") which is three bytes in UTF-8 encoding.
 
-  \code #include <FL/fl_ask.H> \endcode
+  \code #include <fltk3/fl_ask.H> \endcode
   \param[in] str    icon label
 */
 void fl_message_icon_label(const char *str) {

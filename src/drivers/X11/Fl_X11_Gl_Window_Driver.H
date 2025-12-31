@@ -19,7 +19,7 @@
 
 #include <config.h>
 #if HAVE_GL
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "../../Fl_Gl_Window_Driver.H"
 
 class Fl_Gl_Choice;

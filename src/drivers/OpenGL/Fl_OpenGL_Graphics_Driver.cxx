@@ -23,5 +23,5 @@
 //      named Fl_OpenGL_Graphics_Driver_*.cxx.
 //      This may be changed in the future.
 
-#include <FL/gl.h>
+#include <fltk3/gl.h>
 #include "Fl_OpenGL_Graphics_Driver.H"

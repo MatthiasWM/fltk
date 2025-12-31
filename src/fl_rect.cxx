@@ -24,8 +24,8 @@
 // Also all fl_*_clip routines, since they are always linked in so
 // that minimal update works.
 
-#include <FL/platform.H>
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 
 // -----------------------------------------------------------------------------
 // all driver code is now in drivers/XXX/Fl_XXX_Graphics_Driver_xyz.cxx

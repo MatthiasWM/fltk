@@ -17,10 +17,10 @@
 #include <config.h>
 #include "Fl_Posix_System_Driver.H"
 #include "../../flstring.h"
-#include <FL/Fl_File_Icon.H>
-#include <FL/filename.H>
-#include <FL/fl_string_functions.h>
-#include <FL/Fl.H>
+#include <fltk3/Fl_File_Icon.H>
+#include <fltk3/filename.H>
+#include <fltk3/fl_string_functions.h>
+#include <fltk3/Fl.H>
 #include <locale.h>
 #include <stdio.h>
 #if HAVE_DLFCN_H

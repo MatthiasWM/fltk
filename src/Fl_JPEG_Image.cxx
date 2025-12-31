@@ -25,10 +25,10 @@
 // Include necessary header files...
 //
 
-#include <FL/Fl_JPEG_Image.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/fl_utf8.h>
-#include <FL/Fl.H>
+#include <fltk3/Fl_JPEG_Image.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/Fl.H>
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>

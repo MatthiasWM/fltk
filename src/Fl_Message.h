@@ -17,11 +17,13 @@
 #ifndef _src_Fl_Message_h_
 #define _src_Fl_Message_h_
 
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Box.H>
-#include <FL/fl_ask.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Box.H>
+#include <fltk3/fl_ask.H>
 
-class Fl_Button;
+namespace fltk3 {
+  class Button;
+}
 class Fl_Input;
 
 /**
@@ -92,10 +94,10 @@ private:
   static int input_size_;     // size of allocated text buffer
 
   // the callback for all buttons:
-  static void button_cb_(Fl_Widget *w, void *d);
+  static void button_cb_(fltk3::Widget *w, void *d);
 
   // the window callback:
-  static void window_cb_(Fl_Widget *w, void *d);
+  static void window_cb_(fltk3::Widget *w, void *d);
 
   // resize to make text and buttons fit
   void resizeform();
@@ -113,8 +115,8 @@ public:
     form_position_ = center ? 2 : 1;
   }
 
-  /** Implements fl_message_position(Fl_Widget *widget). */
-  static void message_position(Fl_Widget *widget) {
+  /** Implements fl_message_position(fltk3::Widget *widget). */
+  static void message_position(fltk3::Widget *widget) {
     int xo, yo;
     Fl_Window *win = widget->top_window_offset(xo, yo);
     form_x_ = xo + widget->w() / 2;
@@ -151,7 +153,7 @@ private:
   Fl_Window *window_;         ///< message window
   Fl_Message_Box *message_;   ///< message text (handles ctrl-c)
   Fl_Box *icon_;              ///< contains the icon
-  Fl_Button *button_[3];      ///< buttons used internally
+  fltk3::Button *button_[3];      ///< buttons used internally
   Fl_Input *input_;           ///< normal text or secret input
   int retval_;                ///< internally used to store the return value
   int window_closed_;         ///< window close flag (-1 = Escape, -2 = close button)

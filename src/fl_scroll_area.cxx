@@ -19,7 +19,7 @@
 // into the drawing area.
 
 #include "Fl_Window_Driver.H"
-#include <FL/fl_draw.H>
+#include <fltk3/fl_draw.H>
 
 // scroll a rectangle and redraw the newly exposed portions:
 /**

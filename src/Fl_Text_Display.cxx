@@ -19,19 +19,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <FL/fl_utf8.h>
-#include <FL/fl_string_functions.h>     // fl_strdup()
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_string_functions.h>     // fl_strdup()
 #include "flstring.h"
 #include <limits.h>
 #include <ctype.h>
 #include <string.h>
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Text_Buffer.H>
-#include <FL/Fl_Text_Display.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Menu_Item.H>
-#include <FL/Fl_Input.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Text_Buffer.H>
+#include <fltk3/Fl_Text_Display.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Menu_Item.H>
+#include <fltk3/Fl_Input.H>
 #include "Fl_Screen_Driver.H"
 
 #undef min
@@ -489,7 +489,7 @@ void Fl_Text_Display::resize(int X, int Y, int W, int H) {
   fflush(stdout);
 #endif // DEBUG2
 
-  Fl_Widget::resize(X,Y,W,H);
+  fltk3::Widget::resize(X,Y,W,H);
   mColumnScale = 0; // force recomputation of the width of a column when display is rescaled
   display_needs_recalc();
 }
@@ -2377,7 +2377,7 @@ void Fl_Text_Display::draw_string(int style,
     bgbasecolor = (styleRec->attr&ATTR_BGCOLOR) ? styleRec->bgcolor : color();
 
     if (style & PRIMARY_MASK) {
-      if (Fl::focus() == (Fl_Widget*)this) {
+      if (Fl::focus() == (fltk3::Widget*)this) {
         if (Fl::screen_driver()->has_marked_text() && Fl::compose_state) {
           background = bgbasecolor; // Mac OS: underline marked text
         } else {
@@ -2387,13 +2387,13 @@ void Fl_Text_Display::draw_string(int style,
         background = fl_color_average(bgbasecolor, selection_color(), 0.4f);
       }
     } else if (style & HIGHLIGHT_MASK) {
-      if (Fl::focus() == (Fl_Widget*)this) {
+      if (Fl::focus() == (fltk3::Widget*)this) {
         background = fl_color_average(bgbasecolor, selection_color(), 0.5f);
       } else {
         background = fl_color_average(bgbasecolor, selection_color(), 0.6f);
       }
     } else if (style & SECONDARY_MASK) {
-      if (Fl::focus() == (Fl_Widget*)this) {
+      if (Fl::focus() == (fltk3::Widget*)this) {
         background = fl_color_average(bgbasecolor, secondary_selection_color(), 0.5f);
       } else {
         background = fl_color_average(bgbasecolor, secondary_selection_color(), 0.6f);
@@ -2403,21 +2403,21 @@ void Fl_Text_Display::draw_string(int style,
     }
     foreground = (style & PRIMARY_MASK) ? fl_contrast(styleRec->color, background) : styleRec->color;
   } else if (style & PRIMARY_MASK) {
-    if (Fl::focus() == (Fl_Widget*)this) {
+    if (Fl::focus() == (fltk3::Widget*)this) {
       background = selection_color();
     } else {
       background = fl_color_average(color(), selection_color(), 0.4f);
     }
     foreground = fl_contrast(textcolor(), background);
   } else if (style & HIGHLIGHT_MASK) {
-    if (Fl::focus() == (Fl_Widget*)this) {
+    if (Fl::focus() == (fltk3::Widget*)this) {
       background = fl_color_average(color(), selection_color(), 0.5f);
     } else {
       background = fl_color_average(color(), selection_color(), 0.6f);
     }
     foreground = fl_contrast(textcolor(), background);
   } else if (style & SECONDARY_MASK) {
-    if (Fl::focus() == (Fl_Widget*)this) {
+    if (Fl::focus() == (fltk3::Widget*)this) {
       background = secondary_selection_color();
     } else {
       background = fl_color_average(color(), secondary_selection_color(), 0.4f);
@@ -2532,13 +2532,13 @@ void Fl_Text_Display::clear_rect(int style,
 
   Fl_Color c;
   if (style & PRIMARY_MASK) {
-    if (Fl::focus()==(Fl_Widget*)this) {
+    if (Fl::focus()==(fltk3::Widget*)this) {
       c = selection_color();
     } else {
       c = fl_color_average(bgbasecolor, selection_color(), 0.4f);
     }
   } else if (style & HIGHLIGHT_MASK) {
-    if (Fl::focus()==(Fl_Widget*)this) {
+    if (Fl::focus()==(fltk3::Widget*)this) {
       c = fl_color_average(bgbasecolor, selection_color(), 0.5f);
     } else {
       c = fl_color_average(bgbasecolor, selection_color(), 0.6f);
@@ -4021,7 +4021,7 @@ void Fl_Text_Display::draw(void) {
       && (
           (Fl::screen_driver()->has_marked_text() && Fl::compose_state) ||
           (!has_selection) || mCursorPos < start || mCursorPos > end) &&
-      mCursorOn && Fl::focus() == (Fl_Widget*)this ) {
+      mCursorOn && Fl::focus() == (fltk3::Widget*)this ) {
     fl_push_clip(text_area.x-LEFT_MARGIN,
                  text_area.y,
                  text_area.w+LEFT_MARGIN+RIGHT_MARGIN,
@@ -4198,15 +4198,15 @@ int Fl_Text_Display::handle(int event) {
   if (!buffer()) return 0;
   // This isn't very elegant!
   if (!Fl::event_inside(text_area.x, text_area.y, text_area.w, text_area.h) &&
-      !dragging && event != FL_LEAVE && event != FL_ENTER &&
-      event != FL_MOVE && event != FL_FOCUS && event != FL_UNFOCUS &&
-      event != FL_KEYBOARD && event != FL_KEYUP && event != FL_MOUSEWHEEL) {
+      !dragging && event != fltk3::LEAVE && event != fltk3::ENTER &&
+      event != fltk3::MOVE && event != fltk3::FOCUS && event != fltk3::UNFOCUS &&
+      event != fltk3::KEYBOARD && event != fltk3::KEYUP && event != fltk3::MOUSEWHEEL) {
     return Fl_Group::handle(event);
   }
 
   switch (event) {
-    case FL_ENTER:
-    case FL_MOVE:
+    case fltk3::ENTER:
+    case fltk3::MOVE:
       if (active_r()) {
         if (Fl::event_inside(text_area.x, text_area.y, text_area.w,
                              text_area.h)) window()->cursor(FL_CURSOR_INSERT);
@@ -4216,8 +4216,8 @@ int Fl_Text_Display::handle(int event) {
         return 0;
       }
 
-    case FL_LEAVE:
-    case FL_HIDE:
+    case fltk3::LEAVE:
+    case fltk3::HIDE:
       if (active_r() && window()) {
         window()->cursor(FL_CURSOR_DEFAULT);
 
@@ -4226,7 +4226,7 @@ int Fl_Text_Display::handle(int event) {
         return 0;
       }
 
-    case FL_PUSH: {
+    case fltk3::PUSH: {
       if (active_r() && window()) {
         if (Fl::event_inside(text_area.x, text_area.y, text_area.w,
                              text_area.h)) window()->cursor(FL_CURSOR_INSERT);
@@ -4235,7 +4235,7 @@ int Fl_Text_Display::handle(int event) {
 
       if (Fl::focus() != this) {
         Fl::focus(this);
-        handle(FL_FOCUS);
+        handle(fltk3::FOCUS);
       }
       if (Fl_Group::handle(event)) return 1;
 
@@ -4260,7 +4260,7 @@ int Fl_Text_Display::handle(int event) {
         } else {
           dragPos = insert_position();
         }
-        return handle(FL_DRAG);
+        return handle(fltk3::DRAG);
       }
       dragging = 1;
       int pos = xy_to_position(Fl::event_x(), Fl::event_y(), CURSOR_POS);
@@ -4287,7 +4287,7 @@ int Fl_Text_Display::handle(int event) {
       return 1;
     }
 
-    case FL_DRAG: {
+    case fltk3::DRAG: {
       if (dragType==DRAG_NONE)
         return 1;
       if (dragType==DRAG_START_DND) {
@@ -4341,7 +4341,7 @@ int Fl_Text_Display::handle(int event) {
       return 1;
     }
 
-    case FL_RELEASE: {
+    case fltk3::RELEASE: {
       if (Fl::event_is_click() && (! Fl::event_clicks()) &&
           buffer()->primary_selection()->includes(dragPos) && !(Fl::event_state()&FL_SHIFT) ) {
         buffer()->unselect(); // clicking in the selection: unselect and move cursor
@@ -4373,7 +4373,7 @@ int Fl_Text_Display::handle(int event) {
       return 1;
     }
 
-    case FL_MOUSEWHEEL:
+    case fltk3::MOUSEWHEEL:
       if (Fl::e_dy && mVScrollBar->visible()) {
         // Issue #879
         Fl_Scrollbar *vs = mVScrollBar;
@@ -4389,9 +4389,9 @@ int Fl_Text_Display::handle(int event) {
       }
       return 0;
 
-    case FL_UNFOCUS:
+    case fltk3::UNFOCUS:
       if (active_r() && window()) window()->cursor(FL_CURSOR_DEFAULT);
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       if (buffer()->selected()) {
         int start, end;
         if (buffer()->selection_position(&start, &end))
@@ -4409,7 +4409,7 @@ int Fl_Text_Display::handle(int event) {
       }
       return 1;
 
-    case FL_KEYBOARD:
+    case fltk3::KEYBOARD:
       // Copy?
       if ((Fl::event_state()&(FL_CTRL|FL_COMMAND)) && Fl::event_key()=='c') {
         if (!buffer()->selected()) return 1;
@@ -4433,10 +4433,10 @@ int Fl_Text_Display::handle(int event) {
 
       break;
 
-    case FL_SHORTCUT:
+    case fltk3::SHORTCUT:
       if (!(shortcut() ? Fl::test_shortcut(shortcut()) : test_shortcut()))
         return 0;
-      if (Fl::visible_focus() && handle(FL_FOCUS)) {
+      if (Fl::visible_focus() && handle(fltk3::FOCUS)) {
         Fl::focus(this);
         return 1;
       }

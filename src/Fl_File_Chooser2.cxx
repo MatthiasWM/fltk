@@ -16,7 +16,7 @@
 //
 
 // The following documentation is placed here because the implementation and
-// header files FL/Fl_File_Chooser.H and src/Fl_File_Chooser.cxx are generated
+// header files fltk3/Fl_File_Chooser.H and src/Fl_File_Chooser.cxx are generated
 // by fluid from src/Fl_File_Chooser.fl.
 
 // *** BEGIN OUT OF SOURCE DOCUMENTATION ***
@@ -275,10 +275,10 @@
 /** \fn int Fl_File_Chooser::visible()
   Returns 1 if the Fl_File_Chooser window is visible.*/
 
-/** \fn Fl_Widget *Fl_File_Chooser::add_extra(Fl_Widget *extra)
+/** \fn fltk3::Widget *Fl_File_Chooser::add_extra(fltk3::Widget *extra)
   Adds an extra widget at the bottom of the Fl_File_Chooser window.
 
-  You can use any Fl_Widget or Fl_Group. If you use an Fl_Group, set its (x, y)
+  You can use any fltk3::Widget or Fl_Group. If you use an Fl_Group, set its (x, y)
   coordinates to (0, 0) and position its children relative to (0, 0) inside
   the Fl_Group container widget. Make sure that all child widgets of the
   Fl_Group are entirely included inside the bounding box of their parents,
@@ -339,15 +339,15 @@
 // Include necessary headers.
 //
 
-#include <FL/Fl_File_Chooser.H>
+#include <fltk3/Fl_File_Chooser.H>
 #include "Fl_System_Driver.H"
-#include <FL/Fl.H>
-#include <FL/filename.H>
-#include <FL/fl_ask.H>
-#include <FL/platform.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/filename.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -535,7 +535,7 @@ Fl_File_Chooser::favoritesButtonCB()
 //
 
 void
-Fl_File_Chooser::favoritesCB(Fl_Widget *w)
+Fl_File_Chooser::favoritesCB(fltk3::Widget *w)
                                         // I - Widget
 {
   int           i;                      // Looping var

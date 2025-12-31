@@ -18,19 +18,19 @@
  \brief System color support
 */
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Screen_Driver.H"
 #include "Fl_System_Driver.H"
-#include <FL/fl_draw.H>
-#include <FL/platform.H>
-#include <FL/math.h>
-#include <FL/fl_utf8.h>
-#include <FL/fl_string_functions.h>
+#include <fltk3/fl_draw.H>
+#include <fltk3/platform.H>
+#include <fltk3/math.h>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_string_functions.h>
 #include "flstring.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <FL/Fl_Pixmap.H>
-#include <FL/Fl_Tiled_Image.H>
+#include <fltk3/Fl_Pixmap.H>
+#include <fltk3/Fl_Tiled_Image.H>
 #include "tile.xpm"
 
 /**

@@ -22,11 +22,11 @@
 #include "../../../libdecor/build/fl_libdecor.h"
 #include "xdg-shell-client-protocol.h"
 #include "../Posix/Fl_Posix_System_Driver.H"
-#include <FL/Fl.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/platform.H>
-#include <FL/fl_ask.H>
-#include <FL/filename.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/filename.H>
 #include <vector>
 #include "../../print_button.h"
 #include <dlfcn.h>
@@ -233,7 +233,7 @@ static void pointer_enter(void *data, struct wl_pointer *wl_pointer, uint32_t se
   need_leave = NULL;
   win = Fl_Wayland_Window_Driver::surface_to_window(surface);
   // Caution: with an Fl_Tooltip this call can hide the window being entered (#1317)
-  if (!win->parent()) Fl::handle(FL_ENTER, win);
+  if (!win->parent()) Fl::handle(fltk3::ENTER, win);
 }
 
 
@@ -251,7 +251,7 @@ static void pointer_leave(void *data, struct wl_pointer *wl_pointer,
     if (need_leave) { // we really left the sub-or-top win and did not enter another
       extern Fl_Window *fl_xmousewin;
       fl_xmousewin = 0;
-      Fl::handle(FL_LEAVE, need_leave);
+      Fl::handle(fltk3::LEAVE, need_leave);
     }
   }
 }
@@ -274,14 +274,14 @@ static void pointer_motion(void *data, struct wl_pointer *wl_pointer,
       ) {
     Fl::e_x_root = 1000000; // make it too large to be in any window
   }
-//fprintf(stderr, "FL_MOVE on win=%p to x:%dx%d root:%dx%d\n", win, Fl::e_x, Fl::e_y, Fl::e_x_root, Fl::e_y_root);
+//fprintf(stderr, "fltk3::MOVE on win=%p to x:%dx%d root:%dx%d\n", win, Fl::e_x, Fl::e_y, Fl::e_x_root, Fl::e_y_root);
   wld_event_time = time;
   set_event_xy(win);
-  Fl::handle(FL_MOVE, win);
+  Fl::handle(fltk3::MOVE, win);
 }
 
 
-//#include <FL/names.h>
+//#include <fltk3/names.h>
 static void pointer_button(void *data,
          struct wl_pointer *wl_pointer,
          uint32_t serial,
@@ -329,10 +329,10 @@ static void pointer_button(void *data,
 
   set_event_xy(win);
   if (state == WL_POINTER_BUTTON_STATE_PRESSED) {
-    event = FL_PUSH;
+    event = fltk3::PUSH;
     checkdouble();
   } else if (state == WL_POINTER_BUTTON_STATE_RELEASED) {
-    event = FL_RELEASE;
+    event = fltk3::RELEASE;
   }
   // fprintf(stderr, "%s %s\n", fl_eventnames[event], win->label() ? win->label():"[]");
   Fl::handle(event, win);
@@ -347,7 +347,7 @@ static void pointer_axis(void *data, struct wl_pointer *wl_pointer,
   wld_event_time = time;
   int delta = wl_fixed_to_int(value);
   if (abs(delta) >= 10) delta /= 10;
-  // fprintf(stderr, "FL_MOUSEWHEEL: %c delta=%d\n", axis==WL_POINTER_AXIS_HORIZONTAL_SCROLL?'H':'V', delta);
+  // fprintf(stderr, "fltk3::MOUSEWHEEL: %c delta=%d\n", axis==WL_POINTER_AXIS_HORIZONTAL_SCROLL?'H':'V', delta);
   // allow both horizontal and vertical movements to be processed by the widget
   if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
     if (Fl::event_shift()) { // shift key pressed: send vertical mousewheel event
@@ -357,7 +357,7 @@ static void pointer_axis(void *data, struct wl_pointer *wl_pointer,
       Fl::e_dx = delta;
       Fl::e_dy = 0;
     }
-    Fl::handle(FL_MOUSEWHEEL, win->top_window());
+    Fl::handle(fltk3::MOUSEWHEEL, win->top_window());
   }
   if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
     if (Fl::event_shift()) { // shift key pressed: send horizontal mousewheel event
@@ -367,7 +367,7 @@ static void pointer_axis(void *data, struct wl_pointer *wl_pointer,
       Fl::e_dx = 0;
       Fl::e_dy = delta;
     }
-    Fl::handle(FL_MOUSEWHEEL, win->top_window());
+    Fl::handle(fltk3::MOUSEWHEEL, win->top_window());
   }
 }
 
@@ -589,7 +589,7 @@ static void wl_keyboard_enter(void *data, struct wl_keyboard *wl_keyboard,
   last_keydown_serial = 0;
   Fl_Window *win = Fl_Wayland_Window_Driver::surface_to_window(surface);
   if (win) {
-    Fl::handle(FL_FOCUS, win);
+    Fl::handle(fltk3::FOCUS, win);
     fl_wl_find(fl_wl_xid(win));
   }
 }
@@ -606,7 +606,7 @@ struct key_repeat_data_t {
 
 static void key_repeat_timer_cb(key_repeat_data_t *key_repeat_data) {
   if (last_keydown_serial == key_repeat_data->serial) {
-    Fl::handle(FL_KEYDOWN, key_repeat_data->window);
+    Fl::handle(fltk3::KEYDOWN, key_repeat_data->window);
     Fl::add_timeout(KEY_REPEAT_INTERVAL, (Fl_Timeout_Handler)key_repeat_timer_cb, key_repeat_data);
   }
   else delete key_repeat_data;
@@ -650,7 +650,7 @@ void Fl_Wayland_Screen_Driver::insertion_point_location(int x, int y, int height
     previous_cursor_y = y;
     previous_cursor_h = height;
     if (Fl::focus()) {
-      Fl_Widget *focuswin = Fl::focus()->window();
+      fltk3::Widget *focuswin = Fl::focus()->window();
       while (focuswin && focuswin->parent()) {
         x += focuswin->x(); y += focuswin->y();
         focuswin = focuswin->window();
@@ -826,7 +826,7 @@ static void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
   // end of part used only without text-input-unstable-v3
 
   wld_event_time = time;
-  int event = (state == WL_KEYBOARD_KEY_STATE_PRESSED ? FL_KEYDOWN : FL_KEYUP);
+  int event = (state == WL_KEYBOARD_KEY_STATE_PRESSED ? fltk3::KEYDOWN : fltk3::KEYUP);
   // Send event to focus-containing top window as defined by FLTK,
   // otherwise send it to Wayland-defined focus window
   Fl_Window *win = ( Fl::focus() ? Fl::focus()->top_window() :
@@ -836,7 +836,7 @@ static void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
     Fl::e_is_click = 0;
     Fl::handle(event, win);
   }
-  if (event == FL_KEYDOWN && status == XKB_COMPOSE_NOTHING &&
+  if (event == fltk3::KEYDOWN && status == XKB_COMPOSE_NOTHING &&
       !(sym >= FL_Shift_L && sym <= FL_Alt_R)) {
     // Handling of key repeats :
     // Use serial argument rather than time to detect repeated keys because
@@ -865,7 +865,7 @@ static void wl_keyboard_leave(void *data, struct wl_keyboard *wl_keyboard,
   last_keydown_serial = 0;
   Fl_Window *win = Fl_Wayland_Window_Driver::surface_to_window(surface);
   if (!win && Fl::focus()) win = Fl::focus()->top_window();
-  if (win) Fl::handle(FL_UNFOCUS, win);
+  if (win) Fl::handle(fltk3::UNFOCUS, win);
   key_vector.clear();
 }
 
@@ -947,14 +947,14 @@ static void send_text_to_fltk(const char *text, bool is_marked, struct wl_surfac
   Fl::e_is_click = 0;
   if (is_marked) { // goes to widget as marked text
     Fl_Wayland_Screen_Driver::next_marked_length = Fl::e_length;
-    Fl::handle(FL_KEYDOWN, win);
+    Fl::handle(fltk3::KEYDOWN, win);
   } else if (text) {
     Fl_Wayland_Screen_Driver::next_marked_length = 0;
-    Fl::handle(FL_KEYDOWN, win);
+    Fl::handle(fltk3::KEYDOWN, win);
     Fl::compose_state = 0;
   } else {
     Fl_Wayland_Screen_Driver::next_marked_length = 0;
-    Fl::handle(FL_KEYDOWN, win);
+    Fl::handle(fltk3::KEYDOWN, win);
   }
 }
 
@@ -1688,7 +1688,7 @@ void Fl_Wayland_Screen_Driver::init_workarea()
   if (need_init_workarea) {
     screen_xywh(workarea_xywh[0], workarea_xywh[1], workarea_xywh[2], workarea_xywh[3], 0);
   }
-  Fl::handle(FL_SCREEN_CONFIGURATION_CHANGED, NULL);
+  Fl::handle(fltk3::SCREEN_CONFIGURATION_CHANGED, NULL);
 }
 
 

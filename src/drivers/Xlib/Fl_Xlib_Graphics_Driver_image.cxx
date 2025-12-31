@@ -47,11 +47,11 @@
 #include "Fl_Xlib_Graphics_Driver.H"
 #include "../X11/Fl_X11_Screen_Driver.H"
 #include "../X11/Fl_X11_Window_Driver.H"
-#  include <FL/Fl.H>
-#  include <FL/fl_draw.H>
-#  include <FL/platform.H>
-#  include <FL/Fl_Image_Surface.H>
-#  include <FL/Fl_Tiled_Image.H>
+#  include <fltk3/Fl.H>
+#  include <fltk3/fl_draw.H>
+#  include <fltk3/platform.H>
+#  include <fltk3/Fl_Image_Surface.H>
+#  include <fltk3/Fl_Tiled_Image.H>
 #  include "../../Fl_Screen_Driver.H"
 #  include "../../Fl_XColor.H"
 #  include "../../flstring.h"

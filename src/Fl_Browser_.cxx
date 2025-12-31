@@ -17,11 +17,11 @@
 #define DISPLAY_SEARCH_BOTH_WAYS_AT_ONCE
 
 #include <stdio.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Widget.H>
-#include <FL/Fl_Browser_.H>
-#include <FL/fl_draw.H>
-#include <FL/fl_utf8.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Widget.H>
+#include <fltk3/Fl_Browser_.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_utf8.h>
 
 
 // This is the base class for browsers.  To be useful it must be
@@ -49,11 +49,11 @@
    4 = redraw all items
 */
 
-static void scrollbar_callback(Fl_Widget* s, void*) {
+static void scrollbar_callback(fltk3::Widget* s, void*) {
   ((Fl_Browser_*)(s->parent()))->vposition(int(((Fl_Scrollbar*)s)->value()));
 }
 
-static void hscrollbar_callback(Fl_Widget* s, void*) {
+static void hscrollbar_callback(fltk3::Widget* s, void*) {
   ((Fl_Browser_*)(s->parent()))->hposition(int(((Fl_Scrollbar*)s)->value()));
 }
 
@@ -103,7 +103,7 @@ int Fl_Browser_::leftedge() const {
 */
 void Fl_Browser_::resize(int X, int Y, int W, int H) {
   int scrollsize = scrollbar_size_ ? scrollbar_size_ : Fl::scrollbar_size();
-  Fl_Widget::resize(X, Y, W, H);
+  fltk3::Widget::resize(X, Y, W, H);
   // move the scrollbars so they can respond to events:
   bbox(X,Y,W,H);
   scrollbar.resize(
@@ -705,8 +705,8 @@ int Fl_Browser_::handle(int event) {
   Fl_Widget_Tracker wp(this);
 
   // must do shortcuts first or the scrollbar will get them...
-  if (event == FL_ENTER || event == FL_LEAVE) return 1;
-  if (event == FL_KEYBOARD && type() >= FL_HOLD_BROWSER) {
+  if (event == fltk3::ENTER || event == fltk3::LEAVE) return 1;
+  if (event == fltk3::KEYBOARD && type() >= FL_HOLD_BROWSER) {
     void* l1 = selection_;
     void* l = l1; if (!l) l = top_; if (!l) l = item_first();
     if (l) {
@@ -785,7 +785,7 @@ J1:
 // The first form calls the callback *before* setting change.
 // The callback may execute an Fl::wait(), resulting in another
 // call of Fl_Browser_::handle() for the same widget. The sequence
-// of events can be an FL_PUSH followed by an FL_RELEASE.
+// of events can be an fltk3::PUSH followed by an fltk3::RELEASE.
 // This second call of Fl_Browser_::handle() may result in a -
 // somewhat unexpected - second concurrent invocation of the callback.
 
@@ -793,7 +793,7 @@ J1:
   static char whichway;
   static int py;
   switch (event) {
-  case FL_PUSH:
+  case fltk3::PUSH:
     if (!Fl::event_inside(X, Y, W, H)) return 0;
     if (Fl::visible_focus()) {
       Fl::focus(this);
@@ -866,7 +866,7 @@ J1:
       }
     }
     return 1;
-  case FL_DRAG:
+  case fltk3::DRAG:
     // do the scrolling first:
     my = Fl::event_y();
     if (my < Y && my < py) {
@@ -914,7 +914,7 @@ J1:
     }
     py = my;
     return 1;
-  case FL_RELEASE:
+  case fltk3::RELEASE:
     if (type() == FL_SELECT_BROWSER) {
       void* t = selection_;
       deselect();
@@ -935,8 +935,8 @@ J1:
       do_callback(FL_REASON_CHANGED);
     }
     return 1;
-  case FL_FOCUS:
-  case FL_UNFOCUS:
+  case fltk3::FOCUS:
+  case fltk3::UNFOCUS:
     if (type() >= FL_HOLD_BROWSER && Fl::visible_focus()) {
       redraw();
       return 1;

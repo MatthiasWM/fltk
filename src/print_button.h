@@ -17,7 +17,7 @@
 #ifndef _SRC_FL_PRINT_BUTTON_H_
 #define _SRC_FL_PRINT_BUTTON_H_
 
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl_Window.H>
 
 // These are all internal functions, do not FL_EXPORT these functions!
 // These functions are mplemented in src/print_button.cxx

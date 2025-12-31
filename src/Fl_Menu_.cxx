@@ -21,8 +21,8 @@
 
 // More code in Fl_Menu_add.cxx
 
-#include <FL/Fl.H>
-#include <FL/Fl_Menu_.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Menu_.H>
 #include "flstring.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,7 +36,7 @@
     \b Example:
     \code
       Fl_Menu_Bar *menubar = 0;
-      void my_menu_callback(Fl_Widget*,void*) {
+      void my_menu_callback(fltk3::Widget*,void*) {
         char name[80];
         if ( menubar->item_pathname(name, sizeof(name)-1) == 0 ) {   // recently picked item
           if ( strcmp(name, "File/&Open") == 0 ) { .. }              // open invoked
@@ -402,7 +402,7 @@ const Fl_Menu_Item* Fl_Menu_::picked(const Fl_Menu_Item* v) {
     if (when()&(FL_WHEN_CHANGED|FL_WHEN_RELEASE)) {
       if (changed() || when()&FL_WHEN_NOT_CHANGED) {
         if (value_ && value_->callback_) {
-          value_->do_callback((Fl_Widget*)this, value_->user_data(), FL_REASON_SELECTED);
+          value_->do_callback((fltk3::Widget*)this, value_->user_data(), FL_REASON_SELECTED);
         } else {
           do_callback(FL_REASON_SELECTED);
         }
@@ -493,7 +493,7 @@ void Fl_Menu_Item::setonly(Fl_Menu_Item const* first) {
  and label string.  menu() is initialized to null.
  */
 Fl_Menu_::Fl_Menu_(int X,int Y,int W,int H,const char* l)
-: Fl_Widget(X,Y,W,H,l),
+: fltk3::Widget(X,Y,W,H,l),
   menu_(NULL),
   value_(NULL),
   prev_value_(NULL),
@@ -575,7 +575,7 @@ void Fl_Menu_::clear() {
 
       // See GitHub issue #875: we can't release "everything"
       // for several reasons. Maybe we can do better if we create
-      // a new menu system based on Fl_Widget in 1.5.0 or later.
+      // a new menu system based on fltk3::Widget in 1.5.0 or later.
 
       // Fl_Image's and Fl_Multi_Label's and their linked objects
       // can't be released automatically. However, we must take care

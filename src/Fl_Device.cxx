@@ -15,9 +15,9 @@
 //
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Device.H>
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Device.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 
 /* Inheritance diagram.
 
@@ -168,7 +168,7 @@ Fl_Device_Plugin *Fl_Device_Plugin::opengl_plugin() {
 
 #if !defined(FL_NO_PRINT_SUPPORT)
 
-#include <FL/Fl_PDF_File_Surface.H>
+#include <fltk3/Fl_PDF_File_Surface.H>
 
 Fl_PDF_File_Surface::Fl_PDF_File_Surface() {
   platform_surface_ = new_platform_pdf_surface_(&out_filename_);

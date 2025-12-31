@@ -151,7 +151,7 @@ public:
   // this one is in fl_wayland_clipboard_dnd.cxx
   void copy(const char *stuff, int len, int clipboard, const char *type) FL_OVERRIDE;
   // this one is in fl_wayland_clipboard_dnd.cxx
-  void paste(Fl_Widget &receiver, int clipboard, const char *type) FL_OVERRIDE;
+  void paste(fltk3::Widget &receiver, int clipboard, const char *type) FL_OVERRIDE;
   // this one is in fl_wayland_clipboard_dnd.cxx
   int clipboard_contains(const char *type) FL_OVERRIDE;
   void set_spot(int font, int height, int x, int y, int w, int h, Fl_Window *win) FL_OVERRIDE;

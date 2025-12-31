@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl_Window.H>
 #include "Fl_Window_Driver.H"
 
 void Fl_Window::border(int b) {
@@ -43,7 +43,7 @@ void Fl_Window::fullscreen() {
     no_fullscreen_w = w();
     no_fullscreen_h = h();
   }
-  if (shown() && !(flags() & Fl_Widget::FULLSCREEN)) {
+  if (shown() && !(flags() & fltk3::Widget::FULLSCREEN)) {
     pWindowDriver->fullscreen_on();
   } else {
     set_flag(FULLSCREEN);
@@ -51,7 +51,7 @@ void Fl_Window::fullscreen() {
 }
 
 void Fl_Window::fullscreen_off(int X,int Y,int W,int H) {
-  if (shown() && (flags() & Fl_Widget::FULLSCREEN)) {
+  if (shown() && (flags() & fltk3::Widget::FULLSCREEN)) {
     pWindowDriver->fullscreen_off(X, Y, W, H);
   } else {
     clear_flag(FULLSCREEN);

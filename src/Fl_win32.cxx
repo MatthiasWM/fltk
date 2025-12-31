@@ -52,25 +52,25 @@ void fl_release_dc(HWND, HDC);
 void fl_cleanup_dc_list(void);
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include "Fl_Window_Driver.H"
 #include "Fl_Screen_Driver.H"
 #include "Fl_Timeout.h"
 #include "print_button.h"
-#include <FL/Fl_Graphics_Driver.H> // for fl_graphics_driver
+#include <fltk3/Fl_Graphics_Driver.H> // for fl_graphics_driver
 #include "drivers/WinAPI/Fl_WinAPI_Window_Driver.H"
 #include "drivers/WinAPI/Fl_WinAPI_System_Driver.H"
 #include "drivers/WinAPI/Fl_WinAPI_Screen_Driver.H"
 #include "drivers/GDI/Fl_GDI_Graphics_Driver.H"
-#include <FL/fl_utf8.h>
-#include <FL/fl_string_functions.h>
-#include <FL/Fl_Window.H>
-#include <FL/fl_draw.H>
-#include <FL/Enumerations.H>
-#include <FL/Fl_Tooltip.H>
-#include <FL/Fl_Paged_Device.H>
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_string_functions.h>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Enumerations.H>
+#include <fltk3/Fl_Tooltip.H>
+#include <fltk3/Fl_Paged_Device.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include "flstring.h"
 #include "drivers/GDI/Fl_Font.H"
 #include <stdio.h>
@@ -171,7 +171,7 @@ static void get_imm_module() {
 // default, but you can disable it by defining NO_TRACK_MOUSE.
 //
 // TrackMouseEvent is only used to support window leave notifications
-// under Windows. It can be used to get FL_LEAVE events, when the
+// under Windows. It can be used to get fltk3::LEAVE events, when the
 // mouse leaves the _main_ application window (FLTK detects subwindow
 // leave events by using normal move events).
 //
@@ -785,11 +785,11 @@ void Fl_WinAPI_Screen_Driver::copy(const char *stuff, int len, int clipboard, co
 }
 
 // Call this when a "paste" operation happens:
-void Fl_WinAPI_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const char *type) {
+void Fl_WinAPI_Screen_Driver::paste(fltk3::Widget &receiver, int clipboard, const char *type) {
   if (!clipboard || (fl_i_own_selection[clipboard] && strcmp(type, Fl::clipboard_plain_text) == 0)) {
     // We already have it, do it quickly without window server.
     // Notice that the text is clobbered if set_selection is
-    // called in response to FL_PASTE!
+    // called in response to fltk3::PASTE!
     char *i = fl_selection_buffer[clipboard];
     if (i == 0L) {
       Fl::e_text = 0;
@@ -807,7 +807,7 @@ void Fl_WinAPI_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const ch
     Fl::e_text = clip_text;
     Fl::e_length = (int)(o - Fl::e_text);
     Fl::e_clipboard_type = Fl::clipboard_plain_text;
-    receiver.handle(FL_PASTE); // this may change Fl::e_text
+    receiver.handle(fltk3::PASTE); // this may change Fl::e_text
     delete[] clip_text;
     Fl::e_text = 0;
   } else if (clipboard) {
@@ -834,7 +834,7 @@ void Fl_WinAPI_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const ch
         Fl::e_text = clip_text;
         Fl::e_length = (int)(b - Fl::e_text);
         Fl::e_clipboard_type = Fl::clipboard_plain_text; // indicates that the paste event is for plain UTF8 text
-        receiver.handle(FL_PASTE);                       // send the FL_PASTE event to the widget. May change Fl::e_text
+        receiver.handle(fltk3::PASTE);                       // send the fltk3::PASTE event to the widget. May change Fl::e_text
         delete[] clip_text;
         Fl::e_text = 0;
       }
@@ -924,7 +924,7 @@ void Fl_WinAPI_Screen_Driver::paste(Fl_Widget &receiver, int clipboard, const ch
         }
         Fl::e_clipboard_data = image;
         Fl::e_clipboard_type = Fl::clipboard_image; // indicates that the paste event is for image data
-        int done = receiver.handle(FL_PASTE);       // send FL_PASTE event to widget
+        int done = receiver.handle(fltk3::PASTE);       // send fltk3::PASTE event to widget
         Fl::e_clipboard_type = "";
         if (done == 0) { // if widget did not handle the event, delete the image
           Fl::e_clipboard_data = NULL;
@@ -1090,13 +1090,13 @@ static int mouse_event(Fl_Window *window, int what, int button,
       Fl::e_is_click = 1;
       px = pmx = Fl::e_x_root;
       py = pmy = Fl::e_y_root;
-      return Fl::handle(FL_PUSH, window);
+      return Fl::handle(fltk3::PUSH, window);
 
     case 2: // release:
       if (!fl_capture)
         ReleaseCapture();
       Fl::e_keysym = FL_Button + button;
-      return Fl::handle(FL_RELEASE, window);
+      return Fl::handle(fltk3::RELEASE, window);
 
     case 3:  // move:
     default: // avoid compiler warning
@@ -1107,7 +1107,7 @@ static int mouse_event(Fl_Window *window, int what, int button,
       pmy = Fl::e_y_root;
       if (abs(Fl::e_x_root - px) > 5 || abs(Fl::e_y_root - py) > 5)
         Fl::e_is_click = 0;
-      return Fl::handle(FL_MOVE, window);
+      return Fl::handle(fltk3::MOVE, window);
   }
 }
 
@@ -1267,7 +1267,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         Fl::fatal("WM_QUIT message");
 
       case WM_CLOSE: // user clicked close box
-        Fl::handle(FL_CLOSE, window);
+        Fl::handle(fltk3::CLOSE, window);
         return 0;
 
       case WM_SYNCPAINT:
@@ -1404,7 +1404,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
           Fl_Window *tw = window;
           while (tw->parent()) // find top level window
             tw = tw->window();
-          // Get a better mouse position for FL_LEAVE event (#87)
+          // Get a better mouse position for fltk3::LEAVE event (#87)
           POINT pt;
           if (GetCursorPos(&pt)) {
             float scale = Fl::screen_driver()->scale(tw->screen_num());
@@ -1415,7 +1415,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             Fl::e_y = clamp(int(pt.y / scale), 0, window->h() - 1);
           }
           Fl::belowmouse(0);
-          Fl::handle(FL_LEAVE, tw);
+          Fl::handle(fltk3::LEAVE, tw);
         }
         track_mouse_win = 0; // force TrackMouseEvent() restart
         break;
@@ -1425,7 +1425,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
           SetFocus(fl_xid(Fl::modal_));
           return 0;
         }
-        Fl::handle(FL_FOCUS, window);
+        Fl::handle(fltk3::FOCUS, window);
         break;
 
       case WM_KILLFOCUS:
@@ -1433,13 +1433,13 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
           // simulate click at remote location (see issue #1166), coordinates are signed 16 bit values
           mouse_event(Fl::grab(), 0, 1, MK_LBUTTON, MAKELPARAM(32767, 0));
         }
-        Fl::handle(FL_UNFOCUS, window);
+        Fl::handle(fltk3::UNFOCUS, window);
         Fl::flush(); // it never returns to main loop when deactivated...
         break;
 
       case WM_SHOWWINDOW:
         if (!window->parent()) {
-          Fl::handle(wParam ? FL_SHOW : FL_HIDE, window);
+          Fl::handle(wParam ? fltk3::SHOW : fltk3::HIDE, window);
         }
         break;
 
@@ -1466,9 +1466,9 @@ static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
           if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & ~1)
             state |= FL_META;
           Fl::e_state = state;
-          Fl::handle(FL_APP_ACTIVATE, nullptr);
+          Fl::handle(fltk3::APP_ACTIVATE, nullptr);
         } else {
-          Fl::handle(FL_APP_DEACTIVATE, nullptr);
+          Fl::handle(fltk3::APP_DEACTIVATE, nullptr);
         }
         break;
 
@@ -1644,13 +1644,13 @@ content  key    keyboard layout
         // end of processing of the +-containing key
 
         if (lParam & (1 << 31)) { // key up events.
-          if (Fl::handle(FL_KEYUP, window))
+          if (Fl::handle(fltk3::KEYUP, window))
             return 0;
           break;
         }
         while (window->parent())
           window = window->window();
-        if (Fl::handle(FL_KEYBOARD, window)) {
+        if (Fl::handle(fltk3::KEYBOARD, window)) {
           if (uMsg == WM_DEADCHAR || uMsg == WM_SYSDEADCHAR)
             Fl::compose_state = 1;
           return 0;
@@ -1672,7 +1672,7 @@ content  key    keyboard layout
           Fl::e_dx = 0;
           Fl::e_dy = dy;
         }
-        Fl::handle(FL_MOUSEWHEEL, window);
+        Fl::handle(fltk3::MOUSEWHEEL, window);
         return 0;
       }
 
@@ -1690,7 +1690,7 @@ content  key    keyboard layout
           Fl::e_dx = dx;
           Fl::e_dy = 0;
         }
-        Fl::handle(FL_MOUSEWHEEL, window);
+        Fl::handle(fltk3::MOUSEWHEEL, window);
         return 0;
       }
 
@@ -1702,9 +1702,9 @@ content  key    keyboard layout
         if (!window->parent()) {
           Fl_Window_Driver::driver(window)->is_maximized(wParam == SIZE_MAXIMIZED);
           if (wParam == SIZE_MINIMIZED || wParam == SIZE_MAXHIDE) {
-            Fl::handle(FL_HIDE, window);
+            Fl::handle(fltk3::HIDE, window);
           } else {
-            Fl::handle(FL_SHOW, window);
+            Fl::handle(fltk3::SHOW, window);
             resize_bug_fix = window;
             window->size(int(ceil(LOWORD(lParam) / scale)), int(ceil(HIWORD(lParam) / scale)));
             // fprintf(LOG,"WM_SIZE size(%.0f,%.0f) graph(%d,%d) s=%.2f\n",
@@ -1798,7 +1798,7 @@ content  key    keyboard layout
 
       case WM_DISPLAYCHANGE: {// when screen configuration (number, size, position) changes
         Fl::call_screen_init();
-        Fl::handle(FL_SCREEN_CONFIGURATION_CHANGED, NULL);
+        Fl::handle(fltk3::SCREEN_CONFIGURATION_CHANGED, NULL);
         return 0;
       }
       case WM_CHANGECBCHAIN:
@@ -2353,7 +2353,7 @@ void Fl_WinAPI_Window_Driver::makeWindow() {
   if (showit) {
     w->set_visible();
     int old_event = Fl::e_number;
-    w->handle(Fl::e_number = FL_SHOW); // get child windows to appear
+    w->handle(Fl::e_number = fltk3::SHOW); // get child windows to appear
     Fl::e_number = old_event;
     w->redraw(); // force draw to happen
   }
@@ -2376,7 +2376,7 @@ void Fl_WinAPI_Window_Driver::makeWindow() {
   if (!im_enabled)
     flImmAssociateContextEx((HWND)x->xid, 0, 0);
 
-  if (w->fullscreen_active()) Fl::handle(FL_FULLSCREEN, w);
+  if (w->fullscreen_active()) Fl::handle(fltk3::FULLSCREEN, w);
 }
 
 

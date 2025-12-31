@@ -16,10 +16,10 @@
 
 #include <config.h>
 #include "Fl_Xlib_Copy_Surface_Driver.H"
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/fl_draw.H>
 #include "../X11/Fl_X11_Screen_Driver.H"
 #if FLTK_USE_CAIRO
 #  include <cairo-xlib.h>

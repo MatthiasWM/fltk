@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/forms.H>
+#include <fltk3/forms.H>
 
 /**
   Creates a new Fl_FormsPixmap widget using the given box type, position,
@@ -25,7 +25,7 @@
 */
 Fl_FormsPixmap::Fl_FormsPixmap(
   Fl_Boxtype t, int X, int Y, int W, int H, const char* L)
-: Fl_Widget(X, Y, W, H, L) {
+: fltk3::Widget(X, Y, W, H, L) {
   box(t);
   b = 0;
   color(FL_BLACK);

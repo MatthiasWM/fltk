@@ -15,7 +15,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Flex.H>
+#include <fltk3/Fl_Flex.H>
 #include <stdlib.h>       // malloc, free, ...
 
 /**
@@ -96,7 +96,7 @@ Fl_Flex::Fl_Flex(int w, int h, int direction)
 
   This constructor sets the position and size of the widget which is suitable
   for top level Fl_Flex widgets but does not set a widget label.
-  Use Fl_Widget::label() to set one if desired.
+  Use fltk3::Widget::label() to set one if desired.
 
   \param[in]  x,y   widget position
   \param[in]  w,h   widget size
@@ -168,7 +168,7 @@ void Fl_Flex::draw() {
   \param[in]  w,h   width and height
 */
 void Fl_Flex::resize(int x, int y, int w, int h) {
-  Fl_Widget::resize(x, y, w, h);
+  fltk3::Widget::resize(x, y, w, h);
   layout();
 } // resize()
 
@@ -213,7 +213,7 @@ void Fl_Flex::layout() {
   // Precalculate remaining space that can be distributed
 
   for (int i = 0; i < nc; i++) {
-    Fl_Widget *c = child(i);
+    fltk3::Widget *c = child(i);
     if (c->visible()) {
       if (fixed(c)) {
         space -= (hori ? c->w() : c->h());
@@ -240,7 +240,7 @@ void Fl_Flex::layout() {
   }
 
   for (int i = 0; i < nc; i++) {
-    Fl_Widget *c = child(i);
+    fltk3::Widget *c = child(i);
     if (!c->visible())
       continue;
 
@@ -298,7 +298,7 @@ void Fl_Flex::end() {
   \param[in]  child widget to be affected
   \param[in]  size  width (Fl_Flex::HORIZONTAL) or height (Fl_Flex::VERTICAL)
 */
-void Fl_Flex::fixed(Fl_Widget *child, int size) {
+void Fl_Flex::fixed(fltk3::Widget *child, int size) {
   if (size <= 0)
     size = 0;
 
@@ -329,7 +329,7 @@ void Fl_Flex::fixed(Fl_Widget *child, int size) {
   if (idx == -1) {
     if (fixed_size_size_ == fixed_size_alloc_) {
       fixed_size_alloc_ = alloc_size(fixed_size_alloc_);
-      fixed_size_ = (Fl_Widget **)realloc(fixed_size_, fixed_size_alloc_ * sizeof(Fl_Widget *));
+      fixed_size_ = (fltk3::Widget **)realloc(fixed_size_, fixed_size_alloc_ * sizeof(fltk3::Widget *));
     }
     fixed_size_[fixed_size_size_] = child;
     fixed_size_size_++;
@@ -351,7 +351,7 @@ void Fl_Flex::fixed(Fl_Widget *child, int size) {
   \retval     1   the widget has a fixed size
   \retval     0  the widget resizes dynamically
 */
-int Fl_Flex::fixed(Fl_Widget *w) const {
+int Fl_Flex::fixed(fltk3::Widget *w) const {
   for (int i = 0; i < fixed_size_size_; i++) {
     if (w == fixed_size_[i]) {
       return 1;

@@ -21,10 +21,10 @@
  */
 
 #include <config.h>
-#include <FL/Fl.H>
-#include <FL/Fl_Widget.H>
-#include <FL/fl_draw.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Widget.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/platform.H>
 
 #include "Fl_GDI_Graphics_Driver.H"
 

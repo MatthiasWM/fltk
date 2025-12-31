@@ -16,8 +16,8 @@
 
 #ifndef __CYGWIN__
 /* Emulation of POSIX scandir() call with error messages */
-#include <FL/platform_types.h>
-#include <FL/fl_utf8.h>
+#include <fltk3/platform_types.h>
+#include <fltk3/fl_utf8.h>
 #include "flstring.h"
 #include <windows.h>
 #include <stdlib.h>

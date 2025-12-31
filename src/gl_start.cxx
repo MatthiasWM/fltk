@@ -29,12 +29,12 @@
 #include <config.h>
 #if HAVE_GL
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/fl_draw.H>
-#include <FL/gl.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/gl.h>
 class Fl_Gl_Choice;
-#include <FL/Fl_Gl_Window.H>
+#include <fltk3/Fl_Gl_Window.H>
 #include "Fl_Gl_Window_Driver.H"
 
 /**

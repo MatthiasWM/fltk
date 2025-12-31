@@ -72,10 +72,10 @@
 #include "Fl_Quartz_Graphics_Driver.H"
 #include "Fl_Font.H"
 #include <math.h>
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/fl_utf8.h> // for fl_utf8toUtf16()
-#include <FL/fl_string_functions.h> // fl_strdup()
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_utf8.h> // for fl_utf8toUtf16()
+#include <fltk3/fl_string_functions.h> // fl_strdup()
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_8
 const NSUInteger kCTFontOrientationHorizontal = kCTFontHorizontalOrientation;

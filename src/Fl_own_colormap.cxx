@@ -22,7 +22,7 @@
 // and copy the first 16 colors from the default colormap so that we won't
 // get huge color changes when switching windows.
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Screen_Driver.H"
 
 /** \fn Fl::own_colormap()

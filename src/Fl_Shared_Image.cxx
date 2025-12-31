@@ -16,15 +16,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <FL/fl_utf8.h>
+#include <fltk3/fl_utf8.h>
 #include "flstring.h"
 
-#include <FL/Fl.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/Fl_XBM_Image.H>
-#include <FL/Fl_XPM_Image.H>
-#include <FL/Fl_Preferences.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/Fl_XBM_Image.H>
+#include <fltk3/Fl_XPM_Image.H>
+#include <fltk3/Fl_Preferences.H>
+#include <fltk3/fl_draw.H>
 
 //
 // Global class vars...

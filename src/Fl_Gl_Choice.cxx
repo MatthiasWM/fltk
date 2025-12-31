@@ -22,11 +22,11 @@
  \addtogroup DriverDeveloper
  \{
  */
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Gl_Choice.H"
-#include <FL/Fl_Gl_Window.H>
+#include <fltk3/Fl_Gl_Window.H>
 #include "Fl_Gl_Window_Driver.H"
-#include <FL/gl_draw.H>
+#include <fltk3/gl_draw.H>
 #include <stdlib.h>
 #ifndef GL_CURRENT_PROGRAM
 // from glew.h in Windows, glext.h in Unix, not used by FLTK's macOS platform

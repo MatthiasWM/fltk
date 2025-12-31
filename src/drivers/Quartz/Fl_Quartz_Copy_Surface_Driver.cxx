@@ -14,8 +14,8 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl_Copy_Surface.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Copy_Surface.H>
+#include <fltk3/platform.H>
 #include "Fl_Quartz_Graphics_Driver.H"
 #include "Fl_Quartz_Copy_Surface_Driver.H"
 #include "../Cocoa/Fl_Cocoa_Window_Driver.H"

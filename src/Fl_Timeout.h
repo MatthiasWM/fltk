@@ -18,7 +18,7 @@
 #ifndef _src_Fl_Timeout_h_
 #define _src_Fl_Timeout_h_
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 
 #define FL_TIMEOUT_DEBUG 0        // 1 = include debugging features, 0 = no
 

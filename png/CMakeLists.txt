@@ -137,5 +137,5 @@ endif()
 #######################################################################
 
 install(FILES png.h pngconf.h pnglibconf.h pngprefix.h
-        DESTINATION ${FLTK_INCLUDEDIR}/FL/images
+        DESTINATION ${FLTK_INCLUDEDIR}/fltk3/images
 )

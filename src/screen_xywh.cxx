@@ -14,8 +14,8 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include "Fl_Screen_Driver.H"
 #include <config.h>
 

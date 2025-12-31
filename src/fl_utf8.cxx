@@ -16,11 +16,11 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
-#include <FL/filename.H>
+#include <fltk3/filename.H>
 #include <stdarg.h>
-#include <FL/fl_utf8.h>
+#include <fltk3/fl_utf8.h>
 #include "utf8_internal.h"
 
 #include <sys/stat.h>
@@ -67,7 +67,7 @@ static int Toupper(int ucs) {
 
   Example:
   \code{.cpp}
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   bool test(const char *str) {
     if (str == nullptr) return true;
@@ -130,7 +130,7 @@ int fl_utf8len(char c)
 
   Example:
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   char mixed_string[] = "Hello \xFF\x80 world"; // Contains invalid UTF-8
   char *p = mixed_string;
@@ -177,7 +177,7 @@ int fl_utf8len1(char c)
 
  Example:
  \code
- #include <FL/fl_utf8.h>
+ #include <fltk3/fl_utf8.h>
 
  return fl_utf8strlen("über", 1); // returns 2, the ü is encoded 0xC3, 0xBC
  \endcode
@@ -209,7 +209,7 @@ int fl_utf8strlen(const char *text, int len)
 
  Example:
  \code
- #include <FL/fl_utf8.h>
+ #include <fltk3/fl_utf8.h>
 
  const char *str = "äöü"; // strlen(str) is 6
  return fl_utf_nb_char(str, strlen(str)); // returns 3
@@ -248,7 +248,7 @@ fl_utf_nb_char(
   collation sequences into account. The limitations of `fl_tolower()` apply.
 
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   return fl_utf_strncasecmp("über", "Über"); // returns 0
   return fl_utf_strncasecmp("Meier", "Müller"); // returns a negative value
@@ -342,7 +342,7 @@ int fl_toupper(unsigned int ucs)
 
   Example:
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   const char *str = "ÇA VA?";
   auto src_len = strlen(str)
@@ -487,7 +487,7 @@ char * fl_utf2mbcs(const char *s)
 
   Example:
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   fl_putenv("cœur=frère")
   return fl_getenv("cœur");  // return UTF-8 value on all platforms
@@ -545,7 +545,7 @@ int fl_putenv(const char* var) {
   standard open() function fails with UTF-8 encoded non-ASCII filenames.
 
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   void test() {
     int fd = fl_open("¡Peligro!", O_RDWR);
@@ -608,7 +608,7 @@ int fl_open_ext(const char* fname, int binary, int oflags, ...) {
   standard fopen() function fails with UTF-8 encoded non-ASCII filenames.
 
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   void test() {
     FILE *f = fl_fopen("¡Peligro!", "rw");
@@ -634,7 +634,7 @@ FILE *fl_fopen(const char* f, const char *mode) {
   On platforms other than Windows this function calls system() directly.
 
   \code
-  #include <FL/fl_utf8.h>
+  #include <fltk3/fl_utf8.h>
 
   fl_system("echo \"Hauptstraße 2\""");
   \endcode

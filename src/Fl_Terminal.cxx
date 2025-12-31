@@ -31,11 +31,11 @@
 #include <assert.h>
 #include <string>
 
-#include <FL/Fl.H>
-#include <FL/Fl_Terminal.H>
-#include <FL/fl_utf8.h> // fl_utf8len1
-#include <FL/fl_draw.H>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Terminal.H>
+#include <fltk3/fl_utf8.h> // fl_utf8len1
+#include <fltk3/fl_draw.H>
+#include <fltk3/fl_string_functions.h>
 
 /////////////////////////////////
 ////// Static Functions /////////
@@ -142,7 +142,7 @@ Fl_Terminal::Selection::Selection(Fl_Terminal *terminal)
 {
   // These are used to set/get the mouse selection
   srow_ = scol_ = erow_ = ecol_ = 0;
-  // FL_PUSH event row/col
+  // fltk3::PUSH event row/col
   push_clear();
   selectionfgcolor_ = FL_BLACK;
   selectionbgcolor_ = FL_WHITE;
@@ -650,7 +650,7 @@ int Fl_Terminal::Utf8Char::pwidth_int(void) const {
 //    If a \p grp widget is specified (i.e. not NULL), don't let the color \p col be
 //    influenced by the attribute bits /if/ \p col matches the \p grp widget's own color().
 //
-Fl_Color Fl_Terminal::Utf8Char::attr_color_(Fl_Color col, const Fl_Widget *grp) const {
+Fl_Color Fl_Terminal::Utf8Char::attr_color_(Fl_Color col, const fltk3::Widget *grp) const {
   // Don't modify color if it's the special 'see thru' color 0xffffffff or widget's color()
   if (grp && ((col == 0xffffffff) || (col == grp->color()))) return grp->color();
   switch (attrib_ & (Fl_Terminal::BOLD|Fl_Terminal::DIM)) {
@@ -665,7 +665,7 @@ Fl_Color Fl_Terminal::Utf8Char::attr_color_(Fl_Color col, const Fl_Widget *grp) 
 //    If a \p grp widget is specified (i.e. not NULL), don't let the color \p col be
 //    influenced by the attribute bits /if/ \p col matches the \p grp widget's own color().
 //
-Fl_Color Fl_Terminal::Utf8Char::attr_fg_color(const Fl_Widget *grp) const {
+Fl_Color Fl_Terminal::Utf8Char::attr_fg_color(const fltk3::Widget *grp) const {
   if (grp && (fgcolor_ == 0xffffffff))           // see thru color?
     { return grp->color(); }                     // return grp's color()
   return (charflags_ & Fl_Terminal::FG_XTERM)    // fg is an xterm color?
@@ -673,7 +673,7 @@ Fl_Color Fl_Terminal::Utf8Char::attr_fg_color(const Fl_Widget *grp) const {
            : fgcolor();                          // ..ignore attributes.
 }
 
-Fl_Color Fl_Terminal::Utf8Char::attr_bg_color(const Fl_Widget *grp) const {
+Fl_Color Fl_Terminal::Utf8Char::attr_bg_color(const fltk3::Widget *grp) const {
   if (grp && (bgcolor_ == 0xffffffff))           // see thru color?
     { return grp->color(); }                     // return grp's color()
   return (charflags_ & Fl_Terminal::BG_XTERM)    // bg is an xterm color?
@@ -3319,7 +3319,7 @@ int Fl_Terminal::handle_unknown_char(int drow, int dcol) {
 // Handle user interactive scrolling
 //    Note: this callback shared by vertical and horizontal scrollbars
 //
-void Fl_Terminal::scrollbar_cb(Fl_Widget*, void* userdata) {
+void Fl_Terminal::scrollbar_cb(fltk3::Widget*, void* userdata) {
   Fl_Terminal *o = (Fl_Terminal*)userdata;
   o->redraw();
 }
@@ -3837,13 +3837,13 @@ int Fl_Terminal::handle_selection(int e) {
   bool is_rowcol = (xy_to_glob_rowcol(Fl::event_x(), Fl::event_y(), grow, gcol, gcr) > 0)
                    ? true : false;
   switch (e) {
-    case FL_PUSH: {
+    case fltk3::PUSH: {
       // SHIFT-LEFT-CLICK? Extend or start new
       if (Fl::event_state(FL_SHIFT)) {
         if (is_selection()) {                           // extend if select in progress
           selection_extend(Fl::event_x(), Fl::event_y());
           redraw();
-          return 1;                                     // express interest in FL_DRAG
+          return 1;                                     // express interest in fltk3::DRAG
         }
       } else {                                          // Start a new selection
         select_.push_rowcol(grow, gcol, gcr);
@@ -3853,7 +3853,7 @@ int Fl_Terminal::handle_selection(int e) {
             case 1: select_word(grow, gcol); break;
             case 2: select_line(grow); break;
           }
-          return 1;                    // express interest in FL_DRAG
+          return 1;                    // express interest in fltk3::DRAG
         }
       }
       // Left-Click outside terminal area?
@@ -3864,11 +3864,11 @@ int Fl_Terminal::handle_selection(int e) {
       }
       return 0;                                         // event NOT handled
     }
-    case FL_DRAG: {
+    case fltk3::DRAG: {
       if (is_rowcol) {
         if (!is_selection()) {                          // no selection yet?
-          if (select_.dragged_off(grow, gcol, gcr)) {   // dragged off FL_PUSH? enough to start
-            select_.start_push();                       // ..start drag with FL_PUSH position
+          if (select_.dragged_off(grow, gcol, gcr)) {   // dragged off fltk3::PUSH? enough to start
+            select_.start_push();                       // ..start drag with fltk3::PUSH position
           }
         } else {
           if (select_.extend(grow, gcol, gcr)) redraw(); // redraw if selection changed
@@ -3878,7 +3878,7 @@ int Fl_Terminal::handle_selection(int e) {
       handle_selection_autoscroll();
       return 1;
     }
-    case FL_RELEASE: {
+    case fltk3::RELEASE: {
       select_.end();
       // middlemouse gets immediate copy of selection
       if (is_selection()) {
@@ -3902,14 +3902,14 @@ int Fl_Terminal::handle(int e) {
   if (Fl::event_inside(scrollbar)) return ret;             // early exit for scrollbar
   if (Fl::event_inside(hscrollbar)) return ret;             // early exit for hscrollbar
   switch (e) {
-    case FL_ENTER:
-    case FL_LEAVE:
+    case fltk3::ENTER:
+    case fltk3::LEAVE:
       return 1;
-    case FL_UNFOCUS:
-    case FL_FOCUS:
+    case fltk3::UNFOCUS:
+    case fltk3::FOCUS:
       redraw();
       return Fl::visible_focus() ? 1 : 0;
-    case FL_KEYBOARD:
+    case fltk3::KEYBOARD:
       // ^C -- Copy?
       if ((Fl::event_state()&(FL_CTRL|FL_COMMAND)) && Fl::event_key()=='c') {
         const char *copy = is_selection() ? selection_text() : fl_strdup(" ");
@@ -3940,21 +3940,21 @@ int Fl_Terminal::handle(int e) {
         }
       }
       break;
-    case FL_PUSH:
-      if (handle(FL_FOCUS)) Fl::focus(this);              // Accepting focus? take it
+    case fltk3::PUSH:
+      if (handle(fltk3::FOCUS)) Fl::focus(this);              // Accepting focus? take it
       if (Fl::event_button() == FL_LEFT_MOUSE)            // LEFT-CLICK?
-        { ret = handle_selection(FL_PUSH); }
+        { ret = handle_selection(fltk3::PUSH); }
       break;
-    case FL_DRAG:
-      // TODO: This logic can probably be improved to allow an FL_PUSH in margins
+    case fltk3::DRAG:
+      // TODO: This logic can probably be improved to allow an fltk3::PUSH in margins
       //       to drag into terminal area to start a selection.
       if (Fl::event_button() == FL_LEFT_MOUSE)            // LEFT-DRAG?
-        { ret = handle_selection(FL_DRAG); }
+        { ret = handle_selection(fltk3::DRAG); }
       break;
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       // Selection mouse release?
       if (Fl::event_button() == FL_LEFT_MOUSE)            // LEFT-RELEASE?
-        { ret = handle_selection(FL_RELEASE); }
+        { ret = handle_selection(fltk3::RELEASE); }
       // Disable autoscroll timer, if any
       if (autoscroll_dir_)
         { Fl::remove_timeout(autoscroll_timer_cb, this); autoscroll_dir_ = 0; }
@@ -4147,7 +4147,7 @@ void Fl_Terminal::history_lines(int val) { history_rows(val); }
   also supported. Example:
   \par
   \code
-  #include <FL/Fl_Terminal.H>
+  #include <fltk3/Fl_Terminal.H>
   int main(..) {
       :
       // Create a terminal, and append some messages to it

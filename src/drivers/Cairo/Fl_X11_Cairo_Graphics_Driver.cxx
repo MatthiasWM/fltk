@@ -19,7 +19,7 @@
 */
 
 #include "Fl_X11_Cairo_Graphics_Driver.H"
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include <cairo/cairo.h>
 #include <pango/pangocairo.h>
 #include <stdlib.h>

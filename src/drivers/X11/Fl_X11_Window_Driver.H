@@ -25,7 +25,7 @@
 
 #include "../../Fl_Window_Driver.H"
 #include <config.h>
-#include <FL/platform.H> // for Cursor
+#include <fltk3/platform.H> // for Cursor
 
 #if FLTK_USE_CAIRO
 typedef struct _cairo cairo_t;

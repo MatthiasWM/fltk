@@ -20,10 +20,10 @@
 // Include necessary header files...
 //
 
-#include <FL/Fl_BMP_Image.H>
+#include <fltk3/Fl_BMP_Image.H>
 #include "Fl_Image_Reader.h"
-#include <FL/fl_utf8.h>
-#include <FL/Fl.H>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/Fl.H>
 #include <stdio.h>
 #include <stdlib.h>
 

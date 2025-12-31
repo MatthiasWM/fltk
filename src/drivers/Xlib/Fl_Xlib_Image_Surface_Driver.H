@@ -17,7 +17,7 @@
 #ifndef FL_XLIB_IMAGE_SURFACE_DRIVER_H
 #define FL_XLIB_IMAGE_SURFACE_DRIVER_H
 
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 #if FLTK_USE_CAIRO
 # include <cairo/cairo.h>
 #endif // FLTK_USE_CAIRO

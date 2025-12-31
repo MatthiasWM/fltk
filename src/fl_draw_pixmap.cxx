@@ -31,10 +31,10 @@
 // transparency added, color cube not required, etc.      -erco Oct 20 2013
 
 #include <config.h>
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
-#include <FL/platform.H>
-#include <FL/fl_draw.H>
+#include <fltk3/platform.H>
+#include <fltk3/fl_draw.H>
 #include <stdio.h>
 #include "flstring.h"
 

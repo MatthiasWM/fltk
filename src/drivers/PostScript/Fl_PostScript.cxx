@@ -16,31 +16,31 @@
 
 #include <config.h>
 #if !defined(FL_NO_PRINT_SUPPORT)
-#include <FL/Fl.H>
-#include <FL/fl_ask.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_ask.H>
+#include <fltk3/fl_draw.H>
 #include <stdio.h>
 #include "Fl_PostScript_Graphics_Driver.H"
-#include <FL/Fl_PDF_File_Surface.H>
-#include <FL/Fl_PostScript.H>
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_PDF_File_Surface.H>
+#include <fltk3/Fl_PostScript.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
 #include "../../Fl_System_Driver.H"
-#include <FL/Fl_Choice.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Check_Button.H>
-#include <FL/Fl_Return_Button.H>
-#include <FL/fl_string_functions.h>
-#include <FL/fl_callback_macros.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Choice.H>
+#include <fltk3/Button.H>
+#include <fltk3/Fl_Check_Button.H>
+#include <fltk3/Fl_Return_Button.H>
+#include <fltk3/fl_string_functions.h>
+#include <fltk3/fl_callback_macros.H>
+#include <fltk3/platform.H>
 #include <stdarg.h>
 #include <time.h>
 #if USE_PANGO
-#include <FL/math.h> // for M_PI
+#include <fltk3/math.h> // for M_PI
 #include <pango/pangocairo.h>
 #include <cairo/cairo-ps.h>
 #include <cairo/cairo-pdf.h>
-#include <FL/Fl_Preferences.H>
+#include <fltk3/Fl_Preferences.H>
 #  if ! PANGO_VERSION_CHECK(1,10,0)
 #    error "Requires Pango 1.10 or higher"
 #  endif
@@ -1656,7 +1656,7 @@ static int update_format_layout(int rank, Fl_Paged_Device::Page_Layout layout,
   orientation->value(layout == Fl_Paged_Device::PORTRAIT ? 0 : 1);
   Fl_Return_Button *ok = new Fl_Return_Button(orientation->x() + orientation->w() - 55,
                                               psize->y() + psize->h() + 10, 55, 30, fl_ok);
-  FL_INLINE_CALLBACK_4( ok, Fl_Widget*, b, ok,
+  FL_INLINE_CALLBACK_4( ok, fltk3::Widget*, b, ok,
                        int*, pstatus, &status,
                        Fl_Choice*, psize, psize,
                        Fl_Choice*, orientation, orientation,
@@ -1664,8 +1664,8 @@ static int update_format_layout(int rank, Fl_Paged_Device::Page_Layout layout,
     *pstatus = menu_to_size[psize->value()] + 0x100 * orientation->value();
     b->window()->do_callback();
                        } );
-  Fl_Button *cancel = new Fl_Button(ok->x() - 90, psize->y() + psize->h() + 10, 70, 30, fl_cancel);
-  FL_INLINE_CALLBACK_1( cancel, Fl_Widget*, wid, cancel, { wid->window()->do_callback(); } );
+  fltk3::Button *cancel = new fltk3::Button(ok->x() - 90, psize->y() + psize->h() + 10, 70, 30, fl_cancel);
+  FL_INLINE_CALLBACK_1( cancel, fltk3::Widget*, wid, cancel, { wid->window()->do_callback(); } );
   modal->end();
   modal->set_modal();
   modal->show();

@@ -19,9 +19,9 @@
 
 #include <config.h>
 #if HAVE_GL
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "../../Fl_Gl_Window_Driver.H"
-#include <FL/gl.h>
+#include <fltk3/gl.h>
 
 class Fl_WinAPI_Gl_Window_Driver : public Fl_Gl_Window_Driver {
   friend Fl_Gl_Window_Driver* Fl_Gl_Window_Driver::newGlWindowDriver(Fl_Gl_Window *);

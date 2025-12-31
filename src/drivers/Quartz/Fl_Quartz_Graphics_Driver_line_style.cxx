@@ -14,8 +14,8 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/fl_draw.H>
-#include <FL/platform.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/platform.H>
 
 
 /**

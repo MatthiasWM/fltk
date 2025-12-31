@@ -21,9 +21,9 @@
 //
 // Preprocessor macro FLTK_HAVE_CAIRO is defined for both options.
 // Preprocessor macro FLTK_HAVE_CAIRO_EXT is defined only for "CAIRO_EXT".
-// Both macros are defined in 'FL/fl_config.h'.
+// Both macros are defined in 'fltk3/fl_config.h'.
 
-#include "Fl_Private.H" // includes <FL/fl_config.h>
+#include "Fl_Private.H" // includes <fltk3/fl_config.h>
 
 #ifdef FLTK_HAVE_CAIRO
 
@@ -35,8 +35,8 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#include <FL/platform.H>
-#include <FL/Fl_Window.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Window.H>
 
 // Cairo is currently supported for the following platforms:
 // Windows, macOS (Apple Quartz), X11, Wayland

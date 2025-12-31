@@ -108,7 +108,7 @@ public:
   // this one is in Fl_x.cxx
   void copy(const char *stuff, int len, int clipboard, const char *type) FL_OVERRIDE;
   // this one is in Fl_x.cxx
-  void paste(Fl_Widget &receiver, int clipboard, const char *type) FL_OVERRIDE;
+  void paste(fltk3::Widget &receiver, int clipboard, const char *type) FL_OVERRIDE;
   // this one is in Fl_x.cxx
   int clipboard_contains(const char *type) FL_OVERRIDE;
   // this one is in Fl_x.cxx

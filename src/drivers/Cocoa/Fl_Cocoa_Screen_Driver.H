@@ -98,7 +98,7 @@ public:
   Fl_RGB_Image *read_win_rectangle(int X, int Y, int w, int h, Fl_Window *win, bool may_capture_subwins, bool *did_capture_subwins) FL_OVERRIDE;
   void default_icons(const Fl_RGB_Image *icons[], int count) FL_OVERRIDE;
   void copy(const char *stuff, int len, int clipboard, const char *type) FL_OVERRIDE;
-  void paste(Fl_Widget &receiver, int clipboard, const char *type) FL_OVERRIDE;
+  void paste(fltk3::Widget &receiver, int clipboard, const char *type) FL_OVERRIDE;
   int clipboard_contains(const char *type) FL_OVERRIDE;
   void set_spot(int font, int size, int X, int Y, int W, int H, Fl_Window *win) FL_OVERRIDE;
   void reset_spot() FL_OVERRIDE;

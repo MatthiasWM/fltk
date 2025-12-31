@@ -15,7 +15,7 @@
 //
 
 #include "Fl_Quartz_Graphics_Driver.H"
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 
 /**
   \file quartz_arci.cxx

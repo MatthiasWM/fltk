@@ -21,16 +21,16 @@
  */
 
 #include "Fl_Screen_Driver.H"
-#include <FL/Fl_Image.H>
-#include <FL/Fl.H>
-#include <FL/platform.H>
-#include <FL/Fl_Group.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Input.H>
+#include <fltk3/Fl_Image.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
+#include <fltk3/Fl_Group.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Input.H>
 #include "Fl_Window_Driver.H"
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Tooltip.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_Box.H>
+#include <fltk3/Fl_Tooltip.H>
 #include <string.h> // for memchr
 
 // these are set by Fl::args() and override any system colors: from Fl_get_system_colors.cxx
@@ -282,7 +282,7 @@ Fl_RGB_Image *Fl_Screen_Driver::traverse_to_gl_subwindows(Fl_Group *g, int x, in
   float full_img_scale =  (full_img && w > 0 ? float(full_img->data_w())/w : 1);
   int n = (captured_subwin ? 0 : g->children());
   for (int i = 0; i < n; i++) {
-    Fl_Widget *c = g->child(i);
+    fltk3::Widget *c = g->child(i);
     if ( !c->visible() || !c->as_group()) continue;
     if ( c->as_window() ) {
       int origin_x = x; // compute intersection of x,y,w,h and the c window
@@ -476,7 +476,7 @@ void Fl_Screen_Driver::transient_scale_display(float f, int nscreen)
 int Fl_Screen_Driver::scale_handler(int event)
 {
   if (!keyboard_screen_scaling) return 0;
-  if ( event != FL_SHORTCUT || !Fl::event_command() ) return 0;
+  if ( event != fltk3::SHORTCUT || !Fl::event_command() ) return 0;
   enum {none, zoom_in, zoom_out, zoom_reset} zoom = none;
   if (Fl::test_shortcut(FL_COMMAND+'+')) zoom = zoom_in;
   else if (Fl::test_shortcut(FL_COMMAND+'-')) zoom = zoom_out;
@@ -512,7 +512,7 @@ int Fl_Screen_Driver::scale_handler(int event)
   if (zoom != none) {
     int i, count;
     if (Fl::grab()) return 0; // don't rescale when menu windows are on
-    Fl_Widget *wid = Fl::focus();
+    fltk3::Widget *wid = Fl::focus();
     if (!wid) return 0;
     Fl_Window *top = wid->top_window();
     int screen = Fl_Window_Driver::driver(top)->screen_num();
@@ -571,7 +571,7 @@ int Fl_Screen_Driver::scale_handler(int event)
       screen_dr->rescale_all_windows_from_screen(screen, f * initial_scale, screen_dr->scale(screen));
     }
     Fl_Screen_Driver::transient_scale_display(f, screen);
-    Fl::handle(FL_ZOOM_EVENT, NULL);
+    Fl::handle(fltk3::ZOOM_EVENT, NULL);
     return 1;
   }
   return 0;

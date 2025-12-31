@@ -21,11 +21,11 @@
 
 #include <config.h>
 #include "Fl_OpenGL_Graphics_Driver.H"
-#include <FL/gl.h>
-#include <FL/Fl_Gl_Window.H>
-#include <FL/Fl_RGB_Image.H>
-#include <FL/Fl.H>
-#include <FL/fl_draw.H>
+#include <fltk3/gl.h>
+#include <fltk3/Fl_Gl_Window.H>
+#include <fltk3/Fl_RGB_Image.H>
+#include <fltk3/Fl.H>
+#include <fltk3/fl_draw.H>
 
 
 // Implementation of fl_color(i), fl_color(r,g,b).

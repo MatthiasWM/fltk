@@ -23,8 +23,8 @@
 //
 
 #include <config.h>
-#include <FL/filename.H>
-#include <FL/Fl.H>
+#include <fltk3/filename.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,7 +56,7 @@
 
  \b Example
  \code
- #include <FL/filename.H>
+ #include <fltk3/filename.H>
  [..]
  char errmsg[512];
  if ( !fl_open_uri("http://google.com/", errmsg, sizeof(errmsg)) ) {

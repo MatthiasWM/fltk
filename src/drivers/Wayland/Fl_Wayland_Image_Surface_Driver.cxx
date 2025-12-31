@@ -14,7 +14,7 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "Fl_Wayland_Graphics_Driver.H"
 #include "Fl_Wayland_Window_Driver.H"
 #include "Fl_Wayland_Image_Surface_Driver.H"

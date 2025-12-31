@@ -17,8 +17,8 @@
 #ifndef FL_QUARTZ_IMAGE_SURFACE_DRIVER_H
 #define FL_QUARTZ_IMAGE_SURFACE_DRIVER_H
 
-#include <FL/Fl_Image_Surface.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/platform.H>
 
 class Fl_Quartz_Image_Surface_Driver : public Fl_Image_Surface_Driver {
 private:

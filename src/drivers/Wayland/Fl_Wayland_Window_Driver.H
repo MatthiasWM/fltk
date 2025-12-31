@@ -24,7 +24,7 @@
 
 #include <config.h>
 #include "../../Fl_Window_Driver.H"
-#include <FL/Fl_Plugin.H>
+#include <fltk3/Fl_Plugin.H>
 #include "Fl_Wayland_Screen_Driver.H"
 #include "Fl_Wayland_Graphics_Driver.H"
 

@@ -16,7 +16,7 @@
 
 // Set the default visual according to passed switches:
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_Screen_Driver.H"
 
 /** \fn  Fl::visual(int flags)

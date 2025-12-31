@@ -16,15 +16,15 @@
 
 #include <config.h>
 #if HAVE_GL
-#include <FL/platform.H>
-#include <FL/gl.h>
+#include <fltk3/platform.H>
+#include <fltk3/gl.h>
 #include "../../Fl_Gl_Choice.H"
 #include "../../Fl_Screen_Driver.H"
 #include "Fl_Cocoa_Window_Driver.H"
 #include "Fl_Cocoa_Gl_Window_Driver.H"
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include <OpenGL/OpenGL.h>
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include <dlfcn.h>
 
 #import <Cocoa/Cocoa.h>

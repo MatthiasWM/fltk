@@ -17,7 +17,7 @@
 // Forms library compatibility functions.
 // Many more functions are defined as inlines in forms.h!
 
-#include <FL/forms.H>
+#include <fltk3/forms.H>
 #include <stdlib.h>
 
 char fl_flip = 2;
@@ -29,8 +29,8 @@ void Fl_Group::forms_end() {
   // set the dimensions of a group to surround contents
   const int nc = children();
   if (nc && !w()) {
-    Fl_Widget*const* a = array();
-    Fl_Widget* o = *a++;
+    fltk3::Widget*const* a = array();
+    fltk3::Widget* o = *a++;
     int rx = o->x();
     int ry = o->y();
     int rw = rx+o->w();
@@ -49,11 +49,11 @@ void Fl_Group::forms_end() {
   }
   // flip all the children's coordinate systems:
   if (nc && fl_flip) {
-    Fl_Widget* o = as_window() ? this : window();
+    fltk3::Widget* o = as_window() ? this : window();
     int Y = o->h();
-    Fl_Widget*const* a = array();
+    fltk3::Widget*const* a = array();
     for (int i = nc; i--;) {
-      Fl_Widget* ow = *a++;
+      fltk3::Widget* ow = *a++;
       int newy = Y - ow->y() - ow->h();
       ow->y(newy);
     }
@@ -116,13 +116,13 @@ void fl_show_form(Fl_Window *f,int place,int b,const char *n) {
   else f->show();
 }
 
-Fl_Widget *fl_do_forms(void) {
-  Fl_Widget *obj;
+fltk3::Widget *fl_do_forms(void) {
+  fltk3::Widget *obj;
   while (!(obj = Fl::readqueue())) if (!Fl::wait()) exit(0);
   return obj;
 }
 
-Fl_Widget *fl_check_forms() {
+fltk3::Widget *fl_check_forms() {
   Fl::check();
   return Fl::readqueue();
 }
@@ -139,11 +139,11 @@ void Fl_FormsText::draw() {
 
 // Create a forms button by selecting correct fltk subclass:
 
-#include <FL/Fl_Return_Button.H>
-#include <FL/Fl_Repeat_Button.H>
+#include <fltk3/Fl_Return_Button.H>
+#include <fltk3/Fl_Repeat_Button.H>
 
-Fl_Button *fl_add_button(uchar t,int x,int y,int w,int h,const char *l) {
-  Fl_Button *b;
+fltk3::Button *fl_add_button(uchar t,int x,int y,int w,int h,const char *l) {
+  fltk3::Button *b;
   switch (t) {
   case FL_RETURN_BUTTON:
   case FL_HIDDEN_RET_BUTTON:
@@ -153,7 +153,7 @@ Fl_Button *fl_add_button(uchar t,int x,int y,int w,int h,const char *l) {
     b = new Fl_Repeat_Button(x,y,w,h,l);
     break;
   default:
-    b = new Fl_Button(x,y,w,h,l);
+    b = new fltk3::Button(x,y,w,h,l);
   }
   switch (t) {
   case FL_TOGGLE_BUTTON:

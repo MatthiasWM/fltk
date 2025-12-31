@@ -21,7 +21,7 @@
 #ifndef FL_CAIRO_GRAPHICS_DRIVER_H
 # define FL_CAIRO_GRAPHICS_DRIVER_H
 
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include "../../Fl_Scalable_Graphics_Driver.H" // Fl_Font_Descriptor
 #include <cairo/cairo.h>
 

@@ -15,13 +15,13 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 #include "Fl_System_Driver.H"
-#include <FL/Fl_Preferences.H>
-#include <FL/Fl_Plugin.H>
-#include <FL/filename.H>
-#include <FL/fl_utf8.h>
-#include <FL/fl_string_functions.h>
+#include <fltk3/Fl_Preferences.H>
+#include <fltk3/Fl_Plugin.H>
+#include <fltk3/filename.H>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/fl_string_functions.h>
 #include "flstring.h"
 
 #include <stdio.h>

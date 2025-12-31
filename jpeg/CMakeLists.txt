@@ -112,5 +112,5 @@ endif(FLTK_BUILD_SHARED_LIBS)
 install(FILES
           jconfig.h jerror.h jmorecfg.h jpeglib.h fltk_jpeg_prefix.h
         DESTINATION
-          ${FLTK_INCLUDEDIR}/FL/images
+          ${FLTK_INCLUDEDIR}/fltk3/images
 )

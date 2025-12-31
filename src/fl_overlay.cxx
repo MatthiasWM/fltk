@@ -19,15 +19,15 @@
 // to erase the overlay before drawing anything that might intersect
 // it.
 
-#include <FL/fl_config.h>
-#include <FL/platform.H>
-#include <FL/fl_draw.H>
+#include <fltk3/fl_config.h>
+#include <fltk3/platform.H>
+#include <fltk3/fl_draw.H>
 
 static int px,py,pw,ph;
 
 #include <stdlib.h>
 #include "Fl_Screen_Driver.H"
-#include <FL/Fl_RGB_Image.H>
+#include <fltk3/Fl_RGB_Image.H>
 static Fl_RGB_Image *s_bgN = 0, *s_bgS = 0, *s_bgE = 0, *s_bgW = 0;
 
 static int bgx, bgy, bgw, bgh;
@@ -100,15 +100,15 @@ void fl_overlay_clear() {
  \code
   int MyWidget::handle(int event) {
     switch (event) {
-      case FL_PUSH:
+      case fltk3::PUSH:
         ix = Fl::event_x(); // ix defined as (private) class member
         iy = Fl::event_y(); // iy defined as (private) class member
         return 1;
-      case FL_DRAG:
+      case fltk3::DRAG:
         window()->make_current();
         fl_overlay_rect(ix, iy, Fl::event_x() - ix, Fl::event_y() - iy);
         return 1;
-      case FL_RELEASE:
+      case fltk3::RELEASE:
         window()->make_current();
         fl_overlay_clear();
         // select the element under the rectangle

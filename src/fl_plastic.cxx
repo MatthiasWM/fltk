@@ -27,9 +27,9 @@
 // These box types are in separate files so they are not linked
 // in if not used.
 
-#include <FL/Fl.H>
-#include <FL/Fl_Scheme.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Scheme.H>
+#include <fltk3/fl_draw.H>
 
 #include <cassert>
 
@@ -83,7 +83,7 @@ static void set_color_average(int av) {
 
   Include the following header:
   \code
-    #include <FL/Fl_Scheme.H>
+    #include <fltk3/Fl_Scheme.H>
   \endcode
 
   \param[in]  av  color average value in the documented range.

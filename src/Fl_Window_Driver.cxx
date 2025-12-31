@@ -22,14 +22,14 @@
  */
 
 #include "Fl_Window_Driver.H"
-#include <FL/Fl_Image_Surface.H>
-#include <FL/Fl_Overlay_Window.H>
-#include <FL/fl_draw.H>
-#include <FL/Fl.H>
-#include <FL/platform.H>
+#include <fltk3/Fl_Image_Surface.H>
+#include <fltk3/Fl_Overlay_Window.H>
+#include <fltk3/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/platform.H>
 #include "Fl_Screen_Driver.H"
 
-extern void fl_throw_focus(Fl_Widget *o);
+extern void fl_throw_focus(fltk3::Widget *o);
 
 Fl_Menu_Button *Fl_Window_Driver::current_menu_button = NULL;
 
@@ -158,7 +158,7 @@ int Fl_Window_Driver::hide_common() {
 
   // Make sure no events are sent to this window:
   fl_throw_focus(pWindow);
-  pWindow->handle(FL_HIDE);
+  pWindow->handle(fltk3::HIDE);
   return 0;
 }
 
@@ -242,7 +242,7 @@ void Fl_Window_Driver::resize_after_scale_change(int ns, float old_f, float new_
 void Fl_Window_Driver::reposition_menu_window(int x, int y) {
   if (y != pWindow->y() || x != pWindow->x()) {
     int ns = pWindow->screen_num();
-    pWindow->Fl_Widget::position(x, y);
+    pWindow->fltk3::Widget::position(x, y);
     Fl::check();
     // the window move may erroneously change the window's screen number; reset it
     if (pWindow->screen_num() != ns) screen_num(ns);

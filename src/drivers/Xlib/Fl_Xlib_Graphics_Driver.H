@@ -23,9 +23,9 @@
 #define FL_XLIB_GRAPHICS_DRIVER_H
 
 #include <config.h>
-#include <FL/Fl_Graphics_Driver.H>
+#include <fltk3/Fl_Graphics_Driver.H>
 #include "../../Fl_Scalable_Graphics_Driver.H"
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 
 #if HAVE_X11_XREGION_H
 #   include <X11/Xregion.h>

@@ -28,9 +28,9 @@
 #ifndef FL_WINDOW_DRIVER_H
 #define FL_WINDOW_DRIVER_H
 
-#include <FL/Fl_Export.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Overlay_Window.H>
+#include <fltk3/Fl_Export.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Overlay_Window.H>
 
 #include <stdlib.h>
 

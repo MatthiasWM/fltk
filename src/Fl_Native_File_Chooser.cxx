@@ -16,7 +16,7 @@
 //
 
 
-#include <FL/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
 
 /** Localizable message */
 const char *Fl_Native_File_Chooser::file_exists_message = "File exists. Are you sure you want to overwrite?";

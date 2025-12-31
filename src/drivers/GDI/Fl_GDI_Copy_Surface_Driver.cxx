@@ -16,10 +16,10 @@
 
 #include <config.h>
 #include "Fl_GDI_Copy_Surface_Driver.H"
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "Fl_GDI_Graphics_Driver.H"
 #include "../WinAPI/Fl_WinAPI_Screen_Driver.H"
-#include <FL/Fl_Image_Surface.H>
+#include <fltk3/Fl_Image_Surface.H>
 #include <windows.h>
 
 

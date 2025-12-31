@@ -22,16 +22,16 @@
 // FLTK header files
 //
 
-#include <FL/Fl_Help_View.H>
-#include <FL/Fl_Shared_Image.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Pixmap.H>
-#include <FL/Fl_Menu_Item.H>
-#include <FL/fl_utf8.h>
-#include <FL/filename.H>                // fl_open_uri()
-#include <FL/fl_string_functions.h>     // fl_strdup()
-#include <FL/fl_draw.H>
-#include <FL/filename.H>
+#include <fltk3/Fl_Help_View.H>
+#include <fltk3/Fl_Shared_Image.H>
+#include <fltk3/Fl_Window.H>
+#include <fltk3/Fl_Pixmap.H>
+#include <fltk3/Fl_Menu_Item.H>
+#include <fltk3/fl_utf8.h>
+#include <fltk3/filename.H>                // fl_open_uri()
+#include <fltk3/fl_string_functions.h>     // fl_strdup()
+#include <fltk3/fl_draw.H>
+#include <fltk3/filename.H>
 #include "flstring.h"
 
 //
@@ -220,7 +220,7 @@ public:
 
   // Text selection and mouse handling
 
-  Mode          selection_mode_;        ///< Remember election mode between FL_PUSH, FL_DRAG, and FL_RELEASE
+  Mode          selection_mode_;        ///< Remember election mode between fltk3::PUSH, fltk3::DRAG, and fltk3::RELEASE
   bool          selected_;              ///< True if there is text selected
   int           selection_first_;       ///< First character of selection, offset in value_
   int           selection_last_;        ///< Last character of selection, offset in value_
@@ -296,7 +296,7 @@ public:
 
   int           handle(int);
   void          resize(int,int,int,int);
-  /** Changes the size of the widget. \see Fl_Widget::size(int, int) */
+  /** Changes the size of the widget. \see fltk3::Widget::size(int, int) */
 
   // HTML source and raw data
 
@@ -2508,7 +2508,7 @@ void Fl_Help_View::Impl::hv_draw(const char *t, int x, int y, int entity_extra_l
 
 
 /**
-  \brief Called from `handle()>FL_PUSH`, starts new text selection process.
+  \brief Called from `handle()>fltk3::PUSH`, starts new text selection process.
 
   This method return 1 if the user clicks on selectable text. It sets
   selection_push_first_ and selection_push_last_ to the current
@@ -2538,7 +2538,7 @@ char Fl_Help_View::Impl::begin_selection()
 
 
 /**
-  \brief Called from `handle()>FL_DRAG`, extending text selection.
+  \brief Called from `handle()>fltk3::DRAG`, extending text selection.
   \return 1 if more than just the initial text is selected.
 */
 char Fl_Help_View::Impl::extend_selection()
@@ -2593,7 +2593,7 @@ char Fl_Help_View::Impl::extend_selection()
 
 
 /**
-  \brief Called from `handle()>FL_RELEASE`, ends text selection process.
+  \brief Called from `handle()>fltk3::RELEASE`, ends text selection process.
   This method clears the static selection helper member variables.
 */
 void Fl_Help_View::Impl::end_selection()
@@ -3192,7 +3192,7 @@ Fl_Help_View::Fl_Help_View(int xx, int yy, int ww, int hh, const char *l)
   scrollbar_.value(0, hh, 0, 1);
   scrollbar_.step(8.0);
   scrollbar_.show();
-  scrollbar_.callback( [](Fl_Widget *s, void *u) {
+  scrollbar_.callback( [](fltk3::Widget *s, void *u) {
       ((Fl_Help_View*)u)->topline((int)(((Fl_Scrollbar*)s)->value()));
     }, this );
 
@@ -3200,7 +3200,7 @@ Fl_Help_View::Fl_Help_View(int xx, int yy, int ww, int hh, const char *l)
   hscrollbar_.step(8.0);
   hscrollbar_.show();
   hscrollbar_.type(FL_HORIZONTAL);
-  hscrollbar_.callback( [](Fl_Widget *s, void *u) {
+  hscrollbar_.callback( [](fltk3::Widget *s, void *u) {
       ((Fl_Help_View*)u)->leftline(int(((Fl_Scrollbar*)s)->value()));
     }, this );
 
@@ -3244,27 +3244,27 @@ int Fl_Help_View::Impl::handle(int event)
 
   switch (event)
   {
-    case FL_FOCUS:
+    case fltk3::FOCUS:
       // Selection style changes, so ask for a redraw
       if (selected_)
         view.redraw();
       return 1;
-    case FL_UNFOCUS:
+    case fltk3::UNFOCUS:
       // Selection style changes, so ask for a redraw
       if (selected_)
         view.redraw();
       return 1;
-    case FL_ENTER :
+    case fltk3::ENTER :
       view.Fl_Group::handle(event);
       return 1;
-    case FL_LEAVE :
+    case fltk3::LEAVE :
       fl_cursor(FL_CURSOR_DEFAULT);
       break;
-    case FL_MOVE:
+    case fltk3::MOVE:
       if (find_link(xx, yy)) fl_cursor(FL_CURSOR_HAND);
       else fl_cursor(FL_CURSOR_DEFAULT);
       return 1;
-    case FL_PUSH:
+    case fltk3::PUSH:
       // RMB will pop up a menu
       if (Fl::event_button() == FL_RIGHT_MOUSE) {
         rmb_menu[0].label(view.copy_menu_text);
@@ -3299,7 +3299,7 @@ int Fl_Help_View::Impl::handle(int event)
       // Nothing to do.
       fl_cursor(FL_CURSOR_DEFAULT);
       return 1;
-    case FL_DRAG:
+    case fltk3::DRAG:
       // If we clicked on a link, check if this remains a click, or if the user drags the mouse
       if (linkp) {
         if (Fl::event_is_click()) {
@@ -3313,7 +3313,7 @@ int Fl_Help_View::Impl::handle(int event)
           }
         }
       }
-      // If the FL_PUSH started a selection, we extend the selection
+      // If the fltk3::PUSH started a selection, we extend the selection
       if (selection_mode_ == Mode::PUSH) {
         if (extend_selection())
           view.redraw();
@@ -3323,7 +3323,7 @@ int Fl_Help_View::Impl::handle(int event)
       // Nothing to do.
       fl_cursor(FL_CURSOR_DEFAULT);
       return 1;
-    case FL_RELEASE:
+    case fltk3::RELEASE:
       // If we clicked on a link, follow it
       if (linkp) {
         if (Fl::event_is_click()) {
@@ -3341,7 +3341,7 @@ int Fl_Help_View::Impl::handle(int event)
       }
       // Nothing to do.
       return 1;
-    case FL_SHORTCUT: {
+    case fltk3::SHORTCUT: {
       int mods = Fl::event_state() & (FL_META|FL_CTRL|FL_ALT|FL_SHIFT);
       if ( mods == FL_COMMAND) {
         switch ( Fl::event_key() ) {
@@ -3373,7 +3373,7 @@ void Fl_Help_View::Impl::resize(int xx, int yy, int ww, int hh)
 {
   Fl_Boxtype b = view.box() ? view.box() : FL_DOWN_BOX; // Box to draw...
 
-  view.Fl_Widget::resize(xx, yy, ww, hh);
+  view.fltk3::Widget::resize(xx, yy, ww, hh);
 
   int scrollsize = scrollbar_size_ ? scrollbar_size_ : Fl::scrollbar_size();
   view.scrollbar_.resize(view.x() + view.w() - scrollsize - Fl::box_dw(b) + Fl::box_dx(b),
@@ -3719,7 +3719,7 @@ int Fl_Help_View::Impl::find(const char *s, int p)
   It must return a pathname that can be opened as a local file or nullptr:
 
   \code
-  const char *fn(Fl_Widget *w, const char *uri);
+  const char *fn(fltk3::Widget *w, const char *uri);
   \endcode
 
   The link function can be used to retrieve remote or virtual

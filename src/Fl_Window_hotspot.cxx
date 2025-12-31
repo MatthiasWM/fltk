@@ -14,8 +14,8 @@
 //     https://www.fltk.org/bugs.php
 //
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Window.H>
 #include "Fl_Window_Driver.H"
 
 void Fl_Window::hotspot(int X, int Y, int offscreen) {
@@ -51,7 +51,7 @@ void Fl_Window::hotspot(int X, int Y, int offscreen) {
   position(X,Y);
 }
 
-void Fl_Window::hotspot(const Fl_Widget *o, int offscreen) {
+void Fl_Window::hotspot(const fltk3::Widget *o, int offscreen) {
   int X = o->w()/2;
   int Y = o->h()/2;
   while (o != this && o) {

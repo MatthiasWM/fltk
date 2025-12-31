@@ -21,10 +21,10 @@
 #include <config.h>
 
 #include "Fl_System_Driver.H"
-#include <FL/Fl.H>
-#include <FL/Fl_Image.H>
-#include <FL/Fl_Tree_Prefs.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Fl.H>
+#include <fltk3/Fl_Image.H>
+#include <fltk3/Fl_Tree_Prefs.H>
+#include <fltk3/fl_draw.H>
 
 /**
  \cond DriverDev

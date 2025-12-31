@@ -23,7 +23,7 @@
  \{
  */
 
-#include <FL/Fl_Native_File_Chooser.H>
+#include <fltk3/Fl_Native_File_Chooser.H>
 #include <string>
 
 class Fl_Kdialog_Native_File_Chooser_Driver : public Fl_Native_File_Chooser_FLTK_Driver {

@@ -15,7 +15,7 @@
 //
 
 #include <config.h>
-#include <FL/platform.H>
+#include <fltk3/platform.H>
 #include "../Xlib/Fl_Xlib_Copy_Surface_Driver.H"
 #if FLTK_USE_CAIRO
 #  include "../Cairo/Fl_X11_Cairo_Graphics_Driver.H"

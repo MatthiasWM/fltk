@@ -15,11 +15,11 @@
 //
 
 #include "Fl_System_Driver.H"
-#include <FL/Fl.H>
+#include <fltk3/Fl.H>
 
 /** Gets the extension of a filename.
    \code
-   #include <FL/filename.H>
+   #include <fltk3/filename.H>
    [..]
    const char *out;
    out = fl_filename_ext("/some/path/foo.txt");        // result: ".txt"

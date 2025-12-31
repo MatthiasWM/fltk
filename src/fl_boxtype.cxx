@@ -24,8 +24,8 @@
 // linked in if not used.
 
 #include "src/Fl_Private.H"
-#include <FL/Fl_Widget.H>
-#include <FL/fl_draw.H>
+#include <fltk3/Widget.H>
+#include <fltk3/fl_draw.H>
 #include <config.h>
 
 ////////////////////////////////////////////////////////////////
@@ -120,13 +120,13 @@ Fl_Color Fl::box_color(Fl_Color c) {
 
   It should be used whenever a box background is drawn in the box (type)
   drawing code instead of calling fl_color(Fl_Color bg) with the
-  background color \p bg, usually Fl_Widget::color().
+  background color \p bg, usually fltk3::Widget::color().
 
   This method is only useful inside box drawing code. Whenever a box is
   drawn with one of the standard box drawing methods, a static variable
   is set depending on the widget's current state - if the widget is
   !active_r() then the internal variable is false (0), otherwise it
-  is true (1). This is faster than calling Fl_Widget::active_r()
+  is true (1). This is faster than calling fltk3::Widget::active_r()
   because the state is cached.
 
   \see Fl::draw_box_active()
@@ -630,12 +630,12 @@ void fl_draw_box_focus(Fl_Boxtype bt, int x, int y, int w, int h, Fl_Color fg, F
 }
 
 /** Draws the widget box according to its box style */
-void Fl_Widget::draw_box() const {
+void fltk3::Widget::draw_box() const {
   if (box_) draw_box((Fl_Boxtype)box_, x_, y_, w_, h_, color_);
   draw_backdrop();
 }
 /** If FL_ALIGN_IMAGE_BACKDROP is set, the image or deimage will be drawn */
-void Fl_Widget::draw_backdrop() const {
+void fltk3::Widget::draw_backdrop() const {
   if (align() & FL_ALIGN_IMAGE_BACKDROP) {
     const Fl_Image *img = image();
     // if there is no image, we will not draw the deimage either
@@ -646,11 +646,11 @@ void Fl_Widget::draw_backdrop() const {
   }
 }
 /** Draws a box of type t, of color c at the widget's position and size. */
-void Fl_Widget::draw_box(Fl_Boxtype t, Fl_Color c) const {
+void fltk3::Widget::draw_box(Fl_Boxtype t, Fl_Color c) const {
   draw_box(t, x_, y_, w_, h_, c);
 }
 /** Draws a box of type t, of color c at the position X,Y and size W,H. */
-void Fl_Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c) const {
+void fltk3::Widget::draw_box(Fl_Boxtype t, int X, int Y, int W, int H, Fl_Color c) const {
   draw_it_active = active_r();
   fl_box_table[t].f(X, Y, W, H, c);
   draw_it_active = 1;
