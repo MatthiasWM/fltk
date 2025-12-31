@@ -66,9 +66,9 @@ void fltk3::Button::setonly() { // set this radio button on, turn others off
 }
 
 void fltk3::Button::draw() {
-  // if (shim_)
-  //   static_cast<IWidgetShim*>(shim_)->draw();
-  // else
+  if (shim_)
+    static_cast<IWidgetShim*>(shim_)->draw();
+  else
     draw_impl_();
 }
 void fltk3::Button::draw_impl_() {
