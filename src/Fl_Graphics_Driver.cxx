@@ -755,6 +755,23 @@ const char *Fl_Graphics_Driver::font_name(int num) {return NULL;}
 /** Support for Fl::set_font() */
 void Fl_Graphics_Driver::font_name(int num, const char *name) {}
 
+/**
+  Default implementation of load_font().
+  Platform-specific graphics drivers should override this method.
+  \returns (Fl_Font)-1 to indicate that loading fonts from memory is not supported.
+*/
+Fl_Font Fl_Graphics_Driver::load_font(const void* /*data*/, size_t /*data_size*/, const char* /*font_name*/) {
+  return (Fl_Font)-1;
+}
+
+/**
+  Default implementation of unload_font().
+  Platform-specific graphics drivers should override this method.
+*/
+void Fl_Graphics_Driver::unload_font(Fl_Font /*font*/) {
+  // Default implementation does nothing
+}
+
 /** Support function for fl_overlay_rect() and scaled GUI.*/
 void Fl_Graphics_Driver::overlay_rect(int x, int y, int w , int h) {
   loop(x, y, x+w-1, y, x+w-1, y+h-1, x, y+h-1);

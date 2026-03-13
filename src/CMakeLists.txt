@@ -768,6 +768,11 @@ if(USE_PANGO)
   if(USE_PANGOXFT)
     append_optional_libs(PkgConfig::PANGOXFT)
   endif(USE_PANGOXFT)
+  # Add FreeType library for memory font loading support in Cairo driver
+  find_library(LIB_freetype freetype)
+  if(LIB_freetype)
+    list(APPEND OPTIONAL_LIBS ${LIB_freetype})
+  endif(LIB_freetype)
 endif(USE_PANGO)
 
 if(USE_XFT)
@@ -775,6 +780,11 @@ if(USE_XFT)
   if(LIB_fontconfig)
     list(APPEND OPTIONAL_LIBS ${LIB_fontconfig})
   endif(LIB_fontconfig)
+  # Add FreeType library for memory font loading support
+  find_library(LIB_freetype freetype)
+  if(LIB_freetype)
+    list(APPEND OPTIONAL_LIBS ${LIB_freetype})
+  endif(LIB_freetype)
 endif(USE_XFT)
 
 if(UNIX AND FLTK_USE_WAYLAND)

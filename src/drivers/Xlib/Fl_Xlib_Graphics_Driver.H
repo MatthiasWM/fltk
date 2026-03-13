@@ -217,6 +217,8 @@ protected:
   const char *font_name(int num) FL_OVERRIDE;
   void font_name(int num, const char *name) FL_OVERRIDE;
   Fl_Font set_fonts(const char* xstarname) FL_OVERRIDE;
+  Fl_Font load_font(const void* data, size_t data_size, const char* font_name) FL_OVERRIDE;
+  void unload_font(Fl_Font font) FL_OVERRIDE;
 };
 
 #endif // FL_XLIB_GRAPHICS_DRIVER_H

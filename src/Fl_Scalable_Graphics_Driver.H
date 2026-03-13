@@ -150,6 +150,10 @@ struct Fl_Fontdesc {
   const char *name;
   char fontname[128];  // "Pretty" font name
   Fl_Font_Descriptor *first;  // linked list of sizes of this style
+  // Memory font support
+  const void *mem_font_data;  // Pointer to font data in memory (NULL for system fonts)
+  size_t mem_font_size;       // Size of memory font data
+  void *mem_font_handle;      // Platform-specific handle for the memory font
 };
 
 #endif // FL_DOXYGEN

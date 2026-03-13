@@ -663,6 +663,65 @@ FL_EXPORT extern void set_font(Fl_Font, Fl_Font);
 */
 FL_EXPORT extern Fl_Font set_fonts(const char* = 0); // platform dependent
 
+/**
+  Load a font from a TrueType or OpenType font file in memory and make it
+  available for use by FLTK.
+
+  This function loads font data directly from memory, which is useful for
+  embedding fonts in applications or loading fonts from custom sources without
+  requiring them to be installed on the system.
+
+  \param[in] data       Pointer to the font data in memory. The data must be in a
+                        valid TrueType (.ttf) or OpenType (.otf) format.
+  \param[in] data_size  Size of the font data in bytes.
+  \param[in] font_name  The name under which this font will be registered and can
+                        be accessed. If NULL, the font's embedded name will be
+                        used if available.
+
+  \return The font number (Fl_Font) that can be used with fl_font() and other
+          font functions. Returns -1 (cast to Fl_Font) if the font could not be
+          loaded. The returned font number is at or above FL_FREE_FONT.
+
+  \note The font data must remain valid for as long as the font is in use.
+        FLTK does not copy the data; it keeps a reference to it.
+  \note Platform support:
+        - Windows: Uses AddFontMemResourceEx (GDI)
+        - macOS: Uses CTFontManagerRegisterGraphicsFont (CoreText)
+        - Linux/Unix with Pango: Uses FreeType2 FT_New_Memory_Face
+        - Linux/Unix with Xft: Uses FreeType2 FT_New_Memory_Face
+        - Other platforms: May not be supported; returns -1
+
+  Example:
+  \code
+  // Load a font embedded in the application
+  extern unsigned char my_font_data[];
+  extern unsigned int my_font_data_size;
+
+  Fl_Font my_font = Fl::load_font(my_font_data, my_font_data_size, "MyCustomFont");
+  if (my_font != (Fl_Font)-1) {
+    fl_font(my_font, 14);
+    fl_draw("Hello with custom font!", 10, 30);
+  }
+  \endcode
+*/
+FL_EXPORT extern Fl_Font load_font(const void* data, size_t data_size,
+                                   const char* font_name = nullptr);
+
+/**
+  Unload a font that was previously loaded with load_font().
+
+  This function frees the resources associated with a font that was loaded
+  from memory. After calling this function, the font number should no longer
+  be used.
+
+  \param[in] font  The font number returned by load_font().
+
+  \note The original font data memory can be freed after calling this function.
+  \note This function does nothing if the font was not loaded via load_font()
+        or if the font number is invalid.
+*/
+FL_EXPORT extern void unload_font(Fl_Font font);
+
 /**   @} */
 
 /** \defgroup  fl_drawings  Drawing functions

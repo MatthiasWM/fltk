@@ -1570,4 +1570,117 @@ cairo_pattern_t *Fl_Cairo_Graphics_Driver::calc_cairo_mask(const Fl_RGB_Image *r
   return mask_pattern;
 }
 
+// Memory font loading for Cairo/Pango using FreeType
+// This implementation uses FreeType to parse font data and extract the font family name.
+// The font is then registered with FLTK's font table for use with Pango.
+
+#include "../../flstring.h" // for fl_strdup()
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include <stdlib.h>  // for free()
+
+/**
+  Load a TrueType or OpenType font from memory.
+  
+  The font data is parsed using FreeType to extract the font family name,
+  which is then registered with FLTK's font table.
+  
+  \param data Pointer to the font data in memory (TrueType or OpenType format).
+  \param data_size Size of the font data in bytes.
+  \param font_name Name to register the font with, or NULL to use the embedded name.
+  \return Font number on success, or (Fl_Font)-1 on failure.
+  
+  \note The font data buffer must remain valid while the font is in use.
+*/
+Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, const char* font_name) {
+  if (!data || data_size == 0) return (Fl_Font)-1;
+
+  fl_open_display();
+
+  // Create a FreeType library instance for font parsing
+  FT_Library ft_library;
+  if (FT_Init_FreeType(&ft_library) != 0) {
+    return (Fl_Font)-1;
+  }
+
+  // Create a face from the memory buffer to extract font information
+  FT_Face ft_face;
+  if (FT_New_Memory_Face(ft_library, (const FT_Byte*)data, (FT_Long)data_size, 0, &ft_face) != 0) {
+    FT_Done_FreeType(ft_library);
+    return (Fl_Font)-1;
+  }
+
+  // Get the font family name if not provided
+  const char* name_to_use = font_name;
+  if (!name_to_use && ft_face->family_name) {
+    name_to_use = ft_face->family_name;
+  }
+
+  if (!name_to_use) {
+    FT_Done_Face(ft_face);
+    FT_Done_FreeType(ft_library);
+    return (Fl_Font)-1;
+  }
+
+  // For Pango, use full font name without prefix
+  char* allocated_name = fl_strdup(name_to_use);
+
+  FT_Done_Face(ft_face);
+  FT_Done_FreeType(ft_library);
+
+  if (!allocated_name) {
+    return (Fl_Font)-1;
+  }
+
+  // Find a free font slot
+  Fl_Font fnum = Fl::set_fonts(NULL);
+  if (fnum == 0) fnum = FL_FREE_FONT;
+
+  // Register the font in FLTK's table
+  Fl::set_font(fnum, allocated_name);
+
+  // Store the memory font information
+  unsigned width = font_desc_size();
+  Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + fnum * width);
+  s->mem_font_data = data;
+  s->mem_font_size = data_size;
+  s->mem_font_handle = NULL;  // No temp file handle needed
+
+  return fnum;
+}
+
+/**
+  Unload a font previously loaded with load_font().
+  \param font The font number returned by load_font().
+*/
+void Fl_Cairo_Graphics_Driver::unload_font(Fl_Font font) {
+  if (font < FL_FREE_FONT) return;
+
+  unsigned width = font_desc_size();
+  Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + font * width);
+
+  // Check if this is a memory font (has mem_font_data set)
+  if (s->mem_font_data) {
+    // Delete any cached font descriptors
+    for (Fl_Font_Descriptor* f = s->first; f;) {
+      Fl_Font_Descriptor* n = f->next;
+      delete f;
+      f = n;
+    }
+    s->first = NULL;
+
+    // Free the allocated name (allocated in load_font)
+    if (s->name) {
+      free((void*)s->name);
+    }
+
+    // Clear the font descriptor
+    s->name = NULL;
+    s->fontname[0] = 0;
+    s->mem_font_data = NULL;
+    s->mem_font_size = 0;
+    s->mem_font_handle = NULL;
+  }
+}
+
 #endif // USE_PANGO
