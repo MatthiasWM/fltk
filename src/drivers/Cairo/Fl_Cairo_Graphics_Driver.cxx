@@ -1571,6 +1571,7 @@ cairo_pattern_t *Fl_Cairo_Graphics_Driver::calc_cairo_mask(const Fl_RGB_Image *r
 }
 
 // Memory font loading for Cairo/Pango using fontconfig and FreeType
+#include "../../flstring.h" // for fl_strdup()
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
