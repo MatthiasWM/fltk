@@ -31,7 +31,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <unistd.h>  // for unlink()
+#include <unistd.h>  // for unlink(), write()
+#include <fcntl.h>   // for open(), O_CREAT, O_EXCL
+#include <sys/stat.h> // for mode constants
 
 #include <X11/Xft/Xft.h>
 #include <X11/Xft/XftCompat.h>
@@ -1522,19 +1524,41 @@ Fl_Font Fl_Xlib_Graphics_Driver::load_font(const void* data, size_t data_size, c
     return (Fl_Font)-1;
   }
 
-  // Write font to a temporary file and load via fontconfig
-  // This is compatible across fontconfig versions
+  // Write font to a secure temporary file and load via fontconfig
+  // Use mkstemp for secure temp file creation
   char temp_path[256];
-  snprintf(temp_path, sizeof(temp_path), "/tmp/fltk_memfont_%p.ttf", data);
+  snprintf(temp_path, sizeof(temp_path), "/tmp/fltk_memfont_XXXXXX.ttf");
 
-  FILE* temp_file = fopen(temp_path, "wb");
-  if (!temp_file) {
+  // mkstemp expects template without extension, so we use mkstemps if available
+  // or create the file manually with O_EXCL for security
+  int fd = -1;
+#if defined(_GNU_SOURCE) || defined(__linux__)
+  fd = mkstemps(temp_path, 4); // 4 = length of ".ttf"
+#else
+  // Fallback: create temp directory and use unique filename
+  char temp_dir[] = "/tmp/fltk_fontXXXXXX";
+  if (mkdtemp(temp_dir)) {
+    snprintf(temp_path, sizeof(temp_path), "%s/font.ttf", temp_dir);
+    fd = open(temp_path, O_WRONLY | O_CREAT | O_EXCL, 0600);
+  }
+#endif
+
+  if (fd < 0) {
     FT_Done_Face(ft_face);
     FT_Done_FreeType(ft_library);
     return (Fl_Font)-1;
   }
-  fwrite(data, 1, data_size, temp_file);
-  fclose(temp_file);
+
+  // Write the font data to the temp file
+  ssize_t written = write(fd, data, data_size);
+  close(fd);
+
+  if (written < 0 || (size_t)written != data_size) {
+    unlink(temp_path);
+    FT_Done_Face(ft_face);
+    FT_Done_FreeType(ft_library);
+    return (Fl_Font)-1;
+  }
 
   // Register the font file with fontconfig
   FcBool result = FcConfigAppFontAddFile(config, (const FcChar8*)temp_path);
@@ -1608,16 +1632,13 @@ void Fl_Xlib_Graphics_Driver::unload_font(Fl_Font font) {
     s->first = NULL;
 
     // Remove the temporary font file
+    // Note: We cannot selectively remove individual fonts from fontconfig's
+    // app font list (FcConfigAppFontClear removes ALL app fonts), so we just
+    // delete the temp file. The font will become unavailable for new renders.
     char* temp_path = (char*)s->mem_font_handle;
     if (temp_path) {
       unlink(temp_path);
       free(temp_path);
-    }
-
-    // Clear fontconfig's app font list
-    FcConfig* config = FcConfigGetCurrent();
-    if (config) {
-      FcConfigAppFontClear(config);
     }
 
     // Free the allocated name (allocated in load_font)

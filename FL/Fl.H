@@ -705,7 +705,7 @@ FL_EXPORT extern Fl_Font set_fonts(const char* = 0); // platform dependent
   \endcode
 */
 FL_EXPORT extern Fl_Font load_font(const void* data, size_t data_size,
-                                   const char* font_name = 0);
+                                   const char* font_name = nullptr);
 
 /**
   Unload a font that was previously loaded with load_font().

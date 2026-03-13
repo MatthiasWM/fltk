@@ -1574,7 +1574,9 @@ cairo_pattern_t *Fl_Cairo_Graphics_Driver::calc_cairo_mask(const Fl_RGB_Image *r
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <unistd.h>  // for unlink()
+#include <unistd.h>  // for unlink(), write()
+#include <fcntl.h>   // for open(), O_CREAT, O_EXCL
+#include <sys/stat.h> // for mode constants
 
 /**
   Load a TrueType or OpenType font from memory.
@@ -1623,19 +1625,40 @@ Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, 
     return (Fl_Font)-1;
   }
 
-  // Write font to a temporary file and load via fontconfig
-  // This is compatible across fontconfig versions
+  // Write font to a secure temporary file and load via fontconfig
+  // Use mkstemp for secure temp file creation
   char temp_path[256];
-  snprintf(temp_path, sizeof(temp_path), "/tmp/fltk_memfont_%p.ttf", data);
+  snprintf(temp_path, sizeof(temp_path), "/tmp/fltk_memfont_XXXXXX.ttf");
 
-  FILE* temp_file = fopen(temp_path, "wb");
-  if (!temp_file) {
+  // mkstemp expects template without extension, so we use mkstemps if available
+  int fd = -1;
+#if defined(_GNU_SOURCE) || defined(__linux__)
+  fd = mkstemps(temp_path, 4); // 4 = length of ".ttf"
+#else
+  // Fallback: create temp directory and use unique filename
+  char temp_dir[] = "/tmp/fltk_fontXXXXXX";
+  if (mkdtemp(temp_dir)) {
+    snprintf(temp_path, sizeof(temp_path), "%s/font.ttf", temp_dir);
+    fd = open(temp_path, O_WRONLY | O_CREAT | O_EXCL, 0600);
+  }
+#endif
+
+  if (fd < 0) {
     FT_Done_Face(ft_face);
     FT_Done_FreeType(ft_library);
     return (Fl_Font)-1;
   }
-  fwrite(data, 1, data_size, temp_file);
-  fclose(temp_file);
+
+  // Write the font data to the temp file
+  ssize_t written = write(fd, data, data_size);
+  close(fd);
+
+  if (written < 0 || (size_t)written != data_size) {
+    unlink(temp_path);
+    FT_Done_Face(ft_face);
+    FT_Done_FreeType(ft_library);
+    return (Fl_Font)-1;
+  }
 
   // Register the font file with fontconfig
   FcBool result = FcConfigAppFontAddFile(config, (const FcChar8*)temp_path);
@@ -1653,7 +1676,6 @@ Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, 
   FT_Done_FreeType(ft_library);
 
   if (!allocated_name) {
-    FcConfigAppFontClear(config);
     unlink(temp_path);
     return (Fl_Font)-1;
   }
@@ -1698,16 +1720,13 @@ void Fl_Cairo_Graphics_Driver::unload_font(Fl_Font font) {
     s->first = NULL;
 
     // Remove the temporary font file
+    // Note: We cannot selectively remove individual fonts from fontconfig's
+    // app font list (FcConfigAppFontClear removes ALL app fonts), so we just
+    // delete the temp file. The font will become unavailable for new renders.
     char* temp_path = (char*)s->mem_font_handle;
     if (temp_path) {
       unlink(temp_path);
       free(temp_path);
-    }
-
-    // Clear fontconfig's app font list
-    FcConfig* config = FcConfigGetCurrent();
-    if (config) {
-      FcConfigAppFontClear(config);
     }
 
     // Free the allocated name (allocated in load_font)
