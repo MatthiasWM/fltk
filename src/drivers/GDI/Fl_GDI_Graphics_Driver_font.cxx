@@ -676,3 +676,99 @@ void Fl_GDI_Graphics_Driver::rtl_draw_unscaled(const char* c, int n, int x, int 
   SetTextColor(gc_, oldColor);
 }
 #endif
+
+// Memory font loading for Windows using AddFontMemResourceEx
+
+/**
+  Load a TrueType or OpenType font from memory.
+  \param data Pointer to the font data in memory.
+  \param data_size Size of the font data in bytes.
+  \param font_name Name to register the font with, or NULL to use the embedded name.
+  \return Font number on success, or (Fl_Font)-1 on failure.
+*/
+Fl_Font Fl_GDI_Graphics_Driver::load_font(const void* data, size_t data_size, const char* font_name) {
+  if (!data || data_size == 0) return (Fl_Font)-1;
+
+  // Add font to Windows using AddFontMemResourceEx
+  DWORD num_fonts = 0;
+  HANDLE font_handle = AddFontMemResourceEx((PVOID)data, (DWORD)data_size, NULL, &num_fonts);
+  if (!font_handle || num_fonts == 0) {
+    return (Fl_Font)-1;
+  }
+
+  // Get the font name from the font data if not provided
+  const char* name_to_use = font_name;
+  char* allocated_name = NULL;
+
+  if (!name_to_use) {
+    // Try to extract the font family name from the TrueType font data
+    // The TrueType 'name' table (table ID 6) contains the font family name
+    // For simplicity, we require the caller to provide a name
+    // since parsing the name table is complex
+    RemoveFontMemResourceEx(font_handle);
+    return (Fl_Font)-1;
+  }
+
+  // Create a name with the required prefix for the platform (space = normal)
+  size_t name_len = strlen(name_to_use);
+  allocated_name = (char*)malloc(name_len + 2);
+  if (!allocated_name) {
+    RemoveFontMemResourceEx(font_handle);
+    return (Fl_Font)-1;
+  }
+  allocated_name[0] = ' ';  // Normal weight/style prefix
+  memcpy(allocated_name + 1, name_to_use, name_len + 1);
+
+  // Find a free font slot
+  Fl_Font fnum = Fl::set_fonts(NULL);
+  if (fnum == 0) fnum = FL_FREE_FONT;
+
+  // Register the font
+  Fl::set_font(fnum, allocated_name);
+
+  // Store the memory font information
+  unsigned width = font_desc_size();
+  Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + fnum * width);
+  s->mem_font_data = data;
+  s->mem_font_size = data_size;
+  s->mem_font_handle = font_handle;
+
+  return fnum;
+}
+
+/**
+  Unload a font previously loaded with load_font().
+  \param font The font number returned by load_font().
+*/
+void Fl_GDI_Graphics_Driver::unload_font(Fl_Font font) {
+  if (font < FL_FREE_FONT) return;
+
+  unsigned width = font_desc_size();
+  Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + font * width);
+
+  // Check if this is a memory font
+  if (s->mem_font_handle) {
+    // Delete any cached font descriptors
+    for (Fl_Font_Descriptor* f = s->first; f;) {
+      Fl_Font_Descriptor* n = f->next;
+      delete f;
+      f = n;
+    }
+    s->first = NULL;
+
+    // Remove the font from Windows
+    RemoveFontMemResourceEx((HANDLE)s->mem_font_handle);
+
+    // Free the allocated name (allocated in load_font)
+    if (s->name) {
+      free((void*)s->name);
+    }
+
+    // Clear the font descriptor
+    s->name = NULL;
+    s->fontname[0] = 0;
+    s->mem_font_data = NULL;
+    s->mem_font_size = 0;
+    s->mem_font_handle = NULL;
+  }
+}

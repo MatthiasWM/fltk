@@ -364,6 +364,10 @@ public:
   virtual unsigned font_desc_size();
   virtual const char *font_name(int num);
   virtual void font_name(int num, const char *name);
+  /** Load a font from memory. Returns font number on success, or (Fl_Font)-1 on failure. */
+  virtual Fl_Font load_font(const void* data, size_t data_size, const char* font_name);
+  /** Unload a font previously loaded with load_font(). */
+  virtual void unload_font(Fl_Font font);
   // Defaut implementation may be enough
   virtual void overlay_rect(int x, int y, int w , int h);
   virtual float override_scale();

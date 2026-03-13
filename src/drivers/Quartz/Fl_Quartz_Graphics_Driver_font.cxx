@@ -559,3 +559,123 @@ Fl_Font Fl_Quartz_Graphics_Driver::set_fonts(const char* xstarname)
   delete[] tabfontnames;
   return (Fl_Font)fl_free_font;
 }
+
+// Memory font loading for macOS using CoreText
+
+/**
+  Load a TrueType or OpenType font from memory.
+  \param data Pointer to the font data in memory.
+  \param data_size Size of the font data in bytes.
+  \param font_name Name to register the font with, or NULL to use the embedded name.
+  \return Font number on success, or (Fl_Font)-1 on failure.
+*/
+Fl_Font Fl_Quartz_Graphics_Driver::load_font(const void* data, size_t data_size, const char* font_name) {
+  if (!data || data_size == 0) return (Fl_Font)-1;
+
+  // Create a data provider from the memory buffer
+  CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, data, data_size, NULL);
+  if (!provider) {
+    return (Fl_Font)-1;
+  }
+
+  // Create a CGFont from the data provider
+  CGFontRef cg_font = CGFontCreateWithDataProvider(provider);
+  CGDataProviderRelease(provider);
+
+  if (!cg_font) {
+    return (Fl_Font)-1;
+  }
+
+  // Register the font with the system (process-wide, not persistent)
+  CFErrorRef error = NULL;
+  if (!CTFontManagerRegisterGraphicsFont(cg_font, &error)) {
+    if (error) {
+      CFRelease(error);
+    }
+    CGFontRelease(cg_font);
+    return (Fl_Font)-1;
+  }
+
+  // Get the PostScript name from the font or use the provided name
+  const char* name_to_use = font_name;
+  char* allocated_name = NULL;
+
+  if (!name_to_use) {
+    CFStringRef ps_name = CGFontCopyPostScriptName(cg_font);
+    if (ps_name) {
+      CFIndex len = CFStringGetLength(ps_name);
+      CFIndex max_size = CFStringGetMaximumSizeForEncoding(len, kCFStringEncodingUTF8) + 1;
+      allocated_name = (char*)malloc(max_size);
+      if (allocated_name) {
+        CFStringGetCString(ps_name, allocated_name, max_size, kCFStringEncodingUTF8);
+        name_to_use = allocated_name;
+      }
+      CFRelease(ps_name);
+    }
+  } else {
+    allocated_name = fl_strdup(font_name);
+    name_to_use = allocated_name;
+  }
+
+  if (!name_to_use) {
+    CTFontManagerUnregisterGraphicsFont(cg_font, NULL);
+    CGFontRelease(cg_font);
+    return (Fl_Font)-1;
+  }
+
+  // Find a free font slot
+  Fl_Font fnum = Fl::set_fonts(NULL);
+  if (fnum == 0) fnum = FL_FREE_FONT;
+
+  // Register the font in FLTK's table
+  Fl::set_font(fnum, allocated_name);  // allocated_name ownership transferred
+
+  // Store the memory font information
+  unsigned width = font_desc_size();
+  Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + fnum * width);
+  s->mem_font_data = data;
+  s->mem_font_size = data_size;
+  s->mem_font_handle = (void*)cg_font;  // Store CGFontRef for later unloading
+
+  return fnum;
+}
+
+/**
+  Unload a font previously loaded with load_font().
+  \param font The font number returned by load_font().
+*/
+void Fl_Quartz_Graphics_Driver::unload_font(Fl_Font font) {
+  if (font < FL_FREE_FONT) return;
+
+  unsigned width = font_desc_size();
+  Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + font * width);
+
+  // Check if this is a memory font
+  if (s->mem_font_handle) {
+    CGFontRef cg_font = (CGFontRef)s->mem_font_handle;
+
+    // Delete any cached font descriptors
+    for (Fl_Font_Descriptor* f = s->first; f;) {
+      Fl_Font_Descriptor* n = f->next;
+      delete f;
+      f = n;
+    }
+    s->first = NULL;
+
+    // Unregister the font from the system
+    CTFontManagerUnregisterGraphicsFont(cg_font, NULL);
+    CGFontRelease(cg_font);
+
+    // Free the allocated name (allocated in load_font)
+    if (s->name) {
+      free((void*)s->name);
+    }
+
+    // Clear the font descriptor
+    s->name = NULL;
+    s->fontname[0] = 0;
+    s->mem_font_data = NULL;
+    s->mem_font_size = 0;
+    s->mem_font_handle = NULL;
+  }
+}

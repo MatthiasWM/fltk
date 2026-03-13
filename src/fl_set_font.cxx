@@ -79,3 +79,19 @@ void Fl::set_font(Fl_Font fnum, Fl_Font from) {
 const char* Fl::get_font(Fl_Font fnum) {
   return Fl_Graphics_Driver::default_driver().font_name(fnum);
 }
+
+/**
+  Load a font from memory.
+  \see Fl::load_font(const void*, size_t, const char*) in FL/Fl.H for full documentation.
+*/
+Fl_Font Fl::load_font(const void* data, size_t data_size, const char* font_name) {
+  return Fl_Graphics_Driver::default_driver().load_font(data, data_size, font_name);
+}
+
+/**
+  Unload a font previously loaded with load_font().
+  \see Fl::unload_font(Fl_Font) in FL/Fl.H for full documentation.
+*/
+void Fl::unload_font(Fl_Font font) {
+  Fl_Graphics_Driver::default_driver().unload_font(font);
+}

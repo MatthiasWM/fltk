@@ -186,6 +186,8 @@ public:
   void font_name(int num, const char *name) FL_OVERRIDE;
   const char* get_font_name(Fl_Font fnum, int* ap) FL_OVERRIDE;
   int get_font_sizes(Fl_Font fnum, int*& sizep) FL_OVERRIDE;
+  Fl_Font load_font(const void* data, size_t data_size, const char* font_name) FL_OVERRIDE;
+  void unload_font(Fl_Font font) FL_OVERRIDE;
   Fl_Region XRectangleRegion(int x, int y, int w, int h) FL_OVERRIDE;
   void XDestroyRegion(Fl_Region r) FL_OVERRIDE;
   void add_rectangle_to_region(Fl_Region r, int X, int Y, int W, int H) FL_OVERRIDE;

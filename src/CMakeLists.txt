@@ -775,6 +775,11 @@ if(USE_XFT)
   if(LIB_fontconfig)
     list(APPEND OPTIONAL_LIBS ${LIB_fontconfig})
   endif(LIB_fontconfig)
+  # Add FreeType library for memory font loading support
+  find_library(LIB_freetype freetype)
+  if(LIB_freetype)
+    list(APPEND OPTIONAL_LIBS ${LIB_freetype})
+  endif(LIB_freetype)
 endif(USE_XFT)
 
 if(UNIX AND FLTK_USE_WAYLAND)

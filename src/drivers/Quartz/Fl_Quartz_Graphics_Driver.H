@@ -132,6 +132,8 @@ protected:
   Fl_Font set_fonts(const char* xstarname) FL_OVERRIDE;
   void set_fontname_in_fontdesc(Fl_Fontdesc *f);
   void uncache_pixmap(fl_uintptr_t p) FL_OVERRIDE;
+  Fl_Font load_font(const void* data, size_t data_size, const char* font_name) FL_OVERRIDE;
+  void unload_font(Fl_Font font) FL_OVERRIDE;
 
   void descriptor_init(const char* name, Fl_Fontsize Size, Fl_Quartz_Font_Descriptor *d);
   void overlay_rect(int x, int y, int w , int h) FL_OVERRIDE;
