@@ -1570,21 +1570,27 @@ cairo_pattern_t *Fl_Cairo_Graphics_Driver::calc_cairo_mask(const Fl_RGB_Image *r
   return mask_pattern;
 }
 
-// Memory font loading for Cairo/Pango using fontconfig and FreeType
+// Memory font loading for Cairo/Pango using FreeType
+// This implementation uses FreeType to parse font data and extract the font family name.
+// The font is then registered with FLTK's font table for use with Pango.
+
 #include "../../flstring.h" // for fl_strdup()
-#include <fontconfig/fontconfig.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include <unistd.h>  // for unlink(), write()
-#include <fcntl.h>   // for open(), O_CREAT, O_EXCL
-#include <sys/stat.h> // for mode constants
+#include <stdlib.h>  // for free()
 
 /**
   Load a TrueType or OpenType font from memory.
-  \param data Pointer to the font data in memory.
+  
+  The font data is parsed using FreeType to extract the font family name,
+  which is then registered with FLTK's font table.
+  
+  \param data Pointer to the font data in memory (TrueType or OpenType format).
   \param data_size Size of the font data in bytes.
   \param font_name Name to register the font with, or NULL to use the embedded name.
   \return Font number on success, or (Fl_Font)-1 on failure.
+  
+  \note The font data buffer must remain valid while the font is in use.
 */
 Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, const char* font_name) {
   if (!data || data_size == 0) return (Fl_Font)-1;
@@ -1597,7 +1603,7 @@ Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, 
     return (Fl_Font)-1;
   }
 
-  // Create a face from the memory buffer
+  // Create a face from the memory buffer to extract font information
   FT_Face ft_face;
   if (FT_New_Memory_Face(ft_library, (const FT_Byte*)data, (FT_Long)data_size, 0, &ft_face) != 0) {
     FT_Done_FreeType(ft_library);
@@ -1606,8 +1612,6 @@ Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, 
 
   // Get the font family name if not provided
   const char* name_to_use = font_name;
-  char* allocated_name = NULL;
-
   if (!name_to_use && ft_face->family_name) {
     name_to_use = ft_face->family_name;
   }
@@ -1618,66 +1622,13 @@ Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, 
     return (Fl_Font)-1;
   }
 
-  // Create a fontconfig pattern to add the font
-  FcConfig* config = FcConfigGetCurrent();
-  if (!config) {
-    FT_Done_Face(ft_face);
-    FT_Done_FreeType(ft_library);
-    return (Fl_Font)-1;
-  }
-
-  // Write font to a secure temporary file and load via fontconfig
-  // Use mkstemp for secure temp file creation
-  char temp_path[256];
-  snprintf(temp_path, sizeof(temp_path), "/tmp/fltk_memfont_XXXXXX.ttf");
-
-  // mkstemp expects template without extension, so we use mkstemps if available
-  int fd = -1;
-#if defined(_GNU_SOURCE) || defined(__linux__)
-  fd = mkstemps(temp_path, 4); // 4 = length of ".ttf"
-#else
-  // Fallback: create temp directory and use unique filename
-  char temp_dir[] = "/tmp/fltk_fontXXXXXX";
-  if (mkdtemp(temp_dir)) {
-    snprintf(temp_path, sizeof(temp_path), "%s/font.ttf", temp_dir);
-    fd = open(temp_path, O_WRONLY | O_CREAT | O_EXCL, 0600);
-  }
-#endif
-
-  if (fd < 0) {
-    FT_Done_Face(ft_face);
-    FT_Done_FreeType(ft_library);
-    return (Fl_Font)-1;
-  }
-
-  // Write the font data to the temp file
-  ssize_t written = write(fd, data, data_size);
-  close(fd);
-
-  if (written < 0 || (size_t)written != data_size) {
-    unlink(temp_path);
-    FT_Done_Face(ft_face);
-    FT_Done_FreeType(ft_library);
-    return (Fl_Font)-1;
-  }
-
-  // Register the font file with fontconfig
-  FcBool result = FcConfigAppFontAddFile(config, (const FcChar8*)temp_path);
-  if (!result) {
-    unlink(temp_path);
-    FT_Done_Face(ft_face);
-    FT_Done_FreeType(ft_library);
-    return (Fl_Font)-1;
-  }
-
   // For Pango, use full font name without prefix
-  allocated_name = fl_strdup(name_to_use);
+  char* allocated_name = fl_strdup(name_to_use);
 
   FT_Done_Face(ft_face);
   FT_Done_FreeType(ft_library);
 
   if (!allocated_name) {
-    unlink(temp_path);
     return (Fl_Font)-1;
   }
 
@@ -1693,9 +1644,7 @@ Fl_Font Fl_Cairo_Graphics_Driver::load_font(const void* data, size_t data_size, 
   Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + fnum * width);
   s->mem_font_data = data;
   s->mem_font_size = data_size;
-
-  // Store the temp file path as the handle (for cleanup)
-  s->mem_font_handle = fl_strdup(temp_path);
+  s->mem_font_handle = NULL;  // No temp file handle needed
 
   return fnum;
 }
@@ -1710,8 +1659,8 @@ void Fl_Cairo_Graphics_Driver::unload_font(Fl_Font font) {
   unsigned width = font_desc_size();
   Fl_Fontdesc *s = (Fl_Fontdesc*)((char*)fl_fonts + font * width);
 
-  // Check if this is a memory font
-  if (s->mem_font_handle) {
+  // Check if this is a memory font (has mem_font_data set)
+  if (s->mem_font_data) {
     // Delete any cached font descriptors
     for (Fl_Font_Descriptor* f = s->first; f;) {
       Fl_Font_Descriptor* n = f->next;
@@ -1719,16 +1668,6 @@ void Fl_Cairo_Graphics_Driver::unload_font(Fl_Font font) {
       f = n;
     }
     s->first = NULL;
-
-    // Remove the temporary font file
-    // Note: We cannot selectively remove individual fonts from fontconfig's
-    // app font list (FcConfigAppFontClear removes ALL app fonts), so we just
-    // delete the temp file. The font will become unavailable for new renders.
-    char* temp_path = (char*)s->mem_font_handle;
-    if (temp_path) {
-      unlink(temp_path);
-      free(temp_path);
-    }
 
     // Free the allocated name (allocated in load_font)
     if (s->name) {
