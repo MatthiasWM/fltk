@@ -927,11 +927,13 @@ int Code_Writer::crc_printf(const char *format, ...) {
  */
 int Code_Writer::crc_vprintf(const char *format, va_list args) {
   if (proj_.write_mergeback_data || use_buffer) {
-    // Allocate buffer for formatting
+    // Make a copy of args in case we need to call vsnprintf twice
+    // (the first call consumes args on some platforms)
     va_list args_copy;
     va_copy(args_copy, args);
     int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
     if (n > block_buffer_size_) {
+      // Buffer was too small, reallocate and try again with the copy
       block_buffer_size_ = n + 128;
       if (block_buffer_) ::free(block_buffer_);
       block_buffer_ = (char*)::malloc(block_buffer_size_+1);
