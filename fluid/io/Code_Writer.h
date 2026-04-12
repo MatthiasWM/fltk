@@ -26,6 +26,7 @@
 #include <string>
 #include <set>
 #include <map>
+#include <sstream>
 
 class Node;
 struct Fd_Identifier_Tree;
@@ -46,10 +47,17 @@ private:
   /// Link Code_Writer class to the project.
   Project &proj_;
 
-  /// file pointer for the C++ code file
+  /// file pointer for the C++ code file (used for stdout output)
   FILE *code_file = nullptr;
-  /// file pointer for the C++ header file
+  /// file pointer for the C++ header file (used for stdout output)
   FILE *header_file = nullptr;
+
+  /// string stream buffer for generating C++ code file content
+  std::ostringstream code_buffer;
+  /// string stream buffer for generating C++ header file content
+  std::ostringstream header_buffer;
+  /// true if we are using string buffers instead of file pointers
+  bool use_buffer = false;
 
   /// tree of unique but human-readable identifiers
   std::map<std::string, void*> unique_id_list { };
@@ -74,6 +82,9 @@ private:
   int crc_vprintf(const char *format, va_list args);
   int crc_puts(const char *text);
   int crc_putc(int c);
+
+  bool file_content_matches(const char *filename, const std::string &content);
+  bool write_file_if_changed(const char *filename, const std::string &content);
 
 public:
   /// current level of source code indentation
