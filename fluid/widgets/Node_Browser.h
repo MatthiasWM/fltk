@@ -71,6 +71,7 @@ public:
   static Fl_Font code_font;
   static Fl_Color comment_color;
   static Fl_Font comment_font;
+  static Fl_Color commented_out_color;
 };
 
 } // namespace widget

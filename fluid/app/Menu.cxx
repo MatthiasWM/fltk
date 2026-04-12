@@ -27,6 +27,7 @@
 #include "nodes/factory.h"
 #include "panels/codeview_panel.h"
 #include "app/shell_command.h"
+#include "widgets/Node_Browser.h"
 
 #include <FL/Fl_Menu_Bar.H>
 
@@ -48,6 +49,21 @@ void delete_cb(Fl_Widget *, void *) { Fluid.delete_selected(); }
 void paste_cb(Fl_Widget*, void*) { Fluid.paste_from_clipboard(); }
 void duplicate_cb(Fl_Widget*, void*) { Fluid.duplicate_selected(); }
 static void sort_cb(Fl_Widget *,void *) { Fluid.sort_selected(); }
+
+/**
+ Toggle the "commented out" state of all selected nodes.
+ Commented out nodes are grayed in the browser and won't generate code.
+ */
+static void toggle_commented_out_cb(Fl_Widget *, void *) {
+  for (Node *o = Fluid.proj.tree.first; o; o = o->next) {
+    if (o->selected) {
+      o->commented_out(!o->is_commented_out());
+    }
+  }
+  Fluid.proj.set_modflag(true);
+  redraw_browser();
+}
+
 void about_cb(Fl_Widget *, void *) { Fluid.about(); }
 void help_cb(Fl_Widget *, void *) {
   Fluid.show_help("fluid.html");
@@ -130,7 +146,8 @@ Fl_Menu_Item Application::main_menu[] = {
   {"&Earlier", FL_F+2, earlier_cb},
   {"&Later", FL_F+3, later_cb},
   {"&Group", FL_F+7, group_cb},
-  {"Ung&roup", FL_F+8, ungroup_cb,nullptr, FL_MENU_DIVIDER},
+  {"Ung&roup", FL_F+8, ungroup_cb},
+  {"Co&mmented Out", FL_COMMAND+'/', toggle_commented_out_cb, nullptr, FL_MENU_DIVIDER},
   {"Hide O&verlays",FL_COMMAND+FL_SHIFT+'o',toggle_overlays},
   {"Hide Guides",FL_COMMAND+FL_SHIFT+'g',toggle_guides},
   {"Hide Restricted",FL_COMMAND+FL_SHIFT+'r',toggle_restricted},
