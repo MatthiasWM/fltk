@@ -931,7 +931,7 @@ int Code_Writer::crc_vprintf(const char *format, va_list args) {
     va_list args_copy;
     va_copy(args_copy, args);
     int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
-    if (n >= block_buffer_size_) {
+    if (n > block_buffer_size_) {
       block_buffer_size_ = n + 128;
       if (block_buffer_) ::free(block_buffer_);
       block_buffer_ = (char*)::malloc(block_buffer_size_+1);
@@ -999,9 +999,19 @@ bool Code_Writer::file_content_matches(const char *filename, const std::string &
   }
 
   // Get file size
-  fseek(f, 0, SEEK_END);
+  if (fseek(f, 0, SEEK_END) != 0) {
+    fclose(f);
+    return false;  // Seek error
+  }
   long file_size = ftell(f);
-  fseek(f, 0, SEEK_SET);
+  if (file_size < 0) {
+    fclose(f);
+    return false;  // ftell error
+  }
+  if (fseek(f, 0, SEEK_SET) != 0) {
+    fclose(f);
+    return false;  // Seek error
+  }
 
   // Quick check: if sizes don't match, content is different
   if ((size_t)file_size != content.size()) {
