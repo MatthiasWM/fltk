@@ -152,47 +152,53 @@ void update_codeview_position_cb(class Fl_Tabs*, void*) {
 */
 void update_codeview_cb(class Fl_Button*, void*) {
   if (!codeview_panel || !codeview_panel->visible())
-      return;
+    return;
 
-    if (!cv_design_filename) {
-      cv_design_filename = (char*)malloc(FL_PATH_MAX);
-      fl_strlcpy(cv_design_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
-      fl_strlcat(cv_design_filename, "codeview_tmp.fl", FL_PATH_MAX);
-    }
+  if (!cv_design_filename) {
+    cv_design_filename = (char*)malloc(FL_PATH_MAX);
+    fl_strlcpy(cv_design_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
+    fl_strlcat(cv_design_filename, "codeview_tmp.fl", FL_PATH_MAX);
+  }
 
-    if (cv_project->visible_r()) {
-      fld::io::write_file(Fluid.proj, cv_design_filename, false, true);
-      int top = cv_project->top_line();
-      cv_project->buffer()->loadfile(cv_design_filename);
-      cv_project->scroll(top, 0);
-    } else if (cv_strings->visible_r()) {
-      static const char *exts[] = { ".txt", ".po", ".msg" };
-      char fn[FL_PATH_MAX+1];
-      fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
-      fl_strlcat(fn, "strings", FL_PATH_MAX);
-      fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<int>(Fluid.proj.i18n.type)]);
-      fld::io::write_strings(Fluid.proj, fn);
-      int top = cv_strings->top_line();
-      cv_strings->buffer()->loadfile(fn);
-      cv_strings->scroll(top, 0);
-    } else if (cv_source->visible_r() || cv_header->visible_r()) {
-      // Generate code into in-memory ostringstream buffers (no temp files).
-      fld::io::Code_Writer f(Fluid.proj);
-      // Setting code_view to true write code files directly into a string buffer
-      // and does not write over the code files on disk.
-      if (f.write_code("codeview_tmp.cxx", "codeview_tmp.h", true))
-      {
-        // Push generated text directly into the editor buffers.
-        int pos = cv_source->top_line();
-        cv_source->buffer()->text(f.code_string().c_str());
-        cv_source->scroll(pos, 0);
-        pos = cv_header->top_line();
-        cv_header->buffer()->text(f.header_string().c_str());
-        cv_header->scroll(pos, 0);
-        // update the source code highlighting
-        update_codeview_position();
-      }
+  if (cv_project->visible_r()) {
+    fld::io::write_file(Fluid.proj, cv_design_filename, false, true);
+    int top = cv_project->top_line();
+    cv_project->buffer()->loadfile(cv_design_filename);
+    cv_project->scroll(top, 0);
+  } else if (cv_strings->visible_r()) {
+    static const char *exts[] = { ".txt", ".po", ".msg" };
+    char fn[FL_PATH_MAX+1];
+    fl_strlcpy(fn, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
+    fl_strlcat(fn, "strings", FL_PATH_MAX);
+    fl_filename_setext(fn, FL_PATH_MAX, exts[static_cast<int>(Fluid.proj.i18n.type)]);
+    fld::io::write_strings(Fluid.proj, fn);
+    int top = cv_strings->top_line();
+    cv_strings->buffer()->loadfile(fn);
+    cv_strings->scroll(top, 0);
+  } else if (cv_source->visible_r() || cv_header->visible_r()) {
+    // Generate code into in-memory ostringstream buffers (no temp files).
+    fld::io::Code_Writer f(Fluid.proj);
+    std::string code_filename = Fluid.proj.codefile_path() + Fluid.proj.codefile_name();
+    std::string header_filename = Fluid.proj.headerfile_path() + Fluid.proj.headerfile_name();
+    if (Fluid.proj.proj_filename)
+      Fluid.proj.enter_project_dir();
+    // Setting code_view to true write code files directly into a string buffer
+    // and does not write over the code files on disk.
+    if (f.write_code(code_filename.c_str(), header_filename.c_str(), true))
+    {
+      // Push generated text directly into the editor buffers.
+      int pos = cv_source->top_line();
+      cv_source->buffer()->text(f.code_string().c_str());
+      cv_source->scroll(pos, 0);
+      pos = cv_header->top_line();
+      cv_header->buffer()->text(f.header_string().c_str());
+      cv_header->scroll(pos, 0);
+      // update the source code highlighting
+      update_codeview_position();
     }
+    if (Fluid.proj.proj_filename)
+      Fluid.proj.leave_project_dir();
+  }
 }
 
 /**
