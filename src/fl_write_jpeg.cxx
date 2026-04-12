@@ -19,6 +19,7 @@
 #include <FL/Fl_RGB_Image.H>
 #include <FL/fl_utf8.h>               // fl_fopen()
 #include <stdio.h>
+#include <stdlib.h>                   // malloc, free
 
 extern "C" {
 #ifdef HAVE_LIBJPEG
@@ -45,11 +46,12 @@ extern "C" {
   The image file is always written with the original image size data_w()
   and data_h(), even if the image has been scaled.
 
-  Image depth 1 (gray) and 3 (RGB) are supported. Images with depth 2 or 4
-  (with alpha channel) are not supported by the JPEG format.
+  Image depth 1 (gray), 2 (gray + alpha), 3 (RGB), and 4 (RGBA) are supported.
+  For images with alpha channel (depth 2 or 4), the alpha component is ignored
+  and only the color data is written since JPEG does not support transparency.
 
-  \note Error handling is limited to basic error detection: library availability,
-    file opening errors, and depth validation.
+  \note Error handling is limited to basic error detection: library availability
+    and file opening errors.
 
   \param[in]  filename  Output filename, extension should be '.jpg' or '.jpeg'
   \param[in]  img       RGB image to be written
@@ -59,7 +61,8 @@ extern "C" {
   \retval      0        success, file has been written
   \retval     -1        jpeg library not available
   \retval     -2        file open error
-  \retval     -3        unsupported image depth (alpha channel or invalid depth)
+  \retval     -3        invalid image depth (must be 1, 2, 3, or 4)
+  \retval     -4        memory allocation error
 
   \see fl_write_jpeg(const char *, const char *, int, int, int, int)
 */
@@ -95,8 +98,9 @@ int fl_write_jpeg(const char *filename, const unsigned char *pixels, int w, int 
   The total data size must be (w * d + gapsize) * h = ld' * h
   where ld' = w * d if ld == 0.
 
-  Image depth 1 (gray) and 3 (RGB) are supported. Images with depth 2 or 4
-  (with alpha channel) are not supported by the JPEG format.
+  Image depth 1 (gray), 2 (gray + alpha), 3 (RGB), and 4 (RGBA) are supported.
+  For images with alpha channel (depth 2 or 4), the alpha component is ignored
+  and only the color data is written since JPEG does not support transparency.
 
   For further restrictions and return values please see
   fl_write_jpeg(const char *filename, Fl_RGB_Image *img).
@@ -105,7 +109,7 @@ int fl_write_jpeg(const char *filename, const unsigned char *pixels, int w, int 
   \param[in]  pixels    Image data
   \param[in]  w         Image data width
   \param[in]  h         Image data height
-  \param[in]  d         Image depth: 1 = GRAY, 3 = RGB (2 and 4 with alpha not supported)
+  \param[in]  d         Image depth: 1 = GRAY, 2 = GRAY+alpha, 3 = RGB, 4 = RGBA
   \param[in]  ld        Line delta: default (0) = w * d
 
   \return     success (0) or error code: negative values are errors
@@ -113,7 +117,8 @@ int fl_write_jpeg(const char *filename, const unsigned char *pixels, int w, int 
   \retval      0        success, file has been written
   \retval     -1        jpeg library not available
   \retval     -2        file open error
-  \retval     -3        unsupported image depth (alpha channel or invalid depth)
+  \retval     -3        invalid image depth (must be 1, 2, 3, or 4)
+  \retval     -4        memory allocation error
 
   \see fl_write_jpeg(const char *filename, Fl_RGB_Image *img)
 */
@@ -123,11 +128,11 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
 
   FILE *fp;
   J_COLOR_SPACE color_space;
+  int out_d;              // output depth (without alpha)
+  unsigned char *row_buf = NULL;  // buffer for stripping alpha channel
 
-  // JPEG only supports depth 1 (grayscale) and 3 (RGB)
-  // Depth 2 and 4 have alpha channels which are not supported
-  // Other depth values are invalid
-  if (d != 1 && d != 3) {
+  // Validate depth: must be 1, 2, 3, or 4
+  if (d < 1 || d > 4) {
     return -3;
   }
 
@@ -135,13 +140,31 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
     return -2;
   }
 
+  // Determine output depth and color space
+  // Strip alpha channel: depth 2 -> 1 (gray), depth 4 -> 3 (RGB)
   switch (d) {
-    case 1:  color_space = JCS_GRAYSCALE; break;
-    default: color_space = JCS_RGB;       break;
+    case 1:
+    case 2:
+      color_space = JCS_GRAYSCALE;
+      out_d = 1;
+      break;
+    default:  // 3 or 4
+      color_space = JCS_RGB;
+      out_d = 3;
+      break;
   }
 
   if (ld == 0)
     ld = w * d;
+
+  // Allocate buffer for stripping alpha if needed
+  if (d == 2 || d == 4) {
+    row_buf = (unsigned char *)malloc(w * out_d);
+    if (row_buf == NULL) {
+      fclose(fp);
+      return -4;
+    }
+  }
 
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -152,7 +175,7 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
 
   cinfo.image_width = w;
   cinfo.image_height = h;
-  cinfo.input_components = d;
+  cinfo.input_components = out_d;
   cinfo.in_color_space = color_space;
 
   jpeg_set_defaults(&cinfo);
@@ -161,16 +184,32 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
   jpeg_start_compress(&cinfo, TRUE);
 
   JSAMPROW row_pointer;
-  const char *ptr = pixels;
+  const unsigned char *ptr = (const unsigned char *)pixels;
 
   while (cinfo.next_scanline < cinfo.image_height) {
-    row_pointer = (JSAMPROW)ptr;
+    if (d == 2 || d == 4) {
+      // Strip alpha channel: copy only color components
+      const unsigned char *src = ptr;
+      unsigned char *dst = row_buf;
+      for (int x = 0; x < w; x++) {
+        for (int c = 0; c < out_d; c++) {
+          *dst++ = *src++;
+        }
+        src++;  // skip alpha byte
+      }
+      row_pointer = (JSAMPROW)row_buf;
+    } else {
+      row_pointer = (JSAMPROW)ptr;
+    }
     jpeg_write_scanlines(&cinfo, &row_pointer, 1);
     ptr += ld;
   }
 
   jpeg_finish_compress(&cinfo);
   jpeg_destroy_compress(&cinfo);
+
+  if (row_buf)
+    free(row_buf);
 
   fclose(fp);
   return 0;
