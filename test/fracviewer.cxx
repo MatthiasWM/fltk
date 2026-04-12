@@ -39,67 +39,67 @@
 /***************************************************************/
 
    /* Initial polar movement settings */
-#define INIT_POLAR_AZ  0.0f
-#define INIT_POLAR_EL 30.0f
-#define INIT_DIST      4.0f
-#define INIT_AZ_SPIN   0.5f
-#define INIT_EL_SPIN   0.0f
+constexpr float kInitPolarAz = 0.0f;
+constexpr float kInitPolarEl = 30.0f;
+constexpr float kInitDist    = 4.0f;
+constexpr float kInitAzSpin  = 0.5f;
+constexpr float kInitElSpin  = 0.0f;
 
   /* Initial flying movement settings */
-#define INIT_EX        0.0f
-#define INIT_EY       -2.0f
-#define INIT_EZ       -2.0f
-#define INIT_MOVE     0.01f
-#define MINMOVE      0.001f
+constexpr float kInitEx   = 0.0f;
+constexpr float kInitEy   = -2.0f;
+constexpr float kInitEz   = -2.0f;
+constexpr float kInitMove = 0.01f;
+constexpr float kMinMove  = 0.001f;
 
   /* Start in this mode */
-#define INIT_MODE   POLAR
+constexpr int kInitMode = POLAR;
 
   /* Controls:  */
 
   /* map 0-9 to an EyeMove value when number key is hit in FLYING mode */
 #define SPEEDFUNCTION(x) ((x)*(x)*0.001f)
 
-  /* Multiply EyeMove by (1+-MOVEFRACTION) when +/- hit in FLYING mode */
-#define MOVEFRACTION 0.25f
+  /* Multiply EyeMove by (1+-kMoveFraction) when +/- hit in FLYING mode */
+constexpr float kMoveFraction = 0.25f;
 
   /* What to multiply number of pixels mouse moved by to get rotation amount */
-#define EL_SENS   0.5f
-#define AZ_SENS   0.5f
+constexpr float kElSens = 0.5f;
+constexpr float kAzSens = 0.5f;
 
   /* What to multiply number of pixels mouse moved by for movement amounts */
-#define DIST_SENS 0.01f
-#define E_SENS    0.01f
+constexpr float kDistSens = 0.01f;
+constexpr float kESens    = 0.01f;
 
   /* Minimum spin to allow in polar (lower forced to zero) */
-#define MIN_AZSPIN 0.1f
-#define MIN_ELSPIN 0.1f
+constexpr float kMinAzSpin = 0.1f;
+constexpr float kMinElSpin = 0.1f;
 
   /* Factors used in computing dAz and dEl (which determine AzSpin, ElSpin) */
-#define SLOW_DAZ 0.90f
-#define SLOW_DEL 0.90f
-#define PREV_DAZ 0.80f
-#define PREV_DEL 0.80f
-#define CUR_DAZ  0.20f
-#define CUR_DEL  0.20f
+constexpr float kSlowDAz = 0.90f;
+constexpr float kSlowDEl = 0.90f;
+constexpr float kPrevDAz = 0.80f;
+constexpr float kPrevDEl = 0.80f;
+constexpr float kCurDAz  = 0.20f;
+constexpr float kCurDEl  = 0.20f;
 
 /***************************************************************/
 /************************** GLOBALS ****************************/
 /***************************************************************/
 
-int     MoveMode = INIT_MODE;  /* FLYING or POLAR mode? */
+int     MoveMode = kInitMode;  /* FLYING or POLAR mode? */
 
-GLfloat Ex = INIT_EX,             /* flying parameters */
-        Ey = INIT_EY,
-        Ez = INIT_EZ,
-        EyeMove = INIT_MOVE,
+GLfloat Ex = kInitEx,             /* flying parameters */
+        Ey = kInitEy,
+        Ez = kInitEz,
+        EyeMove = kInitMove,
 
-        EyeDist = INIT_DIST,      /* polar params */
-        AzSpin  = INIT_AZ_SPIN,
-        ElSpin  = INIT_EL_SPIN,
+        EyeDist = kInitDist,      /* polar params */
+        AzSpin  = kInitAzSpin,
+        ElSpin  = kInitElSpin,
 
-        EyeAz = INIT_POLAR_AZ,    /* used by both */
-        EyeEl = INIT_POLAR_EL;
+        EyeAz = kInitPolarAz,    /* used by both */
+        EyeEl = kInitPolarEl;
 
 int agvMoving;    /* Currently moving?  */
 
@@ -253,8 +253,8 @@ void agvMove(void)
     }
 
   if (AdjustingAzEl) {
-    dAz *= SLOW_DAZ;
-    dEl *= SLOW_DEL;
+    dAz *= kSlowDAz;
+    dEl *= kSlowDEl;
   }
 
   if (AllowIdle) {
@@ -309,14 +309,14 @@ void agvSwitchMoveMode(int move)
       Ey    = GLfloat( EyeDist*sin(TORAD(EyeEl)));
       Ez    = GLfloat( EyeDist*(cos(TORAD(EyeAz))*cos(TORAD(EyeEl))));
       EyeEl = -EyeEl;
-      EyeMove = INIT_MOVE;
+      EyeMove = kInitMove;
       break;
     case POLAR:
-      EyeDist = INIT_DIST;
-      EyeAz   = INIT_POLAR_AZ;
-      EyeEl   = INIT_POLAR_EL;
-      AzSpin  = INIT_AZ_SPIN;
-      ElSpin  = INIT_EL_SPIN;
+      EyeDist = kInitDist;
+      EyeAz   = kInitPolarAz;
+      EyeEl   = kInitPolarEl;
+      AzSpin  = kInitAzSpin;
+      ElSpin  = kInitElSpin;
       break;
     }
   MoveMode = move;
@@ -347,9 +347,9 @@ void agvHandleButton(int button, int state, int x, int y)
     EyeMove = 0;
 
     EyeDist = downDist + deltay;
-    Ex = GLfloat(downEx - E_SENS*deltay*sin(TORAD(EyeAz))*cos(TORAD(EyeEl)));
-    Ey = GLfloat(downEy - E_SENS*deltay*sin(TORAD(EyeEl)));
-    Ez = GLfloat(downEz + E_SENS*deltay*cos(TORAD(EyeAz))*cos(TORAD(EyeEl)));
+    Ex = GLfloat(downEx - kESens*deltay*sin(TORAD(EyeAz))*cos(TORAD(EyeEl)));
+    Ey = GLfloat(downEy - kESens*deltay*sin(TORAD(EyeEl)));
+    Ez = GLfloat(downEz + kESens*deltay*cos(TORAD(EyeAz))*cos(TORAD(EyeEl)));
 
     EyeMove = downEyeMove;
     glutPostRedisplay();
@@ -388,10 +388,10 @@ void agvHandleButton(int button, int state, int x, int y)
       case GLUT_LEFT_BUTTON:
         if (MoveMode != FLYING) {
           AzSpin =  -dAz;
-          if (AzSpin < MIN_AZSPIN && AzSpin > -MIN_AZSPIN)
+          if (AzSpin < kMinAzSpin && AzSpin > -kMinAzSpin)
             AzSpin = 0;
           ElSpin = -dEl;
-          if (ElSpin < MIN_ELSPIN && ElSpin > -MIN_ELSPIN)
+          if (ElSpin < kMinElSpin && ElSpin > -kMinElSpin)
             ElSpin = 0;
         }
         AdjustingAzEl = 0;
@@ -413,19 +413,19 @@ void agvHandleMotion(int x, int y)
 
   switch (downb) {
     case GLUT_LEFT_BUTTON:
-      EyeEl  = GLfloat(downEl + EL_SENS * deltay);
+      EyeEl  = GLfloat(downEl + kElSens * deltay);
       ConstrainEl();
-      EyeAz  = GLfloat(downAz + AZ_SENS * deltax);
-      dAz    = GLfloat(PREV_DAZ*dAz + CUR_DAZ*(lastAz - EyeAz));
-      dEl    = GLfloat(PREV_DEL*dEl + CUR_DEL*(lastEl - EyeEl));
+      EyeAz  = GLfloat(downAz + kAzSens * deltax);
+      dAz    = GLfloat(kPrevDAz*dAz + kCurDAz*(lastAz - EyeAz));
+      dEl    = GLfloat(kPrevDEl*dEl + kCurDEl*(lastEl - EyeEl));
       lastAz = EyeAz;
       lastEl = EyeEl;
       break;
     case GLUT_MIDDLE_BUTTON:
-        EyeDist = GLfloat(downDist + DIST_SENS*deltay);
-        Ex = GLfloat(downEx - E_SENS*deltay*sin(TORAD(EyeAz))*cos(TORAD(EyeEl)));
-        Ey = GLfloat(downEy - E_SENS*deltay*sin(TORAD(EyeEl)));
-        Ez = GLfloat(downEz + E_SENS*deltay*cos(TORAD(EyeAz))*cos(TORAD(EyeEl)));
+        EyeDist = GLfloat(downDist + kDistSens*deltay);
+        Ex = GLfloat(downEx - kESens*deltay*sin(TORAD(EyeAz))*cos(TORAD(EyeEl)));
+        Ey = GLfloat(downEy - kESens*deltay*sin(TORAD(EyeEl)));
+        Ez = GLfloat(downEz + kESens*deltay*cos(TORAD(EyeAz))*cos(TORAD(EyeEl)));
       break;
   }
   glutPostRedisplay();
@@ -440,7 +440,7 @@ void agvHandleMotion(int x, int y)
    */
 void SetMove(float newmove)
 {
-  if (newmove > MINMOVE) {
+  if (newmove > kMinMove) {
     EyeMove = newmove;
     MoveOn(1);
   } else {
@@ -462,12 +462,12 @@ void agvHandleKeys(unsigned char key, int, int) {
     switch(key) {
       case '+':
         if (EyeMove == 0)
-          SetMove(MINMOVE);
+          SetMove(kMinMove);
          else
-          SetMove(EyeMove *= (1 + MOVEFRACTION));
+          SetMove(EyeMove *= (1 + kMoveFraction));
         break;
       case '-':
-        SetMove(EyeMove *= (1 - MOVEFRACTION));
+        SetMove(EyeMove *= (1 - kMoveFraction));
         break;
     }
 }

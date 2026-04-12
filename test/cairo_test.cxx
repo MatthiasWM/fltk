@@ -24,7 +24,7 @@
 #include <FL/fl_draw.H>
 #include <FL/math.h>
 
-#define DEF_WIDTH 0.03
+constexpr double kDefWidth = 0.03;
 
 // This demo program can be used in 3 modes. All 3 modes require CMake
 // option FLTK_OPTION_CAIRO_WINDOW.
@@ -64,7 +64,7 @@ static void centered_text(cairo_t *cr, double x0, double y0, double w0, double h
   cairo_set_source_rgba(cr, 0, 0, 0, 1);
   cairo_set_line_width(cr, 0.004);
   cairo_stroke(cr);
-  cairo_set_line_width(cr, DEF_WIDTH);
+  cairo_set_line_width(cr, kDefWidth);
 }
 
 // draw a button object with rounded corners and a label
@@ -137,7 +137,7 @@ static void round_button(cairo_t *cr, double x0, double y0,
 
 void draw_image(cairo_t *cr, int w, int h) {
 
-  cairo_set_line_width(cr, DEF_WIDTH);
+  cairo_set_line_width(cr, kDefWidth);
   cairo_scale(cr, w, h);
 
   round_button(cr, 0.1, 0.1, 0.8, 0.2, 0.4, 1, 0, 0);
