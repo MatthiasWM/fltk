@@ -243,7 +243,7 @@ public:
   void user_data_type(const std::string&);
   const char *comment() { return comment_; }
   void comment(const char *);
-  
+
   /** Return true if this node is commented out and won't generate code. */
   bool is_commented_out() const { return commented_out_ != 0; }
   /** Set the commented out state. If true, this node and children won't generate code. */
