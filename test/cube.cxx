@@ -311,26 +311,26 @@ void print_cb(Fl_Widget *w, void *data) {
 //      |  |                     |  |          |  |
 //     MARGIN                    GAP           GAP
 
-#define MENUBAR_H 25    // menubar height
-#define MARGIN    20    // fixed margin around widgets
-#define GAP       20    // fixed gap between widgets
+constexpr int kMenubarH = 25;     // menubar height
+constexpr int kMargin   = 20;    // fixed margin around widgets
+constexpr int kGap      = 20;    // fixed gap between widgets
 
 void makeform(const char *name) {
   // Widget's XYWH's
-  int form_w = 800 + 2 * MARGIN + 2 * GAP;   // main window width
-  int form_h = 350 + MENUBAR_H + 2 * MARGIN; // main window height
+  int form_w = 800 + 2 * kMargin + 2 * kGap;   // main window width
+  int form_h = 350 + kMenubarH + 2 * kMargin;  // main window height
 
   // main window
   form = new Fl_Window(form_w, form_h, name);
   form->callback(exit_cb);
   // menu bar
-  Fl_Sys_Menu_Bar *menubar = new Fl_Sys_Menu_Bar(0, 0, form_w, MENUBAR_H);
+  Fl_Sys_Menu_Bar *menubar = new Fl_Sys_Menu_Bar(0, 0, form_w, kMenubarH);
   menubar->add("File/Print window", FL_COMMAND+'p', print_cb);
   menubar->add("File/Quit",         FL_COMMAND+'q', exit_cb);
 
   // Fl_Grid (layout)
-  Fl_Grid *grid = new Fl_Grid(0, MENUBAR_H, form_w, 350 + 2 * MARGIN);
-  grid->layout(4, 4, MARGIN, GAP);
+  Fl_Grid *grid = new Fl_Grid(0, kMenubarH, form_w, 350 + 2 * kMargin);
+  grid->layout(4, 4, kMargin, kGap);
   grid->box(FL_FLAT_BOX);
 
   // set column and row weights to control resizing behavior

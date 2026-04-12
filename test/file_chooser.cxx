@@ -43,7 +43,7 @@
 #include <stdlib.h>     // exit()
 #include <locale.h>     // setlocale()..
 
-#define TERMINAL_HEIGHT 120
+constexpr int kTerminalHeight = 120;
 #define TERMINAL_GREEN  "\033[32m"
 #define TERMINAL_NORMAL "\033[0m"
 
@@ -107,9 +107,9 @@ main(int  argc,         // I - Number of command-line arguments
   Fl_Shared_Image::add_handler(ps_check);
 
   // Make the main window...
-  window = new Fl_Double_Window(400, 215+TERMINAL_HEIGHT, "File Chooser Test");
+  window = new Fl_Double_Window(400, 215+kTerminalHeight, "File Chooser Test");
 
-  tty = new Fl_Terminal(0,215,window->w(),TERMINAL_HEIGHT);
+  tty = new Fl_Terminal(0,215,window->w(),kTerminalHeight);
   tty->ansi(true);
   tty->display_columns(100);  // at least 100 cols wide, even tho actual window smaller
 

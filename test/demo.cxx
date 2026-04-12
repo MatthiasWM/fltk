@@ -81,10 +81,10 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#define FORM_W 350
-#define FORM_H 440
-#define TTY_W  780
-#define TTY_H  200
+constexpr int kFormW = 350;
+constexpr int kFormH = 440;
+constexpr int kTtyW  = 780;
+constexpr int kTtyH  = 200;
 
 /* The form description */
 
@@ -144,14 +144,14 @@ void debug_var(const char *varname, const char *value) {
 void show_tty(int val) {
   if (val) {
     tty->show();                                        // show debug terminal
-    form->size_range(FORM_W, FORM_H + TTY_H/2, 0, 0);   // allow resizing
-    form->size(TTY_W + 20, FORM_H + TTY_H + 10);        // demo + height for tty + space (10)
-    tty->size(TTY_W, TTY_H);                            // force tty size
+    form->size_range(kFormW, kFormH + kTtyH/2, 0, 0);   // allow resizing
+    form->size(kTtyW + 20, kFormH + kTtyH + 10);        // demo + height for tty + space (10)
+    tty->size(kTtyW, kTtyH);                            // force tty size
   } else {
     tty->hide();                                        // hide debug terminal
-    form->size_range(FORM_W, FORM_H, FORM_W, FORM_H);   // no resizing
-    form->size(FORM_W, FORM_H);                         // normal demo size
-    tty->resize(10, FORM_H - 1, FORM_W - 20, 1);        // restore original position and size
+    form->size_range(kFormW, kFormH, kFormW, kFormH);   // no resizing
+    form->size(kFormW, kFormH);                         // normal demo size
+    tty->resize(10, kFormH - 1, kFormW - 20, 1);        // restore original position and size
   }
   form->init_sizes();
   exit_button->take_focus();
@@ -165,10 +165,10 @@ void popup_menu_cb(Fl_Widget*, void *userdata) {
 void create_the_forms() {
   Fl_Widget *obj;
   Fl_Menu_Button *popup;
-  form = new Fl_Double_Window(FORM_W, FORM_H, "FLTK Demonstration");
+  form = new Fl_Double_Window(kFormW, kFormH, "FLTK Demonstration");
 
   // Parent group for demo
-  demogrp = new Fl_Group(0, 0, FORM_W, FORM_H - 1);
+  demogrp = new Fl_Group(0, 0, kFormW, kFormH - 1);
 
   // Top demo button
   obj = new Fl_Box(FL_FRAME_BOX, 10, 15, 330, 40, "FLTK Demonstration");
@@ -208,7 +208,7 @@ void create_the_forms() {
   }
 
   // Right click popup menu (inside demogrp)
-  popup = new Fl_Menu_Button(0,0,FORM_W,FORM_H);
+  popup = new Fl_Menu_Button(0,0,kFormW,kFormH);
   popup->box(FL_NO_BOX);
   popup->type(Fl_Menu_Button::POPUP3); // pop menu on right-click
   popup->add("Show debug terminal", 0, popup_menu_cb, (void*)1);
@@ -216,7 +216,7 @@ void create_the_forms() {
 
   // The resizable box of 'demogrp' ensures that the demo form is not resized
   // if the user resizes the window while the debug terminal (tty) is shown
-  obj = new Fl_Box(FORM_W - 1, 0, 1, FORM_H);
+  obj = new Fl_Box(kFormW - 1, 0, 1, kFormH);
   obj->box(FL_NO_BOX);
   demogrp->resizable(obj);
 
@@ -225,7 +225,7 @@ void create_the_forms() {
   // Small debug terminal window parented to window, not demogrp
   //    To show/hide debug terminal, use demo's right-click menu
   //
-  tty = new Fl_Terminal(10, FORM_H - 1, FORM_W - 20, 1);
+  tty = new Fl_Terminal(10, kFormH - 1, kFormW - 20, 1);
   tty->history_lines(50);
   tty->display_rows(2);       // make display at least 2 rows high, even if not seen
   tty->display_columns(100);  // make display at least 100 cols wide, even if not seen
@@ -239,7 +239,7 @@ void create_the_forms() {
 
   // Note: do not set size_range() before show() or window can't be made resizable
   // later (macOS and Windows only, works on Linux though)
-  // form->size_range(FORM_W, FORM_H, FORM_W, FORM_H);
+  // form->size_range(kFormW, kFormH, kFormW, kFormH);
 }
 
 /* Maintaining and building up the menus. */
@@ -251,9 +251,9 @@ typedef struct {
   char icommand[9][64];
 } MENU;
 
-#define MAXMENU 32
+constexpr int kMaxMenu = 32;
 
-MENU menus[MAXMENU];
+MENU menus[kMaxMenu];
 int mennumb = 0;
 
 /* Return the number of a given menu name. */
@@ -266,7 +266,7 @@ int find_menu(const char* nnn) {
 
 /* Create a new menu with name nnn */
 void create_menu(const char* nnn) {
-  if (mennumb == MAXMENU -1) return;
+  if (mennumb == kMaxMenu -1) return;
   strcpy(menus[mennumb].name,nnn);
   menus[mennumb].numb = 0;
   mennumb++;
@@ -625,7 +625,7 @@ int main(int argc, char **argv) {
   form->show(argc, argv);
 
   // set size_range() after show() so the window can be resizable (Win + macOS)
-  form->size_range(FORM_W, FORM_H, FORM_W, FORM_H);
+  form->size_range(kFormW, kFormH, kFormW, kFormH);
 
 #if (0) // DEBUG (remove after testing)
   {

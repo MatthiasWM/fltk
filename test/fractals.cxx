@@ -77,8 +77,8 @@ typedef enum { NOTALLOWED, MOUNTAIN, TREE, ISLAND, BIGMTN, STEM, LEAF,
                MOUNTAIN_MAT, WATER_MAT, LEAF_MAT, TREE_MAT, STEMANDLEAVES,
                AXES } DisplayLists;
 
-// Note: MAXLEVEL is the highest level, range is 0..MAXLEVEL
-#define MAXLEVEL 8
+// Note: kMaxLevel is the highest level, range is 0..kMaxLevel
+constexpr int kMaxLevel = 8;
 
 int Rebuild = 1,        /* Rebuild display list in next display? */
     fractal = TREE,     /* What fractal are we building */
@@ -147,14 +147,14 @@ float xzslope(float v1[3], float v2[3])
 /************************ MOUNTAIN STUFF ***********************/
 /***************************************************************/
 
-GLfloat DispFactor[MAXLEVEL + 1]; /* Array of what to multiply random number
+GLfloat DispFactor[kMaxLevel + 1]; /* Array of what to multiply random number
                                      by for a given level to get midpoint
                                      displacement  */
-GLfloat DispBias[MAXLEVEL + 1];   /* Array of what to add to random number
+GLfloat DispBias[kMaxLevel + 1];   /* Array of what to add to random number
                                      before multiplying it by DispFactor */
 
-#define NUMRANDS 191
-float RandTable[NUMRANDS];  /* hash table of random numbers so we can
+constexpr int kNumRands = 191;
+float RandTable[kNumRands];  /* hash table of random numbers so we can
                                raise the same midpoints by the same amount */
 
          /* The following are for permitting an edge of a moutain to be   */
@@ -173,7 +173,7 @@ void InitRandTable(unsigned int seed)
   int i;
 
   srand48((long) seed);
-  for (i = 0; i < NUMRANDS; i++)
+  for (i = 0; i < kNumRands; i++)
     RandTable[i] = drand48() - 0.5f;
 }
 
@@ -191,7 +191,7 @@ void Midpoint(GLfloat mid[3], GLfloat v1[3], GLfloat v2[3],
     srand48((int)((v1[0]+v2[0])*23344));
     hash = unsigned(drand48() * 7334334);
     srand48((int)((v2[2]+v1[2])*43433));
-    hash = (unsigned)(drand48() * 634344 + hash) % NUMRANDS;
+    hash = (unsigned)(drand48() * 634344 + hash) % kNumRands;
     mid[1] += ((RandTable[hash] + DispBias[level]) * DispFactor[level]);
   }
 }
@@ -234,7 +234,7 @@ void FMR(GLfloat v1[3], GLfloat v2[3], GLfloat v3[3], int level)
 void FractalMountain(GLfloat v1[3], GLfloat v2[3], GLfloat v3[3],
                      int pegged[3])
 {
-  GLfloat lengths[MAXLEVEL + 1];
+  GLfloat lengths[kMaxLevel + 1];
   GLfloat fraction[8] = { 0.3f, 0.3f, 0.4f, 0.2f, 0.3f, 0.2f, 0.4f, 0.4f };
   GLfloat bias[8]     = { 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f };
   int i;

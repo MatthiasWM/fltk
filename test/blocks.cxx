@@ -48,10 +48,10 @@
 #  include <mmsystem.h>
 #endif // _WIN32
 
-#define BLOCK_COLS      25
-#define BLOCK_ROWS      15
-#define BLOCK_SIZE      32
-#define BLOCK_BLAST     100
+constexpr int   kBlockCols  = 25;
+constexpr int   kBlockRows  = 15;
+constexpr int   kBlockSize  = 32;
+constexpr int   kBlockBlast = 100;
 
 // These factors are used to fine-tune the game when these events
 // occur by multiplying the timer interval with the given factor:
@@ -60,9 +60,9 @@
 // (b) click on a "normal block", destroy this one and adjacent blocks
 // (c) click on a "bomb", destroy all blocks of the same color
 
-#define LEVEL_FACTOR    0.900f    // was: 0.95
-#define NORMAL_FACTOR   0.999f
-#define BOMB_FACTOR     0.995f
+constexpr float kLevelFactor  = 0.900f;   // was: 0.95
+constexpr float kNormalFactor = 0.999f;
+constexpr float kBombFactor   = 0.995f;
 
 // Set this to 1 to debug the timer callback (should be 0)
 #define DEBUG_TIMER     0
@@ -430,7 +430,7 @@ class BlockWindow : public Fl_Double_Window {
 
   struct Column {
     int         num_blocks;
-    Block       blocks[BLOCK_ROWS];
+    Block       blocks[kBlockRows];
     float       x;
   };
 
@@ -445,7 +445,7 @@ class BlockWindow : public Fl_Double_Window {
                 *play_button_;
 
   int           num_columns_;
-  Column        columns_[BLOCK_COLS];
+  Column        columns_[kBlockCols];
   int           count_;
   bool          help_;
   int           high_score_;
@@ -489,8 +489,8 @@ int main(int argc, char *argv[]) {
   Fl::scheme("plastic");
   Fl::visible_focus(0);
 
-  BlockWindow   *bw = new BlockWindow(BLOCK_COLS * BLOCK_SIZE,
-                                      BLOCK_ROWS * BLOCK_SIZE + 20,
+  BlockWindow   *bw = new BlockWindow(kBlockCols * kBlockSize,
+                                      kBlockRows * kBlockSize + 20,
                                       "Block Attack!");
 
   bw->show(argc, argv);
@@ -548,7 +548,7 @@ int BlockWindow::bomb(int color) {
   Column        *c;
 
 
-  if (color >= BLOCK_BLAST) return (0);
+  if (color >= kBlockBlast) return (0);
 
   for (j = num_columns_, c = columns_, count = 1; j > 0; j --, c ++)
     for (k = c->num_blocks, b = c->blocks; k > 0; k --, b ++)
@@ -573,7 +573,7 @@ int BlockWindow::click(int col, int row) {
   b     = c->blocks + row;
   color = b->color;
 
-  if (color < 0 || color >= BLOCK_BLAST) return (0);
+  if (color < 0 || color >= kBlockBlast) return (0);
 
   // Find the bottom block...
   while (row > 0 && b[-1].color == color) {
@@ -620,9 +620,9 @@ void BlockWindow::draw() {
   for (j = num_columns_, c = columns_; j > 0; j --, c ++)
     for (k = c->num_blocks, b = c->blocks; k > 0; k --, b ++) {
       xx = w() - (int)c->x;
-      yy = h() - BLOCK_SIZE - (int)b->y;
+      yy = h() - kBlockSize - (int)b->y;
 
-      if (b->color >= BLOCK_BLAST) {
+      if (b->color >= kBlockBlast) {
         b->color ++;
         blast_pixmap.draw(xx, yy);
       } else if (b->color < 0) {
@@ -770,15 +770,15 @@ int BlockWindow::handle(int event) {
       break;
 
     case FL_PUSH:
-      mx    = w() - Fl::event_x() + BLOCK_SIZE;
+      mx    = w() - Fl::event_x() + kBlockSize;
       my    = h() - Fl::event_y();
       count = 0;
       b     = 0;
 
       for (j = 0, c = columns_; !count && j < num_columns_; j ++, c ++)
         for (k = 0, b = c->blocks; k < c->num_blocks; k ++, b ++)
-          if (mx >= c->x && mx < (c->x + BLOCK_SIZE) &&
-              my >= b->y && my < (b->y + BLOCK_SIZE)) {
+          if (mx >= c->x && mx < (c->x + kBlockSize) &&
+              my >= b->y && my < (b->y + kBlockSize)) {
             if (b->bomb) count = bomb(b->color);
             else count = click(j, k);
             break;
@@ -794,12 +794,12 @@ int BlockWindow::handle(int event) {
         if (b->bomb) {
           sound_->play_explosion(float(0.19 + 0.005 * count));
 
-          interval_ *= BOMB_FACTOR;
+          interval_ *= kBombFactor;
           score_ += count;
         } else {
           sound_->play_explosion(float(0.09 + 0.005 * count));
 
-          interval_ *= NORMAL_FACTOR;
+          interval_ *= kNormalFactor;
           score_ += count * count;
         }
 
@@ -810,7 +810,7 @@ int BlockWindow::handle(int event) {
 
         for (j = 0, c = columns_; j < num_columns_; j ++, c ++)
           for (k = 0, b = c->blocks; k < c->num_blocks; k ++, b ++)
-            if (b->color < 0) b->color = BLOCK_BLAST;
+            if (b->color < 0) b->color = kBlockBlast;
       }
       return (1);
 
@@ -879,7 +879,7 @@ void BlockWindow::play_cb(Fl_Widget *wi, BlockWindow *bw) {
 }
 
 void BlockWindow::up_level() {
-  interval_ *= LEVEL_FACTOR;
+  interval_ *= kLevelFactor;
   opened_columns_ = 0;
   if (num_colors_ < 7) num_colors_ ++;
   level_ ++;
@@ -952,7 +952,7 @@ void BlockWindow::timeout_cb(BlockWindow *bw) {
   // Update blocks that have been destroyed...
   for (i = 0, c = bw->columns_; i < bw->num_columns_; i ++, c ++)
     for (j = 0, b = c->blocks; j < c->num_blocks; j ++, b ++)
-      if (b->color > (BLOCK_BLAST + 5)) {
+      if (b->color > (kBlockBlast + 5)) {
         bw->redraw();
 
         c->num_blocks --;
@@ -984,7 +984,7 @@ void BlockWindow::timeout_cb(BlockWindow *bw) {
       bw->redraw();
     }
 
-    lastx = c->x + BLOCK_SIZE;
+    lastx = c->x + kBlockSize;
 
     if (!bw->paused_ && bw->interval_ > 0.0) {
       bw->redraw();
@@ -997,7 +997,7 @@ void BlockWindow::timeout_cb(BlockWindow *bw) {
         b->y -= 4;
       }
 
-      lasty = b->y + BLOCK_SIZE;
+      lasty = b->y + kBlockSize;
     }
   }
 
@@ -1013,16 +1013,16 @@ void BlockWindow::timeout_cb(BlockWindow *bw) {
 
     if (bw->count_ <= 0) {
       bw->redraw();
-      bw->count_ = 4 * BLOCK_SIZE;
+      bw->count_ = 4 * kBlockSize;
 
-      if (bw->num_columns_ == BLOCK_COLS) {
+      if (bw->num_columns_ == kBlockCols) {
         bw->interval_ = -1.0;
         bw->sound_->play_explosion(0.8f);
         bw->play_button_->label("@>");
       } else {
         bw->opened_columns_ ++;
 
-        if (bw->opened_columns_ > (2 * BLOCK_COLS)) {
+        if (bw->opened_columns_ > (2 * kBlockCols)) {
           bw->up_level();
         }
 
@@ -1034,12 +1034,12 @@ void BlockWindow::timeout_cb(BlockWindow *bw) {
 
         bw->num_columns_ ++;
         c->x          = 0;
-        c->num_blocks = BLOCK_ROWS;
+        c->num_blocks = kBlockRows;
 
-        for (j = 0, b = c->blocks; j < BLOCK_ROWS; j ++, b ++) {
+        for (j = 0, b = c->blocks; j < kBlockRows; j ++, b ++) {
           b->bomb  = bw->num_colors_ > 3 && (rand() & 127) < bw->num_colors_;
           b->color = 1 + (rand() % bw->num_colors_);
-          b->y     = float(j * (BLOCK_SIZE + 8) + 24);
+          b->y     = float(j * (kBlockSize + 8) + 24);
         }
       }
     }

@@ -16,7 +16,7 @@
 #include <string.h>
 #include <stdlib.h>     // atoi
 
-#define TERMINAL_HEIGHT 120
+constexpr int kTerminalHeight = 120;
 
 // Globals
 Fl_Terminal *G_tty = 0;
@@ -347,9 +347,9 @@ Fl_Menu_Item type_choices[] = {
 
 int main(int argc, char **argv)
 {
-    Fl_Window win(900, 730+TERMINAL_HEIGHT);
+    Fl_Window win(900, 730+kTerminalHeight);
 
-    G_tty = new Fl_Terminal(0,730,win.w(),TERMINAL_HEIGHT);
+    G_tty = new Fl_Terminal(0,730,win.w(),kTerminalHeight);
 
     G_table = new DemoTable(20, 20, 860, 460, "Demo");
     G_table->selection_color(FL_YELLOW);

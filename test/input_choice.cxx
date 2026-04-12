@@ -21,7 +21,7 @@
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Terminal.H>
 
-#define TERMINAL_HEIGHT 150
+constexpr int kTerminalHeight = 150;
 
 // Globals
 Fl_Terminal *G_tty = 0;
@@ -54,9 +54,9 @@ void choice_cb(Fl_Widget *, void *data) {
 }
 
 int main(int argc, char **argv) {
-  Fl_Window *win = new Fl_Double_Window(300, 200 + TERMINAL_HEIGHT);
+  Fl_Window *win = new Fl_Double_Window(300, 200 + kTerminalHeight);
 
-  G_tty = new Fl_Terminal(0, 200, win->w(), TERMINAL_HEIGHT);
+  G_tty = new Fl_Terminal(0, 200, win->w(), kTerminalHeight);
 
   // this group can be activated and deactivated:
   Fl_Group *active_group = new Fl_Group(0, 0, 300, 120);

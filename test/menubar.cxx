@@ -35,7 +35,7 @@
 #include <FL/fl_ask.H>
 #include <FL/fl_string_functions.h>
 
-#define TERMINAL_HEIGHT 120
+constexpr int kTerminalHeight = 120;
 
 // Set the macro below to 1 to test shortcuts usually used for screen scaling.
 // This should normally be set to 0, enable only for testing!
@@ -242,7 +242,7 @@ void menu_linespacing_cb(Fl_Widget* w, void*) {
   Fl::menu_linespacing(val);    // takes effect when someone opens a new menu..
 }
 
-#define WIDTH 700
+constexpr int kWidth = 700;
 
 Fl_Menu_* menus[4];
 
@@ -280,14 +280,14 @@ int main(int argc, char **argv) {
     snprintf(buf, 100,"item %d",i);
     hugemenu[i].text = fl_strdup(buf);
   }
-  Fl_Double_Window window(WIDTH,400+TERMINAL_HEIGHT);
+  Fl_Double_Window window(kWidth,400+kTerminalHeight);
 
   Fl_Scheme_Choice scheme_choice(300, 50, 100, 25, "&scheme");
 
-  G_tty = new Fl_Terminal(0,400,WIDTH,TERMINAL_HEIGHT);
+  G_tty = new Fl_Terminal(0,400,kWidth,kTerminalHeight);
 
   window.callback(window_cb);
-  Fl_Menu_Bar menubar(0,0,WIDTH,30); menubar.menu(menutable);
+  Fl_Menu_Bar menubar(0,0,kWidth,30); menubar.menu(menutable);
   menubar.callback(test_cb);
   menus[0] = &menubar;
   Fl_Menu_Button mb1(100,100,120,25,"&menubutton"); mb1.menu(pulldown);
@@ -301,7 +301,7 @@ int main(int argc, char **argv) {
   ch.tooltip("this is a choice menu");
   ch.callback(test_cb);
   menus[2] = &ch;
-  Fl_Menu_Button mb(0,0,WIDTH,400,"&popup");
+  Fl_Menu_Button mb(0,0,kWidth,400,"&popup");
   mb.type(Fl_Menu_Button::POPUP3);
   mb.menu(menutable);
   mb.remove(1); // delete the "File" submenu
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
   menus[3] = &mb;
   Fl_Box b(200,200,200,100,"Press right button\nfor a pop-up menu");
   window.resizable(&mb);
-  window.size_range(300,400,0,400+TERMINAL_HEIGHT);
+  window.size_range(300,400,0,400+kTerminalHeight);
 #ifdef HAS_MAC_APP_MENU
   Fl_Choice ch2(500,100,150,25,"Use:");
   ch2.menu(menu_location);

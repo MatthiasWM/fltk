@@ -28,7 +28,7 @@
 #include <FL/Fl_Terminal.H>
 #include <FL/Fl_Shared_Image.H>
 
-#define TERMINAL_HEIGHT 120
+constexpr int kTerminalHeight = 120;
 
 // GLOBALS
 Fl_Input *G_filename = NULL;
@@ -108,11 +108,11 @@ int main(int argc, char **argv) {
     filename = argv[argn++];
   }
 
-  Fl_Window *win = new Fl_Window(640, 400+TERMINAL_HEIGHT, "Native File Chooser Test");
+  Fl_Window *win = new Fl_Window(640, 400+kTerminalHeight, "Native File Chooser Test");
   win->size_range(win->w(), win->h(), 0, 0);
   win->begin();
   {
-    G_tty = new Fl_Terminal(0,400,win->w(),TERMINAL_HEIGHT);
+    G_tty = new Fl_Terminal(0,400,win->w(),kTerminalHeight);
 
     int x = 80, y = 10;
     G_filename = new Fl_Input(x, y, win->w()-80-10, 25, "Filename");
@@ -150,10 +150,10 @@ int main(int argc, char **argv) {
                 "    Apps<font color=#55f>&lt;Ctrl-I&gt;</font>*.app\n"
                 "</pre>\n");
 
-    Fl_Button *but = new Fl_Button(win->w()-x-10, win->h()-TERMINAL_HEIGHT-25-10, 80, 25, "Pick File");
+    Fl_Button *but = new Fl_Button(win->w()-x-10, win->h()-kTerminalHeight-25-10, 80, 25, "Pick File");
     but->callback(PickFile_CB);
 
-    Fl_Button *butdir = new Fl_Button(but->x()-x-10, win->h()-TERMINAL_HEIGHT-25-10, 80, 25, "Pick Dir");
+    Fl_Button *butdir = new Fl_Button(but->x()-x-10, win->h()-kTerminalHeight-25-10, 80, 25, "Pick Dir");
     butdir->callback(PickDir_CB);
 
     win->resizable(G_filter);
