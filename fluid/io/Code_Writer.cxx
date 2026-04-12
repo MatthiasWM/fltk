@@ -151,11 +151,7 @@ int Code_Writer::write_h_once(const char *format, ...) {
   if (text_in_header.find(buf) != text_in_header.end()) {
     return 0;
   }
-  if (use_buffer) {
-    header_buffer << buf << "\n";
-  } else {
-    fprintf(header_file, "%s\n", buf);
-  }
+  header_buffer << buf << "\n";
   text_in_header.insert(buf);
   return 1;
 }
@@ -406,11 +402,7 @@ void Code_Writer::write_h(const char* format,...)
   }
   va_end(args);
 
-  if (use_buffer) {
-    header_buffer << block_buffer_;
-  } else {
-    fputs(block_buffer_, header_file);
-  }
+  header_buffer << block_buffer_;
 }
 
 /**
@@ -504,19 +496,6 @@ bool is_comment_before_class_member(Node *q) {
       return true;
   }
   return false;
-}
-
-/** Return the current byte offset in the code output stream.
- When buffering (use_buffer or codeview mode), this uses ostringstream::tellp().
- Otherwise it falls back to ftell() on the underlying FILE*.
- */
-int Code_Writer::code_pos() {
-  return use_buffer ? (int)code_buffer.tellp() : (int)ftell(code_file);
-}
-
-/** Return the current byte offset in the header output stream. */
-int Code_Writer::header_pos() {
-  return use_buffer ? (int)header_buffer.tellp() : (int)ftell(header_file);
 }
 
 /**
@@ -623,32 +602,11 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   current_class = nullptr;
   current_widget_class = nullptr;
 
-  // Use buffered output when writing to named files (conservative write-if-changed)
-  // OR when generating for the codeview panel (avoids temp-file round-trip).
-  // Fall through to direct FILE* output only when writing to stdout (s or t is null).
-  use_buffer = (s && t) || to_codeview;
-
-  if (use_buffer) {
-    // Reset the string streams for fresh output
-    code_buffer.str("");
-    code_buffer.clear();
-    header_buffer.str("");
-    header_buffer.clear();
-  } else {
-    // Direct file output — only reached for stdout (s==nullptr or t==nullptr).
-    if (!s) code_file = stdout;
-    else {
-      FILE *f = fl_fopen(s, "wb");
-      if (!f) return 0;
-      code_file = f;
-    }
-    if (!t) header_file = stdout;
-    else {
-      FILE *f = fl_fopen(t, "wb");
-      if (!f) {fclose(code_file); return 0;}
-      header_file = f;
-    }
-  }
+  // Always use string stream buffers for output
+  code_buffer.str("");
+  code_buffer.clear();
+  header_buffer.str("");
+  header_buffer.clear();
 
   // Remember the last code file location for MergeBack
   if (s && proj_.write_mergeback_data && !to_codeview) {
@@ -797,8 +755,6 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
     p = write_code(p);
   }
 
-  if (!s) return 1;
-
   write_h("#endif\n");
 
   Node* last_node = Fluid.proj.tree.last;
@@ -814,25 +770,27 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
     }
   }
 
-  if (use_buffer) {
-    use_buffer = false;
-    if (write_codeview)
-      return 1;  // strings available via code_string() / header_string(); no file I/O needed
-    // Write files only if content has changed (conservative writing)
-    bool code_ok = write_file_if_changed(s, code_buffer.str());
-    bool header_ok = write_file_if_changed(t, header_buffer.str());
-    return code_ok && header_ok ? 1 : 0;
+  // For codeview mode, strings are available via code_string() / header_string()
+  if (write_codeview)
+    return 1;
+
+  // Write code output: to file if filename provided, to stdout otherwise
+  bool code_ok = true;
+  if (s) {
+    code_ok = write_file_if_changed(s, code_buffer.str());
   } else {
-    // Direct file output mode - close the files
-    int x = 0, y = 0;
-    if (code_file != stdout)
-      x = fclose(code_file);
-    code_file = nullptr;
-    if (header_file != stdout)
-      y = fclose(header_file);
-    header_file = nullptr;
-    return x >= 0 && y >= 0;
+    fputs(code_buffer.str().c_str(), stdout);
   }
+
+  // Write header output: to file if filename provided, to stdout otherwise
+  bool header_ok = true;
+  if (t) {
+    header_ok = write_file_if_changed(t, header_buffer.str());
+  } else {
+    fputs(header_buffer.str().c_str(), stdout);
+  }
+
+  return code_ok && header_ok ? 1 : 0;
 }
 
 
@@ -881,11 +839,7 @@ Code_Writer::~Code_Writer()
  */
 void Code_Writer::tag(proj::Mergeback::Tag prev_type, proj::Mergeback::Tag next_type, unsigned short uid) {
   if (proj_.write_mergeback_data) {
-    if (use_buffer) {
-      code_buffer << Mergeback::format_tag(prev_type, next_type, uid, (uint32_t)block_crc_);
-    } else {
-      Mergeback::print_tag(code_file, prev_type, next_type, uid, (uint32_t)block_crc_);
-    }
+    code_buffer << Mergeback::format_tag(prev_type, next_type, uid, (uint32_t)block_crc_);
   }
   block_crc_ = crc32(0, nullptr, 0);
 }
@@ -949,69 +903,55 @@ int Code_Writer::crc_printf(const char *format, ...) {
  If MergeBack is enabled, the CRC calculation is continued.
  \param[in] format printf style formatting string
  \param[in] args list of arguments
- \return see fprintf(FILE *, *const char*, ...)
+ \return number of characters written
  */
 int Code_Writer::crc_vprintf(const char *format, va_list args) {
-  if (proj_.write_mergeback_data || use_buffer) {
-    // Make a copy of args in case we need to call vsnprintf twice
-    // (the first call consumes args on some platforms)
-    va_list args_copy;
-    va_copy(args_copy, args);
-    int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
-    if (n > block_buffer_size_) {
-      // Buffer was too small, reallocate and try again with the copy
-      block_buffer_size_ = n + 128;
-      if (block_buffer_) ::free(block_buffer_);
-      block_buffer_ = (char*)::malloc(block_buffer_size_+1);
-      n = vsnprintf(block_buffer_, block_buffer_size_, format, args_copy);
-    }
-    va_end(args_copy);
-    if (proj_.write_mergeback_data) {
-      crc_add(block_buffer_, n);
-    }
-    if (use_buffer) {
-      code_buffer << block_buffer_;
-      return n;
-    } else {
-      return fputs(block_buffer_, code_file);
-    }
-  } else {
-    return vfprintf(code_file, format, args);
+  // Make a copy of args in case we need to call vsnprintf twice
+  // (the first call consumes args on some platforms)
+  va_list args_copy;
+  va_copy(args_copy, args);
+  int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
+  if (n > block_buffer_size_) {
+    // Buffer was too small, reallocate and try again with the copy
+    block_buffer_size_ = n + 128;
+    if (block_buffer_) ::free(block_buffer_);
+    block_buffer_ = (char*)::malloc(block_buffer_size_+1);
+    n = vsnprintf(block_buffer_, block_buffer_size_, format, args_copy);
   }
+  va_end(args_copy);
+  if (proj_.write_mergeback_data) {
+    crc_add(block_buffer_, n);
+  }
+  code_buffer << block_buffer_;
+  return n;
 }
 
 /** Write some text to the code file.
  If MergeBack is enabled, the CRC calculation is continued.
  \param[in] text any text, no requirements to end in a newline or such
- \return see fputs(const char*, FILE*)
+ \return 0
  */
 int Code_Writer::crc_puts(const char *text) {
   if (proj_.write_mergeback_data) {
     crc_add(text);
   }
-  if (use_buffer) {
-    code_buffer << text;
-    return 0;
-  }
-  return fputs(text, code_file);
+  code_buffer << text;
+  return 0;
 }
 
 /** Write a single ASCII character to the code file.
  If MergeBack is enabled, the CRC calculation is continued.
  \note to write UTF-8 characters, use Code_Writer::crc_puts(const char *text)
  \param[in] c any character between 0 and 127 inclusive
- \return see fputc(int, FILE*)
+ \return the character written
  */
 int Code_Writer::crc_putc(int c) {
   if (proj_.write_mergeback_data) {
     uchar uc = (uchar)c;
     crc_add(&uc, 1);
   }
-  if (use_buffer) {
-    code_buffer << (char)c;
-    return c;
-  }
-  return fputc(c, code_file);
+  code_buffer << (char)c;
+  return c;
 }
 
 /**
