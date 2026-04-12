@@ -886,10 +886,10 @@ void Code_Writer::crc_add(const void *data, int n) {
   block_crc_ = block_crc(data, n, block_crc_, &block_line_start_);
 }
 
-/** Write formatted text to the code file.
+/** Write formatted text to the code buffer.
  If MergeBack is enabled, the CRC calculation is continued.
  \param[in] format printf style formatting string
- \return see fprintf(FILE *, *const char*, ...)
+ \return number of characters formatted
  */
 int Code_Writer::crc_printf(const char *format, ...) {
   va_list args;
@@ -899,11 +899,11 @@ int Code_Writer::crc_printf(const char *format, ...) {
   return ret;
 }
 
-/** Write formatted text to the code file.
+/** Write formatted text to the code buffer.
  If MergeBack is enabled, the CRC calculation is continued.
  \param[in] format printf style formatting string
  \param[in] args list of arguments
- \return number of characters written
+ \return number of characters formatted
  */
 int Code_Writer::crc_vprintf(const char *format, va_list args) {
   // Make a copy of args in case we need to call vsnprintf twice
@@ -926,10 +926,10 @@ int Code_Writer::crc_vprintf(const char *format, va_list args) {
   return n;
 }
 
-/** Write some text to the code file.
+/** Write some text to the code buffer.
  If MergeBack is enabled, the CRC calculation is continued.
  \param[in] text any text, no requirements to end in a newline or such
- \return 0
+ \return always 0
  */
 int Code_Writer::crc_puts(const char *text) {
   if (proj_.write_mergeback_data) {
@@ -939,7 +939,7 @@ int Code_Writer::crc_puts(const char *text) {
   return 0;
 }
 
-/** Write a single ASCII character to the code file.
+/** Write a single ASCII character to the code buffer.
  If MergeBack is enabled, the CRC calculation is continued.
  \note to write UTF-8 characters, use Code_Writer::crc_puts(const char *text)
  \param[in] c any character between 0 and 127 inclusive
