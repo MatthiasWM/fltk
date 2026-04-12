@@ -40,8 +40,9 @@ extern "C" {
   This is a very basic and restricted function to create a JPEG image file
   from an RGB image (Fl_RGB_Image).
 
-  The image data must be aligned w/o gaps, i.e. ld() \b MUST be zero or
-  equal to data_w() * d().
+  The image data can be aligned with or without gaps after each row.
+  If ld() is 0 or equal to data_w() * d() there are no gaps.
+  Otherwise ld() must be the total length of each row including any gap.
 
   The image file is always written with the original image size data_w()
   and data_h(), even if the image has been scaled.
