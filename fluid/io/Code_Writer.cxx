@@ -388,17 +388,28 @@ void Code_Writer::write_cc(const char *indent, int n, const char *c, const char 
  Print a formatted line to the header file.
  \param[in] format printf-style formatting text, followed by a vararg list
  */
-void Code_Writer::write_h(const char* format,...) {
+void Code_Writer::write_h(const char* format,...)
+{
   if (varused_test) return;
+
   va_list args;
-  char buf[4096];
   va_start(args, format);
-  vsnprintf(buf, sizeof(buf), format, args);
+  int n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
+  if (n > block_buffer_size_) {
+    // Buffer was too small, reallocate and try again with the copy
+    block_buffer_size_ = n + 128;
+    if (block_buffer_) ::free(block_buffer_);
+    block_buffer_ = (char*)::malloc(block_buffer_size_+1);
+    va_end(args);
+    va_start(args, format);
+    n = vsnprintf(block_buffer_, block_buffer_size_, format, args);
+  }
   va_end(args);
+
   if (use_buffer) {
-    header_buffer << buf;
+    header_buffer << block_buffer_;
   } else {
-    fputs(buf, header_file);
+    fputs(block_buffer_, header_file);
   }
 }
 
