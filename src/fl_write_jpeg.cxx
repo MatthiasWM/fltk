@@ -48,8 +48,8 @@ extern "C" {
   Image depth 1 (gray) and 3 (RGB) are supported. Images with depth 2 or 4
   (with alpha channel) are not supported by the JPEG format.
 
-  \note Currently there is no error handling except for errors when opening
-    the file. This may be changed in the future.
+  \note Error handling is limited to basic error detection: library availability,
+    file opening errors, and depth validation.
 
   \param[in]  filename  Output filename, extension should be '.jpg' or '.jpeg'
   \param[in]  img       RGB image to be written
