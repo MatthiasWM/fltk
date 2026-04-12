@@ -61,6 +61,7 @@ Fl_Color  Node_Browser::code_color    = FL_FOREGROUND_COLOR;
 Fl_Font   Node_Browser::code_font     = FL_HELVETICA;
 Fl_Color  Node_Browser::comment_color = FL_DARK_GREEN;
 Fl_Font   Node_Browser::comment_font  = FL_HELVETICA;
+Fl_Color  Node_Browser::commented_out_color = FL_INACTIVE_COLOR;
 
 // ---- global functions
 
@@ -317,6 +318,15 @@ void Node_Browser::item_draw(void *v, int X, int Y, int, int) const {
 
   char buf[500]; // edit buffer: large enough to hold 80 UTF-8 chars + nul
 
+  // check if this node or any parent is commented out
+  bool is_grayed_out = false;
+  for (Node *p = l; p; p = p->parent) {
+    if (p->is_commented_out()) {
+      is_grayed_out = true;
+      break;
+    }
+  }
+
   // calculate the horizontal start position of this item
   // 3 is the edge of the browser
   // 13 is the width of the arrow that indicates children for the item
@@ -335,7 +345,8 @@ void Node_Browser::item_draw(void *v, int X, int Y, int, int) const {
     // -- comment
     copy_trunc(buf, l->comment(), 80, 0, 1);
     comment_incr = textsize()-1;
-    if (l->new_selected) fl_color(fl_contrast(comment_color, FL_SELECTION_COLOR));
+    if (is_grayed_out) fl_color(commented_out_color);
+    else if (l->new_selected) fl_color(fl_contrast(comment_color, FL_SELECTION_COLOR));
     else fl_color(comment_color);
     fl_font(comment_font, textsize()-2);
     fl_draw(buf, X, Y+12);
@@ -343,7 +354,8 @@ void Node_Browser::item_draw(void *v, int X, int Y, int, int) const {
     comment_incr -= comment_incr/2;
   }
 
-  if (l->new_selected) fl_color(fl_contrast(FL_FOREGROUND_COLOR,FL_SELECTION_COLOR));
+  if (is_grayed_out) fl_color(commented_out_color);
+  else if (l->new_selected) fl_color(fl_contrast(FL_FOREGROUND_COLOR,FL_SELECTION_COLOR));
   else fl_color(FL_FOREGROUND_COLOR);
 
   // Width=10: Draw the triangle that indicates possible children
@@ -397,7 +409,8 @@ void Node_Browser::item_draw(void *v, int X, int Y, int, int) const {
     if (c.compare(0, 3, "Fl_")==0) c.erase(0, 3);
     // -- class
     fl_font(class_font, textsize());
-    if (l->new_selected) fl_color(fl_contrast(class_color, FL_SELECTION_COLOR));
+    if (is_grayed_out) fl_color(commented_out_color);
+    else if (l->new_selected) fl_color(fl_contrast(class_color, FL_SELECTION_COLOR));
     else fl_color(class_color);
     fl_draw(c.c_str(), X, Y+13);
     X += int(fl_width(c.c_str())+fl_width('n'));
@@ -405,14 +418,16 @@ void Node_Browser::item_draw(void *v, int X, int Y, int, int) const {
     if (!c.empty()) {
       // -- name
       fl_font(name_font, textsize());
-      if (l->new_selected) fl_color(fl_contrast(name_color, FL_SELECTION_COLOR));
+      if (is_grayed_out) fl_color(commented_out_color);
+      else if (l->new_selected) fl_color(fl_contrast(name_color, FL_SELECTION_COLOR));
       else fl_color(name_color);
       fl_draw(c.c_str(), X, Y+13);
     } else if (l->label()) {
       // -- label
       c = l->label();
       fl_font(label_font, textsize());
-      if (l->new_selected) fl_color(fl_contrast(label_color, FL_SELECTION_COLOR));
+      if (is_grayed_out) fl_color(commented_out_color);
+      else if (l->new_selected) fl_color(fl_contrast(label_color, FL_SELECTION_COLOR));
       else fl_color(label_color);
       copy_trunc(buf, c.c_str(), 32, 1, 0); // quoted string
       fl_draw(buf, X, Y+13);
@@ -421,20 +436,23 @@ void Node_Browser::item_draw(void *v, int X, int Y, int, int) const {
     if (l->is_code_block() && (l->level==0 || l->parent->is_class())) {
       // -- function names
       fl_font(func_font, textsize());
-      if (l->new_selected) fl_color(fl_contrast(func_color, FL_SELECTION_COLOR));
+      if (is_grayed_out) fl_color(commented_out_color);
+      else if (l->new_selected) fl_color(fl_contrast(func_color, FL_SELECTION_COLOR));
       else fl_color(func_color);
       copy_trunc(buf, l->title(), 55, 0, 0);
     } else {
       if (l->is_a(Type::Comment)) {
         // -- comment (in main line, not above entry)
         fl_font(comment_font, textsize());
-        if (l->new_selected) fl_color(fl_contrast(comment_color, FL_SELECTION_COLOR));
+        if (is_grayed_out) fl_color(commented_out_color);
+        else if (l->new_selected) fl_color(fl_contrast(comment_color, FL_SELECTION_COLOR));
         else fl_color(comment_color);
         copy_trunc(buf, l->title(), 55, 0, 0);
       } else {
         // -- code
         fl_font(code_font, textsize());
-        if (l->new_selected) fl_color(fl_contrast(code_color, FL_SELECTION_COLOR));
+        if (is_grayed_out) fl_color(commented_out_color);
+        else if (l->new_selected) fl_color(fl_contrast(code_color, FL_SELECTION_COLOR));
         else fl_color(code_color);
         copy_trunc(buf, l->title(), 55, 0, 1);
       }

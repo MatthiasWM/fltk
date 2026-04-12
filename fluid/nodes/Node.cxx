@@ -519,6 +519,7 @@ Node::Node() :
   selected(0),
   folded_(0),
   visible(0),
+  commented_out_(0),
   level(0),
   next(nullptr), prev(nullptr),
   factory(nullptr),
@@ -955,6 +956,7 @@ void Node::write_properties(fld::io::Project_Writer &f) {
   }
   if (can_have_children() && !folded_) f.write_word("open");
   if (selected) f.write_word("selected");
+  if (commented_out_) f.write_word("commented_out");
 }
 
 void Node::read_property(fld::io::Project_Reader &f, const char *c) {
@@ -978,6 +980,8 @@ void Node::read_property(fld::io::Project_Reader &f, const char *c) {
     folded_ = 0;
   else if (!strcmp(c,"selected"))
     select(this,1);
+  else if (!strcmp(c,"commented_out"))
+    commented_out_ = 1;
   else if (!strcmp(c,"parent_properties"))
     if (parent) {
       const char *cc = f.read_word(1);

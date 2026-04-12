@@ -190,6 +190,7 @@ public: // things that should not be public:
   char selected; // copied here by selection_changed()
   char folded_;  // if set, children are not shown in browser
   char visible; // true if all parents are open
+  char commented_out_; // if set, this node and its children are commented out and won't generate code
   int level;    // number of parents over this
   Node *next, *prev;
   Node *prev_sibling();
@@ -242,6 +243,11 @@ public:
   void user_data_type(const std::string&);
   const char *comment() { return comment_; }
   void comment(const char *);
+  
+  /** Return true if this node is commented out and won't generate code. */
+  bool is_commented_out() const { return commented_out_ != 0; }
+  /** Set the commented out state. If true, this node and children won't generate code. */
+  void commented_out(bool v) { commented_out_ = v ? 1 : 0; }
 
   virtual Node* click_test(int,int) { return nullptr; }
 

@@ -491,6 +491,13 @@ bool is_comment_before_class_member(Node *q) {
  \return pointer to the next sibling
  */
 Node* Code_Writer::write_static(Node* p) {
+  // Skip commented-out nodes and all their children
+  if (p->is_commented_out()) {
+    Node* q;
+    for (q = p->next; q && q->level > p->level; q = q->next) {/*skip children*/}
+    return q;
+  }
+
   if (write_codeview) p->header_static_start = (int)ftell(header_file);
   if (write_codeview) p->code_static_start = (int)ftell(code_file);
   p->write_static(*this);
@@ -513,6 +520,13 @@ Node* Code_Writer::write_static(Node* p) {
  \return pointer to the next sibling
  */
 Node* Code_Writer::write_code(Node* p) {
+  // Skip commented-out nodes and all their children
+  if (p->is_commented_out()) {
+    Node* q;
+    for (q = p->next; q && q->level > p->level; q = q->next) {/*skip children*/}
+    return q;
+  }
+
   // write all code that comes before the children code
   // (but don't write the last comment until the very end)
   if (!(p==Fluid.proj.tree.last && p->is_a(Type::Comment))) {
@@ -611,7 +625,7 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   // if the first entry in the Type tree is a comment, then it is probably
   // a copyright notice. We print that before anything else in the file!
   Node* first_node = Fluid.proj.tree.first;
-  if (first_node && first_node->is_a(Type::Comment)) {
+  if (first_node && first_node->is_a(Type::Comment) && !first_node->is_commented_out()) {
     if (write_codeview) {
       first_node->code1_start = first_node->code2_start = (int)ftell(code_file);
       first_node->header1_start = first_node->header2_start = (int)ftell(header_file);
@@ -751,7 +765,7 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   fprintf(header_file, "#endif\n");
 
   Node* last_node = Fluid.proj.tree.last;
-  if (last_node && (last_node != Fluid.proj.tree.first) && last_node->is_a(Type::Comment)) {
+  if (last_node && (last_node != Fluid.proj.tree.first) && last_node->is_a(Type::Comment) && !last_node->is_commented_out()) {
     if (write_codeview) {
       last_node->code1_start = last_node->code2_start = (int)ftell(code_file);
       last_node->header1_start = last_node->header2_start = (int)ftell(header_file);

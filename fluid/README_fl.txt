@@ -384,6 +384,8 @@ Type Node <word>
   “comment” <word> : one or many lines of text
   “open” : Group content visible in the FLUID tree browser
   “selected” : Type was selected in tree view
+  "commented_out" : This node and its children are disabled and won't generate
+      code. The node is rendered grayed out in the FLUID tree browser.
 
 Type "Function" <word> : function signature
 
