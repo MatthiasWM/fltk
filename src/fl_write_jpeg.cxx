@@ -158,7 +158,8 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
     ld = w * d;
 
   // Allocate buffer for stripping alpha if needed
-  if (d == 2 || d == 4) {
+  int strip_alpha = (d == 2 || d == 4);
+  if (strip_alpha) {
     row_buf = (unsigned char *)malloc(w * out_d);
     if (row_buf == NULL) {
       fclose(fp);
@@ -187,7 +188,7 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
   const unsigned char *ptr = (const unsigned char *)pixels;
 
   while (cinfo.next_scanline < cinfo.image_height) {
-    if (d == 2 || d == 4) {
+    if (strip_alpha) {
       // Strip alpha channel: copy only color components
       const unsigned char *src = ptr;
       unsigned char *dst = row_buf;
