@@ -59,7 +59,7 @@ extern "C" {
   \retval      0        success, file has been written
   \retval     -1        jpeg library not available
   \retval     -2        file open error
-  \retval     -3        unsupported image depth (alpha channel not supported)
+  \retval     -3        unsupported image depth (alpha channel or invalid depth)
 
   \see fl_write_jpeg(const char *, const char *, int, int, int, int)
 */
@@ -108,7 +108,12 @@ int fl_write_jpeg(const char *filename, const unsigned char *pixels, int w, int 
   \param[in]  d         Image depth: 1 = GRAY, 3 = RGB (2 and 4 with alpha not supported)
   \param[in]  ld        Line delta: default (0) = w * d
 
-  \return     success (0) or error code, see ...
+  \return     success (0) or error code: negative values are errors
+
+  \retval      0        success, file has been written
+  \retval     -1        jpeg library not available
+  \retval     -2        file open error
+  \retval     -3        unsupported image depth (alpha channel or invalid depth)
 
   \see fl_write_jpeg(const char *filename, Fl_RGB_Image *img)
 */
@@ -119,8 +124,10 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
   FILE *fp;
   J_COLOR_SPACE color_space;
 
-  // JPEG does not support alpha channels
-  if (d == 2 || d == 4) {
+  // JPEG only supports depth 1 (grayscale) and 3 (RGB)
+  // Depth 2 and 4 have alpha channels which are not supported
+  // Other depth values are invalid
+  if (d != 1 && d != 3) {
     return -3;
   }
 
@@ -130,8 +137,7 @@ int fl_write_jpeg(const char *filename, const char *pixels, int w, int h, int d,
 
   switch (d) {
     case 1:  color_space = JCS_GRAYSCALE; break;
-    case 3:  color_space = JCS_RGB;       break;
-    default: color_space = JCS_RGB;
+    default: color_space = JCS_RGB;       break;
   }
 
   if (ld == 0)
