@@ -26,8 +26,6 @@
 #include <FL/Fl_Tabs.H>
 #include <FL/Fl_Button.H>
 #include "../src/flstring.h"
-static char *cv_source_filename = nullptr;
-static char *cv_header_filename = nullptr;
 static char *cv_design_filename = nullptr;
 int cv_code_choice;
 extern void select_only(Node *o);
@@ -147,23 +145,15 @@ void update_codeview_position_cb(class Fl_Tabs*, void*) {
 }
 
 /**
- Generate a header, source, strings, or design file in a temporary directory
- and load those into the Code Viewer widgets.
+ Generate a header, source, strings, or design file and load the content into
+ the Code Viewer widgets.  Source and header code are generated entirely in
+ memory (via ostringstream) and pushed directly into the text buffers — no
+ temporary files are written or read back for those tabs.
 */
 void update_codeview_cb(class Fl_Button*, void*) {
   if (!codeview_panel || !codeview_panel->visible())
       return;
 
-    if (!cv_source_filename) {
-      cv_source_filename = (char*)malloc(FL_PATH_MAX);
-      fl_strlcpy(cv_source_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
-      fl_strlcat(cv_source_filename, "codeview_tmp.cxx", FL_PATH_MAX);
-    }
-    if (!cv_header_filename) {
-      cv_header_filename = (char*)malloc(FL_PATH_MAX);
-      fl_strlcpy(cv_header_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
-      fl_strlcat(cv_header_filename, "codeview_tmp.h", FL_PATH_MAX);
-    }
     if (!cv_design_filename) {
       cv_design_filename = (char*)malloc(FL_PATH_MAX);
       fl_strlcpy(cv_design_filename, Fluid.get_tmpdir().c_str(), FL_PATH_MAX);
@@ -186,30 +176,22 @@ void update_codeview_cb(class Fl_Button*, void*) {
       cv_strings->buffer()->loadfile(fn);
       cv_strings->scroll(top, 0);
     } else if (cv_source->visible_r() || cv_header->visible_r()) {
-      std::string code_file_name_bak = Fluid.proj.code_file_name;
-      Fluid.proj.code_file_name = cv_source_filename;
-      std::string header_file_name_bak = Fluid.proj.header_file_name;
-      Fluid.proj.header_file_name = cv_header_filename;
-
-      // generate the code and load the files
+      // Generate code into in-memory ostringstream buffers (no temp files).
       fld::io::Code_Writer f(Fluid.proj);
-      // generate files
-      if (f.write_code(cv_source_filename, cv_header_filename, true))
+      // Setting code_view to true write code files directly into a string buffer
+      // and does not write over the code files on disk.
+      if (f.write_code("codeview_tmp.cxx", "codeview_tmp.h", true))
       {
-        // load file into source editor
+        // Push generated text directly into the editor buffers.
         int pos = cv_source->top_line();
-        cv_source->buffer()->loadfile(cv_source_filename);
+        cv_source->buffer()->text(f.code_string().c_str());
         cv_source->scroll(pos, 0);
-        // load file into header editor
         pos = cv_header->top_line();
-        cv_header->buffer()->loadfile(cv_header_filename);
+        cv_header->buffer()->text(f.header_string().c_str());
         cv_header->scroll(pos, 0);
         // update the source code highlighting
         update_codeview_position();
       }
-
-      Fluid.proj.code_file_name = code_file_name_bak;
-      Fluid.proj.header_file_name = header_file_name_bak;
     }
 }
 

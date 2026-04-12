@@ -86,6 +86,11 @@ private:
   bool file_content_matches(const char *filename, const std::string &content);
   bool write_file_if_changed(const char *filename, const std::string &content);
 
+  /// Return the current write position in the code output stream.
+  int code_pos();
+  /// Return the current write position in the header output stream.
+  int header_pos();
+
 public:
   /// current level of source code indentation
   int indentation = 0;
@@ -126,6 +131,11 @@ public:
   Node* write_code(Node* p);
   int write_code(const char *cfile, const char *hfile, bool to_codeview=false);
   void write_public(int state); // writes pubic:/private: as needed
+
+  /// Return the generated source code as a string (valid after write_code() with to_codeview=true).
+  std::string code_string() const { return code_buffer.str(); }
+  /// Return the generated header code as a string (valid after write_code() with to_codeview=true).
+  std::string header_string() const { return header_buffer.str(); }
 
   void tag(proj::Mergeback::Tag prev_type, proj::Mergeback::Tag next_type, unsigned short uid);
 

@@ -506,17 +506,30 @@ bool is_comment_before_class_member(Node *q) {
   return false;
 }
 
+/** Return the current byte offset in the code output stream.
+ When buffering (use_buffer or codeview mode), this uses ostringstream::tellp().
+ Otherwise it falls back to ftell() on the underlying FILE*.
+ */
+int Code_Writer::code_pos() {
+  return use_buffer ? (int)code_buffer.tellp() : (int)ftell(code_file);
+}
+
+/** Return the current byte offset in the header output stream. */
+int Code_Writer::header_pos() {
+  return use_buffer ? (int)header_buffer.tellp() : (int)ftell(header_file);
+}
+
 /**
  Recursively write static code and declarations
  \param[in] p write this type and all its children
  \return pointer to the next sibling
  */
 Node* Code_Writer::write_static(Node* p) {
-  if (write_codeview) p->header_static_start = (int)ftell(header_file);
-  if (write_codeview) p->code_static_start = (int)ftell(code_file);
+  if (write_codeview) p->header_static_start = header_pos();
+  if (write_codeview) p->code_static_start = code_pos();
   p->write_static(*this);
-  if (write_codeview) p->code_static_end = (int)ftell(code_file);
-  if (write_codeview) p->header_static_end = (int)ftell(header_file);
+  if (write_codeview) p->code_static_end = code_pos();
+  if (write_codeview) p->header_static_end = header_pos();
 
   Node* q;
   for (q = p->next; q && q->level > p->level;) {
@@ -537,11 +550,11 @@ Node* Code_Writer::write_code(Node* p) {
   // write all code that comes before the children code
   // (but don't write the last comment until the very end)
   if (!(p==Fluid.proj.tree.last && p->is_a(Type::Comment))) {
-    if (write_codeview) p->code1_start = (int)ftell(code_file);
-    if (write_codeview) p->header1_start = (int)ftell(header_file);
+    if (write_codeview) p->code1_start = code_pos();
+    if (write_codeview) p->header1_start = header_pos();
     p->write_code1(*this);
-    if (write_codeview) p->code1_end = (int)ftell(code_file);
-    if (write_codeview) p->header1_end = (int)ftell(header_file);
+    if (write_codeview) p->code1_end = code_pos();
+    if (write_codeview) p->header1_end = header_pos();
   }
   // recursively write the code of all children
   Node* q;
@@ -560,11 +573,11 @@ Node* Code_Writer::write_code(Node* p) {
     }
 
     // write all code that come after the children
-    if (write_codeview) p->code2_start = (int)ftell(code_file);
-    if (write_codeview) p->header2_start = (int)ftell(header_file);
+    if (write_codeview) p->code2_start = code_pos();
+    if (write_codeview) p->header2_start = header_pos();
     p->write_code2(*this);
-    if (write_codeview) p->code2_end = (int)ftell(code_file);
-    if (write_codeview) p->header2_end = (int)ftell(header_file);
+    if (write_codeview) p->code2_end = code_pos();
+    if (write_codeview) p->header2_end = header_pos();
 
     for (q = p->next; q && q->level > p->level;) {
       if (is_class_member(q) || is_comment_before_class_member(q)) {
@@ -582,11 +595,11 @@ Node* Code_Writer::write_code(Node* p) {
   } else {
     for (q = p->next; q && q->level > p->level;) q = write_code(q);
     // write all code that come after the children
-    if (write_codeview) p->code2_start = (int)ftell(code_file);
-    if (write_codeview) p->header2_start = (int)ftell(header_file);
+    if (write_codeview) p->code2_start = code_pos();
+    if (write_codeview) p->header2_start = header_pos();
     p->write_code2(*this);
-    if (write_codeview) p->code2_end = (int)ftell(code_file);
-    if (write_codeview) p->header2_end = (int)ftell(header_file);
+    if (write_codeview) p->code2_end = code_pos();
+    if (write_codeview) p->header2_end = header_pos();
   }
   return q;
 }
@@ -610,10 +623,10 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   current_class = nullptr;
   current_widget_class = nullptr;
 
-  // Determine whether to use buffered output for conservative file writing.
-  // When not writing to codeview, buffer the output so we can compare with
-  // existing files and only write if content has changed.
-  use_buffer = !to_codeview && s && t;
+  // Use buffered output when writing to named files (conservative write-if-changed)
+  // OR when generating for the codeview panel (avoids temp-file round-trip).
+  // Fall through to direct FILE* output only when writing to stdout (s or t is null).
+  use_buffer = (s && t) || to_codeview;
 
   if (use_buffer) {
     // Reset the string streams for fresh output
@@ -622,7 +635,7 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
     header_buffer.str("");
     header_buffer.clear();
   } else {
-    // Direct file output (for stdout or codeview mode)
+    // Direct file output — only reached for stdout (s==nullptr or t==nullptr).
     if (!s) code_file = stdout;
     else {
       FILE *f = fl_fopen(s, "wb");
@@ -651,14 +664,14 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   Node* first_node = Fluid.proj.tree.first;
   if (first_node && first_node->is_a(Type::Comment)) {
     if (write_codeview) {
-      first_node->code1_start = first_node->code2_start = (int)ftell(code_file);
-      first_node->header1_start = first_node->header2_start = (int)ftell(header_file);
+      first_node->code1_start = first_node->code2_start = code_pos();
+      first_node->header1_start = first_node->header2_start = header_pos();
     }
     // it is ok to write non-recursive code here, because comments have no children or code2 blocks
     first_node->write_code1(*this);
     if (write_codeview) {
-      first_node->code1_end = first_node->code2_end = (int)ftell(code_file);
-      first_node->header1_end = first_node->header2_end = (int)ftell(header_file);
+      first_node->code1_end = first_node->code2_end = code_pos();
+      first_node->header1_end = first_node->header2_end = header_pos();
     }
     first_node = first_node->next;
   }
@@ -791,21 +804,23 @@ int Code_Writer::write_code(const char *s, const char *t, bool to_codeview) {
   Node* last_node = Fluid.proj.tree.last;
   if (last_node && (last_node != Fluid.proj.tree.first) && last_node->is_a(Type::Comment)) {
     if (write_codeview) {
-      last_node->code1_start = last_node->code2_start = (int)ftell(code_file);
-      last_node->header1_start = last_node->header2_start = (int)ftell(header_file);
+      last_node->code1_start = last_node->code2_start = code_pos();
+      last_node->header1_start = last_node->header2_start = header_pos();
     }
     last_node->write_code1(*this);
     if (write_codeview) {
-      last_node->code1_end = last_node->code2_end = (int)ftell(code_file);
-      last_node->header1_end = last_node->header2_end = (int)ftell(header_file);
+      last_node->code1_end = last_node->code2_end = code_pos();
+      last_node->header1_end = last_node->header2_end = header_pos();
     }
   }
 
   if (use_buffer) {
+    use_buffer = false;
+    if (write_codeview)
+      return 1;  // strings available via code_string() / header_string(); no file I/O needed
     // Write files only if content has changed (conservative writing)
     bool code_ok = write_file_if_changed(s, code_buffer.str());
     bool header_ok = write_file_if_changed(t, header_buffer.str());
-    use_buffer = false;
     return code_ok && header_ok ? 1 : 0;
   } else {
     // Direct file output mode - close the files
