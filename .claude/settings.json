@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fluid": {
+      "command": "/opt/homebrew/bin/python3.10",
+      "args": ["/Users/matt/dev/fltk-1.5.matt/fluid/mcp_bridge.py"]
+    }
+  }
+}

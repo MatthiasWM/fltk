@@ -111,6 +111,7 @@ set(MAIN_FILES main.cxx main.h fluid.rc)
 set(CPPFILES
   Fluid.cxx
   Project.cxx
+  mcp_server.cxx
   fluid_icon.cxx
   app/args.cxx
   app/Snap_Action.cxx
@@ -165,6 +166,7 @@ set(CPPFILES
 set(HEADERFILES
   Fluid.h
   Project.h
+  mcp_server.h
   fluid_icon.h
   app/args.h
   app/Snap_Action.h

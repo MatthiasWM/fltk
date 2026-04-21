@@ -53,6 +53,7 @@
 
 #include <locale.h>     // setlocale()..
 #include "../src/flstring.h"
+#include "mcp_server.h"
 
 
 fld::Application Fluid;
@@ -237,7 +238,9 @@ int Application::run(int argc,char **argv) {
 #endif
 
   start_auto_mergeback();
+  mcp_server_start();
   Fl::run();
+  mcp_server_stop();
 
   proj.undo.clear();
   return 0;

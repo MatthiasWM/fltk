@@ -578,7 +578,7 @@ Node *Node::next_sibling() {
 // Return the first child or nullptr
 Node *Node::first_child() {
   Node *n = next;
-  if (n->level > level)
+  if (n && (n->level > level))
     return n;
   return nullptr;
 }

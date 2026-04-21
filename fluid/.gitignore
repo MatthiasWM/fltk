@@ -6,3 +6,7 @@
 
 documentation/html/
 documentation/html-dev/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
