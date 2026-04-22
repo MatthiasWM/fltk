@@ -32,7 +32,7 @@
 
 // some constants
 
-#define MAX_RGB 3000
+constexpr int kMaxRgb = 3000;
 
 #define FL_FREE_COL4    ((Fl_Color)(FL_FREE_COLOR+3))
 #define FL_INDIANRED    ((Fl_Color)(164))
@@ -51,7 +51,7 @@ static int load_browser(const char *);
 
 typedef struct { int r, g, b; } RGBdb;
 
-static RGBdb rgbdb[MAX_RGB];
+static RGBdb rgbdb[kMaxRgb];
 
 
 int main(int argc, char *argv[]) {
@@ -134,7 +134,7 @@ static int read_entry(FILE * fp, int *r, int *g, int *b, char *name)
 static int load_browser(const char *fname)
 {
   FILE *fp;
-  RGBdb *db = rgbdb, *dbs = db + MAX_RGB;
+  RGBdb *db = rgbdb, *dbs = db + kMaxRgb;
   int r, g, b,  lr  = -1 , lg = -1, lb = -1;
   char name[256], buf[300];
 

@@ -41,14 +41,14 @@ int main(int, char**) {
 #include <FL/glu.h>     // added for fltk
 #include "trackball.c"  // changed from trackball.h for fltk
 
-#define WIDTH 4
-#define HEIGHT 5
-#define PIECES 10
-#define OFFSETX -2.0f
-#define OFFSETY -2.5f
-#define OFFSETZ -0.5f
+constexpr int   kWidth    = 4;
+constexpr int   kHeight   = 5;
+constexpr int   kPieces   = 10;
+constexpr float kOffsetX  = -2.0f;
+constexpr float kOffsetY  = -2.5f;
+constexpr float kOffsetZ  = -0.5f;
 
-typedef char Config[HEIGHT][WIDTH];
+typedef char Config[kHeight][kWidth];
 
 struct puzzle {
   struct puzzle *backptr;
@@ -58,17 +58,17 @@ struct puzzle {
   unsigned hashvalue;
 };
 
-#define HASHSIZE 10691
+constexpr int kHashSize = 10691;
 
 struct puzzlelist {
   struct puzzle *puzzle;
   struct puzzlelist *next;
 };
 
-static char convert[PIECES + 1] =
+static char convert[kPieces + 1] =
 {0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 4};
 
-static unsigned char colors[PIECES + 1][3] =
+static unsigned char colors[kPieces + 1][3] =
 {
   {0, 0, 0},
   {255, 255, 127},
@@ -86,25 +86,25 @@ static unsigned char colors[PIECES + 1][3] =
 void changeState(void);
 void animate(int);
 
-static struct puzzle *hashtable[HASHSIZE];
+static struct puzzle *hashtable[kHashSize];
 static struct puzzle *startPuzzle;
 static struct puzzlelist *puzzles;
 static struct puzzlelist *lastentry;
 
 int curX, curY, visible;
 
-#define MOVE_SPEED 0.2f
+constexpr float kMoveSpeed = 0.2f;
 static unsigned char movingPiece;
 static float move_x, move_y;
 static float curquat[4];
 static int doubleBuffer = 1;
 static int depth = 1;
 
-static char xsize[PIECES + 1] =
+static char xsize[kPieces + 1] =
 {0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2};
-static char ysize[PIECES + 1] =
+static char ysize[kPieces + 1] =
 {0, 1, 1, 1, 1, 2, 2, 2, 2, 1, 2};
-static float zsize[PIECES + 1] =
+static float zsize[kPieces + 1] =
 {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.6f};
 
 static Config startConfig =
@@ -142,8 +142,8 @@ hash(Config config)
   int i, j, value;
 
   value = 0;
-  for (i = 0; i < HEIGHT; i++) {
-    for (j = 0; j < WIDTH; j++) {
+  for (i = 0; i < kHeight; i++) {
+    for (j = 0; j < kWidth; j++) {
       value = value + convert[(int)config[i][j]];
       value *= 6;
     }
@@ -271,13 +271,13 @@ drawBox(int piece, float xoff, float yoff)
       if (boxfaces[i][k] == -1)
         continue;
       v = boxcoords[boxfaces[i][k]];
-      x = v[0] + OFFSETX;
+      x = v[0] + kOffsetX;
       if (v[0] > 0.5)
         x += xlen - 1;
-      y = v[1] + OFFSETY;
+      y = v[1] + kOffsetY;
       if (v[1] > 0.5)
         y += ylen - 1;
-      z = v[2] + OFFSETZ;
+      z = v[2] + kOffsetZ;
       if (v[2] > 0.5)
         z += zlen - 1;
       glVertex3f(xoff + x, yoff + y, z);
@@ -291,13 +291,13 @@ drawBox(int piece, float xoff, float yoff)
       if (boxfaces[i][k] == -1)
         continue;
       v = boxcoords[boxfaces[i][k]];
-      x = v[0] + OFFSETX;
+      x = v[0] + kOffsetX;
       if (v[0] > 0.5)
         x += xlen - 1;
-      y = v[1] + OFFSETY;
+      y = v[1] + kOffsetY;
       if (v[1] > 0.5)
         y += ylen - 1;
-      z = v[2] + OFFSETZ;
+      z = v[2] + kOffsetZ;
       if (v[2] > 0.5)
         z += zlen - 1;
       glVertex3f(xoff + x, yoff + y, z);
@@ -415,7 +415,7 @@ drawContainer(void)
     glNormal3f(v[0], -v[1], v[2]);
     for (k = 3; k >= 0; k--) {
       v = containercoords[containerfaces[i][k]];
-      glVertex3f(v[0] + OFFSETX, -(v[1] + OFFSETY), v[2] + OFFSETZ);
+      glVertex3f(v[0] + kOffsetX, -(v[1] + kOffsetY), v[2] + kOffsetZ);
     }
   }
   glEnd();
@@ -426,7 +426,7 @@ drawAll(void)
 {
   int i, j;
   int piece;
-  char done[PIECES + 1];
+  char done[kPieces + 1];
   float m[4][4];
 
   build_rotmatrix(m, curquat);
@@ -441,13 +441,13 @@ drawAll(void)
   } else {
     glClear(GL_COLOR_BUFFER_BIT);
   }
-  for (i = 1; i <= PIECES; i++) {
+  for (i = 1; i <= kPieces; i++) {
     done[i] = 0;
   }
   glLoadName(0);
   drawContainer();
-  for (i = 0; i < HEIGHT; i++) {
-    for (j = 0; j < WIDTH; j++) {
+  for (i = 0; i < kHeight; i++) {
+    for (j = 0; j < kWidth; j++) {
       piece = thePuzzle[i][j];
       if (piece == 0)
         continue;
@@ -504,13 +504,13 @@ addConfig(Config config, struct puzzle *back)
 
   hashvalue = hash(config);
 
-  newpiece = hashtable[hashvalue % HASHSIZE];
+  newpiece = hashtable[hashvalue % kHashSize];
   while (newpiece != NULL) {
     if (newpiece->hashvalue == hashvalue) {
       int i, j;
 
-      for (i = 0; i < WIDTH; i++) {
-        for (j = 0; j < HEIGHT; j++) {
+      for (i = 0; i < kWidth; i++) {
+        for (j = 0; j < kHeight; j++) {
           if (convert[(int)config[j][i]] !=
             convert[(int)newpiece->pieces[j][i]])
             goto nomatch;
@@ -523,12 +523,12 @@ addConfig(Config config, struct puzzle *back)
   }
 
   newpiece = (struct puzzle *) malloc(sizeof(struct puzzle));
-  newpiece->next = hashtable[hashvalue % HASHSIZE];
+  newpiece->next = hashtable[hashvalue % kHashSize];
   newpiece->hashvalue = hashvalue;
-  memcpy(newpiece->pieces, config, HEIGHT * WIDTH);
+  memcpy(newpiece->pieces, config, kHeight * kWidth);
   newpiece->backptr = back;
   newpiece->solnptr = NULL;
-  hashtable[hashvalue % HASHSIZE] = newpiece;
+  hashtable[hashvalue % kHashSize] = newpiece;
 
   newlistentry = (struct puzzlelist *) malloc(sizeof(struct puzzlelist));
   newlistentry->puzzle = newpiece;
@@ -562,30 +562,30 @@ canmove0(Config pieces, int x, int y, int dir, Config newpieces)
   xadd = xadds[dir];
   yadd = yadds[dir];
 
-  if (x + xadd < 0 || x + xadd >= WIDTH ||
-    y + yadd < 0 || y + yadd >= HEIGHT)
+  if (x + xadd < 0 || x + xadd >= kWidth ||
+    y + yadd < 0 || y + yadd >= kHeight)
     return 0;
   piece = pieces[y + yadd][x + xadd];
   if (piece == 0)
     return 0;
-  memcpy(newpieces, pieces, HEIGHT * WIDTH);
-  for (l = 0; l < WIDTH; l++) {
-    for (m = 0; m < HEIGHT; m++) {
+  memcpy(newpieces, pieces, kHeight * kWidth);
+  for (l = 0; l < kWidth; l++) {
+    for (m = 0; m < kHeight; m++) {
       if (newpieces[m][l] == piece)
         newpieces[m][l] = 0;
     }
   }
   xadd = -xadd;
   yadd = -yadd;
-  for (l = 0; l < WIDTH; l++) {
-    for (m = 0; m < HEIGHT; m++) {
+  for (l = 0; l < kWidth; l++) {
+    for (m = 0; m < kHeight; m++) {
       if (pieces[m][l] == piece) {
         int newx, newy;
 
         newx = l + xadd;
         newy = m + yadd;
-        if (newx < 0 || newx >= WIDTH ||
-          newy < 0 || newy >= HEIGHT)
+        if (newx < 0 || newx >= kWidth ||
+          newy < 0 || newy >= kHeight)
           return 0;
         if (newpieces[newy][newx] != 0)
           return 0;
@@ -605,8 +605,8 @@ canmove(Config pieces, int x, int y, int dir, Config newpieces)
   xadd = xadds[dir];
   yadd = yadds[dir];
 
-  if (x + xadd < 0 || x + xadd >= WIDTH ||
-    y + yadd < 0 || y + yadd >= HEIGHT)
+  if (x + xadd < 0 || x + xadd >= kWidth ||
+    y + yadd < 0 || y + yadd >= kHeight)
     return 0;
   if (pieces[y + yadd][x + xadd] == pieces[y][x]) {
     return canmove(pieces, x + xadd, y + yadd, dir, newpieces);
@@ -623,9 +623,9 @@ generateNewConfigs(struct puzzle *puzzle)
   Config pieces;
   Config newpieces;
 
-  memcpy(pieces, puzzle->pieces, HEIGHT * WIDTH);
-  for (i = 0; i < WIDTH; i++) {
-    for (j = 0; j < HEIGHT; j++) {
+  memcpy(pieces, puzzle->pieces, kHeight * kWidth);
+  for (i = 0; i < kWidth; i++) {
+    for (j = 0; j < kHeight; j++) {
       if (pieces[j][i] == 0) {
         for (k = 0; k < 4; k++) {
           if (canmove0(pieces, i, j, k, newpieces)) {
@@ -652,7 +652,7 @@ freeSolutions(void)
     puzzles = nextpuz;
   }
   lastentry = NULL;
-  for (i = 0; i < HASHSIZE; i++) {
+  for (i = 0; i < kHashSize; i++) {
     puzzle = hashtable[i];
     hashtable[i] = NULL;
     while (puzzle) {
@@ -683,14 +683,14 @@ continueSolving(void)
   nextpuz = startPuzzle->solnptr;
   movedPiece = 0;
   movedir = 0;
-  for (i = 0; i < HEIGHT; i++) {
-    for (j = 0; j < WIDTH; j++) {
+  for (i = 0; i < kHeight; i++) {
+    for (j = 0; j < kWidth; j++) {
       if (startPuzzle->pieces[i][j] != nextpuz->pieces[i][j]) {
         if (startPuzzle->pieces[i][j]) {
           movedPiece = startPuzzle->pieces[i][j];
           fromx = j;
           fromy = i;
-          if (i < HEIGHT - 1 && nextpuz->pieces[i + 1][j] == movedPiece) {
+          if (i < kHeight - 1 && nextpuz->pieces[i + 1][j] == movedPiece) {
             movedir = 3;
           } else {
             movedir = 2;
@@ -698,7 +698,7 @@ continueSolving(void)
           goto found_piece;
         } else {
           movedPiece = nextpuz->pieces[i][j];
-          if (i < HEIGHT - 1 &&
+          if (i < kHeight - 1 &&
             startPuzzle->pieces[i + 1][j] == movedPiece) {
             fromx = j;
             fromy = i + 1;
@@ -723,18 +723,18 @@ found_piece:
     move_x = float(fromx);
     move_y = float(fromy);
   }
-  move_x += xadds[movedir] * MOVE_SPEED;
-  move_y += yadds[movedir] * MOVE_SPEED;
+  move_x += xadds[movedir] * kMoveSpeed;
+  move_y += yadds[movedir] * kMoveSpeed;
 
   tox = fromx + xadds[movedir];
   toy = fromy + yadds[movedir];
 
-  if (move_x > tox - MOVE_SPEED / 2 && move_x < tox + MOVE_SPEED / 2 &&
-    move_y > toy - MOVE_SPEED / 2 && move_y < toy + MOVE_SPEED / 2) {
+  if (move_x > tox - kMoveSpeed / 2 && move_x < tox + kMoveSpeed / 2 &&
+    move_y > toy - kMoveSpeed / 2 && move_y < toy + kMoveSpeed / 2) {
     startPuzzle = nextpuz;
     movingPiece = 0;
   }
-  memcpy(thePuzzle, startPuzzle->pieces, HEIGHT * WIDTH);
+  memcpy(thePuzzle, startPuzzle->pieces, kHeight * kWidth);
   changeState();
   return 1;
 }
@@ -813,8 +813,8 @@ nukePiece(int piece)
 {
   int i, j;
 
-  for (i = 0; i < HEIGHT; i++) {
-    for (j = 0; j < WIDTH; j++) {
+  for (i = 0; i < kHeight; i++) {
+    for (j = 0; j < kWidth; j++) {
       if (thePuzzle[i][j] == piece) {
         thePuzzle[i][j] = 0;
       }
@@ -927,8 +927,8 @@ invertMatrix(const GLfloat src[16], GLfloat inverse[16])
 /*
    ** This is a screwball function.  What it does is the following:
    ** Given screen x and y coordinates, compute the corresponding object space
-   **   x and y coordinates given that the object space z is 0.9 + OFFSETZ.
-   ** Since the tops of (most) pieces are at z = 0.9 + OFFSETZ, we use that
+   **   x and y coordinates given that the object space z is 0.9 + kOffsetZ.
+   ** Since the tops of (most) pieces are at z = 0.9 + kOffsetZ, we use that
    **   number.
  */
 int
@@ -947,7 +947,7 @@ computeCoords(int piece, int mousex, int mousey,
 
   if (piece == 0)
     return 0;
-  height = zsize[piece] - 0.1f + OFFSETZ;
+  height = zsize[piece] - 0.1f + kOffsetZ;
 
   glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
   glGetFloatv(GL_MODELVIEW_MATRIX, modelMatrix);
@@ -992,11 +992,11 @@ computeCoords(int piece, int mousex, int mousey,
   *selx = (in[0] * finalMatrix[0 * 4 + 0] +
     in[1] * finalMatrix[1 * 4 + 0] +
     z * finalMatrix[2 * 4 + 0] +
-    finalMatrix[3 * 4 + 0]) / w - OFFSETX;
+    finalMatrix[3 * 4 + 0]) / w - kOffsetX;
   *sely = (in[0] * finalMatrix[0 * 4 + 1] +
     in[1] * finalMatrix[1 * 4 + 1] +
     z * finalMatrix[2 * 4 + 1] +
-    finalMatrix[3 * 4 + 1]) / w - OFFSETY;
+    finalMatrix[3 * 4 + 1]) / w - kOffsetY;
   return 1;
 }
 
@@ -1011,7 +1011,7 @@ grabPiece(int piece, float selx, float sely)
 
   selectx = int(selx);
   selecty = int(sely);
-  if (selectx < 0 || selecty < 0 || selectx >= WIDTH || selecty >= HEIGHT) {
+  if (selectx < 0 || selecty < 0 || selectx >= kWidth || selecty >= kHeight) {
     return;
   }
   hit = thePuzzle[selecty][selectx];
@@ -1075,19 +1075,19 @@ moveSelection(float selx, float sely)
     move_x = deltax + selectx;
     move_y = deltay + selecty;
     if (deltax > 0.5) {
-      memcpy(thePuzzle, newpieces, HEIGHT * WIDTH);
+      memcpy(thePuzzle, newpieces, kHeight * kWidth);
       selectx++;
       selstartx++;
     } else if (deltax < -0.5) {
-      memcpy(thePuzzle, newpieces, HEIGHT * WIDTH);
+      memcpy(thePuzzle, newpieces, kHeight * kWidth);
       selectx--;
       selstartx--;
     } else if (deltay > 0.5) {
-      memcpy(thePuzzle, newpieces, HEIGHT * WIDTH);
+      memcpy(thePuzzle, newpieces, kHeight * kWidth);
       selecty++;
       selstarty++;
     } else if (deltay < -0.5) {
-      memcpy(thePuzzle, newpieces, HEIGHT * WIDTH);
+      memcpy(thePuzzle, newpieces, kHeight * kWidth);
       selecty--;
       selstarty--;
     }
@@ -1178,7 +1178,7 @@ void reset(void)
       movingPiece = 0;
       changeState();
     }
-    memcpy(thePuzzle, startConfig, HEIGHT * WIDTH);
+    memcpy(thePuzzle, startConfig, kHeight * kWidth);
     glutPostRedisplay();
 }
 

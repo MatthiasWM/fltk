@@ -28,9 +28,9 @@
 #  include <vector>
 
 // min. time in seconds before calling Fl::awake(...)
-#define DELTA 0.25
+constexpr double kDelta = 0.25;
 
-// struct to collect primes until at least <DELTA> seconds passed.
+// struct to collect primes until at least kDelta seconds passed.
 // Two such structs per thread are used as alternate buffers.
 
 struct prime {
@@ -136,7 +136,7 @@ extern "C" void* prime_func(void* p) {
 
       double ssl = Fl::seconds_since(last);
 
-      if (ssl > DELTA && pr[1-pi].done) {       // ready to switch buffers
+      if (ssl > kDelta && pr[1-pi].done) {       // ready to switch buffers
         last = Fl::now();
         Fl::awake(update_handler, (void *)(&pr[pi]));
         pi = 1 - pi;                            // switch to alternate buffer

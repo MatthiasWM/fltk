@@ -59,41 +59,41 @@ CubeView::CubeView(int x, int y, int w, int h, const char *l)
 #if HAVE_GL
 void CubeView::drawCube() {
 /* Draw a colored cube */
-#define ALPHA 0.5
+constexpr float kAlpha = 0.5f;
   glShadeModel(GL_FLAT);
 
   glBegin(GL_QUADS);
-    glColor4f(0.0, 0.0, 1.0, ALPHA);
+    glColor4f(0.0, 0.0, 1.0, kAlpha);
     glVertex3fv(boxv0);
     glVertex3fv(boxv1);
     glVertex3fv(boxv2);
     glVertex3fv(boxv3);
 
-    glColor4f(1.0, 1.0, 0.0, ALPHA);
+    glColor4f(1.0, 1.0, 0.0, kAlpha);
     glVertex3fv(boxv0);
     glVertex3fv(boxv4);
     glVertex3fv(boxv5);
     glVertex3fv(boxv1);
 
-    glColor4f(0.0, 1.0, 1.0, ALPHA);
+    glColor4f(0.0, 1.0, 1.0, kAlpha);
     glVertex3fv(boxv2);
     glVertex3fv(boxv6);
     glVertex3fv(boxv7);
     glVertex3fv(boxv3);
 
-    glColor4f(1.0, 0.0, 0.0, ALPHA);
+    glColor4f(1.0, 0.0, 0.0, kAlpha);
     glVertex3fv(boxv4);
     glVertex3fv(boxv5);
     glVertex3fv(boxv6);
     glVertex3fv(boxv7);
 
-    glColor4f(1.0, 0.0, 1.0, ALPHA);
+    glColor4f(1.0, 0.0, 1.0, kAlpha);
     glVertex3fv(boxv0);
     glVertex3fv(boxv3);
     glVertex3fv(boxv7);
     glVertex3fv(boxv4);
 
-    glColor4f(0.0, 1.0, 0.0, ALPHA);
+    glColor4f(0.0, 1.0, 0.0, kAlpha);
     glVertex3fv(boxv1);
     glVertex3fv(boxv5);
     glVertex3fv(boxv6);

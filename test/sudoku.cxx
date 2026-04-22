@@ -62,13 +62,13 @@
 // Default sizes...
 //
 
-#define GROUP_SIZE      160
-#define CELL_SIZE       50
-#define CELL_OFFSET     5
+constexpr int kGroupSize  = 160;
+constexpr int kCellSize   = 50;
+constexpr int kCellOffset = 5;
 #ifdef USE_MACOS
-#  define MENU_OFFSET   0
+constexpr int kMenuOffset = 0;
 #else
-#  define MENU_OFFSET   25
+constexpr int kMenuOffset = 25;
 #endif // USE_MACOS
 
 // Sound class for Sudoku...
@@ -426,9 +426,9 @@ SudokuSound::audio_cb(AudioDeviceID device,
 }
 #endif // __APPLE__
 
-#define NOTE_DURATION 50
+constexpr int kNoteDuration = 50;
 
-// Play a note for <NOTE_DURATION> ms...
+// Play a note for kNoteDuration ms...
 void SudokuSound::play(char note) {
   Fl::check();
 
@@ -438,7 +438,7 @@ void SudokuSound::play(char note) {
   remaining = sample_size * 2;
 
   // Wait for the sound to complete...
-  usleep(NOTE_DURATION*1000);
+  usleep(kNoteDuration*1000);
 
 #elif defined(_WIN32)
   if (sample_size) {
@@ -446,8 +446,8 @@ void SudokuSound::play(char note) {
 
     waveOutWrite(device, header_ptr, sizeof(WAVEHDR));
 
-    Sleep(NOTE_DURATION);
-  } else Beep(frequencies[note - 'A'], NOTE_DURATION);
+    Sleep(kNoteDuration);
+  } else Beep(frequencies[note - 'A'], kNoteDuration);
 
 #elif defined(FLTK_USE_X11)
 
@@ -463,7 +463,7 @@ void SudokuSound::play(char note) {
       snd_pcm_prepare(handle);
       snd_pcm_writei(handle, sample_data[note - 'A'], sample_size);
     }
-    usleep(NOTE_DURATION*1000);
+    usleep(kNoteDuration*1000);
     return;
   }
 #  endif // HAVE_ALSA_ASOUNDLIB_H
@@ -484,7 +484,7 @@ void SudokuSound::play(char note) {
   // Sound a tone for the given note...
   control.bell_percent  = 100;
   control.bell_pitch    = frequencies[note - 'A'];
-  control.bell_duration = NOTE_DURATION;
+  control.bell_duration = kNoteDuration;
 
   XChangeKeyboardControl(fl_display,
                          KBBellPercent | KBBellPitch | KBBellDuration,
@@ -652,7 +652,7 @@ static void redo_cb(Fl_Widget*, void*) {
 
 // Create a Sudoku game window...
 Sudoku::Sudoku()
-  : Fl_Double_Window(GROUP_SIZE * 3, GROUP_SIZE * 3 + MENU_OFFSET, "Sudoku"),
+  : Fl_Double_Window(kGroupSize * 3, kGroupSize * 3 + kMenuOffset, "Sudoku"),
   undo_head_(0), undo_tail_(0), redo_head_(0)
 {
   int j, k;
@@ -703,19 +703,19 @@ Sudoku::Sudoku()
 
   items[10 + difficulty_].flags |= FL_MENU_VALUE;
 
-  menubar_ = new Fl_Sys_Menu_Bar(0, 0, 3 * GROUP_SIZE, 25);
+  menubar_ = new Fl_Sys_Menu_Bar(0, 0, 3 * kGroupSize, 25);
   menubar_->menu(items);
 #ifdef USE_MACOS
   menubar_->about(help_cb, NULL);
 #endif
 
   // Create the grids...
-  grid_ = new Fl_Group(0, MENU_OFFSET, 3 * GROUP_SIZE, 3 * GROUP_SIZE);
+  grid_ = new Fl_Group(0, kMenuOffset, 3 * kGroupSize, 3 * kGroupSize);
 
   for (j = 0; j < 3; j ++)
     for (k = 0; k < 3; k ++) {
-      g = new Fl_Group(k * GROUP_SIZE, j * GROUP_SIZE + MENU_OFFSET,
-                       GROUP_SIZE, GROUP_SIZE);
+      g = new Fl_Group(k * kGroupSize, j * kGroupSize + kMenuOffset,
+                       kGroupSize, kGroupSize);
       g->box(FL_BORDER_BOX);
       if ((int)(j == 1) ^ (int)(k == 1)) g->color(FL_DARK3);
       else g->color(FL_DARK2);
@@ -727,11 +727,11 @@ Sudoku::Sudoku()
   for (j = 0; j < 9; j ++)
     for (k = 0; k < 9; k ++) {
       cell = new SudokuCell(j, k,
-                            k * CELL_SIZE + CELL_OFFSET +
-                                (k / 3) * (GROUP_SIZE - 3 * CELL_SIZE),
-                            j * CELL_SIZE + CELL_OFFSET + MENU_OFFSET +
-                                (j / 3) * (GROUP_SIZE - 3 * CELL_SIZE),
-                            CELL_SIZE, CELL_SIZE);
+                            k * kCellSize + kCellOffset +
+                                (k / 3) * (kGroupSize - 3 * kCellSize),
+                            j * kCellSize + kCellOffset + kMenuOffset +
+                                (j / 3) * (kGroupSize - 3 * kCellSize),
+                            kCellSize, kCellSize);
       cell->callback(reset_cb);
       grid_cells_[j][k] = cell;
     }
@@ -752,15 +752,15 @@ Sudoku::Sudoku()
 
   // Make the window resizable...
   resizable(grid_);
-  size_range(3 * GROUP_SIZE, 3 * GROUP_SIZE + MENU_OFFSET, 0, 0, 5, 5, 1);
+  size_range(3 * kGroupSize, 3 * kGroupSize + kMenuOffset, 0, 0, 5, 5, 1);
 
   // Restore the previous window dimensions...
   int X, Y, W, H;
 
   if (prefs_.get("x", X, -1)) {
     prefs_.get("y", Y, -1);
-    prefs_.get("width", W, 3 * GROUP_SIZE);
-    prefs_.get("height", H, 3 * GROUP_SIZE + MENU_OFFSET);
+    prefs_.get("width", W, 3 * kGroupSize);
+    prefs_.get("height", H, 3 * kGroupSize + kMenuOffset);
 
     resize(X, Y, W, H);
   }

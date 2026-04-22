@@ -23,9 +23,9 @@
 #include <FL/fl_draw.H>
 
 int N = 0;
-#define W 200
-#define H 50
-#define ROWS 14
+constexpr int kW    = 200;
+constexpr int kH    = 50;
+constexpr int kRows = 14;
 
 // Note: Run the program with command line '-s abc' to view boxtypes
 // with scheme 'abc'.
@@ -80,9 +80,9 @@ void bt(const char *name, Fl_Boxtype type, int square=0) {
   int x = N%4;
   int y = N/4;
   N++;
-  x = x*W+10;
-  y = y*H+10;
-  Fl_Button *b = new Fl_Button(x,y,square ? H-20 : W-20,H-20,name);
+  x = x*kW+10;
+  y = y*kH+10;
+  Fl_Button *b = new Fl_Button(x,y,square ? kH-20 : kW-20,kH-20,name);
   b->box(type);
   b->labelsize(11);
   if (inactive) {
@@ -93,7 +93,7 @@ void bt(const char *name, Fl_Boxtype type, int square=0) {
 }
 
 int main(int argc, char ** argv) {
-  window = new Fl_Double_Window(4*W,ROWS*H);
+  window = new Fl_Double_Window(4*kW,kRows*kH);
   window->box(FL_FLAT_BOX);
 #if 0 // this code uses the command line arguments to set arbitrary color schemes
   Fl::args(argc, argv);

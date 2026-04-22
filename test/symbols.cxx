@@ -25,10 +25,10 @@
 #include <FL/fl_draw.H>
 
 int N = 0;
-#define W 70
-#define H 70
-#define ROWS 6
-#define COLS 7
+constexpr int kW    = 70;
+constexpr int kH    = 70;
+constexpr int kRows = 6;
+constexpr int kCols = 7;
 
 Fl_Double_Window *window;
 Fl_Value_Slider *orientation;
@@ -61,20 +61,20 @@ void slider_cb(Fl_Widget *, void *) {
 }
 
 void bt(const char *name) {
-  int x = N%COLS;
-  int y = N/COLS;
+  int x = N%kCols;
+  int y = N/kCols;
   char buf[255];
   N++;
-  x = x*W+10;
-  y = y*H+10;
+  x = x*kW+10;
+  y = y*kH+10;
   snprintf(buf, sizeof(buf), "@%s", name);
-  Fl_Box *a = new Fl_Box(x,y,W-20,H-20);
+  Fl_Box *a = new Fl_Box(x,y,kW-20,kH-20);
   a->box(FL_NO_BOX);
   a->copy_label(buf);
   a->align(FL_ALIGN_BOTTOM);
   a->labelsize(11);
   a->user_data((void *)name);
-  Fl_Box *b = new Fl_Box(x,y,W-20,H-20);
+  Fl_Box *b = new Fl_Box(x,y,kW-20,kH-20);
   b->box(FL_UP_BOX);
   b->copy_label(name);
   b->labelcolor(FL_DARK3);
@@ -82,7 +82,7 @@ void bt(const char *name) {
 }
 
 int main(int argc, char ** argv) {
-  window = new Fl_Double_Window(COLS*W,ROWS*H+60);
+  window = new Fl_Double_Window(kCols*kW,kRows*kH+60);
 bt("@->");
 bt("@>");
 bt("@>>");

@@ -24,9 +24,9 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Light_Button.H>
 
-#define WIDTH 600
-#define HEIGHT 300
-#define GRID 25
+constexpr int kWidth  = 600;
+constexpr int kHeight = 300;
+constexpr int kGrid   = 25;
 
 void ToggleArrowFocus_CB(Fl_Widget *w, void*) {
   Fl_Light_Button *b = (Fl_Light_Button*)w;
@@ -34,9 +34,9 @@ void ToggleArrowFocus_CB(Fl_Widget *w, void*) {
 }
 int main(int argc, char **argv) {
   if (argc > 1) srand(atoi(argv[1]));
-  Fl_Window window(WIDTH,HEIGHT+40,argv[0]);
+  Fl_Window window(kWidth,kHeight+40,argv[0]);
     // Include a toggle button to control arrow focus
-    Fl_Light_Button arrowfocus_butt(10,HEIGHT+10,130,20," Arrow Focus");
+    Fl_Light_Button arrowfocus_butt(10,kHeight+10,130,20," Arrow Focus");
     arrowfocus_butt.callback(ToggleArrowFocus_CB);
     arrowfocus_butt.value(Fl::option(Fl::OPTION_ARROW_FOCUS) ? 1 : 0);  // use default
     arrowfocus_butt.tooltip("Control horizontal arrow key focus navigation behavior.\n"
@@ -44,13 +44,13 @@ int main(int argc, char **argv) {
   window.end(); // don't auto-add children
   for (int i = 0; i<10000; i++) {
     // make up a random size of widget:
-    int x = rand()%(WIDTH/GRID+1) * GRID;
-    int y = rand()%(HEIGHT/GRID+1) * GRID;
-    int w = rand()%(WIDTH/GRID+1) * GRID;
+    int x = rand()%(kWidth/kGrid+1) * kGrid;
+    int y = rand()%(kHeight/kGrid+1) * kGrid;
+    int w = rand()%(kWidth/kGrid+1) * kGrid;
     if (w < x) {w = x-w; x-=w;} else {w = w-x;}
-    int h = rand()%(HEIGHT/GRID+1) * GRID;
+    int h = rand()%(kHeight/kGrid+1) * kGrid;
     if (h < y) {h = y-h; y-=h;} else {h = h-y;}
-    if (w < GRID || h < GRID || w < h) continue;
+    if (w < kGrid || h < kGrid || w < h) continue;
     // find where to insert it and see if it intersects something:
     Fl_Widget *j = 0;
     int n; for (n=0; n < window.children(); n++) {

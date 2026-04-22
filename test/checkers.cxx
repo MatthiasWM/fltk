@@ -913,10 +913,10 @@ void make_pieces() {
     png[i]->scale(png[i]->data_w()/2, png[i]->data_h()/2);
 }
 
-#define ISIZE 62        // old: 56
+constexpr int kIsize = 62;        // old: 56
 
 void draw_piece(int which, int x, int y) {
-  if (!fl_not_clipped(x,y,ISIZE,ISIZE)) return;
+  if (!fl_not_clipped(x,y,kIsize,kIsize)) return;
   switch (which) {
     case BLACK: which = 0; break;
     case WHITE: which = 1; break;
@@ -940,10 +940,10 @@ public:
   Board(int w, int h) : Fl_Double_Window(w,h,"FLTK Checkers") {color(15);}
 };
 
-#define BOXSIZE 52
-#define BORDER 4
-#define BOARDSIZE (8*BOXSIZE+BORDER)
-#define BMOFFSET 3
+constexpr int kBoxSize   = 52;
+constexpr int kBorder    = 4;
+constexpr int kBoardSize = (8*kBoxSize+kBorder);
+constexpr int kBmOffset  = 3;
 
 static int erase_this;  // real location of dragging piece, don't draw it
 static int dragging;    // piece being dragged
@@ -951,8 +951,8 @@ static int dragx;       // where it is
 static int dragy;
 static int showlegal;   // show legal moves
 
-int squarex(int i) {return (usermoves(i,1)-'A')*BOXSIZE+BMOFFSET;}
-int squarey(int i) {return (usermoves(i,2)-'1')*BOXSIZE+BMOFFSET;}
+int squarex(int i) {return (usermoves(i,1)-'A')*kBoxSize+kBmOffset;}
+int squarey(int i) {return (usermoves(i,2)-'1')*kBoxSize+kBmOffset;}
 
 void Board::draw() {
   make_pieces();
@@ -961,14 +961,14 @@ void Board::draw() {
   // -- draw all dark tiles
   fl_color((Fl_Color)10 /*107*/);
   int x; for (x=0; x<8; x++) for (int y=0; y<8; y++) {
-    if (!((x^y)&1)) fl_rectf(BORDER+x*BOXSIZE, BORDER+y*BOXSIZE,
-                             BOXSIZE-BORDER, BOXSIZE-BORDER);
+    if (!((x^y)&1)) fl_rectf(kBorder+x*kBoxSize, kBorder+y*kBoxSize,
+                             kBoxSize-kBorder, kBoxSize-kBorder);
   }
   // -- draw outlines around the fileds
   fl_color(FL_DARK3);
   for (x=0; x<9; x++) {
-    fl_rectf(x*BOXSIZE,0,BORDER,h());
-    fl_rectf(0,x*BOXSIZE,w(),BORDER);
+    fl_rectf(x*kBoxSize,0,kBorder,h());
+    fl_rectf(0,x*kBoxSize,w(),kBorder);
   }
   for (int j = 5; j < 40; j++) if (j != erase_this) {
     draw_piece(b[j], squarex(j), squarey(j));
@@ -977,10 +977,10 @@ void Board::draw() {
     fl_color(FL_WHITE);
     node* n;
     for (n = root->son; n; n = showlegal==2 ? n->son : n->brother) {
-      int x1 = squarex(n->from)+BOXSIZE/2-5;
-      int y1 = squarey(n->from)+BOXSIZE/2-5;
-      int x2 = squarex(n->to)+BOXSIZE/2-5;
-      int y2 = squarey(n->to)+BOXSIZE/2-5;
+      int x1 = squarex(n->from)+kBoxSize/2-5;
+      int y1 = squarey(n->from)+kBoxSize/2-5;
+      int x2 = squarex(n->to)+kBoxSize/2-5;
+      int y2 = squarey(n->to)+kBoxSize/2-5;
       fl_line(x1,y1,x2,y2);
       fl_push_matrix();
       fl_mult_matrix(x2-x1,y2-y1,y1-y2,x2-x1,x2,y2);
@@ -995,10 +995,10 @@ void Board::draw() {
     fl_color(FL_BLACK);
     fl_font(FL_BOLD,10);
     for (n = root->son; n; n = showlegal==2 ? n->son : n->brother) {
-      int x1 = squarex(n->from)+BOXSIZE/2-5;
-      int y1 = squarey(n->from)+BOXSIZE/2-5;
-      int x2 = squarex(n->to)+BOXSIZE/2-5;
-      int y2 = squarey(n->to)+BOXSIZE/2-5;
+      int x1 = squarex(n->from)+kBoxSize/2-5;
+      int y1 = squarey(n->from)+kBoxSize/2-5;
+      int x2 = squarex(n->to)+kBoxSize/2-5;
+      int y2 = squarey(n->to)+kBoxSize/2-5;
       char buf[20]; snprintf(buf, 20,"%d",num);
       fl_draw(buf, x1+int((x2-x1)*.85)-3, y1+int((y2-y1)*.85)+5);
       num++;
@@ -1017,8 +1017,8 @@ void Board::drag_piece(int j, int dx, int dy) {
     dragging = b[j];
   }
   if (dx != dragx || dy != dragy) {
-    damage(FL_DAMAGE_ALL, dragx, dragy, ISIZE, ISIZE);
-    damage(FL_DAMAGE_ALL, dx, dy, ISIZE, ISIZE);
+    damage(FL_DAMAGE_ALL, dragx, dragy, kIsize, kIsize);
+    damage(FL_DAMAGE_ALL, dx, dy, kIsize, kIsize);
   }
   dragx = dx;
   dragy = dy;
@@ -1032,8 +1032,8 @@ void Board::drop_piece(int j) {
   int x = squarex(j);
   int y = squarey(j);
   if (x != dragx || y != dragy) {
-    damage(4, dragx, dragy, ISIZE, ISIZE);
-    damage(4, x, y, ISIZE, ISIZE);
+    damage(4, dragx, dragy, kIsize, kIsize);
+    damage(4, x, y, kIsize, kIsize);
   }
 }
 
@@ -1122,7 +1122,7 @@ int Board::handle(int e) {
       for (t = root->son; t; t = t->brother) {
         int x = squarex(t->from);
         int y = squarey(t->from);
-        if (Fl::event_inside(x,y,BOXSIZE,BOXSIZE)) {
+        if (Fl::event_inside(x,y,kBoxSize,kBoxSize)) {
           deltax = Fl::event_x()-x;
           deltay = Fl::event_y()-y;
           drag_piece(t->from,x,y);
@@ -1164,7 +1164,7 @@ void quit_cb(Fl_Widget*, void*) {exit(0);}
 
 int FLTKmain(int argc, char** argv) {
   Fl::visual(FL_DOUBLE|FL_INDEX);
-  Board b(BOARDSIZE,BOARDSIZE);
+  Board b(kBoardSize,kBoardSize);
   b.color(FL_BACKGROUND_COLOR);
   b.callback(quit_cb);
   b.show(argc,argv);

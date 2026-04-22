@@ -28,7 +28,7 @@
 #include <FL/Fl_Color_Chooser.H>
 #include <FL/Fl_Terminal.H>
 
-#define TERMINAL_HEIGHT 120
+constexpr int kTerminalHeight = 120;
 
 // Globals
 Fl_Terminal *G_tty = 0;
@@ -90,8 +90,8 @@ int main(int argc, char **argv) {
   // calling fl_contrast below will return good results
   Fl::args(argc, argv);
   Fl::get_system_colors();
-  Fl_Window *window = new Fl_Window(400,420+TERMINAL_HEIGHT);
-  G_tty = new Fl_Terminal(0,420,window->w(),TERMINAL_HEIGHT);
+  Fl_Window *window = new Fl_Window(400,420+kTerminalHeight);
+  G_tty = new Fl_Terminal(0,420,window->w(),kTerminalHeight);
 
   int y = 10;
   input[0] = new Fl_Input(70,y,300,30,"Normal:"); y += 35;

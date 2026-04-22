@@ -269,7 +269,7 @@ void exit_cb(Fl_Widget *, void *) {
   exit(0);
 }
 
-#define NUMB 9
+constexpr int kNumb = 9;
 
 int twowindow = 0;
 int initfull = 0;
@@ -286,9 +286,9 @@ int main(int argc, char **argv) {
   if (Fl::args(argc,argv,i,arg) < argc)
     Fl::fatal("Options are:\n -2 = 2 windows\n -f = startup fullscreen\n%s",Fl::help);
 
-  fullscreen_window window(460,400+30*NUMB); window.end();
+  fullscreen_window window(460,400+30*kNumb); window.end();
 
-  shape_window sw(10,10,window.w()-20,window.h()-30*NUMB-120);
+  shape_window sw(10,10,window.w()-20,window.h()-30*kNumb-120);
   sw.set_visible(); // necessary because sw is not a child of window
 #if HAVE_GL
   sw.mode(FL_RGB);
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 
   window.begin();
 
-  int y = window.h()-30*NUMB-105;
+  int y = window.h()-30*kNumb-105;
   Fl_Hor_Slider slider(50,y,window.w()-60,30,"Sides:");
   slider.align(FL_ALIGN_LEFT);
   slider.callback(sides_cb,&sw);
