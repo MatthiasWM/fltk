@@ -35,10 +35,10 @@ static int fl_match(const char *a, const char *s, int atleast = 1) {
 }
 
 static int fl_parse_scaling_factor(const char *p, float &factor) {
-  char *end = NULL;
+  char *end;
   double value = strtod(p, &end);
   if (end == p) return 0;
-  while (*end && isspace(*end)) end++;
+  while (*end && isspace((unsigned char)*end)) end++;
   if (*end || value <= 0.0) return 0;
   factor = (float)value;
   return 1;
@@ -210,8 +210,12 @@ int Fl::arg(int argc, char **argv, int &i) {
     float factor = 1.0f;
     if (!fl_parse_scaling_factor(v, factor))
       return 0;
-    char scaling_factor[80];
-    snprintf(scaling_factor, sizeof(scaling_factor), "FLTK_SCALING_FACTOR=%.9g", (double)factor);
+    // "FLTK_SCALING_FACTOR=" (21 chars) + formatted value + NUL
+    enum { SCALING_ENV_SIZE = 40 };
+    static char scaling_factor[SCALING_ENV_SIZE];
+    int len = snprintf(scaling_factor, SCALING_ENV_SIZE, "FLTK_SCALING_FACTOR=%.9g", (double)factor);
+    if (len < 0 || len >= SCALING_ENV_SIZE)
+      return 0;
     fl_putenv(scaling_factor);
 
   } else if (Fl::system_driver()->arg_and_value(s, v)) {
