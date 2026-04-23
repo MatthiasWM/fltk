@@ -20,15 +20,28 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Tooltip.H>
+#include <FL/fl_utf8.h>
 #include "Fl_Window_Driver.H"
 #include "Fl_System_Driver.H"
 #include "Fl_Screen_Driver.H"
+#include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 static int fl_match(const char *a, const char *s, int atleast = 1) {
   const char *b = s;
   while (*a && (*a == *b || tolower(*a) == *b)) {a++; b++;}
   return !*a && b >= s+atleast;
+}
+
+static int fl_parse_scaling_factor(const char *p, float &factor) {
+  char *end = NULL;
+  double value = strtod(p, &end);
+  if (end == p) return 0;
+  while (*end && isspace(*end)) end++;
+  if (*end || value <= 0.0) return 0;
+  factor = (float)value;
+  return 1;
 }
 
 // flags set by previously parsed arguments:
@@ -80,6 +93,11 @@ extern const char *fl_bg2;
   <br>
   Sets the initial window position and size according
   to the standard X geometry string.
+
+  \li -scaling-factor factor
+  <br>
+  Sets the scaling factor. This overrides the FLTK_SCALING_FACTOR
+  environment variable.
 
   \li -iconic
   <br>
@@ -187,6 +205,14 @@ int Fl::arg(int argc, char **argv, int &i) {
 
   } else if (fl_match(s, "display", 2)) {
     Fl::screen_driver()->display(v);
+
+  } else if (fl_match(s, "scaling-factor", 2)) {
+    float factor = 1.0f;
+    if (!fl_parse_scaling_factor(v, factor))
+      return 0;
+    char scaling_factor[80];
+    snprintf(scaling_factor, sizeof(scaling_factor), "FLTK_SCALING_FACTOR=%.9g", (double)factor);
+    fl_putenv(scaling_factor);
 
   } else if (Fl::system_driver()->arg_and_value(s, v)) {
     // nothing to do
@@ -348,6 +374,7 @@ static const char * const helpmsg =
 " -nod[nd]\n"
 " -nok[bd]\n"
 " -not[ooltips]\n"
+" -sc[aling-factor] factor\n"
 " -s[cheme] scheme\n"
 " -ti[tle] windowtitle\n"
 " -to[oltips]";

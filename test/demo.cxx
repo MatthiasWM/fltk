@@ -138,6 +138,22 @@ void debug_var(const char *varname, const char *value) {
   tty->printf("%-10s = %s\n", varname, value);
 }
 
+static int parse_scaling_factor(const char *text, float &factor) {
+  if (!text || !*text) return 0;
+  char *end = NULL;
+  double value = strtod(text, &end);
+  if (end == text) return 0;
+  while (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r') end++;
+  if (*end || value <= 0.0) return 0;
+  factor = (float)value;
+  return 1;
+}
+
+static int scaling_differs(float a, float b) {
+  float d = a - b;
+  return (d < -1e-6f || d > 1e-6f);
+}
+
 // Show or hide the tty window. Generally this could be much simpler
 // but the extra space (10 px) at the bottom needs "special care"
 
@@ -391,21 +407,47 @@ void dobut(Fl_Widget *, long arg) {
   else if (!strncmp(cmdbuf, "fltk-options", 5))
     path = options_path;
 
+  char scaling_arg[64];
+  scaling_arg[0] = '\0';
+  float current_scale = Fl::screen_scale(form->screen_num());
+  const char *env_scale_text = fl_getenv("FLTK_SCALING_FACTOR");
+  int add_scaling_arg = 0;
+  if (env_scale_text && *env_scale_text) {
+    float env_scale = 1.0f;
+    if (!parse_scaling_factor(env_scale_text, env_scale) || scaling_differs(current_scale, env_scale))
+      add_scaling_arg = 1;
+  } else if (scaling_differs(current_scale, 1.0f)) {
+    add_scaling_arg = 1;
+  }
+  if (add_scaling_arg) {
+    snprintf(scaling_arg, sizeof(scaling_arg), "-scaling-factor %.9g", (double)current_scale);
+  }
+
   // format commandline with optional parameters
 
 #if defined(USE_MAC_OS) // macOS
 
-  if (params[0]) {
+  if (params[0] && scaling_arg[0]) {
+    // we assume that we have only one argument which is a filename in 'data_path'
+    snprintf(command, sizeof(command), "open '%s/%s%s' --args '%s/%s' %s",
+             path, cmdbuf, suffix, data_path, params, scaling_arg);
+  } else if (params[0]) {
     // we assume that we have only one argument which is a filename in 'data_path'
     snprintf(command, sizeof(command), "open '%s/%s%s' --args '%s/%s'", path, cmdbuf, suffix, data_path, params);
+  } else if (scaling_arg[0]) {
+    snprintf(command, sizeof(command), "open '%s/%s%s' --args %s", path, cmdbuf, suffix, scaling_arg);
   } else {
     snprintf(command, sizeof(command), "open '%s/%s%s'", path, cmdbuf, suffix);
   }
 
 #else // other platforms
 
-  if (params[0])
+  if (params[0] && scaling_arg[0])
+    snprintf(command, sizeof(command), "%s/%s%s %s %s", path, cmdbuf, suffix, params, scaling_arg);
+  else if (params[0])
     snprintf(command, sizeof(command), "%s/%s%s %s", path, cmdbuf, suffix, params);
+  else if (scaling_arg[0])
+    snprintf(command, sizeof(command), "%s/%s%s %s", path, cmdbuf, suffix, scaling_arg);
   else
     snprintf(command, sizeof(command), "%s/%s%s", path, cmdbuf, suffix);
 
