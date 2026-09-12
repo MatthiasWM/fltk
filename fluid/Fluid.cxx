@@ -18,6 +18,7 @@
 
 #include "Project.h"
 #include "fluid_icon.h"
+#include "main.h"
 #include "message.h"
 
 #include "app/shell_command.h"
@@ -1112,7 +1113,6 @@ void Application::make_main_window() {
     gui.app_menu_bar->global();
     fill_in_New_Menu();
   }
-  gui.show();
 
   if (!batch_mode) {
     history.load();
