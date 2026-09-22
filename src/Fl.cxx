@@ -23,6 +23,7 @@
 #include "Fl_Screen_Driver.H"
 #include "Fl_Window_Driver.H"
 #include "Fl_System_Driver.H"
+#include "Fl_Driver_Set.H"
 #include "Fl_Timeout.h"
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Tooltip.H>
@@ -141,7 +142,7 @@ int Fl::selection_to_clipboard() {
 /** Returns a pointer to the unique Fl_Screen_Driver object of the platform */
 Fl_Screen_Driver *Fl::screen_driver()
 {
-  static  Fl_Screen_Driver* screen_driver_ = Fl_Screen_Driver::newScreenDriver();
+  static  Fl_Screen_Driver* screen_driver_ = Fl_Driver_Set::current()->create_screen_driver();
   return screen_driver_;
 }
 
@@ -149,7 +150,7 @@ Fl_Screen_Driver *Fl::screen_driver()
 Fl_System_Driver *Fl::system_driver()
 {
   if (!Fl_Screen_Driver::system_driver) {
-    Fl_Screen_Driver::system_driver = Fl_System_Driver::newSystemDriver();
+    Fl_Screen_Driver::system_driver = Fl_Driver_Set::current()->create_system_driver();
   }
   return Fl_Screen_Driver::system_driver;
 }

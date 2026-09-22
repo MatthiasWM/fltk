@@ -57,6 +57,8 @@ class Fl_System_Driver;
   Each supported platform implements several of the virtual methods of this class.
 */
 class Fl_Screen_Driver {
+  friend class Fl_X11_Driver_Set;
+  friend class Fl_Wayland_Driver_Set;
 
 protected:
   Fl_Screen_Driver();
@@ -95,7 +97,6 @@ public:
 
   virtual float scale(int) { return 1; }
   virtual void scale(int /*n*/, float /*f*/) {}
-  static Fl_Screen_Driver *newScreenDriver();
   // implement to process the -display argument and support the DISPLAY env var
   virtual void display(const char *) { }
   // default implementation should be enough

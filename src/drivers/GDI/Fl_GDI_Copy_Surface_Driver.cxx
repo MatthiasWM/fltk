@@ -19,12 +19,13 @@
 #include <FL/platform.H>
 #include "Fl_GDI_Graphics_Driver.H"
 #include "../WinAPI/Fl_WinAPI_Screen_Driver.H"
+#include "../../Fl_Driver_Set.H"
 #include <FL/Fl_Image_Surface.H>
 #include <windows.h>
 
 
 Fl_GDI_Copy_Surface_Driver::Fl_GDI_Copy_Surface_Driver(int w, int h) : Fl_Copy_Surface_Driver(w, h) {
-  driver(Fl_Graphics_Driver::newMainGraphicsDriver());
+  driver(Fl_Driver_Set::current()->create_main_graphics_driver());
   oldgc = (HDC)Fl_Surface_Device::surface()->driver()->gc();
   // exact computation of factor from screen units to EnhMetaFile units (0.01 mm)
   HDC hdc = GetDC(NULL);

@@ -15,6 +15,7 @@
 //
 
 #include <FL/Fl_Image_Surface.H>
+#include "Fl_Driver_Set.H"
 
 #include <FL/fl_draw.H> // necessary for FL_EXPORT fl_*_offscreen()
 
@@ -36,7 +37,7 @@
  \version 1.3.4 (1.3.3 without the \p highres parameter)
  */
 Fl_Image_Surface::Fl_Image_Surface(int w, int h, int high_res, Fl_Offscreen off) : Fl_Widget_Surface(NULL) {
-  platform_surface = Fl_Image_Surface_Driver::newImageSurfaceDriver(w, h, high_res, off);
+  platform_surface = Fl_Driver_Set::current()->create_image_surface_driver(w, h, high_res, off);
   platform_surface->image_surface_ = this;
   driver(platform_surface->driver());
 }
@@ -192,7 +193,7 @@ void Fl_Image_Surface::rescale() {
   int w, h;
   printable_rect(&w, &h);
   delete platform_surface;
-  platform_surface = Fl_Image_Surface_Driver::newImageSurfaceDriver(w, h, 1, 0);
+  platform_surface = Fl_Driver_Set::current()->create_image_surface_driver(w, h, 1, 0);
   Fl_Surface_Device::push_current(this);
   rgb->draw(0,0);
   Fl_Surface_Device::pop_current();

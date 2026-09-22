@@ -16,6 +16,7 @@
 
 #include <config.h>
 #include <FL/platform.H>
+#include "../../Fl_Driver_Set.H"
 #include "../Xlib/Fl_Xlib_Copy_Surface_Driver.H"
 #if FLTK_USE_CAIRO
 #  include "../Cairo/Fl_X11_Cairo_Graphics_Driver.H"
@@ -29,50 +30,49 @@
 #include "../Base/Fl_Base_Pen_Driver.H"
 
 
-Fl_Copy_Surface_Driver *Fl_Copy_Surface_Driver::newCopySurfaceDriver(int w, int h)
-{
-  return new Fl_Xlib_Copy_Surface_Driver(w, h);
-}
+class Fl_X11_Driver_Set : public Fl_Driver_Set {
+public:
+  Fl_X11_Driver_Set() : Fl_Driver_Set("x11") { }
 
+  Fl_Copy_Surface_Driver *create_copy_surface_driver(int w, int h) override {
+    return new Fl_Xlib_Copy_Surface_Driver(w, h);
+  }
 
-Fl_Graphics_Driver *Fl_Graphics_Driver::newMainGraphicsDriver()
-{
+  Fl_Graphics_Driver *create_main_graphics_driver() override {
 #if FLTK_USE_CAIRO
-  return new Fl_X11_Cairo_Graphics_Driver();
+    return new Fl_X11_Cairo_Graphics_Driver();
 #else
-  return new Fl_Xlib_Graphics_Driver();
+    return new Fl_Xlib_Graphics_Driver();
 #endif
-}
+  }
 
-
-Fl_Screen_Driver *Fl_Screen_Driver::newScreenDriver()
-{
-  Fl_X11_Screen_Driver *d = new Fl_X11_Screen_Driver();
+  Fl_Screen_Driver *create_screen_driver() override {
+    Fl_X11_Screen_Driver *d = new Fl_X11_Screen_Driver();
 #if USE_XFT || FLTK_USE_CAIRO
-  for (int i = 0;  i < MAX_SCREENS; i++) d->screens[i].scale = 1;
-  d->current_xft_dpi = 0.; // means the value of the Xft.dpi resource is still unknown
+    for (int i = 0;  i < Fl_Screen_Driver::MAX_SCREENS; i++) d->screens[i].scale = 1;
+    d->current_xft_dpi = 0.; // means the value of the Xft.dpi resource is still unknown
 #else
-  secret_input_character = '*';
+    secret_input_character = '*';
 #endif
-  return d;
-}
+    return d;
+  }
 
+  Fl_System_Driver *create_system_driver() override {
+    return new Fl_Unix_System_Driver();
+  }
 
-Fl_System_Driver *Fl_System_Driver::newSystemDriver()
-{
-  return new Fl_Unix_System_Driver();
-}
+  Fl_Window_Driver *create_window_driver(Fl_Window *w) override {
+    return new Fl_X11_Window_Driver(w);
+  }
 
+  Fl_Image_Surface_Driver *create_image_surface_driver(int w, int h, int high_res, Fl_Offscreen off) override {
+    return new Fl_Xlib_Image_Surface_Driver(w, h, high_res, off);
+  }
+};
 
-Fl_Window_Driver *Fl_Window_Driver::newWindowDriver(Fl_Window *w)
-{
-  return new Fl_X11_Window_Driver(w);
-}
-
-
-Fl_Image_Surface_Driver *Fl_Image_Surface_Driver::newImageSurfaceDriver(int w, int h, int high_res, Fl_Offscreen off)
-{
-  return new Fl_Xlib_Image_Surface_Driver(w, h, high_res, off);
+Fl_Driver_Set *Fl_Driver_Set::make() {
+  static Fl_X11_Driver_Set inst;
+  return &inst;
 }
 
 // This defines X11 dummy driver when Wayland is not being built.

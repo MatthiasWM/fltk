@@ -180,7 +180,7 @@ public:
 #if USE_GDIPLUS
 
 class Fl_GDIplus_Graphics_Driver : public Fl_GDI_Graphics_Driver {
-  friend class Fl_Graphics_Driver;
+  friend class Fl_WinAPI_Driver_Set;
 private:
   Gdiplus::Color gdiplus_color_;
   Gdiplus::Pen *pen_;

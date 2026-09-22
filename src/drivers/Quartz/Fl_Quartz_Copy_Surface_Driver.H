@@ -23,7 +23,7 @@
 #include <FL/platform.H>
 
 class Fl_Quartz_Copy_Surface_Driver : public Fl_Copy_Surface_Driver {
-  friend class Fl_Copy_Surface_Driver;
+  friend class Fl_Cocoa_Driver_Set;
 protected:
   CFMutableDataRef pdfdata;
   CGContextRef gc;

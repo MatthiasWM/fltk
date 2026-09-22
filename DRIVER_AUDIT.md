@@ -20,12 +20,37 @@ via a local `attempt_wayland()` helper (checks `FLTK_BACKEND` env var,
 in the codebase today to the runtime-selectable backend behavior we want to
 generalize — worth reading closely before designing step 2.
 
-**A real plugin/registry mechanism already exists, unused for this purpose.**
+**A real plugin/registry mechanism already exists and is now used for driver
+sets too — but getting there took two rounds of debugging.**
 `FL/Fl_Device.H` defines `Fl_Device_Plugin : public Fl_Plugin`, using the
-pre-existing `Fl_Plugin` / `Fl_Plugin_Manager` machinery. Today it's only used
-for optional OpenGL print/screen-capture hooks. It's a real runtime
-registration system, orthogonal to all the `new*Driver()` factories — worth
-evaluating as a base for step 2 instead of inventing a new mechanism.
+pre-existing `Fl_Plugin` / `Fl_Plugin_Manager` machinery. First attempt to
+reuse it for `Fl_Driver_Set` crashed: `Fl_Plugin_Manager` is built on
+`Fl_Preferences`, and `Fl_Preferences::Node`'s constructor calls
+`fl_strdup()` unconditionally to duplicate path/name strings — and
+`fl_strdup()` (`fl_string_functions.cxx`) is hard-wired to
+`Fl::system_driver()->strdup()`. Resolving the driver set would need
+`Fl_Preferences`, which needed `fl_strdup()`, which needed the driver set
+already resolved. (The MEMORY-only preferences root, used automatically
+here via `Fl_Preferences`'s parent-less/`runtimePrefs` constructor path, was
+*not* the problem — that part already avoided the locale/filesystem code;
+the string duplication was unconditional regardless of root type.) Fixed by
+giving `Fl_Preferences.cxx` its own internal `fl_prefs_strdup()` (plain
+`::strdup`/`::_strdup`, no driver indirection) instead of the public
+`fl_strdup()` — `Fl_System_Driver::strdup()`'s two real implementations were
+already just one-line calls to those same functions, so nothing behavioral
+changed, and the public `fl_strdup()` (used throughout the rest of the
+codebase) was deliberately left untouched, out of scope.
+
+Second pitfall, independent of the first: a self-registering *global*
+`Fl_Xxx_Driver_Set` object doesn't work either, even once `Fl_Plugin` itself
+is safe to call early — `Fl.cxx` has its own namespace-scope globals
+(`fl_local_shift` and friends) whose dynamic initializers call
+`Fl::system_driver()`, and C++ doesn't guarantee cross-translation-unit
+dynamic-init order, so a global driver-set object living in a different
+`.cxx` file isn't guaranteed to register before those run. Fixed by keeping
+driver-set construction lazy (construct-on-first-use via a function-local
+static in `Fl_Driver_Set::current()`), which sidesteps ordering entirely.
+See `src/Fl_Driver_Set.H`'s doc comment for the full reasoning on both.
 
 **Almost nothing is pure virtual.** Across every driver class audited, `= 0`
 is rare to absent — nearly every virtual has a default body (usually a no-op,

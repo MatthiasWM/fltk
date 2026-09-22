@@ -154,6 +154,19 @@ char Fl_Preferences::uuidBuffer[40];
 Fl_Preferences *Fl_Preferences::runtimePrefs = 0;
 unsigned int Fl_Preferences::fileAccess_ = Fl_Preferences::ALL;
 
+// Node path/name/value strings are duplicated with this instead of
+// fl_strdup(), which goes through Fl::system_driver(). Fl_Plugin_Manager
+// (an Fl_Preferences user) must stay usable before Fl::system_driver() is
+// resolved, since it is what resolves the driver set in the first place.
+static char *fl_prefs_strdup(const char *s) {
+  if (!s) return 0L;
+#ifdef _WIN32
+  return _strdup(s);
+#else
+  return strdup(s);
+#endif
+}
+
 static int clocale_snprintf(char *buffer, size_t buffer_size, const char *format, ...)
 {
   va_list args;
@@ -958,7 +971,7 @@ char Fl_Preferences::get( const char *key, char *&text, const char *defaultValue
   }
   if ( !v ) v = defaultValue;
   if ( v )
-    text = fl_strdup( v );
+    text = fl_prefs_strdup( v );
   else
     text = 0;
   return ( v != defaultValue );
@@ -1350,9 +1363,9 @@ Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, Root root, const char
   root_type_((Root)(root & ~CLEAR))
 {
   char *filename = Fl::system_driver()->preference_rootnode(prefs, root, vendor, application);
-  filename_    = filename ? fl_strdup(filename) : 0L;
-  vendor_      = fl_strdup(vendor);
-  application_ = fl_strdup(application);
+  filename_    = filename ? fl_prefs_strdup(filename) : 0L;
+  vendor_      = fl_prefs_strdup(vendor);
+  application_ = fl_prefs_strdup(application);
   if ( (root & CLEAR) == 0 )
     read();
 }
@@ -1371,14 +1384,14 @@ Fl_Preferences::RootNode::RootNode( Fl_Preferences *prefs, const char *path, con
     vendor = "unknown";
   if (!application) {
     application = "unknown";
-    filename_ = fl_strdup(path);
+    filename_ = fl_prefs_strdup(path);
   } else {
     char filename[ FL_PATH_MAX ]; filename[0] = 0;
     snprintf(filename, sizeof(filename), "%s/%s.prefs", path, application);
-    filename_  = fl_strdup(filename);
+    filename_  = fl_prefs_strdup(filename);
   }
-  vendor_      = fl_strdup(vendor);
-  application_ = fl_strdup(application);
+  vendor_      = fl_prefs_strdup(vendor);
+  application_ = fl_prefs_strdup(application);
   if ( (flags & CLEAR) == 0 )
     read();
 }
@@ -1561,7 +1574,7 @@ char Fl_Preferences::RootNode::getPath( char *path, int pathlen ) {
 // create a node that represents a group
 // - path must be a single word, preferable alnum(), dot and underscore only. Space is ok.
 Fl_Preferences::Node::Node( const char *path ) {
-  if ( path ) path_ = fl_strdup( path ); else path_ = 0;
+  if ( path ) path_ = fl_prefs_strdup( path ); else path_ = 0;
   first_child_ = 0; next_ = 0; parent_ = 0;
   entry_ = 0;
   nEntry_ = NEntry_ = 0;
@@ -1675,7 +1688,7 @@ void Fl_Preferences::Node::setParent( Node *pn ) {
   pn->first_child_ = this;
   snprintf( nameBuffer, sizeof(nameBuffer), "%s/%s", pn->path_, path_ );
   free( path_ );
-  path_ = fl_strdup( nameBuffer );
+  path_ = fl_prefs_strdup( nameBuffer );
 }
 
 // find the corresponding root node
@@ -1692,7 +1705,7 @@ Fl_Preferences::RootNode *Fl_Preferences::Node::findRoot() const {
 // add a child to this node and set its path (try to find it first...)
 Fl_Preferences::Node *Fl_Preferences::Node::addChild( const char *path ) {
   snprintf( nameBuffer, sizeof(nameBuffer), "%s/%s", path_, path );
-  char *name = fl_strdup( nameBuffer );
+  char *name = fl_prefs_strdup( nameBuffer );
   Node *nd = find( name );
   free( name );
   updateIndex();
@@ -1708,7 +1721,7 @@ void Fl_Preferences::Node::set( const char *name, const char *value )
       if ( strcmp( value, entry_[i].value ) != 0 ) {
         if ( entry_[i].value )
           free( entry_[i].value );
-        entry_[i].value = fl_strdup( value );
+        entry_[i].value = fl_prefs_strdup( value );
         dirty_ = 1;
       }
       lastEntrySet = i;
@@ -1719,8 +1732,8 @@ void Fl_Preferences::Node::set( const char *name, const char *value )
     NEntry_ = NEntry_ ? NEntry_*2 : 10;
     entry_ = (Entry*)realloc( entry_, NEntry_ * sizeof(Entry) );
   }
-  entry_[ nEntry_ ].name = fl_strdup( name );
-  entry_[ nEntry_ ].value = value?fl_strdup(value):0;
+  entry_[ nEntry_ ].name = fl_prefs_strdup( name );
+  entry_[ nEntry_ ].value = value?fl_prefs_strdup(value):0;
   lastEntrySet = nEntry_;
   nEntry_++;
   dirty_ = 1;

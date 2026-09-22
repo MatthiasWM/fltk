@@ -21,7 +21,7 @@
 #include <FL/platform.H>
 
 class Fl_GDI_Copy_Surface_Driver : public Fl_Copy_Surface_Driver {
-  friend class Fl_Copy_Surface_Driver;
+  friend class Fl_WinAPI_Driver_Set;
 protected:
   HDC oldgc;
   HDC gc;

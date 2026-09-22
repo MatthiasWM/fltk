@@ -26,7 +26,8 @@
 class Fl_Image_Surface;
 
 class Fl_Xlib_Copy_Surface_Driver : public Fl_Copy_Surface_Driver {
-  friend class Fl_Copy_Surface_Driver;
+  friend class Fl_X11_Driver_Set;
+  friend class Fl_Wayland_Driver_Set;
   void end_current() FL_OVERRIDE;
 protected:
   Fl_Image_Surface *xid;

@@ -15,11 +15,12 @@
 //
 
 #include <FL/Fl_Copy_Surface.H>
+#include "Fl_Driver_Set.H"
 
 /** the constructor
 \param w, h Width and height of the drawing surface in FLTK units */
 Fl_Copy_Surface::Fl_Copy_Surface(int w, int h) : Fl_Widget_Surface(NULL) {
-  platform_surface = Fl_Copy_Surface_Driver::newCopySurfaceDriver(w, h);
+  platform_surface = Fl_Driver_Set::current()->create_copy_surface_driver(w, h);
   if (platform_surface) driver(platform_surface->driver());
 }
 

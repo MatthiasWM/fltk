@@ -92,11 +92,6 @@ protected:
   void translate(int x, int y) override = 0;
   void untranslate() override = 0;
   int printable_rect(int *w, int *h) override;
-  /** Each platform implements this function its own way.
-   It returns an object implementing all virtual functions
-   of class Fl_Copy_Surface_Driver for the platform.
-   */
-  static Fl_Copy_Surface_Driver *newCopySurfaceDriver(int w, int h);
 };
 
 /**

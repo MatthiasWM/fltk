@@ -18,6 +18,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Device.H>
 #include <FL/Fl_Graphics_Driver.H>
+#include "Fl_Driver_Set.H"
 
 /* Inheritance diagram.
 
@@ -117,7 +118,7 @@ Fl_Display_Device::Fl_Display_Device(Fl_Graphics_Driver *graphics_driver) : Fl_S
 
 /** Returns a pointer to the unique display device */
 Fl_Display_Device *Fl_Display_Device::display_device() {
-  static Fl_Display_Device *display = new Fl_Display_Device(Fl_Graphics_Driver::newMainGraphicsDriver());
+  static Fl_Display_Device *display = new Fl_Display_Device(Fl_Driver_Set::current()->create_main_graphics_driver());
   return display;
 }
 

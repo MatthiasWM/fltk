@@ -58,10 +58,7 @@ class Fl_Sys_Menu_Bar_Driver;
  Each supported platform implements several of the virtual methods of this class.
   */
 class Fl_System_Driver {
-  friend Fl_System_Driver *Fl::system_driver();
 protected:
-  // implement once for each platform
-  static Fl_System_Driver *newSystemDriver();
   Fl_System_Driver();
   int filename_relative_(char *to, int tolen, const char *from, const char *base, bool case_sensitive);
 

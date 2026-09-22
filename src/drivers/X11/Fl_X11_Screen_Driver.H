@@ -33,7 +33,8 @@ class Fl_Window;
 
 class Fl_X11_Screen_Driver : public Fl_Unix_Screen_Driver
 {
-  friend class Fl_Screen_Driver;
+  friend class Fl_X11_Driver_Set;
+  friend class Fl_Wayland_Driver_Set;
 protected:
   typedef struct {
     short x_org;

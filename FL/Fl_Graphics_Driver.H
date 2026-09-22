@@ -141,8 +141,6 @@ private:
   void draw_image_mono_general_(const uchar *buf, int X, int Y, int W, int H, int D, int L);
   float scale_; // scale between FLTK and drawing coordinates: drawing = FLTK * scale_
 public:
-  /** Creates the graphics driver that is used for core operations. */
-  static Fl_Graphics_Driver *newMainGraphicsDriver();
   /** A 2D coordinate transformation matrix */
   struct matrix {double a, b, c, d, x, y;};
   /** Features that a derived class may possess.  */

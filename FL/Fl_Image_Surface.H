@@ -121,11 +121,6 @@ protected:
   int printable_rect(int *w, int *h) override;
   virtual Fl_RGB_Image *image() = 0;
   virtual void mask(const Fl_RGB_Image *) {}
-  /** Each platform implements this function its own way.
-   It returns an object implementing all virtual functions
-   of class Fl_Image_Surface_Driver for the platform.
-   */
-  static Fl_Image_Surface_Driver *newImageSurfaceDriver(int w, int h, int high_res, Fl_Offscreen off);
 public:
   /** Returns pointer to the associated Fl_Image_Surface object */
   Fl_Image_Surface *image_surface() const { return image_surface_; }
