@@ -147,10 +147,88 @@ Steps, in order:
    fallback paths. WinAPI and Wayland were rewritten by the same mechanical
    pattern but are unverified by a local build — needs a Windows/Linux
    reviewer or CI before merging.
-3. Extend the "Base" (null) driver to every driver type, not just Pen, so a
-   base-only build compiles, links, and runs with no rendering. <- WE ARE HERE
-4. Add a CMake backend switch (FLTK_BACKEND=X11|WAYLAND|COCOA|WINAPI|SDL3|NONE)
-   replacing the implicit OS-based branching.
+3. **Extend the "Base" (null) driver to every driver type.** DONE — see
+   `src/drivers/Base/`: `Fl_Base_Screen_Driver`, `Fl_Base_System_Driver`,
+   `Fl_Base_Window_Driver`, `Fl_Base_Graphics_Driver`,
+   `Fl_Base_Copy_Surface_Driver`, `Fl_Base_Image_Surface_Driver`, bundled by
+   `Fl_Base_Driver_Set` in `fl_base_platform_init.cxx` (registered as
+   `"base"`) — the fifth `Fl_Driver_Set`, same shape as Cocoa/X11/Wayland/
+   WinAPI, requiring zero changes to `Fl_Driver_Set` itself. Most of these
+   classes only needed to expose a protected constructor; the six driver base
+   classes were already nearly instantiable as-is. Two real bugs were found
+   and fixed along the way (not just cosmetic — both are latent in the base
+   classes today, just never exercised because every real platform's
+   override happens to paper over them):
+   - `Fl_Screen_Driver`'s constructor sets `num_screens = -1`, and the
+     default `init()` is a no-op, so `screen_count()` returned **-1**, not
+     the intended fallback of 1. Fixed in `Fl_Base_Screen_Driver`'s
+     constructor (`num_screens = 1`).
+   - `Fl_System_Driver::wait(double)`'s default body computes the timeout
+     bookkeeping and returns the remaining time, but never actually
+     blocks/sleeps — reused unmodified, it would busy-spin an event loop at
+     100% CPU. `Fl_Base_System_Driver::wait()` calls the inherited
+     bookkeeping, then actually sleeps. Verified with `/usr/bin/time`: the
+     smoke test below reports ~0s of `user` CPU time despite three 0.1s
+     waits, confirming it isn't spinning.
+
+   Verification found three more cross-cutting things that are **not** part
+   of `Fl_Driver_Set`'s six factories and have no "base" fallback of their
+   own (same category as `Fl_Gl_Window_Driver`/`Fl_Sys_Menu_Bar_Driver`,
+   excluded in step 2 for the same reason - separate factory mechanisms):
+   `Fl_Native_File_Chooser` (three platform `.cxx`/`.mm` implementations,
+   no fourth), `Fl_PDF_File_Surface::new_platform_pdf_surface_` (ditto -
+   worked around by also setting `FL_NO_PRINT_SUPPORT` for
+   `FLTK_BACKEND_NONE` builds, since print/PDF support is a real optional
+   subsystem, not something to stub out), and the global `Window fl_window`
+   (every platform's own core file defines this one; `Fl_Base_Driver_Set`'s
+   file now does too, for link completeness only - it's not one of the six
+   driver factories). Worth remembering for step 4's real `FLTK_BACKEND`
+   switch and for whoever eventually designs a driver-plugin API doc.
+
+   CMake: added `FLTK_BACKEND_NONE` (`CMake/options.cmake`, next to the
+   existing `FLTK_BACKEND_X11` precedent) and a first `if(FLTK_BACKEND_NONE)`
+   branch in `src/CMakeLists.txt`'s `DRIVER_FILES` chain, explicitly
+   commented as a verification-only stepping stone toward step 4's real
+   switch, not the final design - it doesn't skip Cocoa/X11/GL library
+   detection, only which driver sources get compiled in. Also needed:
+   excluding the Apple-only `Fl_cocoa.mm`/native-file-chooser/sys-menu-bar/
+   pen `.mm` files (these are unconditional on `APPLE`, independent of
+   `Fl_Driver_Set` selection, found only by attempting the build).
+
+   Verified: fresh `build/ninja-none` tree (`-DFLTK_BACKEND_NONE=ON`), core
+   `fltk` library builds and links clean, and a small smoke test
+   (`test/base_smoke.cxx`, gated behind the same option, exercises all six
+   factories) builds, links, and exits with `base_smoke: OK` in ~0.6s
+   wall-clock with ~0s user CPU time.
+
+   Also proven end-to-end since: an *external*, independently-built shared
+   library (`driverset-demo/`, own standalone CMake project, not
+   `add_subdirectory()`'d by anything) implementing a driver set out of the
+   Base classes above plus the real platform System driver (mix-and-match,
+   not all-Base-or-nothing), loaded into a normal FLTK app at runtime via
+   `Fl_Plugin_Manager::load()` + `FLTK_BACKEND=demo`, with no changes to
+   FLTK itself. This is the concrete validation of the long-term goal's
+   "link with an external Graphics and Window driver set". See
+   `driverset-demo/README.md` findings below before repeating this: (a) the
+   driver API is genuinely private today (`Fl_Driver_Set.H` and the Base
+   headers live under `src/`, not `FL/`) - the demo's `CMakeLists.txt`
+   reaches into the FLTK source tree directly via a `FLTK_SOURCE_DIR` cache
+   variable, there is no public path yet (that's step 7's job); (b) an
+   external plugin `.dylib`/`.so` must NOT link FLTK's static library into
+   itself - it must resolve FLTK's symbols against the host process at
+   dlopen time (`-undefined dynamic_lookup` on macOS), or every FLTK symbol
+   (including Fl_cocoa.mm's Objective-C classes) ends up duplicated between
+   the plugin and the host executable, which the ObjC runtime correctly
+   flags as likely to cause "spurious casting failures and mysterious
+   crashes" - worth designing for explicitly whenever step 4/5 makes
+   dynamic driver loading a first-class, documented feature rather than a
+   demo.
+4. Add a CMake backend switch replacing the implicit OS-based branching.
+   **Constraint (firm, not up for revisiting):** keep the existing
+   per-backend boolean option shape (`FLTK_BACKEND_X11`, `FLTK_BACKEND_NONE`,
+   future `FLTK_BACKEND_SDL3`, ...), matching what's already there - not a
+   single string-valued `FLTK_BACKEND=X11|WAYLAND|COCOA|WINAPI|SDL3|NONE`
+   option. The other FLTK developers have already decided this. <- WE ARE HERE
 5. Implement the SDL3 driver set on desktop first (macOS/Linux), using the
    null drivers as scaffolding. Order: Screen -> Window -> Graphics, then
    System, then Gl_Window if needed.
