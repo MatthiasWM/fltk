@@ -114,6 +114,15 @@ elseif(UNIX)
   option(FLTK_BACKEND_X11 "use X11" ON)
 endif(APPLE)
 
+# FLTK_BACKEND_NONE: build with only the null/Base platform drivers (no
+# rendering, no windowing) - see src/drivers/Base/. This is a verification-
+# only stepping stone (see CLAUDE.md step 3); it does not yet skip Cocoa/X11/
+# GL library detection above and below, it only changes which driver source
+# files src/CMakeLists.txt compiles into the fltk library. A real
+# FLTK_BACKEND=NONE switch that also skips platform library detection is
+# planned as a later step.
+option(FLTK_BACKEND_NONE "use no platform driver (Base only, for driver development)" OFF)
+
 #######################################################################
 #  Bundled Library Options
 #######################################################################
@@ -1047,9 +1056,9 @@ endif(FLTK_USE_XRENDER)
 
 #######################################################################
 set(FL_NO_PRINT_SUPPORT FALSE)
-if(X11_FOUND AND NOT FLTK_OPTION_PRINT_SUPPORT)
+if((X11_FOUND AND NOT FLTK_OPTION_PRINT_SUPPORT) OR FLTK_BACKEND_NONE)
   set(FL_NO_PRINT_SUPPORT TRUE)
-endif(X11_FOUND AND NOT FLTK_OPTION_PRINT_SUPPORT)
+endif()
 #######################################################################
 
 #######################################################################

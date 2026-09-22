@@ -228,7 +228,24 @@ endif(FLTK_USE_X11 AND NOT FLTK_OPTION_PRINT_SUPPORT)
 
 set(DRIVER_FILES)
 
-if(FLTK_USE_X11 AND NOT FLTK_USE_WAYLAND)
+if(FLTK_BACKEND_NONE)
+
+  # Base (null) driver set - no platform, no rendering. Verification-only
+  # stepping stone toward a full FLTK_BACKEND=NONE switch (CLAUDE.md step 4).
+
+  set(DRIVER_FILES
+    drivers/Base/fl_base_platform_init.cxx
+  )
+  set(DRIVER_HEADER_FILES
+    drivers/Base/Fl_Base_Screen_Driver.H
+    drivers/Base/Fl_Base_System_Driver.H
+    drivers/Base/Fl_Base_Window_Driver.H
+    drivers/Base/Fl_Base_Graphics_Driver.H
+    drivers/Base/Fl_Base_Copy_Surface_Driver.H
+    drivers/Base/Fl_Base_Image_Surface_Driver.H
+  )
+
+elseif(FLTK_USE_X11 AND NOT FLTK_USE_WAYLAND)
 
   # X11 (including APPLE with X11)
 
@@ -442,7 +459,7 @@ else()
     )
   endif(FLTK_HAVE_PEN_SUPPORT)
 
-endif(FLTK_USE_X11 AND NOT FLTK_USE_WAYLAND)
+endif(FLTK_BACKEND_NONE)
 
 # Common Pen/Tablet Support Files
 
@@ -657,7 +674,7 @@ if(WIN32)
   )
 endif(WIN32)
 
-if(APPLE AND NOT FLTK_BACKEND_X11)
+if(APPLE AND NOT FLTK_BACKEND_X11 AND NOT FLTK_BACKEND_NONE)
   set(MMFILES
     Fl_cocoa.mm
     drivers/Cocoa/Fl_Cocoa_Printer_Driver.mm

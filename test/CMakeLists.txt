@@ -162,6 +162,12 @@ fl_create_example(group group.cxx fltk::fltk)
 fl_create_example(handle_events handle_events.cxx "${GLDEMO_LIBS}")
 fl_create_example(handle_keys handle_keys.cxx fltk::fltk)
 fl_create_example(hello hello.cxx fltk::fltk)
+
+if(FLTK_BACKEND_NONE)
+  # Verification-only smoke test for the Base (null) driver set, see
+  # CLAUDE.md step 3 and src/drivers/Base/.
+  fl_create_example(base_smoke base_smoke.cxx fltk::fltk)
+endif(FLTK_BACKEND_NONE)
 fl_create_example(help_dialog help_dialog.cxx fltk::images)
 fl_create_example(icon icon.cxx fltk::fltk)
 fl_create_example(iconize iconize.cxx fltk::fltk)
